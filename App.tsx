@@ -1,125 +1,100 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import React from "react";
 
-import React, { useEffect } from "react";
-import type { PropsWithChildren } from "react";
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from "react-native";
+import Toast from "react-native-toast-message";
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from "react-native/Libraries/NewAppScreen";
+import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+const Stack = createNativeStackNavigator();
 
-import SplashScreen from "react-native-splash-screen";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useUser } from "./src/services";
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      refetchOnReconnect: true,
+      retry: false,
+      networkMode: "always",
+    },
+    mutations: {
+      retry: false,
+      networkMode: "always",
+    },
+  },
+});
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import { Colors, Typography, ThemeManager } from "react-native-ui-lib";
+Colors.loadColors({
+  brand: "#252a61",
+});
+Typography.loadTypographies({
+  h1: {
+    fontSize: 24,
+    fontFamiliy: "Poppins-Bold",
+  },
+  h2: {
+    fontSize: 20,
+    fontFamiliy: "Poppins-SemiBold",
+  },
+  h3: {
+    fontSize: 18,
+    fontFamiliy: "Poppins-SemiBold",
+  },
+  h4: {
+    fontSize: 16,
+    fontFamiliy: "Poppins-SemiBold",
+  },
+  h5: {
+    fontSize: 14,
+    fontFamiliy: "Poppins-SemiBold",
+  },
+  h6: {
+    fontSize: 12,
+    fontFamiliy: "Poppins-SemiBold",
+  },
+  body: {
+    fontSize: 14,
+    fontFamiliy: "Poppins-Regular",
+  },
+});
 
-function Section({ children, title }: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === "dark";
+ThemeManager.setComponentTheme("Text", {
+  style: {
+    fontFamily: "Poppins-Regular",
+  },
+});
+
+ThemeManager.setComponentTheme("Button", {
+  labelStyle: {
+    fontFamily: "Poppins-Regular",
+  },
+});
+
+import Main from "./src/screens/main/Index";
+import Auth from "./src/screens/auth/Index";
+
+function Navigation(): React.JSX.Element {
+  const { data: user, isSuccess } = useUser();
 
   return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
+    <NavigationContainer>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        {user && isSuccess ? (
+          <Stack.Screen name="main" component={Main} />
+        ) : (
+          <Stack.Screen name="auth" component={Auth} />
+        )}
+      </Stack.Navigator>
+    </NavigationContainer>
   );
 }
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === "dark";
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
-
-  useEffect(() => {
-    SplashScreen.hide();
-  }, []);
-
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? "light-content" : "dark-content"}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <QueryClientProvider client={queryClient}>
+      <Navigation />
+      <Toast />
+    </QueryClientProvider>
   );
 }
-
-const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
-  },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: "600",
-  },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: "400",
-  },
-  highlight: {
-    fontWeight: "700",
-  },
-});
 
 export default App;
