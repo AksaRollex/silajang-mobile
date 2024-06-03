@@ -1,17 +1,22 @@
-import { memo } from "react";
-import { SafeAreaView } from "react-native";
+import React, { memo } from "react";
 
-import { View, Text, Button, Colors, Card } from "react-native-ui-lib";
+// Navigation
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+const { Navigator, Screen } = createNativeStackNavigator();
 
-export default memo(function Index() {
+// Screens
+import Login from "./login/Index";
+import Register from "./register/Index";
+
+const screenOptions = {
+  headerShown: false,
+};
+
+export default memo(function Auth() {
   return (
-    <SafeAreaView>
-      <View paddingH-20 paddingV-10>
-        <Text color={Colors.brand} h2>
-          Auth aiueo
-        </Text>
-        <Button label="Buttonaa" backgroundColor={Colors.brand}></Button>
-      </View>
-    </SafeAreaView>
+    <Navigator screenOptions={screenOptions}>
+      <Screen name="login" component={Login} />
+      <Screen name="register" component={Register} />
+    </Navigator>
   );
 });

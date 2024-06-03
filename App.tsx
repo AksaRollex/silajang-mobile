@@ -28,31 +28,37 @@ Colors.loadColors({
 });
 Typography.loadTypographies({
   h1: {
-    fontSize: 24,
+    fontSize: 32,
     fontFamiliy: "Poppins-Bold",
+    fontWeight: "bold",
   },
   h2: {
-    fontSize: 20,
+    fontSize: 28,
     fontFamiliy: "Poppins-SemiBold",
+    fontWeight: "bold",
   },
   h3: {
-    fontSize: 18,
+    fontSize: 24,
     fontFamiliy: "Poppins-SemiBold",
+    fontWeight: "bold",
   },
   h4: {
-    fontSize: 16,
+    fontSize: 20,
     fontFamiliy: "Poppins-SemiBold",
+    fontWeight: "bold",
   },
   h5: {
-    fontSize: 14,
+    fontSize: 16,
     fontFamiliy: "Poppins-SemiBold",
+    fontWeight: "bold",
   },
   h6: {
-    fontSize: 12,
+    fontSize: 14,
     fontFamiliy: "Poppins-SemiBold",
+    fontWeight: "bold",
   },
   body: {
-    fontSize: 14,
+    fontSize: 12,
     fontFamiliy: "Poppins-Regular",
   },
 });
