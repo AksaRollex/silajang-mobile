@@ -1,5 +1,7 @@
 import React, { memo, useState } from "react";
 import {
+  Assets,
+  Button,
   Colors,
   Image,
   Text,
@@ -14,7 +16,7 @@ import { ScrollView } from "react-native";
 
 import ParallaxScroll from "@monterosa/react-native-parallax-scroll";
 
-export default memo(function Login(): React.JSX.Element {
+export default memo(function Login({ navigation }): React.JSX.Element {
   const [activeTab, setActiveTab] = useState(1);
 
   return (
@@ -100,6 +102,17 @@ export default memo(function Login(): React.JSX.Element {
           <If isTrue={activeTab === 2}>
             <WithPhone />
           </If>
+
+          <Button
+            size="small"
+            label="Daftar Akun Baru"
+            paddingV-12
+            iconOnRight
+            iconSource={Assets.getAssetByPath("icons.chevronRight")}
+            iconStyle={{ width: 20, height: 28 }}
+            color={Colors.brand}
+            hyperlink
+            onPress={() => navigation.navigate("register")}></Button>
         </View>
       </ParallaxScroll>
     </ScrollView>

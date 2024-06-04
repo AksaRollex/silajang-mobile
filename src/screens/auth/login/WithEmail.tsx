@@ -21,7 +21,8 @@ export default memo(function WithEmail() {
     isLoading,
     isSuccess,
   } = useMutation(
-    data => axios.post("/auth/secure/login", { data, type: "email" }),
+    data =>
+      axios.post("/auth/secure/login", { data, type: "email", remember_me: 1 }),
     {
       onSuccess: async ({ headers: { authorization } }) => {
         await AsyncStorage.setItem("@auth-token", authorization);
@@ -46,7 +47,7 @@ export default memo(function WithEmail() {
         <Controller
           control={control}
           name="identifier"
-          rules={{ required: "Email harus diisi" }}
+          rules={{ required: "Email tidak boleh kosong" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
               placeholder={"Email"}
@@ -77,7 +78,7 @@ export default memo(function WithEmail() {
         <Controller
           control={control}
           name="password"
-          rules={{ required: "Password harus diisi" }}
+          rules={{ required: "Password tidak boleh kosong" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
               placeholder={"Password"}

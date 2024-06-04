@@ -5,8 +5,8 @@ import { API_URL } from "@env";
 const axios = Axios.create({
   baseURL: API_URL,
   headers: {
-    // "Content-Type": "application/json",
-    "Content-Type": "multipart/form-data",
+    "Content-Type": "application/json",
+    // "Content-Type": "multipart/form-data",
     Accept: "application/json",
     "X-Requested-With": "XMLHttpRequest",
   },
