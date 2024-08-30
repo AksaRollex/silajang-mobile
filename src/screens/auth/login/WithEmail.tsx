@@ -22,10 +22,11 @@ export default memo(function WithEmail() {
     isSuccess,
   } = useMutation(
     data =>
-      axios.post("/auth/secure/login", { data, type: "email", remember_me: 1 }),
+      axios.post("/auth/secure/login", { ...data, type: "email", remember_me: 1 }),
     {
-      onSuccess: async ({ headers: { authorization } }) => {
-        await AsyncStorage.setItem("@auth-token", authorization);
+      onSuccess: async (res) => {
+        console.log(res.data.token)
+        await AsyncStorage.setItem("@auth-token", res.data.token);
         queryClient.invalidateQueries({
           queryKey: ["auth", "user"],
         });
@@ -38,12 +39,13 @@ export default memo(function WithEmail() {
         });
       },
     },
+    
   );
 
   return (
     <View width={"100%"} paddingV-20 paddingH-10>
       <View marginB-20>
-        <Text marginB-5>Email</Text>
+        <Text marginB-5>Email </Text>
         <Controller
           control={control}
           name="identifier"
