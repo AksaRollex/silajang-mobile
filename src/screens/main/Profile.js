@@ -8,25 +8,32 @@ import {
   ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
-import Akun from "./Akun";  
+import Akun from "./Akun";
 import Perusahaan from "./Perusahaan";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 import Keamanan from "./Keamanan";
 import { Colors } from "react-native-ui-lib";
-import { useNavigation, useNavigationContainerRef } from "@react-navigation/native";
+import {
+  useNavigation,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
 
 export default function Profile() {
   const [activeComponent, setActiveComponent] = useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
+  const queryClient = useQueryClient()
 
   useEffect(() => {
     axios
       .get("/auth")
-      .then((response) => {
-        console.log("Response Data:", response.data.user); // Log data response
+      .then(response => {
+        // console.log("Response Data:", response.data.user); // Log data response
         setUserData(response.data);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error); // Log error
       });
   }, []);
@@ -47,10 +54,29 @@ export default function Profile() {
       break;
   }
 
-  const handleLogout = () => {
-    // Logika logout, seperti menghapus token dan redirect ke halaman login
-    console.log("Logged out");
-  };
+  const {
+    mutate: logout,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useMutation(data => axios.post("/auth/logout"), {
+    onSuccess: async () => {
+      await AsyncStorage.removeItem("@auth-token");
+      Toast.show({
+        type: "success",
+        text1: "Logout Berhasil",
+      });
+      queryClient.invalidateQueries(["auth", "user"]);
+      // navigation.navigate("tabs");
+    },
+    onError: error => {
+      Toast.show({
+        type: "error",
+        text1: "Gagal Logout",
+      });
+    },
+  });
+  
 
   return (
     <ScrollView style={styles.container}>
@@ -61,8 +87,10 @@ export default function Profile() {
         />
         <Text style={styles.headerText}>SI - LAJANG</Text>
       </View>
-      <TouchableOpacity style={styles.buttonLogout}  hyperlink
-            onPress={() => navigation.navigate("login")}>
+      <TouchableOpacity
+        style={styles.buttonLogout}
+        hyperlink
+        onPress={() => logout()}>
         <Text style={styles.buttonLogoutText}>Logout</Text>
       </TouchableOpacity>
       <View style={styles.cardContainer}>
@@ -77,48 +105,56 @@ export default function Profile() {
             />
           </View>
           <View style={styles.ProfileCardText}>
-  {userData ? (
-    <>
-      <View style={styles.iconTextRow}>
-        
-        <Image source={require("@/assets/images/checked.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.nama}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-        <Image source={require("@/assets/images/verification.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.email}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-        <Image source={require("@/assets/images/phone.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.phone}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-      <Image source={require("@/assets/images/gear-assembly.png")} style={styles.icon} />
-      <Text style={styles.text}>{userData.user.golongan.nama}</Text>
-      </View>
-    </>
-  ) : (
-    <Text style={styles.text}>Loading...</Text>
-  )}
-</View>
+            {userData ? (
+              <>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/checked.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{userData.user.nama}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/verification.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{userData.user.email}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/phone.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{userData.user.phone}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/gear-assembly.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{userData.user.golongan.nama}</Text>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.text}>Loading...</Text>
+            )}
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Akun")}
-          >
+            onPress={() => setActiveComponent("Akun")}>
             <Text style={styles.buttonText}>Akun</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Keamanan")}
-          >
+            onPress={() => setActiveComponent("Keamanan")}>
             <Text style={styles.buttonText}>Keamanan</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Perusahaan")}
-          >
+            onPress={() => setActiveComponent("Perusahaan")}>
             <Text style={styles.buttonText}>Perusahaan</Text>
           </TouchableOpacity>
         </View>
@@ -131,8 +167,7 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor : "rgba(13, 71, 161, 0.2)"
-
+    backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   headerContainer: {
     width: "100%",
@@ -197,7 +232,7 @@ const styles = StyleSheet.create({
     height: 16, // Sesuaikan ukuran gambar
     marginRight: 8, // Jarak antara gambar dan teks
   },
-  
+
   text: {
     color: "white",
     fontSize: 14,
@@ -207,14 +242,14 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    display : 'flex',
+    display: "flex",
     justifyContent: "space-around",
   },
   button: {
-    width : 110,
-    height : 35,
-    alignItems : 'center',
-    justifyContent : 'center',
+    width: 110,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
     margin: 10,
     backgroundColor: "#6b7fde",
@@ -236,7 +271,7 @@ const styles = StyleSheet.create({
     shadowRadius: 5,
     elevation: 5,
     marginHorizontal: 20, // Optional: add some margin to the button
-    marginVertical : 10,
+    marginVertical: 10,
   },
   buttonLogoutText: {
     color: "white",
