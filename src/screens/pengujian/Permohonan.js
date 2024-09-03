@@ -1,14 +1,21 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
-import { Colors } from "react-native-ui-lib";
+import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image } from "react-native";
+import { Button, Colors } from "react-native-ui-lib";
 import React, { useState, useEffect } from "react";
 import axios from "@/src/libs/axios";
 import { Modal } from "react-native-ui-lib";
 import { useNavigation } from "@react-navigation/native";
+import { Searchbar } from "react-native-paper";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Permohonan() {
-  const [permohonanData, setPermohonanData] = useState([]); // Inisialisasi dengan array kosong
+  const [permohonanData, setPermohonanData] = useState([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const navigation = useNavigation();
+
+    // SEARCH BAR
+  const [search, setSearch] = useState("");
+
+    const [searchQuery, setSearchQuery] = React.useState("");
 
   const ButtonTitikUji = () => {
     navigation.navigate("TitikUji");
@@ -27,56 +34,114 @@ export default function Permohonan() {
   };
 
   const handleDelete = () => {
-    // Logika untuk menghapus item di sini
     setIsDeleteModalVisible(false);
     console.log("Item telah dihapus");
   };
 
+
   useEffect(() => {
-    axios
-      .get("/permohonan/get")
-      .then((response) => {
+    const fetchData = async () => {
+      try {
+        const token = await AsyncStorage.getItem("@auth-token");
+  
+        if (!token) {
+          console.error("No auth token found");
+          return;
+        }
+  
+        const response = await axios.get("/permohonan/get", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+  
         console.log("Response Data Permohonan:", response.data.data);
-        setPermohonanData(response.data.data || []); // Menyimpan data yang didapat ke state, default ke array kosong jika data null
-      })
-      .catch((error) => {
+        setPermohonanData(response.data.data || []);
+      } catch (error) {
         console.error("Error fetching data:", error);
-      });
+      }
+    };
+  
+    fetchData();
   }, []);
+
+  // useEffect(() => {
+  //   axios
+  //     .get("/permohonan/get")
+  //     .then((response) => {
+  //       console.log("Response Data Permohonan:", response.data.data);
+  //       setPermohonanData(response.data.data || []);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   return (
     <View style={styles.Container}>
-      <Text style={styles.title}>Halaman Permohonan</Text>
-      <TouchableOpacity style={styles.buttonAdd} onPress={ButtonTambahPermohonan}>
-        <Text style={styles.buttonAddText}>Tambah Permohonan +</Text>
-      </TouchableOpacity>
-      {permohonanData.length > 0 ? (
-        permohonanData.map((permohonan, index) => (
-          <View key={index} style={[styles.CardContainer, { backgroundColor: Colors.brand }]}>
-            <View style={styles.CardContent}>
-              <Text style={styles.CardText}>No : {index + 1}</Text>
-              <Text style={styles.CardText}>Nama Industri : {permohonan.nama_industri}</Text>
-              <Text style={styles.CardText}>Alamat : {permohonan.alamat}</Text>
-              <Text style={styles.CardText}>Pembayaran : {permohonan.pembayaran}</Text>
-              <Text style={styles.CardText}>Cara Pengambilan : {permohonan.cara_pengambilan}</Text>
-              <Text style={styles.CardText}>Tanggal : {permohonan.tanggal}</Text>
+       <View style={styles.search}>
+        <Searchbar
+          placeholder="Search"
+          onChangeText={setSearchQuery}
+          value={searchQuery}
+          style={styles.searchbar}
+        />
+
+        <Button style={styles.buttonSearch}>
+          <Image
+            source={require("../../../assets/images/search.png")}
+            style={styles.searchIcon}
+          />
+        </Button>
+      </View>
+      {/* {permohonanData.length > 0 ? ( */}
+        {/* permohonanData.map((permohonan, index) => ( */}
+        <View style={styles.row}>
+          {/* {paginatedCards.map((cardItem) => ( */}
+          <View
+            // key={cardItem.id}
+            style={styles.card}>
+            <View style={styles.cards}>
+              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
+                10 Agustus 2024{" "}
+              </Text>
+              <Text
+                style={[
+                  styles.cardTexts,
+                  { fontWeight: "bold", fontSize: 22 },
+                ]}>
+                CV. UNDERRATED 
+              </Text>
+              <Text style={[styles.cardTexts, { marginTop: 15 }]}>Transfer - Mandiri</Text>
+              <Text style={[styles.cardTexts ]}>
+                Jl. Lasvegas Indehoy Asiek
+              </Text>
             </View>
-            <View style={styles.action}>
-              <TouchableOpacity style={[styles.button, { backgroundColor: "#6B8E23" }]} onPress={ButtonTitikUji}>
-                <Text style={styles.textbutton}>Titik Uji</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.button} onPress={ButtonEditPermohonan}>
-                <Text style={styles.textbutton}>Edit</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={[styles.button, { backgroundColor: "#CD5C5C" }]} onPress={toggleDeleteModal}>
-                <Text style={styles.textbutton}>Hapus</Text>
-              </TouchableOpacity>
+            <View style={styles.cards2}>
+              <View>
+                <Button style={[styles.button, { backgroundColor: "#6B8E23" }]} onPress={ButtonTitikUji}>
+                  <Text style={styles.buttonText}>Titik Uji</Text>
+                </Button>
+                <Button style={styles.button} onPress={ButtonEditPermohonan}>
+                  <Text style={styles.buttonText}>Edit</Text>
+                </Button>
+                <Button style={[styles.button, { backgroundColor: "#CD5C5C" }]} onPress={toggleDeleteModal}>
+                  <Text style={styles.buttonText}>Delete</Text>
+                </Button>
+                {/* <TouchableOpacity
+                  style={styles.ButtonDetail}
+                  onPress={ButtonDetail}>
+                  <Text style={styles.TextButton}>Pembayaran</Text>
+                </TouchableOpacity> */}
+              </View>
             </View>
           </View>
-        ))
+          {/* ))} */}
+        </View>
+        {/* ))
       ) : (
-        <Text style={{fontSize : 15, fontWeight : 'bold', marginVertical : 10, textAlign : 'center'}}>Tidak Ada Data Yang Tersedia</Text>
-      )}
+        <Text style={{ fontSize: 15, fontWeight: 'bold', marginVertical: 10, textAlign: 'center' }}>Tidak Ada Data Yang Tersedia</Text>
+      )} */}
 
       <Modal
         visible={isDeleteModalVisible}
@@ -100,49 +165,63 @@ export default function Permohonan() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+
+      <TouchableOpacity style={styles.floatingButton} onPress={ButtonTambahPermohonan}>
+        <Text style={styles.floatingButtonText}>+</Text>
+      </TouchableOpacity>
+      <View
+        style={[
+          styles.paginationNumber,
+          { width: 30, height: 30, backgroundColor: "#6b7fde" },
+        ]}>
+        <Text style={{ fontSize: 15, color: "white" }}>1</Text>
+      </View>
     </View>
   );
 }
-
 
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
     alignItems: "center",
-    padding : 20,
+    // backgroundColor : "black",
   },
-  title : {
-    fontSize : 20,
-    fontWeight : 'bold',
-    color : 'black',
-    marginVertical : 10,
-  },
-  buttonAdd: {
-    width: 300,
-    height: 40,
-    borderRadius: 10,
-    backgroundColor: "#6b7fde",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-  },
-
-  buttonAddText: {
-    fontSize: 17,
+  title: {
+    fontSize: 20,
     fontWeight: "bold",
-    color: "white",
+    color: "black",
+    marginVertical: 10,
+  },
+  search: {
+    flexDirection: "row", // Mengatur elemen dalam satu baris
+    alignItems: "center", // Mengatur elemen agar rata secara vertikal
+    justifyContent: "space-between", // Mengatur spasi antara elemen jika diperlukan
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginVertical: 10,
+    width: "85%",
+  },
+  searchbar: {
+    flex: 1, // Searchbar akan menempati ruang yang tersisa
+    backgroundColor: "white",
+    borderRadius: 10,
+    marginRight: 10, // Memberikan jarak antara Searchbar dan Button
+  },
+  buttonSearch: {
+    backgroundColor: "#0D47A1", // Contoh warna
+    padding: 10,
+    borderRadius: 10,
+  },
+  searchIcon: {
+    width: 24,
+    height: 24,
   },
   CardContainer: {
     borderRadius: 10,
     padding: 20,
     marginVertical: 10,
-  },
-  judulCard: {
-    fontSize: 15,
-    color: "white",
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
   },
   CardContent: {
     backgroundColor: "#6b7fde",
@@ -154,39 +233,82 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 5,
   },
-  button: {
-    height: 35,
-    width: 90,
-    margin: 6,
-    borderRadius: 10,
-    backgroundColor: "#4682B4",
+ 
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
     justifyContent: "center",
-    alignItems: "center",
   },
-  textbutton: {
+
+  card: {
+    width: 360,
+    marginVertical: 10,
+    borderRadius: 15,
+    padding: 20,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    borderTopColor: Colors.brand,
+    borderTopWidth: 7,
+  },
+  cards: {
+    borderRadius: 10,
+    width: "70%",
+    marginBottom: 4,
+  },
+  cards2: {
+    borderRadius: 10,
+    width: "30%",
+    marginBottom: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  cardTexts: {
+    fontSize: 15,
+    color: "black",
+  },
+  button: {
     color: "white",
-    fontSize: 14,
+    backgroundColor: "green",
+    paddingVertical: 5,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    padding : 10,
+    marginVertical : 3,
+    justifyContent: "center",
+  },
+  buttonText: {
+    color: "white",
+    fontSize: 13,
     fontWeight: "bold",
   },
   action: {
     flexDirection: "row",
     justifyContent: "center",
   },
-  deleteActionContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 5,
+  // Floating Button Styles
+  floatingButton: {
+    position: "absolute",  // Posisikan secara absolut
+    bottom: 80,            // Pastikan ada jarak dengan pagination number
+    right: 20,
+    backgroundColor: "#6b7fde",
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    justifyContent: "center",
+    alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.8,
+    shadowRadius: 2,
+    elevation: 5,
   },
-  optionButton: {
-    paddingHorizontal: 25,
-    paddingVertical : 10,
-    borderRadius: 5,
-  },
-  optionText: {
+  floatingButtonText: {
+    fontSize: 30,
     color: "white",
-    fontSize: 16,
-    textAlign: "center",
-    fontWeight : 'bold'
+    fontWeight: "bold",
   },
   // Styles for Delete Modal
   modalOverlay: {
@@ -195,7 +317,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
-  
   modalDeleteContent: {
     backgroundColor: "#fff",
     padding: 20,
@@ -234,5 +355,11 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     textAlign: "center",
+  },
+  paginationNumber: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
   },
 });

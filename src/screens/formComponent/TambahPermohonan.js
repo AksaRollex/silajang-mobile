@@ -320,7 +320,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
-    backgroundColor: "rgba(13, 71, 161, 0.1)",
+    backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   textInput: {
     marginBottom: 16,

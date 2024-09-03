@@ -5,16 +5,23 @@ import {
   StyleSheet,
   TouchableOpacity,
   Modal,
+  Image,
   TouchableWithoutFeedback,
 } from "react-native";
-import { Colors } from "react-native-ui-lib";
+import { Colors, Button } from "react-native-ui-lib";
 import { useNavigation } from "@react-navigation/native";
+import { Searchbar } from "react-native-paper";
 
 export default function TitikUji() {
   const [isReportModalVisible, setIsReportModalVisible] = useState(false);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const [selectedReportOption, setSelectedReportOption] = useState("");
   const navigation = useNavigation();
+
+  // SEARCH BAR
+  const [search, setSearch] = useState("");
+
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const Parameter = () => {
     navigation.navigate("Parameter");
@@ -32,7 +39,7 @@ export default function TitikUji() {
     setIsDeleteModalVisible(!isDeleteModalVisible);
   };
 
-  const handleSelectReportOption = (value) => {
+  const handleSelectReportOption = value => {
     setSelectedReportOption(value);
     setIsReportModalVisible(false);
   };
@@ -45,43 +52,92 @@ export default function TitikUji() {
   return (
     <View style={styles.Container}>
       <TouchableOpacity
-        style={styles.backButton}
+        style={[styles.backButton,{ backgroundColor : Colors.brand}]}
         onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Kembali</Text>
+        <Image
+          source={require("../../../assets/images/backss.png")}
+          style={{ height: 20, width: 20, tintColor: "white" }}></Image>
       </TouchableOpacity>
-      <View style={[styles.CardContainer, { backgroundColor: Colors.brand }]}>
-        <Text style={styles.judulCard}>Nama Industri</Text>
-        <View style={styles.CardContent}>
-          <Text style={styles.CardText}>Kode : 1</Text>
-          <Text style={styles.CardText}>Titik Uji / Lokasi : </Text>
-          <Text style={styles.CardText}>Diambil Pada : </Text>
-          <Text style={styles.CardText}>Diterima Pada : </Text>
-          <Text style={styles.CardText}>Selesai Pada : </Text>
+      <View
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+        <View style={styles.search}>
+          <Searchbar
+            placeholder="Search"
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+            style={styles.searchbar}
+          />
+
+          <Button style={styles.buttonSearch}>
+            <Image
+              source={require("../../../assets/images/search.png")}
+              style={styles.searchIcon}
+            />
+          </Button>
         </View>
-        <View style={styles.action}>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={[styles.buttonParameter, { backgroundColor: "#CD5C5C" }]}
-              onPress={toggleReportModal}>
-              <Text style={styles.textButtonParameter}>Report</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.buttonParameter, { backgroundColor: "#6B8E23" }]}
-              onPress={Parameter}>
-              <Text style={styles.textButtonParameter}>Parameter</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.buttonParameter}
-              onPress={EditTitikUji}>
-              <Text style={styles.textButtonParameter}>Edit</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[styles.buttonParameter, { backgroundColor: "#CD5C5C" }]}
-              onPress={toggleDeleteModal}>
-              <Text style={styles.textButtonParameter}>Delete</Text>
-            </TouchableOpacity>
+      </View>
+
+      <View style={styles.row}>
+        {/* {paginatedCards.map((cardItem) => ( */}
+        <View
+          // key={cardItem.id}
+          style={styles.card}>
+          <View style={styles.cards}>
+            <Text style={[styles.cardTexts, { fontSize: 15 }]}>
+              Lasvegas, Surabaya, Indonesia
+            </Text>
+            <Text
+              style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
+              SSD0743
+            </Text>
+            <Text style={[styles.cardTexts, { marginTop: 15 }]}>
+              Diambil : 20-20-20
+            </Text>
+            <Text style={[styles.cardTexts]}>Diterima : 29-19-19</Text>
+            <Text style={[styles.cardTexts]}>Selesai : 10-10-10</Text>
+          </View>
+          <View style={styles.cards2}>
+            <View>
+              <Button
+                style={[styles.button, { backgroundColor: "#CD5C5C" }]}
+                onPress={toggleReportModal}>
+                <Text style={styles.buttonText}>Report</Text>
+              </Button>
+              <Button
+                style={[styles.button, { backgroundColor: "#6B8E23" }]}
+                onPress={Parameter}>
+                <Text
+                  style={{
+                    fontSize: 11,
+                    fontWeight: "bold",
+                    color: "white",
+                  }}>
+                  Parameter
+                </Text>
+              </Button>
+              <Button
+                style={[styles.button, { backgroundColor: "#4682B4" }]}
+                onPress={EditTitikUji}>
+                <Text style={styles.buttonText}>Edit</Text>
+              </Button>
+              <Button
+                style={[styles.button, { backgroundColor: "#CD5C5C" }]}
+                onPress={toggleDeleteModal}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </Button>
+              {/* <TouchableOpacity
+                  style={styles.ButtonDetail}
+                  onPress={ButtonDetail}>
+                  <Text style={styles.TextButton}>Pembayaran</Text>
+                </TouchableOpacity> */}
+            </View>
           </View>
         </View>
+        {/* ))} */}
       </View>
 
       {/* Modal for Report Selection */}
@@ -96,13 +152,17 @@ export default function TitikUji() {
               <Text style={styles.modalReportTitle}>Pilih Report</Text>
               <TouchableOpacity
                 style={styles.optionReportButton}
-                onPress={() => handleSelectReportOption('report1')}>
-                <Text style={styles.optionReportText}>Permohonan Pengujian</Text>
+                onPress={() => handleSelectReportOption("report1")}>
+                <Text style={styles.optionReportText}>
+                  Permohonan Pengujian
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 style={styles.optionReportButton}
-                onPress={() => handleSelectReportOption('report2')}>
-                <Text style={styles.optionReportText}>Berita Acara Pengambilan</Text>
+                onPress={() => handleSelectReportOption("report2")}>
+                <Text style={styles.optionReportText}>
+                  Berita Acara Pengambilan
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -119,7 +179,9 @@ export default function TitikUji() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalDeleteContent}>
               <Text style={styles.modalDeleteTitle}>Konfirmasi Hapus</Text>
-              <Text style={styles.modalDeleteMessage}>Apakah Anda yakin ingin menghapus data ini?</Text>
+              <Text style={styles.modalDeleteMessage}>
+                Apakah Anda yakin ingin menghapus data ini?
+              </Text>
               <View style={styles.deleteButtonContainer}>
                 <TouchableOpacity
                   style={styles.confirmDeleteButton}
@@ -136,6 +198,17 @@ export default function TitikUji() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
+      <View style={{ display : 'flex', alignItems : "center", justifyContent : 'center' }}>
+
+      <View
+        style={[
+          styles.paginationNumber,
+          { width: 30, height: 30, backgroundColor: "#6b7fde" },
+        ]}>
+        <Text style={{ fontSize: 15, color: "white" }}>1</Text>
+      </View>
+      </View>
+
     </View>
   );
 }
@@ -143,50 +216,100 @@ export default function TitikUji() {
 const styles = StyleSheet.create({
   Container: {
     flex: 1,
-    alignItems: "center",
-    padding: 20,
+    padding : 20,
+    display: "flex",
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   backButton: {
-    padding: 10,
+    padding: 4,
     backgroundColor: "#6b7fde",
     borderRadius: 5,
     alignItems: "center",
-    width: "100%",
     marginBottom: 20,
+    width: "10%",
   },
   backButtonText: {
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
   },
-  CardContainer: {
-    width: 340,
+  search: {
+    flexDirection: "row", // Mengatur elemen dalam satu baris
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    backgroundColor: "white",
     borderRadius: 10,
-    padding: 20,
-    marginVertical: 10,
+    width: "90%",
   },
-  judulCard: {
-    fontSize: 15,
-    color: "white",
-    fontWeight: "bold",
-    marginBottom: 10,
-    textAlign: "center",
-  },
-  CardContent: {
-    backgroundColor: "#6b7fde",
+  searchbar: {
+    flex: 1, // Searchbar akan menempati ruang yang tersisa
+    backgroundColor: "white",
     borderRadius: 10,
+    marginRight: 10, // Memberikan jarak antara Searchbar dan Button
+  },
+  buttonSearch: {
+    backgroundColor: "#0D47A1", // Contoh warna
     padding: 10,
-    marginBottom: 10,
+    borderRadius: 10,
   },
-  CardText: {
+  searchIcon: {
+    width: 24,
+    height: 24,
+  },
+  row: {
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "center",
+  },
+
+  card: {
+    width: 360,
+    marginVertical: 10,
+    borderRadius: 15,
+    padding: 20,
+    backgroundColor: "#fff",
+    flexDirection: "row",
+    borderTopColor: Colors.brand,
+    borderTopWidth: 7,
+  },
+  cards: {
+    borderRadius: 10,
+    width: "70%",
+    marginBottom: 4,
+  },
+  cards2: {
+    borderRadius: 10,
+    width: "30%",
+    marginBottom: 4,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+
+  cardTexts: {
+    fontSize: 15,
+    color: "black",
+  },
+  button: {
     color: "white",
-    marginBottom: 5,
+    backgroundColor: "green",
+    paddingVertical: 5,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    padding: 10,
+    marginVertical: 3,
+    justifyContent: "center",
+  },
+ 
+  buttonText: {
+    color: "white",
+    fontSize: 13,
+    fontWeight: "bold",
   },
   action: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center",
   },
   buttonContainer: {
     flexDirection: "row",
@@ -280,5 +403,11 @@ const styles = StyleSheet.create({
     fontSize: 16,
     textAlign: "center",
   },
+  paginationNumber: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    borderRadius: 5,
+    marginTop : 325
+  },
 });
-

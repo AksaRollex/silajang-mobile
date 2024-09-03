@@ -50,6 +50,7 @@ const Keamanan = () => {
 
   return (
     <View style={styles.container}>
+      <Text style={{  color : "black" }}>Password Lama</Text>
       <Controller
         control={control}
         name="old_password"
@@ -75,6 +76,7 @@ const Keamanan = () => {
       {errors.old_password && (
         <Text style={styles.errorText}>{errors.old_password.message}</Text>
       )}
+      <Text style={{  color : "black" }}>Password Baru</Text>
       
       <Controller
         control={control}
@@ -101,6 +103,7 @@ const Keamanan = () => {
       {errors.password && (
         <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
+      <Text style={{  color : "black" }}>Konfirmasi Password Baru</Text>
       
       <Controller
         control={control}

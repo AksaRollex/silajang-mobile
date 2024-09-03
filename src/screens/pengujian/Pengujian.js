@@ -32,6 +32,11 @@ export default function Pengujian() {
           <Text style={styles.headerText}>SI - LAJANG</Text>
         </View>
         {/* Render the active component here */}
+        {/* <View style={{ display : 'flex', alignItems : 'center', justifyContent : 'center' }}>
+          <Text style={{ fontSize : 20, }}>
+            Pilih Menu Pengujian
+          </Text>
+        </View> */}
         <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
       </ScrollView>
       <View style={styles.buttonContainer}>

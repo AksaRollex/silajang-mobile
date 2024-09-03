@@ -9,7 +9,7 @@ export default function Detail() {
 
   const copyToClipboard = (text) => {
     Clipboard.setString(text);
-    alert('Copied to clipboard!');
+    // alert('Copied to clipboard!');
   };
 
   return (
@@ -52,13 +52,15 @@ const styles = StyleSheet.create({
   parentWrapper: {
     flex: 1,
     padding: 20,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "rgba(13, 71, 161, 0.2)",
+
   },
   parentTitle: {
     fontSize: 22,
     fontWeight: 'bold',
     marginBottom: 20,
     textAlign: 'center',
+    color : 'black'
   },
   card: {
     backgroundColor: '#fff',
@@ -80,6 +82,7 @@ const styles = StyleSheet.create({
   cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
+    color : 'black'
   },
   copyButton: {
     fontSize: 14,

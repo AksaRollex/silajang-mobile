@@ -8,7 +8,7 @@ import {
   ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
-import Akun from "./Akun";  
+import Akun from "./Akun";
 import Perusahaan from "./Perusahaan";
 import Keamanan from "./Keamanan";
 import { Colors } from "react-native-ui-lib";
@@ -52,6 +52,10 @@ export default function Profile() {
     console.log("Logged out");
   };
 
+  const logout = () => {
+    navigation.navigate("memo")
+  }
+
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -61,8 +65,7 @@ export default function Profile() {
         />
         <Text style={styles.headerText}>SI - LAJANG</Text>
       </View>
-      <TouchableOpacity style={styles.buttonLogout}  hyperlink
-            onPress={() => navigation.navigate("login")}>
+      <TouchableOpacity style={styles.buttonLogout}  onPress={logout}>
         <Text style={styles.buttonLogoutText}>Logout</Text>
       </TouchableOpacity>
       <View style={styles.cardContainer}>
@@ -211,7 +214,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-around",
   },
   button: {
-    width : 110,
+    width : 115,
     height : 35,
     alignItems : 'center',
     justifyContent : 'center',
@@ -221,7 +224,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: "bold",
   },
   buttonLogout: {

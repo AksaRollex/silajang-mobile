@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
+  Image
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 
@@ -113,7 +114,7 @@ const Parameter = ({ navigation }) => {
   );
 
   const renderSelectedParameter = ({ item }) => (
-    <View style={styles.card}>
+    <View style={[styles.card, { marginBottom : 40,}]}>
       <View style={styles.cardContent}>
         <Text style={styles.cell}>{item.nama}</Text>
         <Text style={styles.cell}>{item.harga}</Text>
@@ -134,7 +135,9 @@ const Parameter = ({ navigation }) => {
         style={[styles.backButton, { backgroundColor: Colors.brand }]}
         onPress={() => navigation.goBack()}
       >
-        <Text style={styles.backButtonText}>Kembali</Text>
+        <Image
+          source={require("../../../assets/images/backss.png")}
+          style={{ height: 20, width: 20, tintColor: "white" }}></Image>
       </TouchableOpacity>
 
       <ScrollView>
@@ -210,16 +213,14 @@ const Parameter = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingVertical: 30,
-    paddingHorizontal: 30,
+    padding : 20,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   backButton: {
-    padding: 10,
-    backgroundColor: "#007bff",
+    padding: 4,
     borderRadius: 5,
     alignItems: "center",
-    marginBottom: 20,
+    width: "10%",
   },
   backButtonText: {
     color: "white",
@@ -275,6 +276,7 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     paddingHorizontal: 10,
+    color : 'black'
   },
   actionButton: {
     backgroundColor: "#2196f3",

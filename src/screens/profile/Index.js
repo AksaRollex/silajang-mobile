@@ -9,12 +9,10 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 const { Navigator, Screen } = createNativeStackNavigator();
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Profile";
-import Index from "../pengujian/Index";
-import IndexPembayaran from "../pembayaran/Index";
-import Login from "../auth/login/Index";
-import IndexLogin from "../auth/Index";
-import IndexLogout from "./IndexLogout";
-
+import Keamanan from "./Keamanan";
+import Perusahaan from "./Perusahaan";
+import Akun from "./Akun";
+import Index from "../auth/Index";
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
@@ -34,74 +32,9 @@ const screenOptions = {
 
 export default function MainScreen() {
   return (
+    
     <NavigationContainer independent={true}>
       <Tab.Navigator screenOptions={screenOptions}>
-        <Tab.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/home.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
-
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Beranda
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Pengujian.Index"
-          component={Index}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/approval.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
-
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Pengujian
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Pembayaran.Index"
-          component={IndexPembayaran}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/wallet.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
-
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Pembayaran
-                </Text>
-              </View>
-            ),
-          }}
-        />
         <Tab.Screen
           name="Profile"
           component={Profile}
@@ -119,6 +52,94 @@ export default function MainScreen() {
 
                 <Text style={[styles.label, focused && styles.labelFocused]}>
                   Profil
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Keamanan"
+          component={Keamanan}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}>
+                <Image
+                  source={require("@/assets/images/user.png")}
+                  style={[styles.logo, focused && styles.logoFocused]}
+                />
+
+                <Text style={[styles.label, focused && styles.labelFocused]}>
+                  Keamanan
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Perusahaan"
+          component={Perusahaan}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}>
+                <Image
+                  source={require("@/assets/images/user.png")}
+                  style={[styles.logo, focused && styles.logoFocused]}
+                />
+
+                <Text style={[styles.label, focused && styles.labelFocused]}>
+                  Perusahaan
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Akun"
+          component={Akun}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}>
+                <Image
+                  source={require("@/assets/images/user.png")}
+                  style={[styles.logo, focused && styles.logoFocused]}
+                />
+
+                <Text style={[styles.label, focused && styles.labelFocused]}>
+                  Akun
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Index"
+          component={Index}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}>
+                <Image
+                  source={require("@/assets/images/user.png")}
+                  style={[styles.logo, focused && styles.logoFocused]}
+                />
+
+                <Text style={[styles.label, focused && styles.labelFocused]}>
+                  Index
                 </Text>
               </View>
             ),

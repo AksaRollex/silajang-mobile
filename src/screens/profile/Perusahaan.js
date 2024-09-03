@@ -9,6 +9,7 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
+  ScrollView,
 } from "react-native";
 import { TextInput } from "react-native-paper";
 import { useState, useEffect } from "react";
@@ -22,9 +23,11 @@ import Toast from "react-native-toast-message";
 import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
 
 import DropDownPicker from "react-native-dropdown-picker";
+import { useNavigation } from "@react-navigation/native";
 
 const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
+  const navigation = useNavigation();
 
   const [kotaKabupaten, setKotaKabupaten] = useState([[]]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
@@ -113,39 +116,41 @@ const Perusahaan = () => {
       });
   }, []);
 
-
   // fetching kecamatan v.1
-  useEffect (() => {
-    axios.get("/master/kecamatan").then((response) => {
-      console.log("response data kecamatan : ", response.data.data);
-      setKecamatan(response.data)
-    })
-    .catch(error => {
-      console.error("error fetching data kecamatan : ",error)
-    })
-  },[])
-
+  // useEffect(() => {
+  //   axios
+  //     .get("/master/kecamatan/gets")
+  //     .then(response => {
+  //       const formattedKecamatan = response.data.data.map(item => ({
+  //         label: item.nama,
+  //         value: item.id,
+  //       }));
+  //       setKecamatan(formattedKecamatan);
+  //     })
+  //     .catch(error => {
+  //       console.error("error fetching data kecamatan : ", error);
+  //     });
+  // }, []);
 
   // fetching kecamatan v.2
-  // useEffect(() => {
-  //   if (selectedKotaKabupaten) {
-  //     axios
-  //       .get(`/master/kecamatan/${selectedKotaKabupaten}`)
-  //       .then(response => {
-  //         const formattedKecamatan = response.data.data.map(item => ({
-  //           label : item.nama,
-  //           value: item.id
-  //         }));
-  //         setKecamatan(formattedKecamatan);
-  //       })
-  //       .catch(error => {
-  //         console.error("Error fetching data kecamatan : ", error);
-  //       });
-  //   } else {
-  //     setKecamatan([]);
-  //   }
-  // }, [selectedKotaKabupaten]); 
-
+  useEffect(() => {
+    if (selectedKotaKabupaten) {
+      axios
+        .get(`/master/kecamatan/gets/${selectedKotaKabupaten}`)
+        .then(response => {
+          const formattedKecamatan = response.data.data.map(item => ({
+            label : item.nama,
+            value: item.id
+          }));
+          setKecamatan(formattedKecamatan);
+        })
+        .catch(error => {
+          console.error("Error fetching data kecamatan : ", error);
+        });
+    } else {
+      setKecamatan([]);
+    }
+  }, [selectedKotaKabupaten]);
 
   // fetching kelurahan
   // useEffect (() => {
@@ -159,6 +164,19 @@ const Perusahaan = () => {
   //     console.error("error fetching data kelurahan : ", error)
   //   })
   // },[])
+
+  useEffect (() => {
+    axios.get("/master/kelurahan/gets").then((response ) => {
+      const formattedKelurahan = response.data.data.map(item => ({
+        label : item.nama,
+        value: item.id,
+      }));
+      setKelurahan(formattedKelurahan);
+    })
+    .catch(error => {L
+      console.error("error fetching data kelurahan : ", error)
+    })
+  },[])
 
   useEffect(() => {
     axios
@@ -181,7 +199,18 @@ const Perusahaan = () => {
     formState: { errors },
     getValues,
     reset,
-  } = useForm();
+    watch,
+    setValue,
+  } = useForm({
+    values: {...userData}
+  });
+
+  useEffect(() => {
+    if (location.lat && location.long) {
+      setValue("lat", location.lat);
+      setValue("long", location.long);
+    }
+  }, [location.lat, location.long]);
 
   const useFormPut = create(set => ({
     credential: {
@@ -268,9 +297,13 @@ const Perusahaan = () => {
 
   return (
     <View style={styles.container}>
+      {/* <ScrollView nestedScrollEnabled={true} style={styles.container}
+       contentContainerStyle={styles.scrollViewContainer}
+       showsVerticalScrollIndicator={false}> */}
       {userData ? (
         <>
-          <TouchableOpacity onPress={handleChoosePhoto}>
+          {/* <Text style={{ color : 'black' }}>Tanda Tangan</Text> */}
+          {/* <TouchableOpacity onPress={handleChoosePhoto}>
             <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
           </TouchableOpacity>
           <Controller
@@ -296,7 +329,13 @@ const Perusahaan = () => {
                 )}
               </View>
             )}
-          />
+          /> */}
+
+          <Text>
+            {JSON.stringify(userData)}
+          </Text>
+
+          <Text style={{ color : 'black' }}>Instansi</Text>
 
           <Controller
             control={control}
@@ -315,6 +354,7 @@ const Perusahaan = () => {
           {errors.instansi && (
             <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
           )}
+          <Text style={{ color : 'black' }}>Alamat</Text>
 
           <Controller
             control={control}
@@ -333,6 +373,7 @@ const Perusahaan = () => {
           {errors.alamat && (
             <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
           )}
+          <Text style={{ color : 'black' }}>Pimpinan</Text>
 
           <Controller
             control={control}
@@ -351,6 +392,7 @@ const Perusahaan = () => {
           {errors.pimpinan && (
             <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
           )}
+          <Text style={{ color : 'black' }}>PJ Mutu</Text>
 
           <Controller
             control={control}
@@ -370,6 +412,7 @@ const Perusahaan = () => {
           {errors.pj_mutu && (
             <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
           )}
+          <Text style={{ color : 'black' }}>Nomor Telepon</Text>
 
           <Controller
             control={control}
@@ -389,6 +432,8 @@ const Perusahaan = () => {
             <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
           )}
 
+          <Text style={{ color : 'black' }}>Fax</Text>
+
           <Controller
             control={control}
             name="fax"
@@ -405,6 +450,7 @@ const Perusahaan = () => {
           {errors.fax && (
             <Text style={{ color: "red" }}>{errors.fax.message}</Text>
           )}
+          <Text style={{ color : 'black' }}>Email</Text>
 
           <Controller
             control={control}
@@ -423,7 +469,7 @@ const Perusahaan = () => {
           {errors.email && (
             <Text style={{ color: "red" }}>{errors.email.message}</Text>
           )}
-
+          <Text style={{ color : 'black' }}> Jenis Kegiatan</Text>
           <Controller
             control={control}
             name="jenis_kegiatan"
@@ -438,6 +484,36 @@ const Perusahaan = () => {
                 placeholder={userData.jenis_kegiatan}
               />
             )}></Controller>
+          {/* <Controller
+            control={control}
+            name="lat"
+            rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                mode="outlined"
+                style={styles.textInput}
+                keyboardType="text-input"
+                onChangeText={onChange}
+                value={value}
+                placeholder={userData.lat}
+              />
+            )}></Controller>
+          <Controller
+            control={control}
+            name="long"
+            rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                mode="outlined"
+                style={styles.textInput}
+                keyboardType="text-input"
+                onChangeText={onChange}
+                value={value}
+                placeholder={userData.long}
+              />
+            )}></Controller> */}
+
+          <Text style={{ alignSelf: "center", marginBottom: 5, color : 'black' }}>Lokasi</Text>
 
           <View style={{ display: "flex", flexDirection: "row" }}>
             <Controller
@@ -451,7 +527,7 @@ const Perusahaan = () => {
                   enableErrors
                   keyboardType="text-input"
                   onChangeText={onChange}
-                  value={location.lat}
+                  value={value || location.lat}
                   placeholder={userData.lat}
                 />
               )}></Controller>
@@ -466,7 +542,7 @@ const Perusahaan = () => {
                   keyboardType="text-input"
                   onChangeText={onChange}
                   enableErrors
-                  value={location.long}
+                  value={value || location.long}
                   placeholder={userData.long}
                 />
               )}></Controller>
@@ -476,62 +552,74 @@ const Perusahaan = () => {
             onPress={handleLocationPress}>
             <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
           </TouchableOpacity>
+          <Text style={{ color : 'black' }}>Kota</Text>
+
           <Controller
             control={control}
-            name="alamat"
+            name="kota_kab_id"
             render={({ field: { onChange, value } }) => (
               <DropDownPicker
                 open={openKotaKabupaten}
-                value={selectedKotaKabupaten}
+                value={watch("kab_kota_id")}
                 items={kotaKabupaten}
                 setOpen={setOpenKotaKabupaten}
-                setValue={setSelectedKotaKabupaten}
-                onChangeText={onChange}
+                setValue={onChange}
                 setItems={setKotaKabupaten}
                 placeholder="Pilih Kota / Kabupaten"
                 style={styles.dropdown}
               />
             )}></Controller>
-             <Controller
-        control={control}
-        name="kecamatan_id"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            mode="outlined"
-            style={styles.textInput}
-            keyboardType="text-input"
-            onChangeText={onChange}
-            value={value}
-            // placeholder={userData.kecamatan_id}
-          />
-        )}></Controller>
-      <Controller
-        control={control}
-        name="kelurahan_id"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            mode="outlined"
-            style={styles.textInput}
-            onChangeText={onChange}
-            value={value}
-            keyboardType="text-input"
-            // placeholder={userData.kelurahan_id}
-          />
-        )}></Controller>
+          <Text style={{ color : 'black' }}>Kecamatan</Text>
+          <Controller
+  control={control}
+  name="kota_kab_id"
+  render={({ field: { onChange, value } }) => (
+    <DropDownPicker
+      open={openKotaKabupaten}
+      items={kotaKabupaten}
+      setOpen={setOpenKotaKabupaten}
+      setValue={(val) => {
+        onChange(val);
+        setSelectedKabKota(val); // Atur state ketika kab/kota dipilih
+      }}
+      setItems={setKotaKabupaten}
+      placeholder="Pilih Kota / Kabupaten"
+      style={styles.dropdown}
+    />
+  )}
+/>
+            <Text style={{ color : 'black' }}>Kelurahan</Text>
+          <Controller
+            control={control}
+            name="kelurahan_id"
+            render={({ field: { onChange, value } }) => (
+             <DropDownPicker
+             open={openKelurahan}
+             value={selectedKelurahan}
+             items={kelurahan}
+             setOpen={setOpenKelurahan}
+             setValue={setSelectedKelurahan}
+             onChangeText={onChange}
+             setItems={setKelurahan}
+             placeholder="Pilih Kelurahan"
+             style={styles.dropdown}
+             >
+              
+             </DropDownPicker>
+            )}></Controller>
         </>
       ) : (
-        <Text>Loading...</Text>
+        <Text style={text}>Loading...</Text>
       )}
-
-     
 
       <Button
         label="Simpan"
-        style={{ marginBottom: 40 }}
+        style={{ marginBottom: 60 }}
         backgroundColor={Colors.brand}
         borderRadius={5}
         onPress={handleSubmit(update)}
         disabled={isLoading || isSuccess}></Button>
+      {/* </ScrollView> */}
     </View>
   );
 };
@@ -544,6 +632,13 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginBottom: 16, // Adds space between each TextInput
+  },
+  text: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight : 'bold',
+    color : 'black',
+    marginVertical : 10
   },
   textField: {
     padding: 12,
@@ -582,6 +677,9 @@ const styles = StyleSheet.create({
   buttonLokasiText: {
     color: "#000",
     fontSize: 16,
+  },
+  dropdown: {
+    marginBottom: 16,
   },
 });
 

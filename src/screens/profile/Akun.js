@@ -38,6 +38,10 @@ const Akun = () => {
     },
   }));
 
+  const [photo, setPhoto] = useState({
+    photo: "",
+  });
+
   const { setAkun } = useFormPut();
 
   // get data profile
@@ -60,11 +64,25 @@ const Akun = () => {
     isSuccess,
   } = useMutation(
     () => {
-      const requestData = {
-        nama: getValues("nama"),
-        photo: userData?.photo, // Jika Anda menyertakan foto dalam update
-      };
-      return axios.put("/user/updateAkun", requestData).then(res => res.data);
+      const formData = new FormData();
+  
+      // Tambahkan nama ke dalam FormData
+      formData.append("nama", getValues("nama"));
+  
+      // Tambahkan gambar ke dalam FormData jika ada
+      if (file) {
+        formData.append("photo", {
+          uri: file,
+          type: file.type || 'image/jpeg', // Pastikan tipe file sesuai
+          name: file.fileName || 'profile_photo.jpg', // Nama file yang akan di-upload
+        });
+      }
+  
+      return axios.put("/user/updateAkun", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      }).then(res => res.data);
     },
     {
       onSuccess: () => {
@@ -74,6 +92,7 @@ const Akun = () => {
         });
         navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
         reset();
+        setFile(null); // Hapus file setelah pengiriman berhasil
       },
       onError: error => {
         console.error(error.response.data);
@@ -84,6 +103,7 @@ const Akun = () => {
       },
     },
   );
+  
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
@@ -102,8 +122,7 @@ const Akun = () => {
     <View style={styles.container}>
       {userData ? (
         <>
-        
-
+          <Text style={{ color: "black" }}>Nama</Text>
           <Controller
             control={control}
             name="nama"
@@ -120,7 +139,7 @@ const Akun = () => {
           {errors.nama && (
             <Text style={{ color: "red" }}>{errors.nama.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>Foto Profil</Text>
           <TouchableOpacity onPress={handleChoosePhoto}>
             <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
           </TouchableOpacity>
@@ -134,7 +153,8 @@ const Akun = () => {
                   enableErrors
                   fieldStyle={styles.textField}
                   onChangeText={onChange}
-                  value={value}
+                  value={value || photo}
+                  editable="false"
                 />
                 {file && (
                   <View style={styles.imageContainer}>
@@ -149,6 +169,7 @@ const Akun = () => {
               </View>
             )}
           />
+          <Text style={{ color: "black" }}>Email</Text>
 
           <Controller
             control={control}
@@ -156,7 +177,7 @@ const Akun = () => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 placeholder={userData.user.email}
-                editable={false}  // Disables the TextInput
+                editable={false} // Disables the TextInput
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
@@ -164,7 +185,7 @@ const Akun = () => {
               />
             )}
           />
-
+          <Text style={{ color: "black" }}>Nomor Telepon</Text>
           <Controller
             control={control}
             name="phone"
@@ -181,7 +202,7 @@ const Akun = () => {
           />
         </>
       ) : (
-        <Text style={styles.text}>Loading...</Text>
+        <Text style={[styles.text, { color :  'black', marginVertical : 10}]}>Loading...</Text>
       )}
 
       <Button
@@ -229,6 +250,7 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: "#f0f0f0",
     borderRadius: 8,
+    color: "black",
     borderColor: "#ccc",
     borderWidth: 1,
   },
@@ -238,18 +260,16 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 10,
   },
-  deleteButton: {
-    marginTop: 5,
-  },
+  deleteButton: {},
   deleteButtonText: {
     color: "red",
+    marginBottom: 15,
   },
   selectPhotoText: {
     color: "black",
-    marginVertical : 5,
+    marginVertical: 5,
   },
-  textFieldContainer: {
-  },
+  textFieldContainer: {},
   imageContainer: {
     alignItems: "center",
     marginTop: 10,

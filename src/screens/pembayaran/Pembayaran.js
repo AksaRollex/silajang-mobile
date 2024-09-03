@@ -40,10 +40,10 @@ const Pembayaran = () => {
     axios
       .get("/pembayaran/pengujian")
       .then(response => {
-        console.log("Response Data:", response.data);
+        console.log("Response Data pembayaran :", response.data);
       })
       .catch(error => {
-        console.error("Error fetching data:", error);
+        console.error("Error fetching data pembayaran :", error);
       });
   }, []);
 
@@ -113,10 +113,10 @@ const Pembayaran = () => {
                 ]}>
                 C2342344003
               </Text>
-              <Text style={[styles.cardTexts, { marginTop: 15 }]}>
+              <Text style={[styles.cardTexts, { marginTop: 15 }]}>20.000</Text>
+              <Text style={[styles.cardTexts ]}>
                 Surabaya. Jawa Barat
               </Text>
-              <Text style={styles.cardTexts}>20.000</Text>
             </View>
             <View style={styles.cards2}>
               <View>
@@ -160,15 +160,14 @@ const Pembayaran = () => {
             </Text>
           </TouchableOpacity>
         </View> */}
-      
       </ScrollView>
       <View
-          style={[
-            styles.paginationNumber,
-            { width: 30, height: 30, backgroundColor: "#6b7fde" },
-          ]}>
-          <Text style={{ fontSize: 15, color: "white" }}>1</Text>
-        </View>
+        style={[
+          styles.paginationNumber,
+          { width: 30, height: 30, backgroundColor: "#6b7fde" },
+        ]}>
+        <Text style={{ fontSize: 15, color: "white" }}>1</Text>
+      </View>
     </View>
   );
 };
@@ -324,7 +323,7 @@ const styles = StyleSheet.create({
   },
   pendingText: {
     color: "white",
-    fontSize: 15,
+    fontSize:13,
     fontWeight: "bold",
   },
   icon: {
@@ -340,7 +339,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
-    marginBottom : 80,
+    marginBottom: 80,
   },
 });
 
