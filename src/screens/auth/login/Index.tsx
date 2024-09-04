@@ -43,11 +43,11 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               source={require("@/assets/images/logo.png")}
               style={{ width: 60, height: 80, marginTop: 8 }}
             />
-            <View style={{ flexShrink: 1 }}>
+            <View style={{ flexShrink: 1}}>
               <Text h1 color={Colors.brand}>
                 SELAMAT DATANG
               </Text>
-              <Text>Sistem Informasi Laboratorium Lingkungan Jombang</Text>
+              <Text classname="bg-red-600">Sistem Informasi Laboratorium Lingkungan Jombang</Text>
             </View>
           </View>
 
