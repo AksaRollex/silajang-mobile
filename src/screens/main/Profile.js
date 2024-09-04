@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  Alert, // Import Alert
 } from "react-native";
 import axios from "@/src/libs/axios";
 import Akun from "./Akun";
@@ -15,6 +16,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import Keamanan from "./Keamanan";
 import { Colors } from "react-native-ui-lib";
+import SweetAlert from 'react-native-sweet-alert';
 import {
   useNavigation,
   useNavigationContainerRef,
@@ -24,17 +26,16 @@ export default function Profile() {
   const [activeComponent, setActiveComponent] = useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
-  const queryClient = useQueryClient()
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     axios
       .get("/auth")
       .then(response => {
-        // console.log("Response Data:", response.data.user); // Log data response
         setUserData(response.data);
       })
       .catch(error => {
-        console.error("Error fetching data:", error); // Log error
+        console.error("Error fetching data:", error);
       });
   }, []);
 
@@ -54,30 +55,46 @@ export default function Profile() {
       break;
   }
 
-  const {
-    mutate: logout,
-    isLoading,
-    isSuccess,
-    isError,
-  } = useMutation(data => axios.post("/auth/logout"), {
-    onSuccess: async () => {
-      await AsyncStorage.removeItem("@auth-token");
-      Toast.show({
-        type: "success",
-        text1: "Logout Berhasil",
-      });
-      queryClient.invalidateQueries(["auth", "user"]);
-      // navigation.navigate("tabs");
-    },
-    onError: error => {
-      Toast.show({
-        type: "error",
-        text1: "Gagal Logout",
-      });
-    },
-  });
-  
+  const { mutate: logout } = useMutation(
+    data => axios.post("/auth/logout"),
+    {
+      onSuccess: async () => {
+        await AsyncStorage.removeItem("@auth-token");
+        Toast.show({
+          type: "success",
+          text1: "Logout Berhasil",
+        });
+        queryClient.invalidateQueries(["auth", "user"]);
+        navigation.navigate("tabs");
+      },
+      onError: error => {
+        Toast.show({
+          type: "error",
+          text1: "Gagal Logout",
+        });
+      },
+    }
+  );
 
+
+  const sweet = () => {
+    SweetAlert.showAlertWithOptions({
+      title: 'Apakah anda yakin?',
+      subTitle: 'Anda akan keluar dari akun ini',
+      confirmButtonText: 'Ok',
+      confirmButtonColor: '#000000',
+      barColor : "#000000",
+      otherButtonTitle: 'Cancel',
+      otherButtonColor: '#dedede',
+      style: 'warning',
+      cancellable: true
+    },
+    (callback) => {
+      if (callback) {
+        logout(); // Ok untuk Logout
+      }
+    });
+  };
   return (
     <ScrollView style={styles.container}>
       <View style={styles.headerContainer}>
@@ -89,8 +106,8 @@ export default function Profile() {
       </View>
       <TouchableOpacity
         style={styles.buttonLogout}
-        hyperlink
-        onPress={() => logout()}>
+        onPress={sweet} 
+      >
         <Text style={styles.buttonLogoutText}>Logout</Text>
       </TouchableOpacity>
       <View style={styles.cardContainer}>
@@ -144,17 +161,20 @@ export default function Profile() {
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Akun")}>
+            onPress={() => setActiveComponent("Akun")}
+          >
             <Text style={styles.buttonText}>Akun</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Keamanan")}>
+            onPress={() => setActiveComponent("Keamanan")}
+          >
             <Text style={styles.buttonText}>Keamanan</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Perusahaan")}>
+            onPress={() => setActiveComponent("Perusahaan")}
+          >
             <Text style={styles.buttonText}>Perusahaan</Text>
           </TouchableOpacity>
         </View>
