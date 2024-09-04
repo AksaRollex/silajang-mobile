@@ -1,15 +1,15 @@
+// Navigation.js
 import React from "react";
-import "./theme";
-
-import Toast from "react-native-toast-message";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUser } from "./src/services";
+import Toast from "react-native-toast-message";
 
 // Import your screens
 import Main from "./src/screens/main/Index";
 import Auth from "./src/screens/auth/Index";
+import Login from "./src/screens/auth/login/Index";
 import TrackingPengujian from "./src/screens/pengujian/TrackingPengujian";
 import TrackingList from "./src/screens/pengujian/TrackingList";
 
@@ -37,12 +37,14 @@ function Navigation(): React.JSX.Element {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {user && isSuccess ? (
           <>
-            <Stack.Screen name="main" component={Main} />
+            <Stack.Screen name="Main" component={Main} />
             <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
             <Stack.Screen name="TrackingList" component={TrackingList} />
           </>
         ) : (
-          <Stack.Screen name="auth" component={Auth} />
+          <>
+            <Stack.Screen name="Auth" component={Auth} />
+          </>
         )}
       </Stack.Navigator>
     </NavigationContainer>
