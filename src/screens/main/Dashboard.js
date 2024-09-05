@@ -225,7 +225,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: Colors.brand,
+    backgroundColor: "#0d47a1",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
