@@ -192,11 +192,12 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: Colors.brand, // Ganti dengan warna yang sesuai
+    backgroundColor: "#312e81", // Ganti dengan warna yang sesuai
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row", // Menyusun elemen secara horizontal
     elevation: 4,
+
   },
   logo: {
     width: 40,
