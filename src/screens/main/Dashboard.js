@@ -58,13 +58,6 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.headerText}>SI - LAJANG</Text>
-      </View>
       {/* <View
         style={[
           styles.searchFilterContainer,
@@ -225,7 +218,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: "#0d47a1",
+    backgroundColor: "#312e81",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
