@@ -1,21 +1,45 @@
-import { View, Text, StyleSheet, TouchableOpacity, TouchableWithoutFeedback, Image } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  TouchableWithoutFeedback,
+  Image,
+  RefreshControl,
+  ScrollView,
+} from "react-native";
 import { Button, Colors } from "react-native-ui-lib";
 import React, { useState, useEffect } from "react";
 import axios from "@/src/libs/axios";
 import { Modal } from "react-native-ui-lib";
 import { useNavigation } from "@react-navigation/native";
 import { Searchbar } from "react-native-paper";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useUser } from "@/src/services";
+import RNPickerSelect from "react-native-picker-select";
 
 export default function Permohonan() {
   const [permohonanData, setPermohonanData] = useState([]);
   const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
   const navigation = useNavigation();
+  const [refreshing, setRefreshing] = useState(false);
+  const { data: user } = useUser();
+  const [selectedYear, setSelectedYear] = useState("2024");
 
-    // SEARCH BAR
+  // REFRESH
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUserData();
+    setRefreshing(false);
+  };
+
+  // SEARCH BAR
   const [search, setSearch] = useState("");
 
-    const [searchQuery, setSearchQuery] = React.useState("");
+  const [searchQuery, setSearchQuery] = React.useState("");
 
   const ButtonTitikUji = () => {
     navigation.navigate("TitikUji");
@@ -37,49 +61,60 @@ export default function Permohonan() {
     setIsDeleteModalVisible(false);
     console.log("Item telah dihapus");
   };
-
+  const [tahun, setTahun] = useState(new Date().getFullYear());
+  const [tahuns, setTahuns] = useState([]);
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const token = await AsyncStorage.getItem("@auth-token");
-  
-        if (!token) {
-          console.error("No auth token found");
-          return;
-        }
-  
-        const response = await axios.get("/permohonan/get", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-  
-        console.log("Response Data Permohonan:", response.data.data);
-        setPermohonanData(response.data.data || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
-    };
-  
-    fetchData();
-  }, []);
+    const years = [];
+    for (let i = tahun; i >= 2022; i--) {
+      years.push({ id: i, text: i });
+    }
+    setTahuns(years);
+  }, [tahun]);
 
+  // FETCHING PERMOHONAN ANEH V.2
+  const fetchUserData = () => {
+    axios
+      .get("/permohonan/" + user.role.name, { tahun: tahun })
+      .then(response => {
+        console.log("Response Data Permohonan:", response.data.data);
+        setPermohonanData(response.data.data);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  // FETCHING PERMOHONAN ANEH
   // useEffect(() => {
-  //   axios
-  //     .get("/permohonan/get")
-  //     .then((response) => {
+  //   const fetchData = async () => {
+  //     try {
+  //       const token = await AsyncStorage.getItem("@auth-token");
+
+  //       if (!token) {
+  //         console.error("No auth token found");
+  //         return;
+  //       }
+
+  //       const response = await axios.get("/permohonan/get", {
+  //         headers: {
+  //           Authorization: `Bearer ${token}`,
+  //         },
+  //       });
+
   //       console.log("Response Data Permohonan:", response.data.data);
   //       setPermohonanData(response.data.data || []);
-  //     })
-  //     .catch((error) => {
+  //     } catch (error) {
   //       console.error("Error fetching data:", error);
-  //     });
+  //     }
+  //   };
+
+  //   fetchData();
   // }, []);
 
   return (
     <View style={styles.Container}>
-       <View style={styles.search}>
+      <View style={styles.search}>
         <Searchbar
           placeholder="Search"
           onChangeText={setSearchQuery}
@@ -94,51 +129,79 @@ export default function Permohonan() {
           />
         </Button>
       </View>
+      <View style={styles.pickerContainer}>
+        <RNPickerSelect
+          onValueChange={value => setSelectedYear(value)}
+          items={[
+            { label: "2024", value: "2024" },
+            { label: "2023", value: "2023" },
+            { label: "2022", value: "2022" },
+          ]}
+          value={selectedYear}
+          placeholder={{ label: "", value: null }} // Placeholder to add the blank area
+          style={pickerSelectStyles}
+          useNativeAndroidPickerStyle={false} // Use custom styling on Android
+          Icon={() => {
+            return (
+              <View style={styles.iconContainer}>
+                <Text style={{ color: "black" }}>▼</Text>
+              </View>
+            );
+          }}
+        />
+      </View>
+
       {/* {permohonanData.length > 0 ? ( */}
-        {/* permohonanData.map((permohonan, index) => ( */}
-        <View style={styles.row}>
-          {/* {paginatedCards.map((cardItem) => ( */}
-          <View
-            // key={cardItem.id}
-            style={styles.card}>
-            <View style={styles.cards}>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                10 Agustus 2024{" "}
-              </Text>
-              <Text
-                style={[
-                  styles.cardTexts,
-                  { fontWeight: "bold", fontSize: 22 },
-                ]}>
-                CV. UNDERRATED 
-              </Text>
-              <Text style={[styles.cardTexts, { marginTop: 15 }]}>Transfer - Mandiri</Text>
-              <Text style={[styles.cardTexts ]}>
-                Jl. Lasvegas Indehoy Asiek
-              </Text>
-            </View>
-            <View style={styles.cards2}>
-              <View>
-                <Button style={[styles.button, { backgroundColor: "#6B8E23" }]} onPress={ButtonTitikUji}>
-                  <Text style={styles.buttonText}>Titik Uji</Text>
-                </Button>
-                <Button style={styles.button} onPress={ButtonEditPermohonan}>
-                  <Text style={styles.buttonText}>Edit</Text>
-                </Button>
-                <Button style={[styles.button, { backgroundColor: "#CD5C5C" }]} onPress={toggleDeleteModal}>
-                  <Text style={styles.buttonText}>Delete</Text>
-                </Button>
-                {/* <TouchableOpacity
+      {/* permohonanData.map((permohonan, index) => ( */}
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }></ScrollView>
+      <View style={styles.row}>
+        {/* {paginatedCards.map((cardItem) => ( */}
+        <View
+          // key={cardItem.id}
+          style={styles.card}>
+          <View style={styles.cards}>
+            <Text style={[styles.cardTexts, { fontSize: 15 }]}>
+              10 Agustus 2024{" "}
+            </Text>
+            <Text
+              style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
+              CV. UNDERRATED
+            </Text>
+            <Text style={[styles.cardTexts, { marginTop: 15 }]}>
+              Transfer - Mandiri
+            </Text>
+            <Text style={[styles.cardTexts]}>Jl. Lasvegas Indehoy Asiek</Text>
+          </View>
+          <View style={styles.cards2}>
+            <View>
+              <Button
+                style={[styles.button, { backgroundColor: "#6B8E23" }]}
+                onPress={ButtonTitikUji}>
+                <Text style={styles.buttonText}>Titik Uji</Text>
+              </Button>
+              <Button style={styles.button} onPress={ButtonEditPermohonan}>
+                <Text style={styles.buttonText}>Edit</Text>
+              </Button>
+              <Button
+                style={[styles.button, { backgroundColor: "#CD5C5C" }]}
+                onPress={toggleDeleteModal}>
+                <Text style={styles.buttonText}>Delete</Text>
+              </Button>
+              {/* <TouchableOpacity
                   style={styles.ButtonDetail}
                   onPress={ButtonDetail}>
                   <Text style={styles.TextButton}>Pembayaran</Text>
                 </TouchableOpacity> */}
-              </View>
             </View>
           </View>
-          {/* ))} */}
         </View>
-        {/* ))
+        {/* ))} */}
+      </View>
+      {/* ))
       ) : (
         <Text style={{ fontSize: 15, fontWeight: 'bold', marginVertical: 10, textAlign: 'center' }}>Tidak Ada Data Yang Tersedia</Text>
       )} */}
@@ -152,12 +215,18 @@ export default function Permohonan() {
           <View style={styles.modalOverlay}>
             <View style={styles.modalDeleteContent}>
               <Text style={styles.modalDeleteTitle}>Konfirmasi Hapus</Text>
-              <Text style={styles.modalDeleteMessage}>Apakah Anda yakin ingin menghapus data ini?</Text>
+              <Text style={styles.modalDeleteMessage}>
+                Apakah Anda yakin ingin menghapus data ini?
+              </Text>
               <View style={styles.deleteButtonContainer}>
-                <TouchableOpacity style={styles.confirmDeleteButton} onPress={handleDelete}>
+                <TouchableOpacity
+                  style={styles.confirmDeleteButton}
+                  onPress={handleDelete}>
                   <Text style={styles.deleteButtonText}>Ya, Hapus</Text>
                 </TouchableOpacity>
-                <TouchableOpacity style={styles.cancelDeleteButton} onPress={toggleDeleteModal}>
+                <TouchableOpacity
+                  style={styles.cancelDeleteButton}
+                  onPress={toggleDeleteModal}>
                   <Text style={styles.deleteButtonText}>Batal</Text>
                 </TouchableOpacity>
               </View>
@@ -166,7 +235,9 @@ export default function Permohonan() {
         </TouchableWithoutFeedback>
       </Modal>
 
-      <TouchableOpacity style={styles.floatingButton} onPress={ButtonTambahPermohonan}>
+      <TouchableOpacity
+        style={styles.floatingButton}
+        onPress={ButtonTambahPermohonan}>
         <Text style={styles.floatingButtonText}>+</Text>
       </TouchableOpacity>
       <View
@@ -185,6 +256,20 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: "center",
     // backgroundColor : "black",
+  },
+  pickerContainer: {
+    flex: 1,
+    justifyContent: "flex-end", // Align the picker to the end of the container
+    alignItems: "flex-end", // Align the picker to the end of the container
+    padding: 10, // Optional: Adjust padding as needed
+    width: "100%", // Ensure it takes the full width of the parent
+  },
+
+  iconContainer: {
+    padding: 5,
+    display: "flex",
+    alignItems: "flex-end",
+    justifyContent: "flex-end",
   },
   title: {
     fontSize: 20,
@@ -233,7 +318,7 @@ const styles = StyleSheet.create({
     color: "white",
     marginBottom: 5,
   },
- 
+
   row: {
     flexDirection: "row",
     flexWrap: "wrap",
@@ -275,8 +360,8 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     display: "flex",
     alignItems: "center",
-    padding : 10,
-    marginVertical : 3,
+    padding: 10,
+    marginVertical: 3,
     justifyContent: "center",
   },
   buttonText: {
@@ -290,8 +375,8 @@ const styles = StyleSheet.create({
   },
   // Floating Button Styles
   floatingButton: {
-    position: "absolute",  // Posisikan secara absolut
-    bottom: 80,            // Pastikan ada jarak dengan pagination number
+    position: "absolute", // Posisikan secara absolut
+    bottom: 80, // Pastikan ada jarak dengan pagination number
     right: 20,
     backgroundColor: "#6b7fde",
     width: 60,
@@ -361,5 +446,33 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
+  },
+});
+
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "gray",
+    borderRadius: 4,
+    color: "black",
+    paddingRight: 30, // To ensure the text is not covered by the icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderWidth: 0.5,
+    marginHorizontal : 25,
+    borderColor: "gray",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30, // To ensure the text is not covered by the icon
+  },
+  placeholder: {
+    color: "gray",
+    fontSize: 16,
   },
 });

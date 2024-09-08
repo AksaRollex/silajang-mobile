@@ -5,16 +5,28 @@ import {
   ScrollView,
   StyleSheet,
   Image,
-  Dimensions,
+  RefreshControl,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import { Picker } from "@react-native-picker/picker";
 import { LineChart } from "react-native-chart-kit";
 import axios from "@/src/libs/axios";
+import { useUser } from "@/src/services";
 
 const Dashboard = () => {
+  const [dashboard, setDashboard] = useState(null);
+  const [refreshing, setRefreshing] = useState(false);
 
-  const [ dashboard, setDashboard ] = useState(null);
+  // refresh
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    setRefreshing(false);
+    fetchUserData();
+  };
 
   const requestTypes = [
     { label: "Permohonan Baru", value: "new" },
@@ -22,21 +34,30 @@ const Dashboard = () => {
     { label: "Permohonan Selesai", value: "completed" },
     { label: "Total Permohonan", value: "total" },
   ];
-  axios.get("/dashboard/get", {
-    params: {
-      tahun: 2024, // Misalnya, tahun 2024
-    },
-  })
+
+  const [tahun, setTahun] = useState(new Date().getFullYear());
+  const [tahuns, setTahuns] = useState([]);
+  const { data: user } = useUser();
 
   useEffect(() => {
-    axios.get("/dashboard/get").then(response => {
-      console.log("response data dashboard : ", response.data)
-      setDashboard(response.data)
-    })
-    .catch(error => {
-      console.error("error fetching data dashboard ", error)
-    })
-  },[]);
+    const years = [];
+    for (let i = tahun; i >= 2022; i--) {
+      years.push({ id: i, text: i });
+    }
+    setTahuns(years);
+  }, [tahun]);
+
+  const fetchUserData = () => {
+    axios
+      .post("/dashboard/" + user.role.name, { tahun: tahun })
+      .then(response => {
+        console.log("response data dashboard : ", response.data);
+        setDashboard(response.data);
+      })
+      .catch(error => {
+        console.error("error fetching data dashboard ", error);
+      }, []);
+  };
 
   return (
     <View style={styles.container}>
@@ -47,111 +68,77 @@ const Dashboard = () => {
         />
         <Text style={styles.headerText}>SI - LAJANG</Text>
       </View>
-      {/* <View
-        style={[
-          styles.searchFilterContainer,
-          { backgroundColor: Colors.brand },
-        ]}>
-        <Picker
-          selectedValue={selectedRequestType}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedRequestType(itemValue)}>
-          <Picker.Item label="Pilih Jenis Permohonan" value="" />
-          {requestTypes.map(type => (
-            <Picker.Item
-              key={type.value}
-              label={type.label}
-              value={type.value}
-            />
-          ))}
-        </Picker>
-        <Picker
-          selectedValue={selectedYear}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedYear(itemValue)}>
-          <Picker.Item label="Tahun" value="" />
-          {years.map(year => (
-            <Picker.Item key={year} label={year} value={year} />
-          ))}
-        </Picker>
-        <Picker
-          selectedValue={selectedMonth}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedMonth(itemValue)}>
-          <Picker.Item label="Bulan" value="" />
-          {months.map(month => (
-            <Picker.Item
-              key={month.value}
-              label={month.label}
-              value={month.value}
-            />
-          ))}
-        </Picker>
-      </View> */}
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
+        contentContainerStyle={styles.scrollViewContainer} // Updated styles
         showsVerticalScrollIndicator={false}>
+        <View style={styles.gridContainer}>
           {dashboard ? (
             <>
-               <View style={[styles.cardContainer, styles.cardNew]}>
-          <View style={styles.row}>
-            <Image
-              source={require("@/assets/images/folder.png")}
-              style={styles.logoFiles}
-            />
-            <Text style={[styles.cardNumber, styles.card1]}>{dashboard.permohonanBaru}</Text>
-          </View>
-          <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-            Permohonan Baru
-          </Text>
-        </View>
-        <View style={[styles.cardContainer, styles.cardProcess]}>
-          <View style={styles.row}>
-            <Image
-              source={require("@/assets/images/process.png")}
-              style={styles.logoProcess}
-            />
-            <Text style={[styles.cardNumber, styles.card2]}>{dashboard.permohonanDiproses}</Text>
-          </View>
-          <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-            Permohonan Proses
-          </Text>
-        </View>
-        <View style={[styles.cardContainer, styles.cardCompleted]}>
-          <View style={styles.row}>
-            <Image
-              source={require("@/assets/images/checked.png")}
-              style={styles.logoChecked}
-            />
-            <Text style={[styles.cardNumber, styles.card3]}>{dashboard.permohonanSelesai}</Text>
-          </View>
-          <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-            Permohonan Selesai
-          </Text>
-        </View>
-        <View style={[styles.cardContainer, styles.cardTotal]}>
-          <View style={styles.row}>
-            <Image
-              source={require("@/assets/images/select-all.png")}
-              style={styles.logoSelectAll}
-            />
-            <Text style={[styles.cardNumber, styles.card4]}>{dashboard.permohonanTotal}</Text>
-          </View>
-          <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-            Total Permohonan
-          </Text>
-        </View>
+              <View style={[styles.cardContainer, styles.cardNew]}>
+                <View style={styles.row}>
+                  <Image
+                    source={require("@/assets/images/folder.png")}
+                    style={styles.logoFiles}
+                  />
+                  <Text style={[styles.cardNumber, styles.card1]}>
+                    {dashboard.permohonanBaru}
+                  </Text>
+                </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Baru
+                </Text>
+              </View>
+              <View style={[styles.cardContainer, styles.cardProcess]}>
+                <View style={styles.row}>
+                  <Image
+                    source={require("@/assets/images/process.png")}
+                    style={styles.logoProcess}
+                  />
+                  <Text style={[styles.cardNumber, styles.card2]}>
+                    {dashboard.permohonanDiproses}
+                  </Text>
+                </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Proses
+                </Text>
+              </View>
+              <View style={[styles.cardContainer, styles.cardCompleted]}>
+                <View style={styles.row}>
+                  <Image
+                    source={require("@/assets/images/checked.png")}
+                    style={styles.logoChecked}
+                  />
+                  <Text style={[styles.cardNumber, styles.card3]}>
+                    {dashboard.permohonanSelesai}
+                  </Text>
+                </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Selesai
+                </Text>
+              </View>
+              <View style={[styles.cardContainer, styles.cardTotal]}>
+                <View style={styles.row}>
+                  <Image
+                    source={require("@/assets/images/select-all.png")}
+                    style={styles.logoSelectAll}
+                  />
+                  <Text style={[styles.cardNumber, styles.card4]}>
+                    {dashboard.permohonanTotal}
+                  </Text>
+                </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Total Permohonan
+                </Text>
+              </View>
             </>
           ) : (
-            <Text style={styles.text}>Loading...</Text>
+            <Text style={{ color: "black", fontSize: 15, textAlign: "center" }}>
+              Loading...
+            </Text>
           )}
-     
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            {
-              "2024 ©SI-LAJANG v.3 \nSistem Informasi Laboratorium Lingkungan Jombang"
-            }
-          </Text>
         </View>
       </ScrollView>
     </View>
@@ -160,7 +147,6 @@ const Dashboard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
     flex: 1,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
@@ -218,13 +204,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollViewContainer: {
+padding : 10    
+  },
+  gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-around",
-    paddingVertical: 10,
+    justifyContent: "space-between", // Adjust space between items
   },
   cardContainer: {
-    width: "45%",
+    width: "48%", // Adjust to ensure it fits in a 2x2 grid
     height: 160,
     marginVertical: 10,
     borderRadius: 7,

@@ -6,31 +6,65 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
+  RefreshControl, // Import RefreshControl
 } from "react-native";
 import axios from "@/src/libs/axios";
 import Akun from "./Akun";
 import Perusahaan from "./Perusahaan";
 import Keamanan from "./Keamanan";
 import { Colors } from "react-native-ui-lib";
-import { useNavigation, useNavigationContainerRef } from "@react-navigation/native";
+import {
+  useNavigation,
+  useNavigationContainerRef,
+} from "@react-navigation/native";
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
 
 export default function Profile() {
   const [activeComponent, setActiveComponent] = useState(null);
-  const [userData, setUserData] = useState(null);
+  const [data, setData] = useState(null);
+  const [imageUrl, setImageUrl] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [refreshing, setRefreshing] = useState(false); // State for refreshing
   const navigation = useNavigation();
+  const QueryClient = useQueryClient();
 
   useEffect(() => {
-    axios
-      .get("/auth")
-      .then((response) => {
-        console.log("Response Data:", response.data.user); // Log data response
-        setUserData(response.data);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error); // Log error
-      });
+    fetchData();
   }, []);
 
+  // Fungsi untuk mengambil data dari API
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/auth"); // Memanggil API
+      const { nama, email, phone, golongan } = response.data.user;
+      console.log(response.data.user);
+      setData({ nama, email, phone, golongan });
+      setLoading(false); // Menonaktifkan loading setelah data berhasil diambil
+
+      //gambar 
+      const { photo } = response.data.user
+      const fullImageUrl = `http://10.0.2.2:8000${photo}?t=${new Date().getTime()}`;
+      
+
+      // Set URL gambar
+      setImageUrl(fullImageUrl);
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false); // Menonaktifkan loading saat terjadi error
+    }
+  };
+
+  // REFRESH
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchData();
+    setRefreshing(false);
+  };
+
+  // COMPONENT PROFILE
   let RenderedComponent;
   switch (activeComponent) {
     case "Akun":
@@ -47,17 +81,36 @@ export default function Profile() {
       break;
   }
 
-  const handleLogout = () => {
-    // Logika logout, seperti menghapus token dan redirect ke halaman login
-    console.log("Logged out");
-  };
-
-  const logout = () => {
-    navigation.navigate("memo")
-  }
+  // LOGOUT
+  const {
+    mutate: logout,
+    isLoading,
+    isSuccess,
+    isError,
+  } = useMutation(() => axios.post("/auth/logout"), {
+    onSuccess: async () => {
+      await AsyncStorage.removeItem("@auth-token");
+      Toast.show({
+        type: "success",
+        text1: "Logout Berhasil",
+      });
+      QueryClient.invalidateQueries(["auth", "user"]);
+      navigation.navigate("Login"); // Redirect to login page
+    },
+    onError: error => {
+      Toast.show({
+        type: "error",
+        text1: "Gagal Logout",
+      });
+    },
+  });
 
   return (
-    <ScrollView style={styles.container}>
+    <ScrollView
+      style={styles.container}
+      refreshControl={
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }>
       <View style={styles.headerContainer}>
         <Image
           source={require("@/assets/images/logo.png")}
@@ -65,7 +118,7 @@ export default function Profile() {
         />
         <Text style={styles.headerText}>SI - LAJANG</Text>
       </View>
-      <TouchableOpacity style={styles.buttonLogout}  onPress={logout}>
+      <TouchableOpacity style={styles.buttonLogout} hyperlink onPress={logout}>
         <Text style={styles.buttonLogoutText}>Logout</Text>
       </TouchableOpacity>
       <View style={styles.cardContainer}>
@@ -73,55 +126,61 @@ export default function Profile() {
           <View style={styles.photoProfileCard}>
             <Image
               style={styles.image}
-              source={{
-                uri: "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp",
-              }}
+              source={{ uri: imageUrl }}
               resizeMode="cover"
             />
           </View>
           <View style={styles.ProfileCardText}>
-  {userData ? (
-    <>
-      <View style={styles.iconTextRow}>
-        
-        <Image source={require("@/assets/images/checked.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.nama}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-        <Image source={require("@/assets/images/verification.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.email}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-        <Image source={require("@/assets/images/phone.png")} style={styles.icon} />
-        <Text style={styles.text}>{userData.user.phone}</Text>
-      </View>
-      <View style={styles.iconTextRow}>
-      <Image source={require("@/assets/images/gear-assembly.png")} style={styles.icon} />
-      <Text style={styles.text}>{userData.user.golongan.nama}</Text>
-      </View>
-    </>
-  ) : (
-    <Text style={styles.text}>Loading...</Text>
-  )}
-</View>
+            {data ? (
+              <>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/checked.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{data.nama}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/verification.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{data.email}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/phone.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{data.phone}</Text>
+                </View>
+                <View style={styles.iconTextRow}>
+                  <Image
+                    source={require("@/assets/images/gear-assembly.png")}
+                    style={styles.icon}
+                  />
+                  <Text style={styles.text}>{data.golongan?.nama}</Text>
+                </View>
+              </>
+            ) : (
+              <Text style={styles.text}>Loading...</Text>
+            )}
+          </View>
         </View>
         <View style={styles.buttonContainer}>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Akun")}
-          >
+            onPress={() => setActiveComponent("Akun")}>
             <Text style={styles.buttonText}>Akun</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Keamanan")}
-          >
+            onPress={() => setActiveComponent("Keamanan")}>
             <Text style={styles.buttonText}>Keamanan</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.button}
-            onPress={() => setActiveComponent("Perusahaan")}
-          >
+            onPress={() => setActiveComponent("Perusahaan")}>
             <Text style={styles.buttonText}>Perusahaan</Text>
           </TouchableOpacity>
         </View>
@@ -134,16 +193,15 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor : "rgba(13, 71, 161, 0.2)"
-
+    backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: Colors.brand, // Ganti dengan warna yang sesuai
+    backgroundColor: Colors.brand,
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row", // Menyusun elemen secara horizontal
+    flexDirection: "row",
     elevation: 4,
   },
   logo: {
@@ -155,8 +213,8 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "white",
     fontWeight: "bold",
-    marginLeft: 10, // Beri jarak antara logo dan teks
-    alignSelf: "center", // Vertically align the text to the center
+    marginLeft: 10,
+    alignSelf: "center",
   },
   cardContainer: {
     flex: 1,
@@ -186,21 +244,19 @@ const styles = StyleSheet.create({
     width: 230,
     height: 120,
     borderRadius: 10,
-    // backgroundColor : 'green',
     justifyContent: "center",
     alignItems: "flex-start",
   },
   iconTextRow: {
-    flexDirection: "row", // Untuk mengatur gambar dan teks berdampingan
-    alignItems: "center", // Vertikal pusat gambar dan teks
-    marginBottom: 4, // Menambahkan jarak antara setiap baris gambar dan teks
+    flexDirection: "row",
+    alignItems: "center",
+    marginBottom: 4,
   },
   icon: {
-    width: 16, // Sesuaikan ukuran gambar
-    height: 16, // Sesuaikan ukuran gambar
-    marginRight: 8, // Jarak antara gambar dan teks
+    width: 16,
+    height: 16,
+    marginRight: 8,
   },
-  
   text: {
     color: "white",
     fontSize: 14,
@@ -210,14 +266,13 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     flexDirection: "row",
-    display : 'flex',
     justifyContent: "space-around",
   },
   button: {
-    width : 115,
-    height : 35,
-    alignItems : 'center',
-    justifyContent : 'center',
+    width: 115,
+    height: 35,
+    alignItems: "center",
+    justifyContent: "center",
     borderRadius: 10,
     margin: 10,
     backgroundColor: "#6b7fde",
@@ -228,7 +283,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   buttonLogout: {
-    backgroundColor: "#C0392B", // Warna merah untuk tombol logout
+    backgroundColor: "#C0392B",
     paddingVertical: 10,
     paddingHorizontal: 25,
     borderRadius: 8,
@@ -238,16 +293,18 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 5,
     elevation: 5,
-    marginHorizontal: 20, // Optional: add some margin to the button
-    marginVertical : 10,
+    marginHorizontal: 20,
+    marginVertical: 10,
   },
   buttonLogoutText: {
     color: "white",
-    fontSize: 18,
+    fontSize: 14,
     fontWeight: "bold",
   },
   activeComponentContainer: {
-    flex: 1,
+    marginTop: 10,
+    marginBottom: 20,
     width: "100%",
+    paddingHorizontal: 10,
   },
 });

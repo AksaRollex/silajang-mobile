@@ -62,6 +62,7 @@ const EditPermohonan = () => {
       >
         <Text style={styles.backButtonText}>Kembali</Text>
       </TouchableOpacity>
+      <Text style={{ color : 'black' }}>Nama Indsutri</Text>
       <TextInput
         label="Nama Industri"
         value={text}
@@ -70,6 +71,7 @@ const EditPermohonan = () => {
         style={styles.textInput}
         placeholder="CV. MCFLYON"
       />
+      <Text style={{ color : 'black' }}>Alamat</Text>
       <TextInput
         label="Alamat"
         value={text}
@@ -78,6 +80,7 @@ const EditPermohonan = () => {
         style={styles.textInput}
         placeholder="Alamat"
       />
+      <Text style={{ color : 'black' }}>Pembayaran</Text>
       <TextInput
         label="Pembayaran"
         value={text}
@@ -86,6 +89,7 @@ const EditPermohonan = () => {
         style={styles.textInput}
         placeholder="Pembayaran"
       />
+      <Text style={{ color : 'black' }}>Jasa Pengambilan</Text>
       <DropDownPicker
         open={openJasaPengambilan}
         value={selectedJasaPengambilan}
@@ -96,6 +100,7 @@ const EditPermohonan = () => {
         placeholder="Pilih Jenis Pengambilan"
         style={styles.dropdown}
       />
+      <Text style={{ color : 'black' }}>Tanggal / Jam Pengiriman</Text>
       <TouchableOpacity onPress={() => setShowDateTimePicker(true)}>
           <TextInput
             label="Tanggal / Jam Pengirim"
@@ -114,6 +119,7 @@ const EditPermohonan = () => {
             is24Hour={true}
             display={Platform.OS === "ios" ? "spinner" : "default"} // Ensuring proper display on iOS and Android
             onChange={handleDateTimeChange}
+            style={styles.dropdown}
           />
         )}
      

@@ -198,7 +198,7 @@ const [location, setLocation] = useState({
           mode="outlined"
           style={styles.textInput}
           placeholder=""></TextInput>
-        <Text style={styles.titleText}>Detail Pengiriman</Text>
+        <Text style={[styles.titleText, {color : 'black'}]}>Detail Pengiriman</Text>
         <TextInput
           label="Nama Pengirim"
           value={text}
@@ -238,7 +238,7 @@ const [location, setLocation] = useState({
           style={styles.dropdown}
         />
 
-        <Text style={styles.titleText}>Detail Lokasi</Text>
+        <Text style={[styles.titleText, { color : 'black'}]}>Detail Lokasi</Text>
         <TextInput
           label="South"
           value={location.latitude}
@@ -256,7 +256,7 @@ const [location, setLocation] = useState({
         <TouchableOpacity style={styles.buttonLokasi} onPress={handleLocationPress}>
           <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
         </TouchableOpacity>
-        <Text style={styles.titleText}>Hasil Pengukuran Lapangan</Text>
+        <Text style={[styles.titleText, { color : 'black'}]}>Hasil Pengukuran Lapangan</Text>
         <TextInput
           label="Suhu Air (t°C)"
           value={text}
@@ -307,7 +307,7 @@ Salinitas (‰)"
           mode="outlined"
           style={styles.textInput}
           placeholder=""></TextInput>
-        <Text style={styles.titleText}>Kondisi Lingkungan</Text>
+        <Text style={[styles.titleText, { color : 'black'}]}>Kondisi Lingkungan</Text>
         <TextInput
           label="Suhu Udara (t°C)"
           value={text}

@@ -7,7 +7,7 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image
+  Image,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 
@@ -16,53 +16,57 @@ const Parameter = ({ navigation }) => {
   const [parameterData, setParameterData] = useState([]);
   const [paketData, setPaketData] = useState([]);
   const [selectedParameters, setSelectedParameters] = useState([]);
+  navigation.pop(2); // This will pop two screens from the stack.
 
+  // FETCH DATA PARAMETER
   useEffect(() => {
     axios
       .get("/master/parameter")
-      .then((response) => {
+      .then(response => {
         console.log("Response Data Parameter:", response.data.parameter);
         setParameterData(response.data.parameter);
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
+  // FETCH DATA PAKET
   useEffect(() => {
     axios
       .get("/master/paket")
-      .then((response) => {
+      .then(response => {
         console.log("Response Data Paket:", response.data);
         setPaketData(response.data.data); // Pastikan response.data berisi array paket
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
+  // FETCH DATA PERATURAN
   useEffect(() => {
     axios
       .get("/master/peraturan/get")
-      .then((response) => {
+      .then(response => {
         console.log("Response Data Peraturan:", response.data);
         setPeraturanData(response.data.peraturan); // Pastikan response.data berisi array paket
       })
-      .catch((error) => {
+      .catch(error => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
-  const handleAddParameter = (parameter) => {
-    setSelectedParameters((prevSelectedParameters) => [
+  const handleAddParameter = parameter => {
+    setSelectedParameters(prevSelectedParameters => [
       ...prevSelectedParameters,
       parameter,
     ]);
   };
 
-  const handleRemoveParameter = (parameterId) => {
-    setSelectedParameters((prevSelectedParameters) =>
-      prevSelectedParameters.filter((item) => item.id !== parameterId)
+  const handleRemoveParameter = parameterId => {
+    setSelectedParameters(prevSelectedParameters =>
+      prevSelectedParameters.filter(item => item.id !== parameterId),
     );
     console.log("Parameter removed:", parameterId);
   };
@@ -76,8 +80,7 @@ const Parameter = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.actionButton}
-        onPress={() => handleAddParameter(item)}
-      >
+        onPress={() => handleAddParameter(item)}>
         <Text style={styles.actionButtonText}>+</Text>
       </TouchableOpacity>
     </View>
@@ -91,8 +94,7 @@ const Parameter = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.actionButton}
-        onPress={() => handleAddParameter(item)}
-      >
+        onPress={() => handleAddParameter(item)}>
         <Text style={styles.actionButtonText}>+</Text>
       </TouchableOpacity>
     </View>
@@ -106,23 +108,21 @@ const Parameter = ({ navigation }) => {
       </View>
       <TouchableOpacity
         style={styles.actionButton}
-        onPress={() => handleAddParameter(item)}
-      >
+        onPress={() => handleAddParameter(item)}>
         <Text style={styles.actionButtonText}>+</Text>
       </TouchableOpacity>
     </View>
   );
 
   const renderSelectedParameter = ({ item }) => (
-    <View style={[styles.card, { marginBottom : 40,}]}>
+    <View style={[styles.card, { marginBottom: 40 }]}>
       <View style={styles.cardContent}>
         <Text style={styles.cell}>{item.nama}</Text>
         <Text style={styles.cell}>{item.harga}</Text>
       </View>
       <TouchableOpacity
         style={[styles.actionButton, { backgroundColor: "#ff5252" }]}
-        onPress={() => handleRemoveParameter(item.id)}
-      >
+        onPress={() => handleRemoveParameter(item.id)}>
         <Text style={styles.actionButtonText}>Delete</Text>
       </TouchableOpacity>
     </View>
@@ -134,7 +134,7 @@ const Parameter = ({ navigation }) => {
       <TouchableOpacity
         style={[styles.backButton, { backgroundColor: Colors.brand }]}
         onPress={() => navigation.goBack()}
-      >
+        >
         <Image
           source={require("../../../assets/images/backss.png")}
           style={{ height: 20, width: 20, tintColor: "white" }}></Image>
@@ -146,13 +146,14 @@ const Parameter = ({ navigation }) => {
           style={[
             styles.headerTopBar,
             { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}
-        >
-          <Text style={styles.headerTopBarText}>Pilih Berdasarkan Peraturan</Text>
+          ]}>
+          <Text style={styles.headerTopBarText}>
+            Pilih Berdasarkan Peraturan
+          </Text>
         </View>
         <FlatList
           data={peraturanData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={renderItemPeraturan}
           scrollEnabled={false}
         />
@@ -162,13 +163,12 @@ const Parameter = ({ navigation }) => {
           style={[
             styles.headerTopBar,
             { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}
-        >
+          ]}>
           <Text style={styles.headerTopBarText}>Pilih Berdasarkan Paket</Text>
         </View>
         <FlatList
           data={paketData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={renderItemPaket}
           scrollEnabled={false}
         />
@@ -178,13 +178,12 @@ const Parameter = ({ navigation }) => {
           style={[
             styles.headerTopBar,
             { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}
-        >
+          ]}>
           <Text style={styles.headerTopBarText}>Parameter Tersedia</Text>
         </View>
         <FlatList
           data={parameterData}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={renderItemLangsung}
           scrollEnabled={false}
         />
@@ -194,13 +193,12 @@ const Parameter = ({ navigation }) => {
           style={[
             styles.headerTopBar,
             { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}
-        >
+          ]}>
           <Text style={styles.headerTopBarText}>Parameter Di Pilih</Text>
         </View>
         <FlatList
           data={selectedParameters}
-          keyExtractor={(item) => item.id.toString()}
+          keyExtractor={item => item.id.toString()}
           renderItem={renderSelectedParameter}
           scrollEnabled={false}
           style={styles.parameterDiPilih}
@@ -213,7 +211,7 @@ const Parameter = ({ navigation }) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding : 20,
+    padding: 20,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   backButton: {
@@ -237,16 +235,7 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     alignItems: "center",
   },
-  headerTopBars: {
-    backgroundColor: "#6ab8e2",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 5,
-    elevation: 2,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-  },
+
   headerTopBarText: {
     color: "#fff",
     fontSize: 16,
@@ -276,7 +265,7 @@ const styles = StyleSheet.create({
   cell: {
     flex: 1,
     paddingHorizontal: 10,
-    color : 'black'
+    color: "black",
   },
   actionButton: {
     backgroundColor: "#2196f3",

@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  onChange,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
@@ -15,8 +16,7 @@ import { create } from "zustand";
 import { TextField, Colors, Button } from "react-native-ui-lib";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
-import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
-
+import { launchImageLibrary } from "react-native-image-picker";
 const Akun = () => {
   const [file, setFile] = React.useState(null);
   const [userData, setUserData] = useState(null);
@@ -31,25 +31,11 @@ const Akun = () => {
     reset,
   } = useForm();
 
-  const useFormPut = create(set => ({
-    credential: {
-      nama: "",
-      photo: "",
-    },
-  }));
-
-  const [photo, setPhoto] = useState({
-    photo: "",
-  });
-
-  const { setAkun } = useFormPut();
-
-  // get data profile
+  // get data profile untuk di tampilkan di placeholder
   useEffect(() => {
     axios
       .get("/auth")
       .then(response => {
-        console.log("Response Data user akun:", response.data.user); // Log data response
         setUserData(response.data);
       })
       .catch(error => {
@@ -57,59 +43,69 @@ const Akun = () => {
       });
   }, []);
 
-  // Update data pengguna
+  //update data nama
+  const updateUser = async () => {
+    const formData = new FormData();
+    formData.append("nama", getValues("nama")); // Menambahkan nama ke FormData
+
+    if (file) {
+      // Periksa apakah file.uri adalah string dan valid
+      formData.append("photo", {
+        uri: file.uri, // Pastikan ini adalah path file yang benar
+        type: file.type || "image/jpeg",
+        name: file.fileName || "profile_photo.jpg",
+      });
+    }
+
+    try {
+      const response = await axios.post("/user/updateAkun/", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      // Setelah update berhasil, ambil URL gambar baru
+      const { photo } = response.data.user;
+      const updatedImageUrl = `http://192.168.18.14:8000${photo}?t=${new Date().getTime()}`;
+      setImageUrl(updatedImageUrl);
+      setData(prevData => ({ ...prevData, nama: getValues("nama") }));
+    } catch (error) {
+      console.error("Update failed:", error.message);
+    }
+  };
+
+  // UPDATE DATA PENGGUNA V.2
   const {
     mutate: update,
     isLoading,
     isSuccess,
-  } = useMutation(
-    () => {
-      const formData = new FormData();
-  
-      // Tambahkan nama ke dalam FormData
-      formData.append("nama", getValues("nama"));
-  
-      // Tambahkan gambar ke dalam FormData jika ada
-      if (file) {
-        formData.append("photo", {
-          uri: file,
-          type: file.type || 'image/jpeg', // Pastikan tipe file sesuai
-          name: file.fileName || 'profile_photo.jpg', // Nama file yang akan di-upload
-        });
-      }
-  
-      return axios.put("/user/updateAkun", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      }).then(res => res.data);
+  } = useMutation(updateUser, {
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Data Berhasil Di Kirim",
+      });
+      navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
+      reset();
     },
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Data Berhasil Di Kirim",
-        });
-        navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
-        reset();
-        setFile(null); // Hapus file setelah pengiriman berhasil
-      },
-      onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-      },
+    onError: error => {
+      console.error(error.message);
+      Toast.show({
+        type: "error",
+        text1: error.message,
+      });
     },
-  );
-  
+  });
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0].uri;
-        setFile(selectedImage);
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorMessage) {
+        console.log("ImagePicker Error: ", response.errorMessage);
+      } else {
+        console.log("Chosen file:", response.assets[0]);
+        setFile(response.assets[0]);
       }
     });
   };
@@ -130,6 +126,7 @@ const Akun = () => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 placeholder={userData.user.nama}
+                placeholderTextColor="black"
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
@@ -140,35 +137,51 @@ const Akun = () => {
             <Text style={{ color: "red" }}>{errors.nama.message}</Text>
           )}
           <Text style={{ color: "black" }}>Foto Profil</Text>
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-          </TouchableOpacity>
 
           <Controller
             control={control}
             name="photo"
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { value } }) => (
               <View style={styles.textFieldContainer}>
-                <TextField
-                  enableErrors
-                  fieldStyle={styles.textField}
-                  onChangeText={onChange}
-                  value={value || photo}
-                  editable="false"
-                />
-                {file && (
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: file }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={handleDeletePhoto}>
-                      <Text style={styles.deleteButtonText}>Hapus Gambar</Text>
+                <View
+                  style={[
+                    styles.textField,
+                    {
+                      backgroundColor: file ? "#D4D4D4" : "#fff",
+                      padding: 20,
+                      marginBottom: 20,
+                      borderRadius: 7,
+                    },
+                  ]}
+                  value={value}>
+                  {/* Tampilkan tombol "Pilih Gambar" hanya jika tidak ada gambar */}
+                  {!file && (
+                    <TouchableOpacity onPress={handleChoosePhoto}>
+                      <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
                     </TouchableOpacity>
-                  </View>
-                )}
+                  )}
+
+                  {/* Tampilkan gambar dan tombol hapus jika ada gambar */}
+                  {file && (
+                    <View style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: file.uri }} // Pastikan file.uri adalah path yang benar
+                        style={styles.imagePreview}
+                      />
+                      <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={handleDeletePhoto}>
+                        <Text style={styles.deleteButtonText}>
+                          Hapus Gambar
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
               </View>
             )}
           />
+
           <Text style={{ color: "black" }}>Email</Text>
 
           <Controller
@@ -180,6 +193,7 @@ const Akun = () => {
                 editable={false} // Disables the TextInput
                 enableErrors
                 fieldStyle={styles.textField}
+                placeholderTextColor="black"
                 onChangeText={onChange}
                 value={value}
               />
@@ -195,6 +209,7 @@ const Akun = () => {
                 enableErrors
                 editable={false}
                 fieldStyle={styles.textField}
+                placeholderTextColor="black"
                 onChangeText={onChange}
                 value={value}
               />
@@ -202,7 +217,9 @@ const Akun = () => {
           />
         </>
       ) : (
-        <Text style={[styles.text, { color :  'black', marginVertical : 10}]}>Loading...</Text>
+        <Text style={[styles.text, { color: "black", marginVertical: 10 }]}>
+          Loading...
+        </Text>
       )}
 
       <Button
@@ -267,12 +284,10 @@ const styles = StyleSheet.create({
   },
   selectPhotoText: {
     color: "black",
-    marginVertical: 5,
   },
   textFieldContainer: {},
   imageContainer: {
     alignItems: "center",
-    marginTop: 10,
   },
 });
 

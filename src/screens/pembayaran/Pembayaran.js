@@ -9,11 +9,10 @@ import {
   Image,
   Modal,
   TouchableOpacity,
+  RefreshControl
 } from "react-native";
 import { Colors, Button } from "react-native-ui-lib";
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
-import SignatureScreen from "react-native-signature-canvas";
 import { Searchbar } from "react-native-paper";
 
 const Pembayaran = () => {
@@ -24,28 +23,40 @@ const Pembayaran = () => {
   const [itemsPerPage, setItemsPerPage] = useState(10);
   const [currentPage, setCurrentPage] = useState(1);
   const [pembayaranData, setPembayaranData] = useState([]);
+  const [refreshing, setRefreshing] = useState(false); // State for refreshing
 
   // SEARCH BAR
   const [searchQuery, setSearchQuery] = React.useState("");
+
   // PREVIOUS
   const handlePreviousPage = () => {
     if (currentPage > 1) setCurrentPage(currentPage - 1);
   };
+
   // NEXT
   const handleNextPage = () => {
     if (currentPage < totalPages) setCurrentPage(currentPage + 1);
   };
-
-  useEffect(() => {
+  
+  const fetchUserData = () => {
     axios
-      .get("/pembayaran/pengujian")
-      .then(response => {
-        console.log("Response Data pembayaran :", response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data pembayaran :", error);
-      });
+    .get("/pembayaran/pengujian")
+    .then(response => {
+      console.log("Response Data pembayaran :", response.data);
+    })
+    .catch(error => {
+      console.error("Error fetching data pembayaran :", error);
+    });
+  }
+  useEffect(() => {
+      fetchUserData();
   }, []);
+
+  const onRefresh = () => {
+    setRefreshing(true);
+    fetchUserData();
+    setRefreshing(false)
+  }
 
   const filteredCards = pembayaranData.filter(cardItem => {
     const matchesSearch = cardItem.lokasi
@@ -96,7 +107,10 @@ const Pembayaran = () => {
       </View>
       <ScrollView
         contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }>
         <View style={styles.row}>
           {/* {paginatedCards.map((cardItem) => ( */}
           <View

@@ -37,17 +37,6 @@ const TambahPermohonan = () => {
       });
   }, []);
 
-  // useEffect (() => {
-  //   axios.get("/master/jasa-pengambilan")
-  //   .then(response => {
-  //     const formattedJasaPengambilan = response.data.data
-  //     console.log("Response Data Jasa Pengambilan : ", response.data);
-  //   })
-  //   .catch(error => {
-  //     console.error("Error fetching data : ", error);
-  //   })
-  // })
-
   const navigation = useNavigation();
   const {
     handleSubmit,
@@ -136,7 +125,7 @@ const TambahPermohonan = () => {
       </TouchableOpacity>
 
       <View marginB-20>
-        <Text marginB-5>Nama Industri</Text>
+        <Text marginB-5 style={{ color : 'black' }}>Nama Industri</Text>
         <Controller
           control={control}
           name="industri"
@@ -161,7 +150,7 @@ const TambahPermohonan = () => {
         )}
       </View>
       <View marginB-20>
-        <Text marginB-5>Alamat</Text>
+        <Text marginB-5 style={{ color : 'black' }}>Alamat</Text>
         <Controller
           control={control}
           name="alamat"
@@ -186,7 +175,7 @@ const TambahPermohonan = () => {
         )}
       </View>
       <View marginB-20>
-        <Text marginB-5>Kegiatan Industri</Text>
+        <Text marginB-5 style={{ color : 'black' }}>Kegiatan Industri</Text>
         <Controller
           control={control}
           name="kegiatan"
@@ -210,8 +199,9 @@ const TambahPermohonan = () => {
           <Text style={{ color: "red" }}>{errors.kegiatan.message}</Text>
         )}
       </View>
-      {/* <View marginB-20>
-        <Text marginB-5>Keterangan</Text>
+
+      <View marginB-20>
+        <Text marginB-5 style={{ color : 'black' }}>Keterangan</Text>
         <Controller
           control={control}
           name="keterangan"
@@ -234,10 +224,10 @@ const TambahPermohonan = () => {
         {errors.keterangan && (
           <Text style={{ color: "red" }}>{errors.keterangan.message}</Text>
         )}
-      </View> */}
+      </View>
 
       <View>
-        <Text style={styles.sectionTitle}>Cara Pengambilan</Text>
+        <Text style={[styles.sectionTitle, { color : "black"}] }>Cara Pengambilan</Text>
         <View style={styles.cardContainer}>
           <TouchableOpacity
             style={[
@@ -286,7 +276,7 @@ const TambahPermohonan = () => {
         />
       )}
       <View>
-        <Text style={styles.sectionTitle}>Opsi Pembayaran</Text>
+        <Text style={[styles.sectionTitle, { color : "black"}]}>Opsi Pembayaran</Text>
         <TouchableOpacity
           style={[
             styles.cardPembayaran,
@@ -370,6 +360,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     borderRadius: 7,
     borderWidth: 1,
+    marginBottom : 10,
     borderColor: "#000",
     alignItems: "center",
     marginHorizontal: 5,

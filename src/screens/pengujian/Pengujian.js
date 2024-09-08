@@ -1,13 +1,17 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
+import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl } from "react-native";
 import React, { useState } from "react";
 import { Colors } from "react-native-ui-lib";
-
 import Permohonan from "./Permohonan";
 import TrackingPengujian from "./TrackingPengujian";
 
 export default function Pengujian() {
   const [activeComponent, setActiveComponent] = useState(null);
+  const [ refreshing, setRefreshing ] = useState(false);
 
+  const onRefresh = () => {
+    setRefreshing(false);
+    setRefreshing(true);
+  }
   let RenderedComponent;
   switch (activeComponent) {
     case "Permohonan":
@@ -22,8 +26,10 @@ export default function Pengujian() {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
+    <View style={styles.container} >
+      <ScrollView contentContainerStyle={styles.contentContainer} refreshControl={
+      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+    }>
         <View style={styles.headerContainer}>
           <Image
             source={require("@/assets/images/logo.png")}
