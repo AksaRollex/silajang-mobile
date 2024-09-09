@@ -44,10 +44,10 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               style={{ width: 60, height: 80, marginTop: 8 }}
             />
             <View style={{ flexShrink: 1}}>
-              <Text h1 color={Colors.brand}>
+              <Text h1 color={Colors.brand} style={{ fontSize: 30, fontWeight: "bold", color: "#1e1b4b"}}>
                 SELAMAT DATANG
               </Text>
-              <Text classname="bg-red-600">Sistem Informasi Laboratorium Lingkungan Jombang</Text>
+              <Text>Sistem Informasi Laboratorium Lingkungan Jombang</Text>
             </View>
           </View>
 

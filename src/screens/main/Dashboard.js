@@ -13,6 +13,10 @@ import { LineChart } from "react-native-chart-kit";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
 import { rupiah } from "@/src/libs/utils";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Fontisto from "react-native-vector-icons/Fontisto";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -109,10 +113,7 @@ const Dashboard = () => {
           <>
             <View style={[styles.cardContainer, styles.cardNew]}>
               <View style={styles.row}>
-                <Image
-                  source={require("@/assets/images/folder.png")}
-                  style={styles.logoFiles}
-                />
+                <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
                 <Text style={[styles.cardNumber, styles.card1]}>
                   {dashboard.customers}
                 </Text>
@@ -123,10 +124,7 @@ const Dashboard = () => {
             </View>
             <View style={[styles.cardContainer, styles.cardProcess]}>
               <View style={styles.row}>
-                <Image
-                  source={require("@/assets/images/process.png")}
-                  style={styles.logoProcess}
-                />
+                <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
                 <Text style={[styles.cardNumber, styles.card2]}>
                   {dashboard.allSampels}
                 </Text>
@@ -137,10 +135,7 @@ const Dashboard = () => {
             </View>
             <View style={[styles.cardContainer, styles.cardCompleted]}>
               <View style={styles.row}>
-                <Image
-                  source={require("@/assets/images/checked.png")}
-                  style={styles.logoChecked}
-                />
+                <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
                 <Text style={[styles.cardNumber, styles.card3]}>
                   {dashboard.newSampels}
                 </Text>
@@ -151,10 +146,7 @@ const Dashboard = () => {
             </View>
             <View style={[styles.cardContainer, styles.cardTotal]}>
               <View style={styles.row}>
-                <Image
-                  source={require("@/assets/images/select-all.png")}
-                  style={styles.logoSelectAll}
-                />
+                <Fontisto name="laboratory" size={30} color={"#f2416e"} />
                 <Text style={[styles.cardNumber, styles.card4]}>
                   {dashboard.undoneSampels}
                 </Text>
@@ -165,10 +157,7 @@ const Dashboard = () => {
             </View>
             <View style={[styles.cardContainer, styles.cardTotal]}>
               <View style={styles.row}>
-                <Image
-                  source={require("@/assets/images/select-all.png")}
-                  style={styles.logoSelectAll}
-                />
+                <IonIcons name="document-text" size={30} color={"#f2416e"} />
                 <Text style={[styles.cardNumber, styles.card4]}>
                   {dashboard.unverifSampels}
                 </Text>
@@ -177,18 +166,37 @@ const Dashboard = () => {
                 Dokumen Belum DIverifikasi
               </Text>
             </View>
-            <View style={[styles.cardContainer, styles.cardTotal]}>
+            <View style={[styles.cardContainer, styles.cardTotals]}>
               <View>
-                <Image
-                  source={require("@/assets/images/select-all.png")}
-                  style={styles.logoSelectAll}
-                />
-                <Text style={[styles.cardCurrency, styles.card4]}>
+                <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
+                <Text style={[styles.cardCurrency]} className="text-[#0fd194]" >
                   {rupiah(dashboard.revenue)}
                 </Text>
               </View>
               <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
                 Pendapatan
+              </Text>
+            </View>
+            <View style={[styles.cardContainer, styles.cardLast]}>
+              <View className="flex flex-row">
+                <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
+                <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                  {dashboard.total.toFixed(2)}
+                </Text>
+              </View>
+              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                IKM Unit Pelayanan
+              </Text>
+            </View>
+            <View style={[styles.cardContainer, styles.cardLast]}>
+              <View className="flex flex-row">
+                <FontAwesome5 name="coins" size={30} color={"#0090a6"} />
+                <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                  {dashboard.jumlah}
+                </Text>
+              </View>
+              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                Jumlah Responden
               </Text>
             </View>
           </>
@@ -217,7 +225,7 @@ const styles = StyleSheet.create({
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: Colors.brand,
+    backgroundColor: "#0d47a1",
     alignItems: "center",
     justifyContent: "center",
     flexDirection: "row",
@@ -275,7 +283,7 @@ const styles = StyleSheet.create({
   },
   cardContainer: {
     width: "45%",
-    height: 160,
+    height: 140,
     marginVertical: 10,
     borderRadius: 7,
     padding: 20,
@@ -324,7 +332,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 10,
-    borderColor: "#008000",
+    borderColor: "#ffc300",
     borderTopWidth: 6,
   },
   cardTotal: {
@@ -341,22 +349,50 @@ const styles = StyleSheet.create({
     borderColor: "#f2416e",
     borderTopWidth: 6,
   },
+  cardTotals: {
+    backgroundColor: "white",
+    shadowColor: "white",
+    borderTopColor: "white",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
+    borderColor: "#0fd194",
+    borderTopWidth: 6,
+  },
+  cardLast: {
+    backgroundColor: "white",
+    shadowColor: "white",
+    borderTopColor: "white",
+    shadowOffset: {
+      width: 0,
+      height: 6,
+    },
+    shadowOpacity: 0.4,
+    shadowRadius: 10,
+    elevation: 10,
+    borderColor: "#0090a6",
+    borderTopWidth: 6,
+  },
   cardNumber: {
     fontSize: 35,
     fontWeight: "800",
     marginHorizontal: 12,
   },
   cardCurrency: {
-    fontSize: 17,
+    fontSize: 18,
     fontWeight: "800",
-    marginHorizontal: 12,
+    marginHorizontal: 6,
   },
   cardTextColor: {
     color: "black",
   },
   cardInfoValue: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontWeight: "500",
     color: "black",
     textAlign: "left",
   },
@@ -367,7 +403,7 @@ const styles = StyleSheet.create({
     color: "#5a3dff",
   },
   card3: {
-    color: "#008000",
+    color: "#ffc300",
   },
   card4: {
     color: "#f2416e",
