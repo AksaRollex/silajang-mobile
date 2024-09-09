@@ -11,7 +11,6 @@ import {
   Platform,
   ScrollView,
 } from "react-native";
-import { TextInput } from "react-native-paper";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { create } from "zustand";
@@ -24,7 +23,7 @@ import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Imp
 import RNPickerSelect from "react-native-picker-select";
 import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation } from "@react-navigation/native";
-
+import Icon from "react-native-vector-icons/Ionicons";
 const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
@@ -93,6 +92,14 @@ const Perusahaan = () => {
   };
   // end geo location
 
+  // Geo Location
+  useEffect(() => {
+    if (location.lat && location.long) {
+      setValue("lat", location.lat);
+      setValue("long", location.long);
+    }
+  }, [location.lat, location.long]);
+
   // fetching kota-kabupaten
   useEffect(() => {
     axios
@@ -155,7 +162,7 @@ const Perusahaan = () => {
     } else {
       setKelurahan([]); // Kosongkan data kelurahan jika tidak ada kecamatan yang dipilih
     }
-  }, [selectedKecamatan]); // `useEffect` akan dijalankan setiap kali `selectedKecamatan` berubah
+  }, [selectedKecamatan]); // useEffect akan dijalankan setiap kali selectedKecamatan berubah
 
   // fetch data detail user
   useEffect(() => {
@@ -184,66 +191,82 @@ const Perusahaan = () => {
     values: { ...userData },
   });
 
-  // Geo Location
-  useEffect(() => {
-    if (location.lat && location.long) {
-      setValue("lat", location.lat);
-      setValue("long", location.long);
-    }
-  }, [location.lat, location.long]);
+  // function update data
+  const updateUser = async () => {
+    const formData = new FormData();
+    formData.append("instansi", getValues("instansi"));
+    formData.append("pimpinan", getValues("pimpinan"));
+    formData.append("pj_mutu", getValues("pj_mutu"));
+    formData.append("alamat", getValues("alamat"));
+    formData.append("telepon", getValues("telepon"));
+    formData.append("fax", getValues("fax"));
+    formData.append("email", getValues("email"));
+    formData.append("jenis_kegiatan", getValues("jenis_kegiatan"));
+    formData.append("lat", getValues("lat"));
+    formData.append("long", getValues("long"));
+    formData.append("kab_kota_id", getValues("kab_kotas"));
+    formData.append("kecamatan_id", getValues("kecamatans"));
+    formData.append("kelurahan_id", getValues("kelurahans"));
 
+    if (file) {
+      formData.append("tanda_tangan", {
+        uri: file.uri,
+        type: file.type || "image/jpeg",
+        name: file.fileName || "tanda_tangan.jpg",
+      });
+    }
+    try {
+      const response = await axios.post("/user/company", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const { tanda_tangan } = response.data;
+      const updatedImageUrl = `http://192.168.18.14:8000${tanda_tangan}?t=${new Date().getTime()}`;
+      setImageUrl(updatedImageUrl);
+      setData(prevData => ({
+        ...prevData,
+        tanda_tangan: getValues("tanda_tangan"),
+      }));
+    } catch (error) {
+      console.error("Update failed:", error.message);
+    }
+  };
+
+  // respone setelah update
   const {
     mutate: update,
     isLoading,
     isSuccess,
-  } = useMutation(
-    () => {
-      const requestData = {
-        // tanda_tangan: getValues("tanda_tangan"),
-        instansi: getValues("instansi"),
-        pimpinan: getValues("pimpinan"),
-        pj_mutu: getValues("pj_mutu"),
-        alamat: getValues("alamat"),
-        telepon: getValues("telepon"),
-        fax: getValues("fax"),
-        email: getValues("email"),
-        jenis_kegiatan: getValues("jenis_kegiatan"),
-        lat: getValues("lat"),
-        long: getValues("long"),
-        kab_kota_id: getValues("kab_kotas"),
-        kecamatan_id: getValues("kecamatans"),
-        kelurahan_id: getValues("kelurahans"),
-      };
-      return axios
-        .put("/user/updatePerusahaan", requestData)
-        .then(res => res.data);
+  } = useMutation(updateUser, {
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Data Berhasil Di Kirim",
+      });
+      navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
+      reset();
     },
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Data Berhasil Di Kirim",
-        });
-        reset();
-        navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
-      },
-      onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-      },
+    onError: error => {
+      console.error(error.message);
+      Toast.show({
+        type: "error",
+        text1: error.message,
+      });
     },
-  );
+  });
 
   // Gambar
   const [file, setFile] = React.useState(null);
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0].uri;
-        setFile(selectedImage);
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorMessage) {
+        console.log("ImagePicker Error: ", response.errorMessage);
+      } else {
+        console.log("Chosen file:", response.assets[0]);
+        setFile(response.assets[0]);
       }
     });
   };
@@ -258,45 +281,59 @@ const Perusahaan = () => {
        showsVerticalScrollIndicator={false}> */}
       {userData ? (
         <>
-          {/* <Text style={{ color: "black" }}>Tanda Tangan</Text>
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-          </TouchableOpacity>
+          <Text style={{ color: "black" }}>Tanda Tangan</Text>
           <Controller
             control={control}
             name="tanda_tangan"
-            render={({ field: { onChange, value } }) => (
+            render={({ field: { value } }) => (
               <View style={styles.textFieldContainer}>
-                <TextField
-                  enableErrors
-                  fieldStyle={styles.textField}
-                  onChangeText={onChange}
-                  value={value}
-                />
-                {file && (
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: file }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={handleDeletePhoto}>
-                      <Text style={styles.deleteButtonText}>Hapus Gambar</Text>
+                <View
+                  style={[
+                    styles.textField,
+                    {
+                      backgroundColor: file ? "#D4D4D4" : "#fff",
+                      padding: 20,
+                      marginBottom: 20,
+                      borderRadius: 7,
+                    },
+                  ]}
+                  value={value}>
+                  {/* Tampilkan tombol "Pilih Gambar" hanya jika tidak ada gambar */}
+                  {!file && (
+                    <TouchableOpacity onPress={handleChoosePhoto}>
+                      <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
                     </TouchableOpacity>
-                  </View>
-                )}
+                  )}
+
+                  {/* Tampilkan gambar dan tombol hapus jika ada gambar */}
+                  {file && (
+                    <View style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: file.uri }} // Pastikan file.uri adalah path yang benar
+                        style={styles.imagePreview}
+                      />
+                      <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={handleDeletePhoto}>
+                        <Text style={styles.deleteButtonText}>
+                          Hapus Gambar
+                        </Text>
+                      </TouchableOpacity>
+                    </View>
+                  )}
+                </View>
               </View>
             )}
-          /> */}
-
-          {/* <Text>{JSON.stringify(userData)}</Text> */}
-
+          />
+          {/* <Text>{JSON.stringify(userData)}</Text> ->  "menampilkan data user" */}
           <Text style={{ color: "black" }}>Instansi</Text>
-
           <Controller
             control={control}
             name="instansi"
             rules={{ required: "Instansi Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                placeholderTextColor="black"
                 placeholder={userData.instansi}
                 enableErrors
                 fieldStyle={styles.textField}
@@ -308,16 +345,16 @@ const Perusahaan = () => {
             <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
           )}
           <Text style={{ color: "black" }}>Alamat</Text>
-
           <Controller
             control={control}
             name="alamat"
             rules={{ required: "Alamat Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
+                placeholderTextColor="black"
                 placeholder={userData.alamat}
                 onChangeText={onChange}
               />
@@ -326,16 +363,16 @@ const Perusahaan = () => {
             <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
           )}
           <Text style={{ color: "black" }}>Pimpinan</Text>
-
           <Controller
             control={control}
             name="pimpinan"
             rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
+                placeholderTextColor="black"
                 placeholder={userData.pimpinan}
                 onChangeText={onChange}
               />
@@ -344,17 +381,18 @@ const Perusahaan = () => {
             <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
           )}
           <Text style={{ color: "black" }}>PJ Mutu</Text>
-
           <Controller
             control={control}
             name="pj_mutu"
             rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
+              <TextField
                 // onChangeText={handleNumberChange}
-                mode="outlined"
-                style={styles.textInput}
+
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input" // Ensures number keyboard
+                placeholderTextColor="black"
                 placeholder={userData.pj_mutu}
                 onChangeText={onChange}
               />
@@ -363,53 +401,49 @@ const Perusahaan = () => {
             <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
           )}
           <Text style={{ color: "black" }}>Nomor Telepon</Text>
-
           <Controller
             control={control}
             name="telepon"
             rules={{ required: "Telepon Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
+              <TextField
                 onChangeText={onChange}
-                style={styles.textInput}
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="phone-pad"
+                placeholderTextColor="black"
                 placeholder={userData.telepon}
               />
             )}></Controller>
           {errors.telepon && (
             <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
           )}
-
           <Text style={{ color: "black" }}>Fax</Text>
-
           <Controller
             control={control}
             name="fax"
             render={({ field: { onChange, value } }) => (
-              <TextInput
+              <TextField
                 onChangeText={onChange}
-                mode="outlined"
-                style={styles.textInput}
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="phone-pad"
+                placeholderTextColor="black"
                 placeholder={userData.fax}
               />
             )}></Controller>
-          {errors.fax && (
-            <Text style={{ color: "red" }}>{errors.fax.message}</Text>
-          )}
           <Text style={{ color: "black" }}>Email</Text>
-
           <Controller
             control={control}
             name="email"
             rules={{ required: "Email Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="email-address"
                 onChangeText={onChange}
+                placeholderTextColor="black"
                 placeholder={userData.email}
               />
             )}></Controller>
@@ -422,121 +456,136 @@ const Perusahaan = () => {
             name="jenis_kegiatan"
             rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
                 onChangeText={onChange}
+                placeholderTextColor="black"
                 placeholder={userData.jenis_kegiatan}
               />
             )}></Controller>
-
+          {errors.jenis_kegiatan && (
+            <Text style={{ color: "red" }}>
+              {errors.jenis_kegiatan.message}
+            </Text>
+          )}
           <Text
             style={{ alignSelf: "center", marginBottom: 5, color: "black" }}>
             Lokasi
           </Text>
+          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
+  <Controller
+    control={control}
+    name="lat"
+    rules={{ required: "Latitude Tidak Boleh Kosong" }}
+    render={({ field: { onChange, value } }) => (
+      <TextField
+        style={{ flex: 1, backgroundColor: "white", marginRight: 10 }} // Memberikan margin antar field
+        enableErrors
+        keyboardType="text-input"
+        onChangeText={onChange}
+        value={value || location.lat}
+        placeholderTextColor="black"
+        placeholder={userData.lat}
+      />
+    )}
+  />
+  <Controller
+    control={control}
+    name="long"
+    rules={{ required: "Longitude Tidak Boleh Kosong" }}
+    render={({ field: { onChange, value } }) => (
+      <TextField
+        style={{ flex: 1, backgroundColor: "white" }} // Menggunakan flex untuk mengisi ruang
+        keyboardType="text-input"
+        onChangeText={onChange}
+        enableErrors
+        value={value || location.long}
+        placeholderTextColor="black"
+        placeholder={userData.long}
+      />
+    )}
+  />
+</View>
 
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Controller
-              control={control}
-              name="lat"
-              rules={{ required: "Latitude Tidak Boleh Kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  mode="outlined"
-                  style={{ width: "48%" }}
-                  enableErrors
-                  keyboardType="text-input"
-                  onChangeText={onChange}
-                  value={value || location.lat}
-                  placeholder={userData.lat}
-                />
-              )}></Controller>
-            <Controller
-              control={control}
-              name="long"
-              rules={{ required: "Longitude Tidak Boleh Kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  mode="outlined"
-                  style={{ width: "48%", marginHorizontal: "4%" }}
-                  keyboardType="text-input"
-                  onChangeText={onChange}
-                  enableErrors
-                  value={value || location.long}
-                  placeholder={userData.long}
-                />
-              )}></Controller>
-          </View>
           <TouchableOpacity
             style={styles.buttonLokasi}
             onPress={handleLocationPress}>
             <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
           </TouchableOpacity>
+          <Text style={styles.label}>Select Kabupaten/Kota:</Text>
           <Controller
-            name="kab_kotas" // Name of the form field
-            control={control} // Control from useForm
+            name="kab_kotas"
+            control={control}
             render={({ field: { onChange, value } }) => (
-              <RNPickerSelect
-                onValueChange={value => {
-                  onChange(value); // This will update the form value
-                  setSelectedKotaKabupaten(value); // Update your local state
-                }}
-                value={value} // Bind the value to the form value
-                items={kotaKabupaten} // Your picker items
-              />
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKotaKabupaten(value);
+                  }}
+                  value={value}
+                  items={kotaKabupaten}
+                  style={pickerSelectStyles} // Tambahkan style khusus
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
             )}
           />
-          <Text>Select Kota/Kabupaten:</Text>
-
-          {/* <RNPickerSelect
-            onValueChange={value => setSelectedKotaKabupaten(value)}
-            items={kotaKabupaten}
-          /> */}
-          {/* <Text>Selected Kota/Kabupaten ID: {selectedKotaKabupaten}</Text> */}
-          <Text>Select Kecamatan:</Text>
+          {errors.kab_kotas && (
+            <Text style={{ color: "red" }}>{errors.kab_kotas.message}</Text>
+          )}
+          <Text style={styles.label}>Select Kecamatan:</Text>
           <Controller
-            name="kecamatans" // Name of the form field
-            control={control} // Control from useForm
+            name="kecamatans"
+            control={control}
             render={({ field: { onChange, value } }) => (
-              <RNPickerSelect
-                onValueChange={value => {
-                  onChange(value); // This will update the form value
-                  setSelectedKecamatan(value); // Update your local state
-                }}
-                value={value} // Bind the value to the form value
-                items={kecamatan} // Your picker items
-              />
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKecamatan(value);
+                  }}
+                  value={value}
+                  items={kecamatan}
+                  style={pickerSelectStyles} // Tambahkan style khusus
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
             )}
           />
-          {/* <RNPickerSelect
-            onValueChange={value => setSelectedKecamatan(value)}
-            items={kecamatan}
-            placeholder={{ label: "Pilih Kecamatan...", value: null }}
-          /> */}
-          {/* <Text>Selected Kota/Kabupaten ID: {selectedKecamatan}</Text> */}
-          <Text>Select Kelurahan:</Text>
+          {errors.kecamatans && (
+            <Text style={{ color: "red" }}>{errors.kecamatans.message}</Text>
+          )}
+          <Text style={styles.label}>Select Kelurahan:</Text>
           <Controller
             name="kelurahans"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <RNPickerSelect
-                onValueChange={value => {
-                  onChange(value);
-                  setSelectedKelurahan(value);
-                }}
-                value={value}
-                items={kelurahan}
-              />
-            )}></Controller>
-          {/* <RNPickerSelect
-            onValueChange={value => setSelectedKelurahan(value)}
-            items={kelurahan}
-            placeholder={{ label: "Pilih Kelurahan...", value: null }}
-          /> */}
-          {/* {selectedKelurahan && (
-            <Text>Selected Kelurahan ID: {selectedKelurahan}</Text>
-          )} */}
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKelurahan(value);
+                  }}
+                  value={value}
+                  items={kelurahan}
+                  style={pickerSelectStyles} // Tambahkan style khusus
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
+            )}
+          />
+          {errors.kelurahans && (
+            <Text style={{ color: "red" }}>{errors.kelurahans.message}</Text>
+          )}
         </>
       ) : (
         <Text style={text}>Loading...</Text>
@@ -560,8 +609,8 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  textInput: {
-    marginBottom: 16, // Adds space between each TextInput
+  TextField: {
+    marginBottom: 16, // Adds space between each TextField
   },
   text: {
     textAlign: "center",
@@ -570,14 +619,6 @@ const styles = StyleSheet.create({
     color: "black",
     marginVertical: 10,
   },
-  textField: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    borderColor: "#ccc",
-    borderWidth: 1,
-  },
-
   submitButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -610,6 +651,70 @@ const styles = StyleSheet.create({
   },
   dropdown: {
     marginBottom: 16,
+  },
+  textField: {
+    padding: 12,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    color: "black",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+    borderRadius: 10,
+  },
+  deleteButton: {},
+  deleteButtonText: {
+    color: "red",
+    marginBottom: 15,
+  },
+  selectPhotoText: {
+    color: "black",
+  },
+  textFieldContainer: {},
+  imageContainer: {
+    alignItems: "center",
+  },
+  label: {
+    fontSize: 16,
+    marginBottom: 8,
+    color: "#333",
+  },
+  inputContainer: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 8,
+    marginBottom: 16,
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30, // untuk memberi ruang bagi icon
+  },
+  inputAndroid: {
+    fontSize: 16,
+    paddingVertical: 8,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    color: "black",
+    paddingRight: 30, // untuk memberi ruang bagi icon
+  },
+  iconContainer: {
+    top: 12,
+    right: 10,
   },
 });
 

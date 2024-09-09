@@ -58,7 +58,7 @@ const Akun = () => {
     }
 
     try {
-      const response = await axios.post("/user/updateAkun/", formData, {
+      const response = await axios.post("/user/account", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -66,7 +66,7 @@ const Akun = () => {
 
       // Setelah update berhasil, ambil URL gambar baru
       const { photo } = response.data.user;
-      const updatedImageUrl = `http://192.168.18.14:8000${photo}?t=${new Date().getTime()}`;
+      const updatedImageUrl = `http://192.168.61.240:8000${photo}?t=${new Date().getTime()}`;
       setImageUrl(updatedImageUrl);
       setData(prevData => ({ ...prevData, nama: getValues("nama") }));
     } catch (error) {

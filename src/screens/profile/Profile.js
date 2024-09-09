@@ -45,7 +45,7 @@ export default function Profile() {
 
       //gambar 
       const { photo } = response.data.user
-      const fullImageUrl = `http://10.0.2.2:8000${photo}?t=${new Date().getTime()}`;
+      const fullImageUrl = `http://192.168.61.240:8000${photo}?t=${new Date().getTime()}`;
       
 
       // Set URL gambar
