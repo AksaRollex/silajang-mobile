@@ -1,21 +1,25 @@
-import React, { useState, useEffect, useRef } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Animated, Easing } from "react-native";
+import { useUser } from "@/src/services";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
-import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
-import Icon from "react-native-vector-icons/MaterialIcons";
-import { Colors } from "react-native-ui-lib";
-import IonIcons from "react-native-vector-icons/Ionicons";
-import { Image } from "react-native-ui-lib";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-const { Navigator, Screen } = createNativeStackNavigator();
+import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Animated, Easing, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { Image } from "react-native-ui-lib";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import IonIcons from "react-native-vector-icons/Ionicons";
+import Icon from "react-native-vector-icons/MaterialIcons";
+import IndexMaster from "../master/Index";
+import User from "../master/User";
+import IndexPembayaran from "../pembayaran/Index";
+import Index from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
-import Index from "../pengujian/Index";
-import IndexPembayaran from "../pembayaran/Index";
-import IndexMaster from "../master/Index";
-import Sub from "../master/Sub";
-import { useUser } from "@/src/services";
+import Wilayah from "../master/Wilayah";
+import Pengujian from "../konfigurasi/Pengujian";
+import Website from "../konfigurasi/Website";
+
+const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -137,39 +141,48 @@ const ProfileDetail = () => {
   )
 }
 
-const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, icon, setIcon }) => {
+const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome,  setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(animatedHeight, {
       toValue: isExpanded ? 1 : 0,
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isExpanded]);
+  }, [isExpanded, animatedHeight]);
 
-  const renderIcon = () => {
-    if(icon){
-      return <IonIcons name={icon} size={20} color={isActive ? '#fff' : '#000'} />
+  const renderIcon = useMemo(() => {
+    if(ionIcon){
+      return <IonIcons name={ionIcon} size={22} color={isActive ? '#fff' : '#000'} />
+    }
+    if(fontAwesome){
+      return <FontAwesome5Icon name={fontAwesome} size={22} color={isActive ? '#fff' : '#000'} />
     }
     if(depth === 0 && hasSubItems && setIcon){
-      return <IonIcons name={setIcon} size={20} color={isActive ? '#fff' : '#000'} />
+      return <IonIcons name={setIcon} size={22} color={isActive ? '#fff' : '#000'} />
     }
     return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
-  }
+  }, [ionIcon, fontAwesome, depth, hasSubItems, isActive, setIcon]);
 
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex flex-row space-x-2 items-center p-4 ${depth > 0 ? `pl-${8 + depth * 4}` : ''} ${
+      className={`flex flex-row space-x-3 items-center py-4 ${
         isActive ? 'bg-indigo-900' : ''
       }`}
+      style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12,}}
     >
-      {renderIcon()}
-      <Text className={`flex-1 text-[17px] ${isActive ? 'text-white' : 'text-black'}`}>{label}</Text>
+      {renderIcon}
+      <Text className={`flex-1 ${isSub ? 'text-[15px]' : 'text-[18px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
-        <IonIcons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={isActive ? '#fff' : '#000'} />
+        <Animated.View style={{ transform: [{ rotate: animatedHeight.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['0deg', '180deg']
+        }) }] }}>
+          <IonIcons name="chevron-down" size={20} color={isActive ? '#fff' : '#000'} />
+        </Animated.View>
       )}
     </TouchableOpacity>
   );
@@ -177,129 +190,112 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
 
 const DrawerContent = (props) => {
   const [expandedMenus, setExpandedMenus] = useState({});
-  const [heights, setHeights] = useState({});
+  const heightRef = useRef({});
 
-  const toggleSubMenu = (menuPath) => {
-    setExpandedMenus(prev => {
-      const newState = { ...prev };
-      let current = newState;
-      for (let i = 0; i < menuPath.length - 1; i++) {
-        if (!current[menuPath[i]]) current[menuPath[i]] = {};
-        current = current[menuPath[i]];
-      }
-      current._expanded = !current._expanded;
-      return newState;
-    });
+  const toggleSubMenu = useCallback((menuName) => {
+    setExpandedMenus(prev => ({
+      ...prev,
+      [menuName]: !prev[menuName]
+    }));
+  }, []);
 
-    const pathKey = menuPath.join('-');
-    const isCurrentlyExpanded = isExpanded(menuPath);
+  const isExpanded = useCallback((menuName) => {
+    return !!expandedMenus[menuName];
+  }, [expandedMenus]);
 
-    Animated.timing(heights[pathKey], {
-      toValue: isCurrentlyExpanded ? 0 : getSubMenuHeight(menuPath), 
+  const getSubMenuHeight = useCallback((item) => {
+    if (!item.subItems) return 0;
+    return 50 * item.subItems.length;
+  }, []);
+
+  const animateHeight = useCallback((menuName, toValue) => {
+    if (!heightRef.current[menuName]) {
+      heightRef.current[menuName] = new Animated.Value(0);
+    }
+    Animated.timing(heightRef.current[menuName], {
+      toValue,
       duration: 300,
       easing: Easing.ease,
       useNativeDriver: false,
     }).start();
-};
+  }, []);
 
+  const renderMenuItem = useCallback((item) => {
+    const expanded = isExpanded(item.name);
+    const hasSubItems = item.subItems && item.subItems.length > 0;
 
-  const isExpanded = (menuPath) => {
-    let current = expandedMenus;
-    for (let key of menuPath) {
-      if (!current[key]) return false;
-      current = current[key];
-    }
-    return true;
-  }
-
-  const getSubMenuHeight = (menuPath) => {
-    const visibleSubItemCount = getVisibleSubItemCount(menuPath);
-    return visibleSubItemCount * 50; // Sesuaikan nilai 50 sesuai dengan tinggi item Anda
-  };
-  
-
-  const getVisibleSubItemCount = (menuPath) => {
-    let current = customDrawerItems;
-    for (let key of menuPath) {
-      current = current.find(item => item.name === key)?.subItems;
-      if (!current) return 0;
-    }
-    return current.length;
-  }
-
-  const renderMenuItem = (item, depth = 0, path = []) => {
-    const currentPath = [...path, item.name];
-    const expanded = isExpanded(currentPath);
-    const pathKey = currentPath.join('-');
-
-    // Initialize height Animated.Value if not already set
     useEffect(() => {
-      if (!heights[pathKey]) {
-        setHeights(prev => ({ ...prev, [pathKey]: new Animated.Value(expanded ? getSubMenuHeight(currentPath) : 0) }));
+      if (expanded) {
+        animateHeight(item.name, getSubMenuHeight(item));
+      } else {
+        animateHeight(item.name, 0);
       }
-    }, [pathKey]);
+    }, [expanded, item]);
+
+    const handlePress = () => {
+      if (hasSubItems) {
+        toggleSubMenu(item.name);
+      } else if (item.screen) {
+        props.navigation.navigate(item.screen);
+      }
+    }
 
     return (
       <React.Fragment key={item.name}>
         <CustomDrawerItem
           label={item.name}
-          onPress={() => {
-            if (item.subItems) {
-              toggleSubMenu(currentPath);
-            } else if (item.screen) {
-              props.navigation.navigate(item.screen);
-            }
-          }}
-          depth={depth}
+          onPress={handlePress}
+          depth={0}
           isExpanded={expanded}
           isActive={props.state.routeNames[props.state.index] === item.screen}
-          hasSubItems={!!item.subItems}
-          icon={item.icon}
+          hasSubItems={hasSubItems}
+          ionIcon={item.ionIcon}
+          fontAwesome={item.fontAwesome}
           setIcon={item.setIcon}
         />
-        {item.subItems && (
+        {hasSubItems && (
           <Animated.View
             style={{
-              height: heights[pathKey],
+              height: heightRef.current[item.name] || new Animated.Value(0),
               overflow: 'hidden',
             }}
           >
-            {item.subItems.map(subItem => renderMenuItem(subItem, depth + 1, currentPath))}
+            {item.subItems.map(subItem => (
+              <CustomDrawerItem
+                key={subItem.name}
+                label={subItem.name}
+                onPress={() => props.navigation.navigate(subItem.screen)}
+                isActive={props.state.routeNames[props.state.index] === subItem.screen}
+                depth={1}
+                isSub={true}
+                hasSubItems={false}
+              />
+            ))}
           </Animated.View>
         )}
       </React.Fragment>
     );
-};
+  }, [isExpanded, toggleSubMenu, animateHeight, getSubMenuHeight, props.navigation, props.state.index, props.state.routeNames]);
 
 
   const customDrawerItems = [
-    { name: 'Home', screen: 'Home', icon: 'home' },
-    { name: 'Profile', screen: 'Profile', icon: 'person' },
+    { name: 'Home', screen: 'Home', ionIcon: 'home' },
+    { name: 'Profile', screen: 'Profile', ionIcon: 'person' },
     {
       name: 'Master',
       setIcon: 'grid',
       subItems: [
-        {
-          name: 'Master',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-        {
-          name: 'User',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-        {
-          name: 'Wilayah',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
+          { name: 'Master', screen: 'IndexMaster' },
+          { name: 'User', screen: 'User' },
+          { name: 'Wilayah', screen: 'Wilayah' },
+      ],
+    },
+    {
+      name: 'Konfigurasi',
+      fontAwesome: 'wrench',
+      subItems: [
+          { name: 'Pengujian', screen: 'Pengujian' },
+          { name: 'Website', screen: 'Website' }
       ],
     },
   ];
@@ -328,7 +324,11 @@ export default function MainScreen() {
       >
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
-        <Drawer.Screen name="Sub" component={Sub} />
+        <Drawer.Screen name="IndexMaster" component={IndexMaster} />
+        <Drawer.Screen name="User" component={User} />
+        <Drawer.Screen name="Wilayah" component={Wilayah} />
+        <Drawer.Screen name="Pengujian" component={Pengujian} />
+        <Drawer.Screen name="Website" component={Website} />
       </Drawer.Navigator>
     </NavigationContainer>
   );
