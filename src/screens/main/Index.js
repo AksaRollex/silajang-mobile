@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback, useMemo } from "react";
 import { Text, View, StyleSheet, TouchableOpacity, Animated, Easing } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
@@ -140,15 +140,15 @@ const ProfileDetail = () => {
 const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, icon, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(animatedHeight, {
       toValue: isExpanded ? 1 : 0,
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isExpanded]);
+  }, [isExpanded, animatedHeight]);
 
-  const renderIcon = () => {
+  const renderIcon = useMemo(() => {
     if(icon){
       return <IonIcons name={icon} size={20} color={isActive ? '#fff' : '#000'} />
     }
@@ -156,7 +156,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       return <IonIcons name={setIcon} size={20} color={isActive ? '#fff' : '#000'} />
     }
     return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
-  }
+  }, [icon, depth, hasSubItems, isActive, setIcon]);
 
 
   return (
@@ -166,10 +166,15 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
         isActive ? 'bg-indigo-900' : ''
       }`}
     >
-      {renderIcon()}
+      {renderIcon}
       <Text className={`flex-1 text-[17px] ${isActive ? 'text-white' : 'text-black'}`}>{label}</Text>
       {hasSubItems && (
-        <IonIcons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={isActive ? '#fff' : '#000'} />
+        <Animated.View style={{ transform: [{ rotate: animatedHeight.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['0deg', '180deg']
+        }) }] }}>
+          <IonIcons name="chevron-down" size={20} color={isActive ? '#fff' : '#000'} />
+        </Animated.View>
       )}
     </TouchableOpacity>
   );
@@ -177,9 +182,9 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
 
 const DrawerContent = (props) => {
   const [expandedMenus, setExpandedMenus] = useState({});
-  const [heights, setHeights] = useState({});
+  const heightRef = useRef({});
 
-  const toggleSubMenu = (menuPath) => {
+  const toggleSubMenu = useCallback((menuPath) => {
     setExpandedMenus(prev => {
       const newState = { ...prev };
       let current = newState;
@@ -187,90 +192,90 @@ const DrawerContent = (props) => {
         if (!current[menuPath[i]]) current[menuPath[i]] = {};
         current = current[menuPath[i]];
       }
-      current._expanded = !current._expanded;
+      current[menuPath[menuPath.length - 1]] = !current[menuPath[menuPath.length - 1]];
       return newState;
     });
+  }, []);
 
-    const pathKey = menuPath.join('-');
-    const isCurrentlyExpanded = isExpanded(menuPath);
-
-    Animated.timing(heights[pathKey], {
-      toValue: isCurrentlyExpanded ? 0 : getSubMenuHeight(menuPath), 
-      duration: 300,
-      easing: Easing.ease,
-      useNativeDriver: false,
-    }).start();
-};
-
-
-  const isExpanded = (menuPath) => {
+  const isExpanded = useCallback((menuPath) => {
     let current = expandedMenus;
     for (let key of menuPath) {
       if (!current[key]) return false;
       current = current[key];
     }
-    return true;
-  }
+    return !!current;
+  }, [expandedMenus]);
 
-  const getSubMenuHeight = (menuPath) => {
-    const visibleSubItemCount = getVisibleSubItemCount(menuPath);
-    return visibleSubItemCount * 50; // Sesuaikan nilai 50 sesuai dengan tinggi item Anda
-  };
+  const getSubMenuHeight = useCallback((item) => {
+    if (!item.subItems && !item.subMenuItems) return 0;
+    const subItems = item.subItems || [];
+    const subMenuItems = item.subMenuItems || [];
+    return 50 * (subItems.length + subMenuItems.length);
+  }, []);
   
 
-  const getVisibleSubItemCount = (menuPath) => {
-    let current = customDrawerItems;
-    for (let key of menuPath) {
-      current = current.find(item => item.name === key)?.subItems;
-      if (!current) return 0;
+  const animateHeight = useCallback((pathKey, toValue) => {
+    if (!heightRef.current[pathKey]) {
+      heightRef.current[pathKey] = new Animated.Value(0);
     }
-    return current.length;
-  }
+    Animated.timing(heightRef.current[pathKey], {
+      toValue,
+      duration: 300,
+      easing: Easing.ease,
+      useNativeDriver: false,
+    }).start();
+  }, []);
 
-  const renderMenuItem = (item, depth = 0, path = []) => {
+  const renderMenuItem = useCallback((item, depth = 0, path = []) => {
     const currentPath = [...path, item.name];
-    const expanded = isExpanded(currentPath);
     const pathKey = currentPath.join('-');
+    const expanded = isExpanded(currentPath);
+    const subItems = item.subItems || [];
+    const subMenuItems = item.subMenuItems || [];
+    const hasSubItems = subItems.length > 0 || subMenuItems.length > 0;
 
-    // Initialize height Animated.Value if not already set
     useEffect(() => {
-      if (!heights[pathKey]) {
-        setHeights(prev => ({ ...prev, [pathKey]: new Animated.Value(expanded ? getSubMenuHeight(currentPath) : 0) }));
+      if (expanded) {
+        animateHeight(pathKey, getSubMenuHeight(item));
+      } else {
+        animateHeight(pathKey, 0);
       }
-    }, [pathKey]);
+    }, [expanded, pathKey, item, animateHeight, getSubMenuHeight]);
+
+    const handlePress = () => {
+      if(subItems.length || subMenuItems.length){
+        toggleSubMenu(currentPath);
+      } else if (item.screen) {
+        props.navigation.navigate(item.screen);
+      }
+    }
 
     return (
-      <React.Fragment key={item.name}>
+      <React.Fragment key={pathKey}>
         <CustomDrawerItem
           label={item.name}
-          onPress={() => {
-            if (item.subItems) {
-              toggleSubMenu(currentPath);
-            } else if (item.screen) {
-              props.navigation.navigate(item.screen);
-            }
-          }}
+          onPress={handlePress}
           depth={depth}
           isExpanded={expanded}
           isActive={props.state.routeNames[props.state.index] === item.screen}
-          hasSubItems={!!item.subItems}
+          hasSubItems={!!(subItems.length || subMenuItems.length)}
           icon={item.icon}
           setIcon={item.setIcon}
         />
-        {item.subItems && (
+        {(subItems.length > 0 || subMenuItems.length > 0) && (
           <Animated.View
             style={{
-              height: heights[pathKey],
+              height: heightRef.current[pathKey] || new Animated.Value(0),
               overflow: 'hidden',
             }}
           >
-            {item.subItems.map(subItem => renderMenuItem(subItem, depth + 1, currentPath))}
+          {subItems.map(subItem => renderMenuItem(subItem, depth + 1, currentPath))}
+          {subMenuItems.map(subMenuItem => renderMenuItem(subMenuItem, depth + 1, currentPath))}          
           </Animated.View>
         )}
       </React.Fragment>
     );
-};
-
+  }, [isExpanded, toggleSubMenu, animateHeight, getSubMenuHeight, props.navigation, props.state.index, props.state.routeNames]);
 
   const customDrawerItems = [
     { name: 'Home', screen: 'Home', icon: 'home' },
@@ -280,24 +285,23 @@ const DrawerContent = (props) => {
       setIcon: 'grid',
       subItems: [
         {
-          name: 'Master',
-          subItems: [
+          name: 'Master Management',
+          subMenuItems: [
             { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
+            { name: 'Sub Master 2', screen: 'SubMaster2' },
           ]
         },
+      ],
+    },
+    {
+      name: 'Mastr',
+      setIcon: 'grid',
+      subItems: [
         {
-          name: 'User',
-          subItems: [
+          name: 'Master Management',
+          subMenuItems: [
             { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-        {
-          name: 'Wilayah',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
+            { name: 'Sub Master 2', screen: 'SubMaster2' },
           ]
         },
       ],
