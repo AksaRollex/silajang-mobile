@@ -71,25 +71,25 @@ export default function MainScreen() {
             ),
           }}
         />
-        <Tab.Screen
-          name="TitikUji"
-          component={TitikUji}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Titik Uji
-                </Text>
-              </View>
-            ),
-          }}
-        />
+          <Tab.Screen
+            name="TitikUji"
+            component={TitikUji}
+            options={{
+              tabBarIcon: ({ focused }) => (
+                <View>
+                  <Icon
+                    name="user"
+                    size={24}
+                    color={focused ? "#16247d" : "#111"}
+                  />
+                  <Text
+                    style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
+                    Titik Uji
+                  </Text>
+                </View>
+              ),
+            }}
+          />
         <Tab.Screen
           name="Parameter"
           component={Parameter}
