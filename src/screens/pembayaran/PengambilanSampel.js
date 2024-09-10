@@ -19,7 +19,7 @@ export default function PengambilanSampel() {
       <View style={styles.searchRow}>
         <View style={styles.search}>
           <Searchbar
-            placeholder="Search"
+            placeholder="Search" 
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={styles.searchbar}
@@ -143,8 +143,8 @@ const styles = StyleSheet.create({
     marginStart: "2%",
   },
   searchIcon: {
-    width: 24,
-    height: 24,
+    width: 17,
+    height: 17,
   },
   container: {
     flex: 1,
@@ -168,6 +168,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     marginRight: 10,
+    // height: 45,
+    // paddingVertical: 
   },
   buttonSearch: {
     backgroundColor: "#0D47A1", 
@@ -239,7 +241,7 @@ const styles = StyleSheet.create({
   },
   yearpick: {
     marginTop: 25,
-    // marginStart: 270,/
+    marginStart: 270,
     backgroundColor: "white",
     height: 31,
     borderRadius: 5,
