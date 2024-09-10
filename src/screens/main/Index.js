@@ -146,15 +146,15 @@ const ProfileDetail = () => {
 const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, icon, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
-  React.useEffect(() => {
+  useEffect(() => {
     Animated.timing(animatedHeight, {
       toValue: isExpanded ? 1 : 0,
       duration: 300,
       useNativeDriver: false,
     }).start();
-  }, [isExpanded]);
+  }, [isExpanded, animatedHeight]);
 
-  const renderIcon = () => {
+  const renderIcon = useMemo(() => {
     if(icon){
       return <IonIcons name={icon} size={20} color={isActive ? '#fff' : '#000'} />
     }
@@ -162,7 +162,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       return <IonIcons name={setIcon} size={20} color={isActive ? '#fff' : '#000'} />
     }
     return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
-  }
+  }, [icon, depth, hasSubItems, isActive, setIcon]);
 
 
   return (
@@ -172,10 +172,15 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
         isActive ? 'bg-indigo-900' : ''
       }`}
     >
-      {renderIcon()}
+      {renderIcon}
       <Text className={`flex-1 text-[17px] ${isActive ? 'text-white' : 'text-black'}`}>{label}</Text>
       {hasSubItems && (
-        <IonIcons name={isExpanded ? 'chevron-up' : 'chevron-down'} size={20} color={isActive ? '#fff' : '#000'} />
+        <Animated.View style={{ transform: [{ rotate: animatedHeight.interpolate({
+          inputRange: [0, 1],
+          outputRange: ['0deg', '180deg']
+        }) }] }}>
+          <IonIcons name="chevron-down" size={20} color={isActive ? '#fff' : '#000'} />
+        </Animated.View>
       )}
     </TouchableOpacity>
   );
