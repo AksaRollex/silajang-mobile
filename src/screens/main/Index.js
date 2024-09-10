@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Text, View, StyleSheet, TouchableOpacity, Animated, Easing } from "react-native";
+import { Text, View, StyleSheet, TouchableOpacity, Modal, Animated, Easing, TouchableHighlight } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { createDrawerNavigator, DrawerContentScrollView, DrawerItemList } from "@react-navigation/drawer";
@@ -16,6 +16,12 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexMaster from "../master/Index";
 import Sub from "../master/Sub";
 import { useUser } from "@/src/services";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import SweetAlert from 'react-native-sweet-alert';
+import axios from "@/src/libs/axios";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -175,142 +181,263 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
   );
 };
 
-const DrawerContent = (props) => {
-  const [expandedMenus, setExpandedMenus] = useState({});
-  const [heights, setHeights] = useState({});
+  const DrawerContent = (props) => {
+    const [expandedMenus, setExpandedMenus] = useState({});
+    const [heights, setHeights] = useState({});
+    const queryClient = useQueryClient();
 
-  const toggleSubMenu = (menuPath) => {
-    setExpandedMenus(prev => {
-      const newState = { ...prev };
-      let current = newState;
-      for (let i = 0; i < menuPath.length - 1; i++) {
-        if (!current[menuPath[i]]) current[menuPath[i]] = {};
-        current = current[menuPath[i]];
-      }
-      current._expanded = !current._expanded;
-      return newState;
-    });
-
-    const pathKey = menuPath.join('-');
-    const isCurrentlyExpanded = isExpanded(menuPath);
-
-    Animated.timing(heights[pathKey], {
-      toValue: isCurrentlyExpanded ? 0 : getSubMenuHeight(menuPath), 
-      duration: 300,
-      easing: Easing.ease,
-      useNativeDriver: false,
-    }).start();
-};
-
-
-  const isExpanded = (menuPath) => {
-    let current = expandedMenus;
-    for (let key of menuPath) {
-      if (!current[key]) return false;
-      current = current[key];
-    }
-    return true;
-  }
-
-  const getSubMenuHeight = (menuPath) => {
-    const visibleSubItemCount = getVisibleSubItemCount(menuPath);
-    return visibleSubItemCount * 50; // Sesuaikan nilai 50 sesuai dengan tinggi item Anda
-  };
-  
-
-  const getVisibleSubItemCount = (menuPath) => {
-    let current = customDrawerItems;
-    for (let key of menuPath) {
-      current = current.find(item => item.name === key)?.subItems;
-      if (!current) return 0;
-    }
-    return current.length;
-  }
-
-  const renderMenuItem = (item, depth = 0, path = []) => {
-    const currentPath = [...path, item.name];
-    const expanded = isExpanded(currentPath);
-    const pathKey = currentPath.join('-');
-
-    // Initialize height Animated.Value if not already set
-    useEffect(() => {
-      if (!heights[pathKey]) {
-        setHeights(prev => ({ ...prev, [pathKey]: new Animated.Value(expanded ? getSubMenuHeight(currentPath) : 0) }));
-      }
-    }, [pathKey]);
-
-    return (
-      <React.Fragment key={item.name}>
-        <CustomDrawerItem
-          label={item.name}
-          onPress={() => {
-            if (item.subItems) {
-              toggleSubMenu(currentPath);
-            } else if (item.screen) {
-              props.navigation.navigate(item.screen);
-            }
-          }}
-          depth={depth}
-          isExpanded={expanded}
-          isActive={props.state.routeNames[props.state.index] === item.screen}
-          hasSubItems={!!item.subItems}
-          icon={item.icon}
-          setIcon={item.setIcon}
-        />
-        {item.subItems && (
-          <Animated.View
+    const Logout = () => {
+      const [modalVisible, setModalVisible] = useState(false);
+      const queryClient = useQueryClient();
+    
+      const { mutate: logout } = useMutation(
+        () => axios.post("/auth/logout"),
+        {
+          onSuccess: async () => {
+            await AsyncStorage.removeItem("@auth-token");
+            Toast.show({
+              type: "success",
+              text1: "Logout Berhasil",
+            });
+            queryClient.invalidateQueries(["auth", "user"]);
+          },
+          onError: () => {
+            Toast.show({
+              type: "error",
+              text1: "Gagal Logout",
+            });
+          },
+        }
+      );
+    
+      const handleLogout = () => {
+        setModalVisible(true); // Tampilkan modal saat tombol logout diklik
+      };
+    
+      const confirmLogout = () => {
+        setModalVisible(false); // Tutup modal setelah logout dikonfirmasi
+        logout();
+      };
+    
+      return (
+        <View className="flex-1 justify-end mb-3">
+          <View className="px-2 mx-2 flex-row items-center border-t-[1px] text-black pt-1"></View>
+          <TouchableHighlight
+            onPress={handleLogout}
+            underlayColor="#f8c1c8"
             style={{
-              height: heights[pathKey],
-              overflow: 'hidden',
+              borderRadius: 5,
+              paddingVertical: 15,
+              paddingHorizontal: 15,
+              marginHorizontal: 13,
+              marginTop: 8,
             }}
           >
-            {item.subItems.map(subItem => renderMenuItem(subItem, depth + 1, currentPath))}
-          </Animated.View>
-        )}
-      </React.Fragment>
+            <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+              <IonIcons name="log-out" size={25} color="#f2416e" />
+              <Text className="font-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
+                Logout
+              </Text>
+            </View>
+          </TouchableHighlight>
+    
+          {/* Modal for confirmation */}
+          <Modal
+            transparent={true}
+            visible={modalVisible}
+            animationType="fade"
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View style={{
+              flex: 1,
+              justifyContent: 'center',
+              alignItems: 'center',
+              backgroundColor: 'rgba(0, 0, 0, 0.5)', // Background semi-transparan
+            }}>
+              <View style={{
+                width: 300,
+                padding: 20,
+                backgroundColor: 'white',
+                borderRadius: 10,
+                alignItems: 'center',
+              }}>
+                <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 15 }}>Konfirmasi Logout</Text>
+                
+                {/* Garis pembatas */}
+                <View style={{
+                  width: '100%',
+                  borderBottomWidth: 1,
+                  borderBottomColor: '#dedede',
+                  marginBottom: 15,
+                }} />
+                
+                <Text style={{ fontSize: 16, marginBottom: 25 }}>Apakah Anda yakin ingin keluar?</Text>
+                <View style={{ flexDirection: 'row' }}>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 20,
+                      backgroundColor: '#dedede',
+                      borderRadius: 5,
+                      marginRight: 10,
+                    }}
+                  >
+                    <Text style={{ color: 'black' }}>Batal</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={confirmLogout}
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 20,
+                      backgroundColor: '#f2416e',
+                      borderRadius: 5,
+                    }}
+                  >
+                    <Text style={{ color: 'white' }}>Ya, Logout</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+        </View>
+      );
+    };
+    
+    
+  
+    const toggleSubMenu = (menuPath) => {
+      setExpandedMenus(prev => {
+        const newState = { ...prev };
+        let current = newState;
+        for (let i = 0; i < menuPath.length - 1; i++) {
+          if (!current[menuPath[i]]) current[menuPath[i]] = {};
+          current = current[menuPath[i]];
+        }
+        current._expanded = !current._expanded;
+        return newState;
+      });
+  
+      const pathKey = menuPath.join('-');
+      const isCurrentlyExpanded = isExpanded(menuPath);
+  
+      Animated.timing(heights[pathKey], {
+        toValue: isCurrentlyExpanded ? 0 : getSubMenuHeight(menuPath),
+        duration: 300,
+        easing: Easing.ease,
+        useNativeDriver: false,
+      }).start();
+    };
+  
+    const isExpanded = (menuPath) => {
+      let current = expandedMenus;
+      for (let key of menuPath) {
+        if (!current[key]) return false;
+        current = current[key];
+      }
+      return true;
+    }
+  
+    const getSubMenuHeight = (menuPath) => {
+      const visibleSubItemCount = getVisibleSubItemCount(menuPath);
+      return visibleSubItemCount * 50; // Sesuaikan nilai 50 sesuai dengan tinggi item Anda
+    };
+  
+    const getVisibleSubItemCount = (menuPath) => {
+      let current = customDrawerItems;
+      for (let key of menuPath) {
+        current = current.find(item => item.name === key)?.subItems;
+        if (!current) return 0;
+      }
+      return current.length;
+    }
+  
+    const renderMenuItem = (item, depth = 0, path = []) => {
+      const currentPath = [...path, item.name];
+      const expanded = isExpanded(currentPath);
+      const pathKey = currentPath.join('-');
+  
+      useEffect(() => {
+        if (!heights[pathKey]) {
+          setHeights(prev => ({ ...prev, [pathKey]: new Animated.Value(expanded ? getSubMenuHeight(currentPath) : 0) }));
+        }
+      }, [pathKey]);
+  
+      return (
+        <React.Fragment key={item.name}>
+          <CustomDrawerItem
+            label={item.name}
+            onPress={() => {
+              if (item.subItems) {
+                toggleSubMenu(currentPath);
+              } else if (item.screen) {
+                props.navigation.navigate(item.screen);
+              }
+            }}
+            depth={depth}
+            isExpanded={expanded}
+            isActive={props.state.routeNames[props.state.index] === item.screen}
+            hasSubItems={!!item.subItems}
+            icon={item.icon}
+            setIcon={item.setIcon}
+          />
+          {item.subItems && (
+            <Animated.View
+              style={{
+                height: heights[pathKey],
+                overflow: 'hidden',
+              }}
+            >
+              {item.subItems.map(subItem => renderMenuItem(subItem, depth + 1, currentPath))}
+            </Animated.View>
+          )}
+        </React.Fragment>
+      );
+    };
+  
+    const customDrawerItems = [
+      { name: 'Home', screen: 'Home', icon: 'home' },
+      { name: 'Profile', screen: 'Profile', icon: 'person' },
+      {
+        name: 'Master',
+        setIcon: 'grid',
+        subItems: [
+          {
+            name: 'Master',
+            subItems: [
+              { name: 'Sub', screen: 'Sub' },
+              { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
+            ]
+          },
+          {
+            name: 'User',
+            subItems: [
+              { name: 'Sub', screen: 'Sub' },
+              { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
+            ]
+          },
+          {
+            name: 'Wilayah',
+            subItems: [
+              { name: 'Sub', screen: 'Sub' },
+              { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
+            ]
+          },
+        ],
+      },
+    ];
+  
+    return (
+      <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
+        <ProfileDetail />
+        <View style={{ flex: 1 }}>
+          {customDrawerItems.map(item => renderMenuItem(item))}
+        </View>
+        <Logout />
+      </DrawerContentScrollView>
     );
-};
-
-
-  const customDrawerItems = [
-    { name: 'Home', screen: 'Home', icon: 'home' },
-    { name: 'Profile', screen: 'Profile', icon: 'person' },
-    {
-      name: 'Master',
-      setIcon: 'grid',
-      subItems: [
-        {
-          name: 'Master',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-        {
-          name: 'User',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-        {
-          name: 'Wilayah',
-          subItems: [
-            { name: 'Sub', screen: 'Sub' },
-            { name: 'Sub Sub Menu 2', screen: 'SubSubMenu2' },
-          ]
-        },
-      ],
-    },
-  ];
-
-  return (
-    <DrawerContentScrollView {...props} className="flex-1">
-      <ProfileDetail />
-      {customDrawerItems.map(item => renderMenuItem(item))}
-    </DrawerContentScrollView>
-  );
-};
+  };
+  
 
 export default function MainScreen() {
   return (
