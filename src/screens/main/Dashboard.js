@@ -46,14 +46,24 @@ const Dashboard = () => {
   // })
 
   useEffect(() => {
+    user.role.name == 'customer' ? 
     axios
-      .post("/dashboard/" + user.role.name, { tahun: tahun })
+      .post("/dashboard/" + 'customer', { tahun: tahun })
       .then(response => {
         setDashboard(response.data);
       })
       .catch(error => {
         console.error("error fetching data dashboard ", error);
-      });
+      })
+      :
+      axios
+      .post("/dashboard/" + 'admin', { tahun: tahun })
+      .then(response => {
+        setDashboard(response.data);
+      })
+      .catch(error => {
+        console.error("error fetching data dashboard ", error);
+      })
   }, []);
 
   return (
@@ -104,94 +114,167 @@ const Dashboard = () => {
         showsVerticalScrollIndicator={false}>
         {dashboard ? (
           <>
-            <View style={[styles.cardContainer, styles.cardNew]}>
-              <View style={styles.row}>
-                <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
-                <Text style={[styles.cardNumber, styles.card1]}>
-                  {dashboard.customers}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Customers
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardProcess]}>
-              <View style={styles.row}>
-                <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
-                <Text style={[styles.cardNumber, styles.card2]}>
-                  {dashboard.allSampels}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Total Permohonan
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardCompleted]}>
-              <View style={styles.row}>
-                <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
-                <Text style={[styles.cardNumber, styles.card3]}>
-                  {dashboard.newSampels}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Persetujuan Permohonan
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardTotal]}>
-              <View style={styles.row}>
-                <Fontisto name="laboratory" size={30} color={"#f2416e"} />
-                <Text style={[styles.cardNumber, styles.card4]}>
-                  {dashboard.undoneSampels}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Sampel Belum Dianalisa
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardTotal]}>
-              <View style={styles.row}>
-                <IonIcons name="document-text" size={30} color={"#f2416e"} />
-                <Text style={[styles.cardNumber, styles.card4]}>
-                  {dashboard.unverifSampels}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Dokumen Belum DIverifikasi
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardTotals]}>
-              <View>
-                <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
-                <Text style={[styles.cardCurrency]} className="text-[#0fd194]" >
-                  {rupiah(dashboard.revenue)}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Pendapatan
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardLast]}>
-              <View className="flex flex-row">
-                <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
-                <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
-                  {dashboard.total.toFixed(2)}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                IKM Unit Pelayanan
-              </Text>
-            </View>
-            <View style={[styles.cardContainer, styles.cardLast]}>
-              <View className="flex flex-row">
-                <FontAwesome5 name="coins" size={30} color={"#0090a6"} />
-                <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
-                  {dashboard.jumlah}
-                </Text>
-              </View>
-              <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                Jumlah Responden
-              </Text>
-            </View>
+            {user.role.name === 'customer' ? (
+              <>
+                <View style={[styles.cardContainer, styles.cardNew]}>
+                  <View style={styles.row}>
+                    <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
+                    <Text style={[styles.cardNumber, styles.card1]}>
+                      {dashboard.permohonanBaru}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Permohonan Baru
+                  </Text>
+                </View>
+
+                <View style={[styles.cardContainer, styles.cardNew]}>
+                  <View style={styles.row}>
+                    <FontAwesome5 name="leaf" size={30} color={"#828cff"} />
+                    <Text style={[styles.cardNumber, styles.card1]}>
+                      {dashboard.permohonanDiproses}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Permohonan Diproses
+                  </Text>
+                </View>
+
+                <View style={[styles.cardContainer, styles.cardNew]}>
+                  <View style={styles.row}>
+                    <FontAwesome5 name="book-open" size={32} color={"#828cff"} />
+                    <Text style={[styles.cardNumber, styles.card1]}>
+                      {dashboard.permohonanSelesai}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Permohonan Selesai
+                  </Text>
+                </View>
+
+                <View style={[styles.cardContainer, styles.cardNew]}>
+                  <View style={styles.row}>
+                    <FontAwesome5 name="wallet" size={32} color={"#828cff"} />
+                    <Text style={[styles.cardNumber, styles.card1]}>
+                      {dashboard.permohonanTotal}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Total Permohonan
+                  </Text>
+                </View>
+              </> 
+            ) : (
+              <>
+                {['admin', 'kepala-upt'].includes(user.role.name) && (
+                <View style={[styles.cardContainer, styles.cardNew]}>
+                  <View style={styles.row}>
+                    <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
+                    <Text style={[styles.cardNumber, styles.card1]}>
+                      {dashboard.customers}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Customers
+                  </Text>
+                </View> 
+                )}
+
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && ( 
+                <View style={[styles.cardContainer, styles.cardProcess]}>
+                  <View style={styles.row}>
+                    <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
+                    <Text style={[styles.cardNumber, styles.card2]}>
+                      {dashboard.allSampels}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Total Permohonan
+                  </Text>
+                </View> 
+                )}
+
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                <View style={[styles.cardContainer, styles.cardCompleted]}>
+                  <View style={styles.row}>
+                    <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
+                    <Text style={[styles.cardNumber, styles.card3]}>
+                      {dashboard.newSampels}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Persetujuan Permohonan
+                  </Text>
+                </View>
+                )}
+
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                <View style={[styles.cardContainer, styles.cardTotal]}>
+                  <View style={styles.row}>
+                    <Fontisto name="laboratory" size={30} color={"#f2416e"} />
+                    <Text style={[styles.cardNumber, styles.card4]}>
+                      {dashboard.undoneSampels}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Sampel Belum Dianalisa
+                  </Text>
+                </View>
+                )}
+
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                <View style={[styles.cardContainer, styles.cardTotal]}>
+                  <View style={styles.row}>
+                    <IonIcons name="document-text" size={30} color={"#f2416e"} />
+                    <Text style={[styles.cardNumber, styles.card4]}>
+                      {dashboard.unverifSampels}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Dokumen Belum Diverifikasi
+                  </Text>
+                </View>
+                )}
+
+                {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
+                <View style={[styles.cardContainer, styles.cardTotals]}>
+                  <View>
+                    <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
+                    <Text style={[styles.cardCurrency]} className="text-[#0fd194]" >
+                      {rupiah(dashboard.revenue)}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Pendapatan
+                  </Text>
+                </View>
+                )}
+
+                <View style={[styles.cardContainer, styles.cardLast]}>
+                  <View className="flex flex-row">
+                    <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
+                    <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                      {dashboard.total?.toFixed(2)}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    IKM Unit Pelayanan
+                  </Text>
+                </View>
+
+                <View style={[styles.cardContainer, styles.cardLast]}>
+                  <View className="flex flex-row">
+                    <FontAwesome5 name="coins" size={30} color={"#0090a6"} />
+                    <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                      {dashboard.jumlah}
+                    </Text>
+                  </View>
+                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                    Jumlah Responden
+                  </Text>
+                </View>
+              </>
+            )}
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>

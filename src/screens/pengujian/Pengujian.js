@@ -1,12 +1,20 @@
 import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image } from "react-native";
 import React, { useState } from "react";
 import { Colors } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
+import { List } from 'react-native-paper';
+import { useNavigation } from '@react-navigation/native';
+import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 import Permohonan from "./Permohonan";
 import TrackingPengujian from "./TrackingPengujian";
 
 export default function Pengujian() {
+  const navigation = useNavigation();
   const [activeComponent, setActiveComponent] = useState(null);
+  const { data: user } = useUser();
 
   let RenderedComponent;
   switch (activeComponent) {
@@ -22,31 +30,129 @@ export default function Pengujian() {
   }
 
   return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.contentContainer}>
-        <View style={styles.headerContainer}>
-          <Image
-            source={require("@/assets/images/logo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.headerText}>SI - LAJANG</Text>
+      user.role.name === 'customer' ? (
+        <View style={styles.container}>
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            <View style={styles.headerContainer}>
+              <Image
+                source={require("@/assets/images/logo.png")}
+                style={styles.logo}
+              />
+              <Text style={styles.headerText}>SI - LAJANG</Text>
+            </View>
+            {/* Render the active component here */}
+            <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
+          </ScrollView>
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setActiveComponent("Permohonan")}>
+              <Text style={styles.buttonText}>Permohonan</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={() => setActiveComponent("Tracking Pengujian")}>
+              <Text style={styles.buttonText}>Tracking Pengujian</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-        {/* Render the active component here */}
-        <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setActiveComponent("Permohonan")}>
-          <Text style={styles.buttonText}>Permohonan</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setActiveComponent("Tracking Pengujian")}>
-          <Text style={styles.buttonText}>Tracking Pengujian</Text>
-        </TouchableOpacity>
-      </View>
-    </View>
+      ) : (
+        <View style={styles.container}>
+          <ScrollView contentContainerStyle={styles.contentContainer}>
+            <List.Accordion
+              title="Administrasi"
+              left={props => <FontAwesome6 {...props} name="computer" size={22} />}
+              className='bg-slate-50 border-black'
+            >
+              <List.Item 
+                title="Kontrak"
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+                onPress={() => navigation.navigate("Kontrak")}  
+              />
+              <List.Item 
+                title="Persetujuan" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100'
+                onPress={() => navigation.navigate("Persetujuan")}   
+              />
+              <List.Item 
+                title="Pengambil Sampel" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+                onPress={() => navigation.navigate("PenerimaSampel")}    
+              />
+              <List.Item 
+                title="Penerima Sampel" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100'
+                onPress={() => navigation.navigate("PengambilSampel")}  
+              />
+              <List.Item 
+                title="Cetak LHU" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+                onPress={() => navigation.navigate("CetakLHU")}    
+              />
+            </List.Accordion>
+
+            <List.Accordion
+              title="Verifikasi"
+              left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
+              className='bg-slate-50 border-black'
+            >
+              <List.Item 
+                title="Analis"
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+              />
+              <List.Item 
+                title="Koordinator Teknis" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100'
+              />
+              <List.Item 
+                title="Verifikasi LHU" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+              />
+            </List.Accordion>
+
+            <List.Accordion
+              title="Report"
+              left={props => <Ionicons {...props} name="document-text" size={22} />}
+              className='bg-slate-50 border-black'
+            >
+              <List.Item 
+                title="Laporan Hasil Pengujian"
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+              />
+              <List.Item 
+                title="Kendali Mutu" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100'
+              />
+              <List.Item 
+                title="Registrasi Sampel" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+              />
+              <List.Item 
+                title="Rekap Data" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100'
+              />
+              <List.Item 
+                title="Rekap Parameter" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='p-2 bg-slate-100' 
+              />
+            </List.Accordion>
+      
+          </ScrollView>
+        </View>
+      )
   );
 }
 
@@ -87,7 +193,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10,
-    marginBottom : 60,
+    marginBottom: 60,
     // backgroundColor: "rgba(255, 255, 255, 0.9)", // Optional: Semi-transparent background
   },
   button: {
@@ -95,8 +201,8 @@ const styles = StyleSheet.create({
     width: 190,
     borderRadius: 10,
     margin: 10,
-    borderWidth : 1,
-    borderColor : "rgba(13, 71, 161, 0.2)",
+    borderWidth: 1,
+    borderColor: "rgba(13, 71, 161, 0.2)",
     backgroundColor: "#6b7fde",
   },
   buttonText: {
