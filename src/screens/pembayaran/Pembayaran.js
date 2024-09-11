@@ -69,6 +69,9 @@ const Pembayaran = () => {
   const ButtonDetail = () => {
     navigation.navigate("Detail");
   };
+  const PengambilanSampel = () => {
+    navigation.navigate("PengambilanSampel");
+  };
 
   return (
     <View style={styles.container}>
@@ -127,6 +130,11 @@ const Pembayaran = () => {
                   style={styles.ButtonDetail}
                   onPress={ButtonDetail}>
                   <Text style={styles.TextButton}>Pembayaran</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={styles.ButtonDetail}
+                  onPress={PengambilanSampel}>
+                  <Text style={styles.TextButton}>PengambilanSampel</Text>
                 </TouchableOpacity>
               </View>
             </View>

@@ -277,7 +277,7 @@ const Dashboard = () => {
             )}
           </>
         ) : (
-          <Text style={styles.text}>Loading...</Text>
+          <Text className="text-2xl font-bold text-center">Loading...</Text>
         )}
 
         <View style={styles.footer}>

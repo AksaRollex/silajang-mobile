@@ -6,8 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { TouchableOpacity } from "react-native";
-import IonIcons from 'react-native-vector-icons/Ionicons';
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { TouchableOpacity } from "react-native-ui-lib";
 
 export default memo(function WithEmail() {
   const {
@@ -115,7 +115,7 @@ export default memo(function WithEmail() {
                   top: 12,
                 }}
               >
-                <IonIcons
+                <Ionicons
                   name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
                   size={20}
                   color={Colors.brand}

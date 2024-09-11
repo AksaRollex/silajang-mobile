@@ -97,13 +97,7 @@ export default function Profile() {
   };
   return (
     <ScrollView style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.headerText}>SI - LAJANG</Text>
-      </View>
+      
       <TouchableOpacity
         style={styles.buttonLogout}
         onPress={sweet} 
@@ -189,27 +183,13 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: Colors.brand, // Ganti dengan warna yang sesuai
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row", // Menyusun elemen secara horizontal
-    elevation: 4,
-  },
+  
   logo: {
     width: 40,
     height: 40,
     marginTop: 8,
   },
-  headerText: {
-    fontSize: 22,
-    color: "white",
-    fontWeight: "bold",
-    marginLeft: 10, // Beri jarak antara logo dan teks
-    alignSelf: "center", // Vertically align the text to the center
-  },
+  
   cardContainer: {
     flex: 1,
     alignItems: "center",

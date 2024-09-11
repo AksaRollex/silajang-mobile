@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Sub = () => {
+const Pengujian = () => {
   return (
     <View>
-      <Text>Sub</Text>
+      <Text>Pengujian</Text>
     </View>
   )
 }
 
-export default Sub
+export default Pengujian
