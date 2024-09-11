@@ -32,7 +32,6 @@ export default memo(function WithEmail() {
       axios.post("/auth/secure/login", { ...data, type: "email", remember_me: 1 }),
     {
       onSuccess: async (res) => {
-        console.log(res.data.token);
         await AsyncStorage.setItem("@auth-token", res.data.token);
         queryClient.invalidateQueries({
           queryKey: ["auth", "user"],
