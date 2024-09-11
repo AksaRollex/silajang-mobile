@@ -80,7 +80,7 @@ const styles = StyleSheet.create({
   },
   backButtonText: {
     color: "white",
-    fontSize: 16,
+    fontSize: 32,
     fontWeight: "bold",
   },
 

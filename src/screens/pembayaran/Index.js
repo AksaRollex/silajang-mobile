@@ -3,6 +3,7 @@ import { Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Entypo';
+import PengambilanSampel from "./PengambilanSampel";
 
 import Pembayaran from './Pembayaran';
 import EditPembayaran from '../formComponent/EditPembayaran'
@@ -62,6 +63,18 @@ export default function MainScreen() {
               <View style={styles.iconContainer}>
                 <Icon name="user" size={24} color={focused ? "#16247d" : "#111"} />
                 <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>Detail</Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="PengambilanSampel"
+          component={PengambilanSampel}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View style={styles.iconContainer}>
+                <Icon name="user" size={24} color={focused ? "#16247d" : "#111"} />
+                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>PengambilanSampel</Text>
               </View>
             ),
           }}
