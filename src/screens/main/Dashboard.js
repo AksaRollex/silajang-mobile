@@ -174,7 +174,7 @@ const Dashboard = () => {
               <View className="flex flex-row">
                 <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
                 <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
-                  {dashboard.total.toFixed(2)}
+                  {dashboard.total?.toFixed(2)}
                 </Text>
               </View>
               <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
@@ -194,7 +194,9 @@ const Dashboard = () => {
             </View>
           </>
         ) : (
-          <Text className="text-2xl font-bold text-center">Loading...</Text>
+          <View className="w-full flex justify-center">
+            <Text className="text-2xl font-bold text-center">Loading...</Text>
+          </View>
         )}
 
         <View style={styles.footer}>
@@ -213,7 +215,7 @@ const styles = StyleSheet.create({
   container: {
     backgroundColor: "white",
     flex: 1,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#0d47a133",
   },
   headerContainer: {
     width: "100%",
