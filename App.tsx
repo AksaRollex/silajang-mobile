@@ -38,8 +38,6 @@ function Navigation(): React.JSX.Element {
         {user && isSuccess ? (
           <>
             <Stack.Screen name="Main" component={Main} />
-            <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
-            <Stack.Screen name="TrackingList" component={TrackingList} />
           </>
         ) : (
           <>

@@ -1,34 +1,32 @@
-import { Text, View, StyleSheet, TouchableOpacity, Modal, Animated, Easing, TouchableHighlight } from "react-native";
+import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
+import Toast from "react-native-toast-message";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import IndexMaster from "../master/Index";
-import User from "../master/User";
+import Pengujian from "../konfigurasi/Pengujian";
+import Website from "../konfigurasi/Website";
+import IndexMaster from "../master/master/Index";
+import IndexUser from "../master/user/Index";
+import IndexWilayah from "../master/wilayah/Index";
 import IndexPembayaran from "../pembayaran/Index";
 import Index from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import SweetAlert from 'react-native-sweet-alert';
-import axios from "@/src/libs/axios";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
-
-import Wilayah from "../master/Wilayah";
-import Pengujian from "../konfigurasi/Pengujian";
-import Website from "../konfigurasi/Website";
-
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
+const Stack = createNativeStackNavigator();
 
 const screenOptions = {
   tabBarShowLabel: false,
@@ -57,6 +55,21 @@ const Header = () => {
   );
 };
 
+const customHeaderLeft = () => {
+  const navigation = useNavigation();
+  return (
+    <View className="flex flex-row items-center justify-between">
+      <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
+        <IonIcons name="arrow-back" size={24} color="white" />
+      </TouchableOpacity>
+      <Text className="text-white text-xl font-bold " >SI-LAJANG</Text>
+      <Image
+        source={require("@/assets/images/logo.png")}
+        className="w-9 h-9"
+      />
+    </View>
+  )
+}
 
 const TabNavigator = () => {
   return (
@@ -159,14 +172,14 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
   }, [isExpanded, animatedHeight]);
 
   const renderIcon = useMemo(() => {
-    if (ionIcon) {
-      return <IonIcons name={ionIcon} size={22} color={isActive ? '#fff' : '#000'} />
+    if(ionIcon){
+      return <IonIcons name={ionIcon} size={21} color={isActive ? '#fff' : '#000'} />
     }
-    if (fontAwesome) {
-      return <FontAwesome5Icon name={fontAwesome} size={22} color={isActive ? '#fff' : '#000'} />
+    if(fontAwesome){
+      return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#fff' : '#000'} />
     }
-    if (depth === 0 && hasSubItems && setIcon) {
-      return <IonIcons name={setIcon} size={22} color={isActive ? '#fff' : '#000'} />
+    if(depth === 0 && hasSubItems && setIcon){
+      return <IonIcons name={setIcon} size={21} color={isActive ? '#fff' : '#000'} />
     }
     return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
   }, [ionIcon, fontAwesome, depth, hasSubItems, isActive, setIcon]);
@@ -180,7 +193,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text className={`flex-1 ${isSub ? 'text-[15px]' : 'text-[18px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text className={`flex-1 ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -426,9 +439,9 @@ const DrawerContent = (props) => {
       name: "Master",
       setIcon: "grid",
       subItems: [
-        { name: "Master", screen: "IndexMaster" },
-        { name: "User", screen: "User" },
-        { name: "Wilayah", screen: "Wilayah" },
+          { name: 'Master', screen: 'Master' },
+          { name: 'User', screen: 'User' },
+          { name: 'Wilayah', screen: 'Wilayah' },
       ],
     },
     {
@@ -452,9 +465,7 @@ const DrawerContent = (props) => {
   );
 };
 
-
-export default function MainScreen() {
-  return (
+const Admin = () =>  (
     <NavigationContainer independent={true}>
       <Drawer.Navigator
         drawerContent={(props) => <DrawerContent {...props} />}
@@ -469,13 +480,33 @@ export default function MainScreen() {
       >
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
-        <Drawer.Screen name="IndexMaster" component={IndexMaster} />
-        <Drawer.Screen name="User" component={User} />
-        <Drawer.Screen name="Wilayah" component={Wilayah} />
+        <Drawer.Screen name="Master" component={IndexMaster} />
+        <Drawer.Screen name="User" component={IndexUser} />
+        <Drawer.Screen name="Wilayah" component={IndexWilayah} />
         <Drawer.Screen name="Pengujian" component={Pengujian} />
         <Drawer.Screen name="Website" component={Website} />
       </Drawer.Navigator>
     </NavigationContainer>
+  )
+
+
+const NonAdmin = () => (
+    <NavigationContainer independent={true}>
+    <Stack.Navigator>
+      <Stack.Screen name="Dashboard" component={Dashboard} />
+    </Stack.Navigator>
+  </NavigationContainer>
+)
+
+
+export default function MainScreen() {
+  const { data: user } = useUser();
+  
+  return (
+    user.role.name === 'admin' ?
+    <Admin /> 
+    : 
+    <NonAdmin />
   );
 }
 
