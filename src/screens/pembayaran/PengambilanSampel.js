@@ -18,22 +18,19 @@ export default function PengambilanSampel() {
     <View style={styles.container}>
       <View style={styles.searchRow}>
         <View style={styles.search}>
-          <Searchbar
-            placeholder="Search" 
+          <Searchbar 
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={styles.searchbar}
           />
-
-          <Button style={styles.buttonSearch}>
-            <Image
-              source={require("../../../assets/images/search.png")}
-              style={styles.searchIcon}
-            />
-          </Button>
         </View>
 
-        <View>
+        <Button 
+          style={styles.buttonSetting}>
+          
+        </Button>
+
+        {/* <View>
           <TouchableOpacity onPress={toggleDropdown}>
             <Icon
               name={"dots-three-vertical"}
@@ -42,7 +39,7 @@ export default function PengambilanSampel() {
             />
           </TouchableOpacity>
 
-          {/* Tampilkan dropdown jika state dropdownVisible bernilai true */}
+          
           {dropdownVisible && (
             <View style={styles.dropdown}>
               <TouchableOpacity style={styles.dropdownItem}>
@@ -53,9 +50,9 @@ export default function PengambilanSampel() {
               </TouchableOpacity>
             </View>
           )}
-        </View>
+        </View> */}
       </View>
-      <View>
+      <View style={styles.car}>
         <Button style={styles.yearpick} title="Show Picker" onPress={() => setIsShow(true)} />
         <MonthYearPicker
           isShow={isShow}
@@ -136,74 +133,65 @@ export default function PengambilanSampel() {
 const styles = StyleSheet.create({
   searchRow: {
     flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "92%",
-    marginStart: "2%",
+    marginBottom: 50,
+    justifyContent: "space-between",
+    marginTop: 25,
+    height: 50,
+    width: "86%",
   },
   searchIcon: {
     width: 17,
     height: 17,
   },
   container: {
-    flex: 1,
+    flex: 3,
     alignItems: "center",
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
   search: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     paddingHorizontal: 10,
-    paddingVertical: 0, 
-    backgroundColor: "white",
+    paddingVertical: 0,
+    backgroundColor: 'white',
     borderRadius: 10,
-    marginVertical: 10,
-    width: "86%",
-    marginTop: 20,
+    width: '86%',
+    marginTop: 5,
   },
   searchbar: {
-    flex: 1, 
-    backgroundColor: "white",
+    flex: 1,
+    backgroundColor: 'white',
     borderRadius: 10,
     marginRight: 10,
-    // height: 45,
-    // paddingVertical: 
-  },
-  buttonSearch: {
-    backgroundColor: "#0D47A1", 
-    padding: 10,
-    borderRadius: 10,
-    minWidth: "15%",
+    height: 45, 
   },
   icon: {
     color: "black",
     marginTop: 10.5,
   },
-  dropdown: {
-    position: "absolute",
-    top: 60,
-    right: 5,
-    backgroundColor: "white",
-    borderRadius: 8,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: "700%",
-    zIndex: 10,
-  },
-  dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: "black",
-  },
+  // dropdown: {
+  //   position: "absolute",
+  //   top: 60,
+  //   right: 5,
+  //   backgroundColor: "white",
+  //   borderRadius: 8,
+  //   elevation: 5,
+  //   shadowColor: "#000",
+  //   shadowOffset: { width: 0, height: 2 },
+  //   shadowOpacity: 0.25,
+  //   shadowRadius: 3.84,
+  //   width: "700%",
+  //   zIndex: 10,
+  // },
+  // dropdownItem: {
+  //   padding: 10,
+  //   borderBottomWidth: 1,
+  //   borderBottomColor: "#ddd",
+  // },
+  // dropdownText: {
+  //   fontSize: 14,
+  //   color: "black",
+  // },
   scrollViewContent: {
     flexGrow: 1, 
     marginHorizontal: 20,
@@ -240,10 +228,17 @@ const styles = StyleSheet.create({
     position: "absolute",
   },
   yearpick: {
-    marginTop: 25,
+    marginBottom: 5,
     marginStart: 270,
     backgroundColor: "white",
     height: 31,
     borderRadius: 5,
-  }
+  },
+  buttonSetting: {
+    minWidth: "10%",
+    minHeight: "30%",
+    borderRadius: 10,
+    marginTop: 5
+  },
+  
 });
