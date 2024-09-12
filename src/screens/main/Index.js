@@ -15,7 +15,7 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Pengujian from "../konfigurasi/Pengujian";
 import Website from "../konfigurasi/Website";
-import IndexMaster from "../master/master/Index";
+import MasterNavigator from "../master/master/Index";
 import IndexUser from "../master/user/Index";
 import IndexWilayah from "../master/wilayah/Index";
 import IndexPembayaran from "../pembayaran/Index";
@@ -409,7 +409,7 @@ const DrawerContent = (props) => {
                 <CustomDrawerItem
                   key={subItem.name}
                   label={subItem.name}
-                  onPress={() => props.navigation.navigate(subItem.screen)}
+                  onPress={() => props.navigation.navigate(subItem.screen, subItem.params)}
                   isActive={props.state.routeNames[props.state.index] === subItem.screen}
                   depth={1}
                   isSub={true}
@@ -439,7 +439,7 @@ const DrawerContent = (props) => {
       name: "Master",
       setIcon: "grid",
       subItems: [
-          { name: 'Master', screen: 'Master' },
+          { name: 'Master', screen: 'Master', params: {screen: 'MasterIndex'} },
           { name: 'User', screen: 'User' },
           { name: 'Wilayah', screen: 'Wilayah' },
       ],
@@ -480,7 +480,8 @@ const Admin = () =>  (
       >
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
-        <Drawer.Screen name="Master" component={IndexMaster} />
+        {/* <Drawer.Screen name="MasterIndex" component={MasterNavigator} /> */}
+        <Drawer.Screen name="Master" component={MasterNavigator} />
         <Drawer.Screen name="User" component={IndexUser} />
         <Drawer.Screen name="Wilayah" component={IndexWilayah} />
         <Drawer.Screen name="Pengujian" component={Pengujian} />
@@ -500,13 +501,13 @@ const NonAdmin = () => (
 
 
 export default function MainScreen() {
-  const { data: user } = useUser();
+  // const { data: user } = useUser();
   
   return (
-    user.role.name === 'admin' ?
+    // user.role.name === 'admin' ?
     <Admin /> 
-    : 
-    <NonAdmin />
+    // : 
+    // <NonAdmin />
   );
 }
 

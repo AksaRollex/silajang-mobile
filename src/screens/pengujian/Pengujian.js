@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { TextFooter } from "../components/TextFooter";
 import Permohonan from "./Permohonan";
 import TrackingPengujian from "./TrackingPengujian";
 
@@ -55,6 +55,8 @@ export default function Pengujian() {
               <Text style={styles.buttonText}>Tracking Pengujian</Text>
             </TouchableOpacity>
           </View>
+        <TextFooter/>
+
         </View>
       ) : (
         <View style={styles.container}>
@@ -149,7 +151,7 @@ export default function Pengujian() {
                 className='p-2 bg-slate-100' 
               />
             </List.Accordion>
-      
+            <TextFooter />
           </ScrollView>
         </View>
       )

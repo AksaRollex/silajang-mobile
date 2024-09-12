@@ -17,6 +17,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import { TextFooter } from "../components/TextFooter";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -282,13 +283,7 @@ const Dashboard = () => {
           </View>
         )}
 
-        <View style={styles.footer}>
-          <Text style={styles.footerText}>
-            {
-              "2024 ©SI-LAJANG v.3 \nSistem Informasi Laboratorium Lingkungan Jombang"
-            }
-          </Text>
-        </View>
+       <TextFooter />
       </ScrollView>
     </View>
   );
