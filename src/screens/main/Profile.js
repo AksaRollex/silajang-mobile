@@ -6,202 +6,194 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  Alert, // Import Alert
+  Animated,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import Akun from "./Akun";
 import Perusahaan from "./Perusahaan";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
 import Keamanan from "./Keamanan";
-import { Colors } from "react-native-ui-lib";
-import SweetAlert from 'react-native-sweet-alert';
-import {
-  useNavigation,
-  useNavigationContainerRef,
-} from "@react-navigation/native";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
 
 export default function Profile() {
   const [activeComponent, setActiveComponent] = useState(null);
   const [userData, setUserData] = useState(null);
-  const navigation = useNavigation();
-  const queryClient = useQueryClient();
+  const [fadeAnim] = useState(new Animated.Value(0));
 
   useEffect(() => {
     axios
       .get("/auth")
-      .then(response => {
+      .then((response) => {
         setUserData(response.data);
       })
-      .catch(error => {
+      .catch((error) => {
         console.error("Error fetching data:", error);
       });
   }, []);
 
+  const handlePress = (component) => {
+    setActiveComponent(component);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
+  };
+
+  const handleCancel = () => {
+    setActiveComponent(null);
+  };
+
   let RenderedComponent;
   switch (activeComponent) {
     case "Akun":
-      RenderedComponent = <Akun />;
+      RenderedComponent = <Akun onCancel={handleCancel} />;
       break;
     case "Perusahaan":
-      RenderedComponent = <Perusahaan />;
+      RenderedComponent = <Perusahaan onCancel={handleCancel} />;
       break;
     case "Keamanan":
-      RenderedComponent = <Keamanan />;
+      RenderedComponent = <Keamanan onCancel={handleCancel} />;
       break;
     default:
       RenderedComponent = null;
       break;
   }
 
-  const { mutate: logout } = useMutation(
-    data => axios.post("/auth/logout"),
-    {
-      onSuccess: async () => {
-        await AsyncStorage.removeItem("@auth-token");
-        Toast.show({
-          type: "success",
-          text1: "Logout Berhasil",
-        });
-        queryClient.invalidateQueries(["auth", "user"]);
-        navigation.navigate("tabs");
-      },
-      onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Gagal Logout",
-        });
-      },
-    }
-  );
-
-
-  const sweet = () => {
-    SweetAlert.showAlertWithOptions({
-      title: 'Apakah anda yakin?',
-      subTitle: 'Anda akan keluar dari akun ini',
-      confirmButtonText: 'Ok',
-      confirmButtonColor: '#000000',
-      barColor : "#000000",
-      otherButtonTitle: 'Cancel',
-      otherButtonColor: '#dedede',
-      style: 'warning',
-      cancellable: true
-    },
-    (callback) => {
-      if (callback) {
-        logout(); // Ok untuk Logout
-      }
-    });
-  };
   return (
-    <ScrollView style={styles.container}>
-      
-      <TouchableOpacity
-        style={styles.buttonLogout}
-        onPress={sweet} 
-      >
-        <Text style={styles.buttonLogoutText}>Logout</Text>
-      </TouchableOpacity>
-      <View style={styles.cardContainer}>
-        <View style={[styles.profileCard, { backgroundColor: Colors.brand }]}>
-          <View style={styles.photoProfileCard}>
-            <Image
-              style={styles.image}
-              source={{
-                uri: "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp",
-              }}
-              resizeMode="cover"
-            />
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.header} />
+        <View style={styles.cardContainer}>
+          <View style={[styles.profileCard, styles.shadow]}>
+            <View style={styles.photoProfileCard}>
+              <Image
+                style={styles.image}
+                source={{
+                  uri: "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp",
+                }}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.ProfileCardText}>
+              {userData ? (
+                <>
+                  <View style={styles.iconTextRow}>
+                    <Fontawesome5 name="user-circle" color="#64748b" />
+                    <Text style={styles.text}>{userData.user.nama}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Ionicons name="mail" color="#64748b" />
+                    <Text style={styles.text}>{userData.user.email}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Fontawesome5 name="phone-alt" color="#64748b" />
+                    <Text style={styles.text}>{userData.user.phone}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Fontawesome5 name="user-check" color="#64748b" />
+                    <Text style={styles.text}>{userData.user.golongan.nama}</Text>
+                  </View>
+                </>
+              ) : (
+                <Text style={styles.text}>Loading...</Text>
+              )}
+            </View>
           </View>
-          <View style={styles.ProfileCardText}>
-            {userData ? (
-              <>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/checked.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{userData.user.nama}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/verification.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{userData.user.email}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/phone.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{userData.user.phone}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/gear-assembly.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{userData.user.golongan.nama}</Text>
-                </View>
-              </>
-            ) : (
-              <Text style={styles.text}>Loading...</Text>
-            )}
+
+          {/* Instruction to Edit Profile */}
+          <View style={styles.editProfileTextContainer}>
+            <Text style={styles.editProfileText}>Edit Profile</Text>
           </View>
+          <View style={styles.divider} />
+
+          {/* Buttons for switching components */}
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Akun" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Akun")}
+            >
+              <Ionicons name="person" color="#6b7fde" size={20} />
+              <Text style={styles.buttonText}>Akun</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Keamanan" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Keamanan")}
+            >
+              <Fontawesome5 name="lock" color="#6b7fde" size={20} />
+              <Text style={styles.buttonText}>Keamanan</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Perusahaan" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Perusahaan")}
+            >
+              <Fontawesome5 name="briefcase" color="#6b7fde" size={20} />
+              <Text style={styles.buttonText}>Perusahaan</Text>
+            </TouchableOpacity>
+          </View>
+
+          {/* Animated form rendering */}
+          <Animated.View style={[styles.activeComponentContainer, { opacity: fadeAnim }]}>
+            {RenderedComponent}
+          </Animated.View>
         </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Akun")}
-          >
-            <Text style={styles.buttonText}>Akun</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Keamanan")}
-          >
-            <Text style={styles.buttonText}>Keamanan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Perusahaan")}
-          >
-            <Text style={styles.buttonText}>Perusahaan</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#f8f8f8",
   },
-  
-  logo: {
-    width: 40,
-    height: 40,
-    marginTop: 8,
+  header: {
+    height: 220,
+    backgroundColor: "#312e81",
+    justifyContent: "flex-end",
+    zIndex: 1,
   },
-  
   cardContainer: {
-    flex: 1,
+    marginTop: -30,
+    backgroundColor: "#f8f8f8",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 28,
+    paddingTop: 20,
+    zIndex: 2,
     alignItems: "center",
   },
   profileCard: {
-    height: 140,
-    width: 380,
-    borderRadius: 10,
+    height: 150,
+    width: 375,
+    borderRadius: 20,
     flexDirection: "row",
-    backgroundColor: "#6b7fde",
     alignItems: "center",
     justifyContent: "flex-start",
+    marginVertical: 20,
+    backgroundColor: "white",
+    overflow: "hidden",
+    marginTop: -187,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   photoProfileCard: {
     height: 120,
@@ -215,71 +207,75 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   ProfileCardText: {
-    width: 230,
+    width: 220,
     height: 120,
-    borderRadius: 10,
-    // backgroundColor : 'green',
     justifyContent: "center",
     alignItems: "flex-start",
   },
   iconTextRow: {
-    flexDirection: "row", // Untuk mengatur gambar dan teks berdampingan
-    alignItems: "center", // Vertikal pusat gambar dan teks
-    marginBottom: 4, // Menambahkan jarak antara setiap baris gambar dan teks
+    flexDirection: "row",
+    alignItems: "center",
   },
-  icon: {
-    width: 16, // Sesuaikan ukuran gambar
-    height: 16, // Sesuaikan ukuran gambar
-    marginRight: 8, // Jarak antara gambar dan teks
-  },
-
   text: {
-    color: "white",
+    color: "#333",
     fontSize: 14,
-    paddingLeft: 10,
-    padding: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    fontWeight: "600",
+    lineHeight: 24,
+  },
+  editProfileTextContainer: {
+    marginBottom: 10,
+    marginTop: 18,
+    alignItems: "center",
+  },
+  editProfileText: {
+    color: "#64748b",
+    fontSize: 19,
     fontWeight: "bold",
+  },
+  divider: {
+    width: "90%",
+    height: 1,
+    backgroundColor: "#e0e0e0",
+    marginVertical: 10,
+    alignSelf: "center",
   },
   buttonContainer: {
     flexDirection: "row",
-    display: "flex",
     justifyContent: "space-around",
-  },
-  button: {
-    width: 110,
-    height: 35,
     alignItems: "center",
+    marginTop: 10,
+    width: "100%",
+    paddingHorizontal: 10,
+  },
+  buttonBox: {
+    width: 100,
+    height: 100,
     justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "white",
     borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    elevation: 6,
     margin: 10,
-    backgroundColor: "#6b7fde",
+    position: "relative",
+  },
+  activeButtonBox: {
+    backgroundColor: "#e1e7ff",
   },
   buttonText: {
-    color: "white",
-    fontSize: 16,
+    color: "#6b7fde",
+    fontSize: 14,
     fontWeight: "bold",
-  },
-  buttonLogout: {
-    backgroundColor: "#C0392B", // Warna merah untuk tombol logout
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-    marginHorizontal: 20, // Optional: add some margin to the button
-    marginVertical: 10,
-  },
-  buttonLogoutText: {
-    color: "white",
-    fontSize: 18,
-    fontWeight: "bold",
+    marginTop: 5,
   },
   activeComponentContainer: {
     flex: 1,
     width: "100%",
+    paddingHorizontal: 20,
   },
 });
