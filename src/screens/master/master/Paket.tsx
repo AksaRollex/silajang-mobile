@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const IndexMaster = () => {
+const Paket = () => {
   return (
     <View>
-      <Text>IndexMaster</Text>
+      <Text>Paket</Text>
     </View>
   )
 }
 
-export default IndexMaster
+export default Paket
