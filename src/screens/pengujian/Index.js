@@ -41,7 +41,7 @@ export default function MainScreen() {
   <NavigationContainer independent={true}>
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
-        name="Pengujian"
+        name="PengujianIndex"
         component={Pengujian}
       />
       

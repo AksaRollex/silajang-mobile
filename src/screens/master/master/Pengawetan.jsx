@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Wilayah = () => {
+const Pengawetan = () => {
   return (
     <View>
-      <Text>Wilayah</Text>
+      <Text>Pengawetan</Text>
     </View>
   )
 }
 
-export default Wilayah
+export default Pengawetan

@@ -7,7 +7,7 @@ import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
-
+import { TextFooter } from "../components/TextFooter";
 import Permohonan from "./Permohonan";
 import TrackingPengujian from "./TrackingPengujian";
 
@@ -55,6 +55,8 @@ export default function Pengujian() {
               <Text style={styles.buttonText}>Tracking Pengujian</Text>
             </TouchableOpacity>
           </View>
+        <TextFooter/>
+
         </View>
       ) : (
         <View className="bg-[#ececec] flex-1 flex-start">
@@ -149,12 +151,7 @@ export default function Pengujian() {
                 className='px-5 bg-[#f8f8f8]' 
               />
             </List.Accordion>
-      
-            <View className="p-10 flex-end items-center">
-              <Text className="text-xs text-center text-gray-500">
-                { "2024 ©SI-LAJANG v.3 \nSistem Informasi Laboratorium Lingkungan Jombang" }
-              </Text>
-            </View>
+            <TextFooter />
           </ScrollView>
         </View>
       )
