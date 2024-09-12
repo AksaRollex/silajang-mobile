@@ -6,12 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-<<<<<<< HEAD
 import { TouchableOpacity } from "react-native";
-import IonIcons from 'react-native-vector-icons/Ionicons';
-=======
-import Ionicons from "react-native-vector-icons/Ionicons";
->>>>>>> refs/remotes/origin/main
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 export default memo(function WithEmail() {
   const {
@@ -33,14 +29,14 @@ export default memo(function WithEmail() {
     isSuccess,
   } = useMutation(
     data =>
-      axios.post("/auth/secure/login", { ...data, type: "email", remember_me: 1 }),
+      axios.post("/auth/secure/login", {
+        ...data,
+        type: "email",
+        remember_me: 1,
+      }),
     {
-      onSuccess: async (res) => {
-<<<<<<< HEAD
+      onSuccess: async res => {
         console.log(res.data.token);
-=======
-        // console.log(res.data.token)
->>>>>>> refs/remotes/origin/main
         await AsyncStorage.setItem("@auth-token", res.data.token);
         queryClient.invalidateQueries({
           queryKey: ["auth", "user"],
@@ -88,6 +84,7 @@ export default memo(function WithEmail() {
             {errors.identifier.message}
           </Text>
         )}
+        
       </View>
       <View marginB-20>
         <Text marginB-5>Password</Text>
@@ -121,8 +118,7 @@ export default memo(function WithEmail() {
                   position: "absolute",
                   right: 10,
                   top: 12,
-                }}
-              >
+                }}>
                 <IonIcons
                   name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
                   size={20}
@@ -144,8 +140,7 @@ export default memo(function WithEmail() {
         paddingV-12
         borderRadius={5}
         onPress={handleSubmit(login)}
-        disabled={isLoading || isSuccess}
-      ></Button>
+        disabled={isLoading || isSuccess}></Button>
     </View>
   );
 });

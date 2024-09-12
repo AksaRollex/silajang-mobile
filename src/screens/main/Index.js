@@ -14,7 +14,7 @@ import IndexPembayaran from "../pembayaran/Index";
 import Login from "../auth/login/Index";
 import IndexLogin from "../auth/Index";
 import IndexLogout from "./IndexLogout";
-
+import Penerima from "../pengujian/Penerima";
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
@@ -105,6 +105,28 @@ export default function MainScreen() {
         <Tab.Screen
           name="Profile"
           component={Profile}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}>
+                <Image
+                  source={require("@/assets/images/user.png")}
+                  style={[styles.logo, focused && styles.logoFocused]}
+                />
+
+                <Text style={[styles.label, focused && styles.labelFocused]}>
+                  Profil
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Penerima"
+          component={Penerima}
           options={{
             tabBarIcon: ({ focused }) => (
               <View

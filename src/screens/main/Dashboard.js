@@ -5,28 +5,38 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  TouchableOpacity,
   Dimensions,
 } from "react-native";
-import { Colors } from "react-native-ui-lib";
+import { Button, Colors } from "react-native-ui-lib";
 import { Picker } from "@react-native-picker/picker";
 import { LineChart } from "react-native-chart-kit";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
 import { rupiah } from "@/src/libs/utils";
+import { useNavigation } from "@react-navigation/native";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
-
   const requestTypes = [
     { label: "Permohonan Baru", value: "new" },
     { label: "Permohonan Proses", value: "process" },
     { label: "Permohonan Selesai", value: "completed" },
     { label: "Total Permohonan", value: "total" },
   ];
-
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
+  const navigation = useNavigation();
+
+  const Penerima = () => {
+    navigation.navigate("Penerima");
+  };
+
+  const handlePress = () => {
+    const uuid = '7cd62078-6101-4ef3-ad6f-28afe23d81b9';
+    navigation.navigate("Penerima", { uuid });
+  }
 
   useEffect(() => {
     const years = [];
@@ -195,7 +205,10 @@ const Dashboard = () => {
         ) : (
           <Text style={styles.text}>Loading...</Text>
         )}
-
+        <Button 
+        onPress={handlePress}>
+          <Text>Penerima</Text>
+        </Button>
         <View style={styles.footer}>
           <Text style={styles.footerText}>
             {

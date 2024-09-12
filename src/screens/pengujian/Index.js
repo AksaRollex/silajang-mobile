@@ -12,7 +12,7 @@ import EditPermohonan from "../formComponent/EditPermohonan";
 import EditTitikUji from "../formComponent/EditTitikUji";
 import EditPembayaran from "../formComponent/EditPembayaran";
 import TambahPermohonan from "../formComponent/TambahPermohonan";
-
+import Penerima from "./Penerima";
 const Tab = createBottomTabNavigator();
 
 const screenOptions = {
@@ -180,6 +180,25 @@ export default function MainScreen() {
                 <Text
                   style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
                   TambahPermohonan
+                </Text>
+              </View>
+            ),
+          }}
+        />
+        <Tab.Screen
+          name="Penerima"
+          component={Penerima}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View>
+                <Icon
+                  name="user"
+                  size={24}
+                  color={focused ? "#16247d" : "#111"}
+                />
+                <Text
+                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
+                  Penerima
                 </Text>
               </View>
             ),
