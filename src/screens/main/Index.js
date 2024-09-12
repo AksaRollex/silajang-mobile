@@ -3,20 +3,20 @@ import { useUser } from "@/src/services";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import IndexMaster from "../master/Index";
 import User from "../master/User";
 import IndexPembayaran from "../pembayaran/Index";
-import Index from "../pengujian/Index";
+import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import SweetAlert from 'react-native-sweet-alert';
 import axios from "@/src/libs/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
@@ -24,8 +24,6 @@ import Toast from "react-native-toast-message";
 import Wilayah from "../master/Wilayah";
 import Pengujian from "../konfigurasi/Pengujian";
 import Website from "../konfigurasi/Website";
-
-const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -72,10 +70,7 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/home.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <Entypo name="home" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Beranda
               </Text>
@@ -84,8 +79,8 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Pengujian.Index"
-        component={Index}
+        name="Pengujian"
+        component={IndexPengujian}
         options={{
           tabBarIcon: ({ focused }) => (
             <View
@@ -94,10 +89,7 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/approval.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Pengujian
               </Text>
@@ -106,7 +98,7 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Pembayaran.Index"
+        name="Pembayaran"
         component={IndexPembayaran}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -116,10 +108,7 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/wallet.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <Entypo name="wallet" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Pembayaran
               </Text>

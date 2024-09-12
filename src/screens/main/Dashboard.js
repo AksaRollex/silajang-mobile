@@ -67,7 +67,7 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <View style={styles.container}>
+    <View className={user.role.name === 'customer' ? 'flex-1 bg-[#0d47a133]' : 'flex-1 bg-[#ececec]'}>
       {/* <View
         style={[
           styles.searchFilterContainer,
@@ -128,10 +128,10 @@ const Dashboard = () => {
                   </Text>
                 </View>
 
-                <View style={[styles.cardContainer, styles.cardNew]}>
+                <View style={[styles.cardContainer, styles.cardCompleted]}>
                   <View style={styles.row}>
-                    <FontAwesome5 name="leaf" size={30} color={"#828cff"} />
-                    <Text style={[styles.cardNumber, styles.card1]}>
+                    <FontAwesome5 name="leaf" size={30} color={"#ffc300"} />
+                    <Text style={[styles.cardNumber, styles.card3]}>
                       {dashboard.permohonanDiproses}
                     </Text>
                   </View>
@@ -140,10 +140,10 @@ const Dashboard = () => {
                   </Text>
                 </View>
 
-                <View style={[styles.cardContainer, styles.cardNew]}>
+                <View style={[styles.cardContainer, styles.cardTotal]}>
                   <View style={styles.row}>
-                    <FontAwesome5 name="book-open" size={32} color={"#828cff"} />
-                    <Text style={[styles.cardNumber, styles.card1]}>
+                    <FontAwesome5 name="book-open" size={32} color={"#50cc88"} />
+                    <Text style={[styles.cardNumber, styles.card4]}>
                       {dashboard.permohonanSelesai}
                     </Text>
                   </View>
@@ -152,10 +152,10 @@ const Dashboard = () => {
                   </Text>
                 </View>
 
-                <View style={[styles.cardContainer, styles.cardNew]}>
+                <View style={[styles.cardContainer, styles.cardProcess]}>
                   <View style={styles.row}>
-                    <FontAwesome5 name="wallet" size={32} color={"#828cff"} />
-                    <Text style={[styles.cardNumber, styles.card1]}>
+                    <FontAwesome5 name="wallet" size={32} color={"#5a3dff"} />
+                    <Text style={[styles.cardNumber, styles.card2]}>
                       {dashboard.permohonanTotal}
                     </Text>
                   </View>
@@ -167,109 +167,109 @@ const Dashboard = () => {
             ) : (
               <>
                 {['admin', 'kepala-upt'].includes(user.role.name) && (
-                <View style={[styles.cardContainer, styles.cardNew]}>
-                  <View style={styles.row}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
+                  <View className="flex-row items-center">
                     <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
-                    <Text style={[styles.cardNumber, styles.card1]}>
+                    <Text className="text-[35px] font-extrabold mx-3 text-[#828cff]">
                       {dashboard.customers}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Customers
                   </Text>
                 </View> 
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && ( 
-                <View style={[styles.cardContainer, styles.cardProcess]}>
-                  <View style={styles.row}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#5a3dff]">
+                  <View className="flex-row items-center">
                     <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
-                    <Text style={[styles.cardNumber, styles.card2]}>
+                    <Text className="text-[35px] font-extrabold mx-3 text-[#5a3dff]">
                       {dashboard.allSampels}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Total Permohonan
                   </Text>
                 </View> 
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View style={[styles.cardContainer, styles.cardCompleted]}>
-                  <View style={styles.row}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]">
+                  <View className="flex-row items-center">
                     <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
-                    <Text style={[styles.cardNumber, styles.card3]}>
+                    <Text className="text-[35px] font-extrabold mx-3 text-[#ffc300]">
                       {dashboard.newSampels}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Persetujuan Permohonan
                   </Text>
                 </View>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View style={[styles.cardContainer, styles.cardTotal]}>
-                  <View style={styles.row}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]">
+                  <View className="flex-row items-center">
                     <Fontisto name="laboratory" size={30} color={"#f2416e"} />
-                    <Text style={[styles.cardNumber, styles.card4]}>
+                    <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
                       {dashboard.undoneSampels}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Sampel Belum Dianalisa
                   </Text>
                 </View>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View style={[styles.cardContainer, styles.cardTotal]}>
-                  <View style={styles.row}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]">
+                  <View className="flex-row items-center">
                     <IonIcons name="document-text" size={30} color={"#f2416e"} />
-                    <Text style={[styles.cardNumber, styles.card4]}>
+                    <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
                       {dashboard.unverifSampels}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Dokumen Belum Diverifikasi
                   </Text>
                 </View>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View style={[styles.cardContainer, styles.cardTotals]}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0fd194]">
                   <View>
                     <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
-                    <Text style={[styles.cardCurrency]} className="text-[#0fd194]" >
+                    <Text className="text-[18px] font-extrabold text-[#0fd194]" >
                       {rupiah(dashboard.revenue)}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Pendapatan
                   </Text>
                 </View>
                 )}
 
-                <View style={[styles.cardContainer, styles.cardLast]}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]">
                   <View className="flex flex-row">
                     <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
-                    <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                    <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
                       {dashboard.total?.toFixed(2)}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     IKM Unit Pelayanan
                   </Text>
                 </View>
 
-                <View style={[styles.cardContainer, styles.cardLast]}>
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]">
                   <View className="flex flex-row">
-                    <FontAwesome5 name="coins" size={30} color={"#0090a6"} />
-                    <Text className="text-[#0090a6] text-3xl font-bold mx-3" >
+                    <IonIcons name="clipboard" size={30} color={"#0090a6"} />
+                    <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
                       {dashboard.jumlah}
                     </Text>
                   </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  <Text className="text-[16px] font-medium text-black text-left">
                     Jumlah Responden
                   </Text>
                 </View>
@@ -294,7 +294,6 @@ const Dashboard = () => {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "white",
     flex: 1,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
   },
@@ -422,7 +421,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 10,
-    borderColor: "#f2416e",
+    borderColor: "#50cc88",
     borderTopWidth: 6,
   },
   cardTotals: {
@@ -482,7 +481,7 @@ const styles = StyleSheet.create({
     color: "#ffc300",
   },
   card4: {
-    color: "#f2416e",
+    color: "#50cc88",
   },
   chartContainer: {
     marginVertical: 20,
