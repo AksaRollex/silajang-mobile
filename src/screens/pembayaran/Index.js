@@ -1,6 +1,7 @@
 import React from 'react';
 import { Text, View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { NavigationContainer } from '@react-navigation/native';
 import Icon from 'react-native-vector-icons/Entypo';
 import PengambilanSampel from "./PengambilanSampel";
@@ -8,8 +9,12 @@ import PengambilanSampel from "./PengambilanSampel";
 import Pembayaran from './Pembayaran';
 import EditPembayaran from '../formComponent/EditPembayaran'
 import Detail from './Detail';
+import Pengujian from './Pengujian';
+import NonPengujian from './NonPengujian';
+import Global from './Global';
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const screenOptions = {
   tabBarShowLabel: false,
@@ -79,6 +84,9 @@ export default function MainScreen() {
             ),
           }}
         />
+        <Stack.Screen name="Pengujian" component={Pengujian}/>
+        <Stack.Screen name="NonPengujian" component={NonPengujian}/>
+        <Stack.Screen name="Global" component={Global}/>
       </Tab.Navigator>
     </NavigationContainer>
   );
