@@ -1,17 +1,18 @@
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import React from 'react'
-import JasaPengambilan from './JasaPengambilan'
-import JenisSampel from './JenisSampel'
-import JenisWadah from './JenisWadah'
-import KodeRetribusi from './KodeRetribusi'
-import LiburCuti from './LiburCuti'
+import JasaPengambilan from './jasa-pengambilan/JasaPengambilan'
+import JenisSampel from './jenis-sampel/JenisSampel'
+import JenisWadah from './jenis-wadah/JenisWadah'
+import KodeRetribusi from './kode-retribusi/KodeRetribusi'
+import LiburCuti from './libur-cuti/LiburCuti'
 import Master from './Master'
-import Metode from './Metode'
-import Paket from './Paket'
-import Parameter from './Parameter'
-import Pengawetan from './Pengawetan'
-import Peraturan from './Peraturan'
-import RadiusPengambilan from './RadiusPengambilan'
+import Metode from './metode/Metode'
+import Paket from './paket/Paket'
+import Parameter from './parameter/Parameter'
+import Pengawetan from './pengawetan/Pengawetan'
+import Peraturan from './peraturan/Peraturan'
+import RadiusPengambilan from './radius-pengambilan/RadiusPengambilan'
+import FormMetode from './metode/Form'
 
 const Stack = createNativeStackNavigator()
 export default function MainScreen () {
@@ -29,6 +30,7 @@ export default function MainScreen () {
         <Stack.Screen name="Pengawetan" component={Pengawetan} />
         <Stack.Screen name="Peraturan" component={Peraturan} />
         <Stack.Screen name="RadiusPengambilan" component={RadiusPengambilan} />
+        <Stack.Screen name="FormMetode" component={FormMetode}/>
       </Stack.Navigator>
   )
 }
