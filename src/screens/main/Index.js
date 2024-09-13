@@ -24,6 +24,8 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
+import { ToggleButton } from "react-native-paper";
+const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
@@ -153,7 +155,7 @@ const ProfileDetail = () => {
   return (
     <View className="text-black p-3 border-b-[1px] m-2">
       <View className="flex gap-2">
-        <Image source={{ uri: user.photo ?? "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+        <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
           className="w-12 h-12 rounded-full" />
         <View className="flex gao-y-0">
           <Text className="text-xl font-bold" >{user.nama}</Text>
