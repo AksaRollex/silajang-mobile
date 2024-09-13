@@ -12,16 +12,19 @@ import Toast from "react-native-toast-message";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Pengujian from "../konfigurasi/Pengujian";
 import Website from "../konfigurasi/Website";
 import MasterNavigator from "../master/master/Index";
 import IndexUser from "../master/user/Index";
 import IndexWilayah from "../master/wilayah/Index";
 import IndexPembayaran from "../pembayaran/Index";
-import Index from "../pengujian/Index";
+import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
+import { ToggleButton } from "react-native-paper";
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -85,10 +88,7 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/home.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <Entypo name="home" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Beranda
               </Text>
@@ -97,9 +97,10 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Pengujian.Index"
-        component={Index}
+        name="Pengujian"
+        component={IndexPengujian}
         options={{
+          // unmountOnBlur: true,
           tabBarIcon: ({ focused }) => (
             <View
               style={[
@@ -107,19 +108,27 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/approval.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Pengujian
               </Text>
             </View>
           ),
         }}
+        listeners={({ navigation }) => ({
+          tabPress: (e) => {
+            if (navigation.isFocused()) {
+              e.preventDefault();
+              navigation.reset({
+                index: 0, 
+                routes: [{ name: 'Pengujian' }], 
+              });
+            }
+          },
+        })}
       />
       <Tab.Screen
-        name="Pembayaran.Index"
+        name="Pembayaran"
         component={IndexPembayaran}
         options={{
           tabBarIcon: ({ focused }) => (
@@ -129,10 +138,7 @@ const TabNavigator = () => {
                 focused && styles.iconContainerFocused,
               ]}
             >
-              <Image
-                source={require("@/assets/images/wallet.png")}
-                style={[styles.logo, focused && styles.logoFocused]}
-              />
+              <Entypo name="wallet" size={25} color={"#fff"} />
               <Text style={[styles.label, focused && styles.labelFocused]}>
                 Pembayaran
               </Text>
@@ -149,7 +155,7 @@ const ProfileDetail = () => {
   return (
     <View className="text-black p-3 border-b-[1px] m-2">
       <View className="flex gap-2">
-        <Image source={{ uri: user.photo ?? "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+        <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
           className="w-12 h-12 rounded-full" />
         <View className="flex gao-y-0">
           <Text className="text-xl font-bold" >{user.nama}</Text>

@@ -2,7 +2,6 @@ import React from "react";
 import {
   View,
   StyleSheet,
-  Alert,
   TouchableOpacity,
   Text,
   Image,
@@ -17,7 +16,7 @@ import { useMutation } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
 
-const Akun = () => {
+const Akun = ({ onCancel }) => {
   const [file, setFile] = React.useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
@@ -98,12 +97,11 @@ const Akun = () => {
     setFile(null);
   };
 
+
   return (
     <View style={styles.container}>
       {userData ? (
         <>
-        
-
           <Controller
             control={control}
             name="nama"
@@ -156,7 +154,7 @@ const Akun = () => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 placeholder={userData.user.email}
-                editable={false}  // Disables the TextInput
+                editable={false} // Disables the TextInput
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
@@ -164,7 +162,6 @@ const Akun = () => {
               />
             )}
           />
-
           <Controller
             control={control}
             name="phone"
@@ -184,14 +181,23 @@ const Akun = () => {
         <Text style={styles.text}>Loading...</Text>
       )}
 
-      <Button
-        label="Perbarui"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(update)}
-        disabled={isLoading || isSuccess}
-      />
+      <View style={styles.buttonContainer}>
+        <Button
+          label="Batal"
+          backgroundColor="#fca5a5"
+          borderRadius={5}
+          style={styles.button}
+          onPress={onCancel}
+        />
+        <Button
+          label="Perbarui"
+          backgroundColor={Colors.brand}
+          borderRadius={5}
+          style={styles.button}
+          onPress={handleSubmit(update)}
+          disabled={isLoading || isSuccess}
+        />
+      </View>
     </View>
   );
 };
@@ -204,21 +210,6 @@ const styles = StyleSheet.create({
   },
   textInput: {
     marginBottom: 16,
-  },
-  submitButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#4682B4",
-    marginVertical: 7,
-  },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    marginBottom: 50,
-    fontWeight: "bold",
   },
   text: {
     textAlign: "center",
@@ -246,13 +237,19 @@ const styles = StyleSheet.create({
   },
   selectPhotoText: {
     color: "black",
-    marginVertical : 5,
+    marginVertical: 5,
   },
-  textFieldContainer: {
-  },
+  textFieldContainer: {},
   imageContainer: {
     alignItems: "center",
     marginTop: 10,
+  },
+  buttonContainer: {
+    marginTop: 5,
+  },
+  button: {
+    width: "100%",
+    marginBottom: 10,
   },
 });
 

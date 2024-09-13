@@ -4,8 +4,9 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from "react-native-vector-icons/Entypo";
 
-import TrackingList from "./TrackingList";
 import Pengujian from "./Pengujian";
+
+import TrackingList from "./TrackingList";
 import TitikUji from "./TitikUji";
 import Parameter from "./Parameter";
 import EditPermohonan from "../formComponent/EditPermohonan";
@@ -40,9 +41,10 @@ export default function MainScreen() {
   <NavigationContainer independent={true}>
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
-        name="Pengujian"
+        name="PengujianIndex"
         component={Pengujian}
       />
+      
       <Stack.Screen
         name="TrackingList"
         component={TrackingList}
@@ -54,6 +56,10 @@ export default function MainScreen() {
       <Stack.Screen
         name="Parameter"
         component={Parameter}
+      />
+      <Stack.Screen
+        name="EditPermohonan"
+        component={EditPermohonan}
       />
       <Stack.Screen
         name="EditTitikUji"

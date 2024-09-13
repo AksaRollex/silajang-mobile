@@ -7,11 +7,12 @@ import { useMutation } from "@tanstack/react-query";
 import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
 import axios from "@/src/libs/axios";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
-const Keamanan = () => {
+const Keamanan = ({ onCancel }) => {
   const { handleSubmit, control, formState: { errors }, reset } = useForm();
   const navigation = useNavigation();
-  
+
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -65,8 +66,13 @@ const Keamanan = () => {
             error={!!errors.old_password}
             right={
               <TextInput.Icon
-                name={showOldPassword ? "eye-off" : "eye"}
-                onPress={() => setShowOldPassword(!showOldPassword)}
+                name={() => (
+                  <Ionicons 
+                    name={showOldPassword ? "eye-outline" : "eye-off-outline"}
+                    size={24}
+                    onPress={() => setShowOldPassword(!showOldPassword)}
+                  />
+                )}
               />
             }
           />
@@ -75,7 +81,7 @@ const Keamanan = () => {
       {errors.old_password && (
         <Text style={styles.errorText}>{errors.old_password.message}</Text>
       )}
-      
+
       <Controller
         control={control}
         name="password"
@@ -91,8 +97,13 @@ const Keamanan = () => {
             error={!!errors.password}
             right={
               <TextInput.Icon
-                name={showNewPassword ? "eye-off" : "eye"}
-                onPress={() => setShowNewPassword(!showNewPassword)}
+                name={() => (
+                  <Ionicons 
+                    name={showNewPassword ? "eye-outline" : "eye-off-outline"}
+                    size={24}
+                    onPress={() => setShowNewPassword(!showNewPassword)}
+                  />
+                )}
               />
             }
           />
@@ -101,7 +112,7 @@ const Keamanan = () => {
       {errors.password && (
         <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
-      
+
       <Controller
         control={control}
         name="password_confirmation"
@@ -117,8 +128,13 @@ const Keamanan = () => {
             error={!!errors.password_confirmation}
             right={
               <TextInput.Icon
-                name={showConfirmPassword ? "eye-off" : "eye"}
-                onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                name={() => (
+                  <Ionicons 
+                    name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
+                    size={24}
+                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
+                  />
+                )}
               />
             }
           />
@@ -127,18 +143,29 @@ const Keamanan = () => {
       {errors.password_confirmation && (
         <Text style={styles.errorText}>{errors.password_confirmation.message}</Text>
       )}
-   
-      <Button
-        label="Perbarui"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(onSubmit)}
-        disabled={updateKeamanan.isLoading}
-      />
+
+      <View style={styles.buttonContainer}>
+        <Button
+          label="Batal"
+          backgroundColor="#fca5a5"
+          borderRadius={5}
+          style={styles.button}
+          onPress={onCancel}
+        />
+
+        <Button
+          label="Perbarui"
+          backgroundColor={Colors.brand}
+          borderRadius={5}
+          style={styles.button}
+          onPress={handleSubmit(onSubmit)}
+          disabled={updateKeamanan.isLoading}
+        />
+      </View>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -146,21 +173,18 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   textInput: {
-    marginBottom: 16, // Adds space between each TextInput
+    marginBottom: 16,
   },
-  submitButton: {
-    paddingVertical: 12,
-    paddingHorizontal: 20,
-    borderRadius: 15,
-    alignItems: "center",
-    justifyContent: "center",
-    backgroundColor: "#4682B4",
-    marginVertical: 7,
+  buttonContainer: {
+    marginTop: 20,
   },
-  submitButtonText: {
-    color: "#fff",
-    fontSize: 18,
-    fontWeight: "bold",
+  button: {
+    width: "100%",
+    marginBottom: 10,
+  },
+  errorText: {
+    color: "red",
+    marginBottom: 16,
   },
 });
 
