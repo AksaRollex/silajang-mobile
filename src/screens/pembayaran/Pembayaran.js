@@ -15,6 +15,10 @@ import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
 import SignatureScreen from "react-native-signature-canvas";
 import { Searchbar } from "react-native-paper";
+import { List } from "react-native-paper";
+import Pengujian from "./Pengujian";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
@@ -73,74 +77,46 @@ const Pembayaran = () => {
     navigation.navigate("PengambilanSampel");
   };
 
+const Pengujian = () => {
+  navigation.navigate("Pengujian");
+};
+
+const NonPengujian = () => {
+  navigation.navigate("NonPengujian");
+};
+
+const Global = () => {
+  navigation.navigate("Global");
+};
+
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.headerText}>SI - LAJANG</Text>
-      </View>
-      <View style={styles.search}>
-        <Searchbar
-          placeholder="Search"
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          style={styles.searchbar}
-        />
-
-        <Button style={styles.buttonSearch}>
-          <Image
-            source={require("../../../assets/images/search.png")}
-            style={styles.searchIcon}
+      <ScrollView contentContainerStyle={styles.scrollViewContent}>
+          <List.Item
+          title="Pembayaran Dengan Pengujian"
+          left={props => <FontAwesome5Icon {...props} name="wallet" size={22} />}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          className='bg-slate-50 border-black p-2'
+          onPress={Pengujian}
           />
-        </Button>
-      </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.row}>
-          {/* {paginatedCards.map((cardItem) => ( */}
-          <View
-            // key={cardItem.id}
-            style={styles.card}>
-            <View style={styles.cards}>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                10 Agustus 2024{" "}
-              </Text>
-              <Text
-                style={[
-                  styles.cardTexts,
-                  { fontWeight: "bold", fontSize: 22 },
-                ]}>
-                C2342344003
-              </Text>
-              <Text style={[styles.cardTexts, { marginTop: 15 }]}>
-                Surabaya. Jawa Barat
-              </Text>
-              <Text style={styles.cardTexts}>20.000</Text>
-            </View>
-            <View style={styles.cards2}>
-              <View>
-                <View style={styles.pending}>
-                  <Text style={styles.pendingText}>Pending</Text>
-                </View>
-                <TouchableOpacity
-                  style={styles.ButtonDetail}
-                  onPress={ButtonDetail}>
-                  <Text style={styles.TextButton}>Pembayaran</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={styles.ButtonDetail}
-                  onPress={PengambilanSampel}>
-                  <Text style={styles.TextButton}>PengambilanSampel</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
+          
+          <List.Item
+            title="Pembayaran Non Pengujian"
+            left={props => <FontAwesome5Icon {...props} name="credit-card" size={22}/>}
+            right={props => <List.Icon {...props} icon="chevron-right" />}
+            className='bg-slate-50 border-black p-2'
+            onPress={NonPengujian}
+            />
+
+            <List.Item
+            title="Pembayaran Global"
+            left={props => <FontAwesome6Icon {...props} name="building-columns" size={22}/>}
+            right={props => <List.Icon {...props} icon="chevron-right" />}
+            className='bg-slate-50 border-black p-2'
+            onPress={Global}
+            />
+
           {/* ))} */}
-        </View>
         {/* <View style={styles.paginationContainer}>
           <TouchableOpacity
             onPress={handlePreviousPage}
@@ -170,21 +146,22 @@ const Pembayaran = () => {
         </View> */}
       
       </ScrollView>
-      <View
+      {/* <View
           style={[
             styles.paginationNumber,
             { width: 30, height: 30, backgroundColor: "#6b7fde" },
           ]}>
           <Text style={{ fontSize: 15, color: "white" }}>1</Text>
-        </View>
+        </View> */}
     </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
+    // alignItems: "center",
     backgroundColor: "rgba(13, 71, 161, 0.2)",
+    justifyContent: "flex-start", // Ensure content starts from the top
   },
   headerContainer: {
     width: "100%",
@@ -236,8 +213,9 @@ const styles = StyleSheet.create({
 
   scrollViewContent: {
     flexGrow: 1, // Ensures that ScrollView content is scrollable
-    marginHorizontal: 20,
-    marginVertical: 10,
+    // marginHorizontal: 20,
+    // marginVertical: 10,
+    paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
   },
   judul: {
     fontSize: 17,
