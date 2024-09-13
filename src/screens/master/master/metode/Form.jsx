@@ -3,6 +3,7 @@ import { useForm, Controller } from 'react-hook-form'
 import { useMutation, useQuery } from '@tanstack/react-query'
 import { ScrollView } from 'react-native-gesture-handler'
 import React, { memo } from 'react'
+import { ActivityIndicator } from 'react-native'
 import axios from '@/src/libs/axios'
 import Toast from 'react-native-toast-message'
 import BackButton from '@/src/screens/components/BackButton'
@@ -74,14 +75,24 @@ export default memo(function Form({ route, navigation }) {
     }
   )
 
+  const onSubmit = (data) => {
+    if (uuid) {
+      update(data)
+    } else {
+      create(data)
+    }
+  }
   
+  if(isLoadingData && uuid){
+    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+  }
 
   return (
     <ScrollView className="bg-[#ececec] h-full">
-      <View className="bg-white m-3">
-        <View className=" flex-row mx-3 mt-4">
+      <View className="bg-white rounded m-3">
+        <View className="flex-row justify-between mx-3 mt-4">
           <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-xl font-bold ml-20 flex-1">{ data ? "Edit Metode" : "Tambah Metode" }</Text>
+          <Text className="text-xl font-bold">{ data ? "Edit Metode" : "Tambah Metode" }</Text>
         </View>
         <View className="p-5">
           <Text className="mb-3 text-lg font-semibold">Nama</Text>
@@ -107,9 +118,9 @@ export default memo(function Form({ route, navigation }) {
           <Button
             label="Simpan" 
             loading={isUpdating} 
-            onPress={handleSubmit(update)}
+            onPress={handleSubmit(onSubmit)}
             className="rounded-md bg-indigo-800 mt-4"
-            disabled={isLoadingData || isUpdating}
+            disabled={isCreating || isUpdating}
           />
         </View>
       </View>
