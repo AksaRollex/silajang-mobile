@@ -6,19 +6,16 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios from "@/src/libs/axios";
 import DropDownPicker from 'react-native-dropdown-picker';
 import { MenuView } from '@react-native-menu/menu';
-
+import BackButton from "@/src/screens/components/BackButton";
+import { useNavigation } from "@react-navigation/native";
 
 export default function PengambilSampel() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
   const [selectedFilter, setSelectedFilter] = useState("Menunggu Konfirmasi"); 
   const [selectedYear, setSelectedYear] = useState(2024);
   const [pengambil, setPengambil] = useState([]); 
   const [open, setOpen] = useState(false);
-
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
+  const navigation = useNavigation();
   
  const fetchData = () => {
   const payload = {
@@ -53,10 +50,12 @@ const generateYears = () => {
 
   return (
     <View style={styles.container} className="bg-[#ececec]">
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Pengambilan Sampel</Text>
-      </View>
       <View style={styles.searchRow}>
+
+        <View style={styles.backButton}>
+          <BackButton action={() => navigation.goBack()} size={24} />
+        </View>
+
         <View style={styles.search}>
           <Searchbar
             placeholder="Search"
@@ -65,49 +64,47 @@ const generateYears = () => {
             style={styles.searchbar}
             iconColor="#6e6e6e"
           />
-          {/* <Button style={styles.buttonSearch}>
-            <Image
-              source={require("../../../../assets/images/search.png")}
-              style={styles.searchIcon}
-              />
-          </Button> */}
         </View>
 
-        <MenuView style={styles.filterButton} onPressAction={({ nativeEvent }) => {
-          console.warn(JSON.stringify(nativeEvent));
-        }}
-        actions={[
-         { id: '0', 
-          title: 'Menunggu Konfirmasi',
-          titleColor: 'black',
-          // onPress: () => setSelectedFilter("Menunggu Konfirmasi")
-        },
-         { id: '1',
-          title: 'Sudah Konfirmasi',
-          titleColor: 'black',
-          // onPress: () => setSelectedFilter("Telah diterima")
-         }
-        ]}
-        shouldopenonLongPress={false}>
-          <Icon name="dots-vertical" size={27} color="black" />
-        </MenuView>
       </View>
+        
 
-      
-
-      <View style={styles.pickerContainer}>
-        <Text style={styles.pickerLabel}></Text>
+      <View className="flex-row mt-7 mr-4">
+      {/* DropDownPicker Container */}
+      <View className="flex-1">
         <DropDownPicker
           open={open}
           value={selectedYear}
           items={generateYears()}
           setOpen={setOpen}
           setValue={setSelectedYear}
+          placeholder="Pilih Tahun"
           style={styles.dropdownPicker}
           textStyle={styles.dropdownText}
           containerStyle={styles.dropdownContainer}
-          placeholder="Pilih Tahun"
         />
+      </View>
+
+      {/* MenuView */}
+      <View className="mt-2">
+        <MenuView 
+          className="ml-2"
+          onPressAction={({ nativeEvent }) => {
+            if (nativeEvent.event === "0") {
+              setSelectedFilter("Menunggu Konfirmasi");
+            } else if (nativeEvent.event === "1") {
+              setSelectedFilter("Telah diterima");
+            }
+          }}
+          actions={[
+            { id: '0', title: 'Menunggu Konfirmasi', titleColor: 'black' },
+            { id: '1', title: 'Sudah Konfirmasi', titleColor: 'black' }
+          ]}
+          >
+          <Icon name="dots-vertical" size={30} color="black"/>
+        </MenuView>
+      </View>
+
       </View>
 
       {/* Bagian Switch Ternary Berdasarkan Filter */}
@@ -119,18 +116,16 @@ const generateYears = () => {
                 <>
                 
               <View>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.permohonan }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.permohonan }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.permohonan }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.permohonan }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
               </View>
               <Button style={styles.eye}>
                 <Icon name={"eye"} size={14} style={[{ color: "#fff" }]} />
               </Button>
               <View>
-                <TouchableOpacity>
-                  <Icon name={"dots-vertical"} size={25} style={styles.IconFilter} />
-                </TouchableOpacity>
               </View>
               </>
               ) : (
@@ -142,17 +137,39 @@ const generateYears = () => {
           <View style={[styles.card, { marginTop: 10 }]} className="bg-[#f8f8f8]">
             <View style={styles.cards}>
               <View>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>Telah Diterima - Detail 1</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>Telah Diterima - Detail 2</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>Telah Diterima - Detail 3</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
               </View>
               <Button style={styles.eye}>
                 <Icon name={"eye"} size={15} style={[{ color: "#fff" }]} />
               </Button>
               <View>
-                <TouchableOpacity>
-                  <Icon name={"dots-vertical"} size={25} style={styles.IconFilter} />
-                </TouchableOpacity>
+              <View className="mt-20 ml-80 relative">
+                  <MenuView 
+                    className="ml-2"
+                    onPressAction={({ nativeEvent }) => {
+                      console.warn(JSON.stringify(nativeEvent));
+                    }}
+                    actions={[
+                      { id: '0', title: 'Cetak Sampling', titleColor: 'black' },
+                      { id: '1', title: 'Berita Acara', titleColor: 'black',
+                        subactions: [
+                          {
+                            id: '2', title: 'Berita Acara Pengambilan', titleColor: 'black'
+                          },
+                          {
+                            id: '3', title: 'Data Pengambilan', titleColor: 'black'
+                          }
+                        ]
+                       }
+                    ]}
+                    >
+                    <Icon name="dots-vertical" size={30} color="black" className="fixed"/>
+                  </MenuView>
+                </View>
               </View>
             </View>
           </View>
@@ -167,9 +184,12 @@ const styles = StyleSheet.create({
     width: 24,
     height: 24,
   },
+  backButton: {
+    marginTop: "4%",
+    marginEnd: "3%"
+  },
 
   pickerContainer: {
-    // marginBottom: 16,
     width: "25%",
     marginStart: 250,
   },
@@ -185,9 +205,12 @@ const styles = StyleSheet.create({
   },
   dropdownContainer: {
     height: 40,
+    width: "25%",
+    marginStart: "71%"
   },
   dropdownText: {
     fontSize: 16,
+    
   },
   headerContainer: {
     marginTop: 20,
@@ -202,8 +225,9 @@ const styles = StyleSheet.create({
   searchRow: {
     flexDirection: "row",
     justifyContent: "space-between",
-    width: "90%",
-    marginStart: "2%"
+    width: "93%",
+    marginStart: "2%",
+    marginTop: 20
   },
   container: {
     flex: 1,
@@ -215,25 +239,15 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     flex: 1,
-    marginRight: 10,
     backgroundColor: 'white',
     borderRadius: 100,
-    width: 100
+    marginRight: 10
   },
   searchbar: {
     backgroundColor: 'white',
-    borderRadius: 10,
-    width: "60%",
-    marginEnd: 100
-  },
-  buttonSearch: {
-    backgroundColor: "#0D47A1", // Contoh warna
-    padding: 10,
-    borderRadius: 10,
-    minWidth: 20,
+    borderRadius: 100,
   },
   filterButton: {
-    padding: 10,
     borderRadius: 10,
     justifyContent: "center",
     alignItems: "center",
@@ -244,7 +258,7 @@ const styles = StyleSheet.create({
     marginVertical: 10,
   },
   card: {
-    width: 360,
+    width: 380,
     borderRadius: 15,
     padding: 20,
     backgroundColor: "#fff",
@@ -259,7 +273,6 @@ const styles = StyleSheet.create({
   },
   cards: {
     borderRadius: 10,
-    width: "70%",
     marginBottom: 4,
     flexDirection: "row",
   },
@@ -272,18 +285,16 @@ const styles = StyleSheet.create({
     height: 33,
     borderRadius: 10,
     minWidth: 0,
-    marginStart: 250,
+    marginStart: 280,
     position: "absolute",
   },
   IconFilter: {
     color: "black",
     marginTop: 50,
     height: 40,
-    // borderRadius: 10,
     minWidth: 10,
-    marginStart: 285,
+    marginStart: 315,
     position: "absolute",
-    // zIndex: 10,
   },
   dropdown: {
     backgroundColor: "white",

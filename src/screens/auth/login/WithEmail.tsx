@@ -115,7 +115,7 @@ export default memo(function WithEmail() {
                 }}
               >
                 <Ionicons
-                  name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+                  name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
                   size={20}
                   color={Colors.brand}
                 />
