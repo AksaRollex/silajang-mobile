@@ -23,7 +23,7 @@ import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Imp
 
 import DropDownPicker from "react-native-dropdown-picker";
 
-const Perusahaan = () => {
+const Perusahaan = ({onCancel}) => {
   const [userData, setUserData] = useState(null);
 
   const [kotaKabupaten, setKotaKabupaten] = useState([[]]);
