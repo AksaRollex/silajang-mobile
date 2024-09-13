@@ -59,41 +59,41 @@ export default function Pengujian() {
 
         </View>
       ) : (
-        <View style={styles.container}>
+        <View className="bg-[#ececec] flex-1 flex-start">
           <ScrollView contentContainerStyle={styles.contentContainer}>
             <List.Accordion
               title="Administrasi"
               left={props => <FontAwesome6 {...props} name="computer" size={22} />}
-              className='bg-slate-50 border-black'
+              className='bg-[#ffffff]'
             >
               <List.Item 
                 title="Kontrak"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("Kontrak")}  
               />
               <List.Item 
                 title="Persetujuan" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100'
+                className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Persetujuan")}   
               />
               <List.Item 
                 title="Pengambil Sampel" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
-                onPress={() => navigation.navigate("PenerimaSampel")}    
+                className='px-5 bg-[#f8f8f8]' 
+                onPress={() => navigation.navigate("PengambilSampel")}    
               />
               <List.Item 
                 title="Penerima Sampel" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100'
-                onPress={() => navigation.navigate("PengambilSampel")}  
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("PenerimaSampel")}  
               />
               <List.Item 
                 title="Cetak LHU" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("CetakLHU")}    
               />
             </List.Accordion>
@@ -101,54 +101,54 @@ export default function Pengujian() {
             <List.Accordion
               title="Verifikasi"
               left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
-              className='bg-slate-50 border-black'
+              className='bg-[#ffffff]'
             >
               <List.Item 
                 title="Analis"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
               />
               <List.Item 
                 title="Koordinator Teknis" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100'
+                className='px-5 bg-[#f8f8f8]'
               />
               <List.Item 
                 title="Verifikasi LHU" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
               />
             </List.Accordion>
 
             <List.Accordion
               title="Report"
               left={props => <Ionicons {...props} name="document-text" size={22} />}
-              className='bg-slate-50 border-black'
+              className='bg-[#ffffff]'
             >
               <List.Item 
                 title="Laporan Hasil Pengujian"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
               />
               <List.Item 
                 title="Kendali Mutu" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100'
+                className='px-5 bg-[#f8f8f8]'
               />
               <List.Item 
                 title="Registrasi Sampel" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
               />
               <List.Item 
                 title="Rekap Data" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100'
+                className='px-5 bg-[#f8f8f8]'
               />
               <List.Item 
                 title="Rekap Parameter" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='p-2 bg-slate-100' 
+                className='px-5 bg-[#f8f8f8]' 
               />
             </List.Accordion>
             <TextFooter />
