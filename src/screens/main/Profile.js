@@ -101,13 +101,12 @@ export default function Profile() {
             </View>
           </View>
 
-          {/* Instruction to Edit Profile */}
           <View style={styles.editProfileTextContainer}>
             <Text style={styles.editProfileText}>Edit Profile</Text>
           </View>
           <View style={styles.divider} />
 
-          {/* Buttons for switching components */}
+
           <View style={styles.buttonContainer}>
             <TouchableOpacity
               style={[
@@ -116,7 +115,13 @@ export default function Profile() {
               ]}
               onPress={() => handlePress("Akun")}
             >
-              <Ionicons name="person" color="#6b7fde" size={20} />
+              <View
+                style={[
+                  styles.buttonLine, { backgroundColor: "#6b7fde" },
+                  activeComponent === "Akun" ? styles.activeButtonLine : styles.inactiveButtonLine,
+                ]}
+              />
+              <Ionicons name="person" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Akun</Text>
             </TouchableOpacity>
 
@@ -127,7 +132,13 @@ export default function Profile() {
               ]}
               onPress={() => handlePress("Keamanan")}
             >
-              <Fontawesome5 name="lock" color="#6b7fde" size={20} />
+              <View
+                style={[
+                  styles.buttonLine,{ backgroundColor: "#6b7fde" },
+                  activeComponent === "Keamanan" ? styles.activeButtonLine : styles.inactiveButtonLine,
+                ]}
+              />
+              <Fontawesome5 name="lock" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Keamanan</Text>
             </TouchableOpacity>
 
@@ -138,12 +149,19 @@ export default function Profile() {
               ]}
               onPress={() => handlePress("Perusahaan")}
             >
-              <Fontawesome5 name="briefcase" color="#6b7fde" size={20} />
+              <View
+                style={[
+                  styles.buttonLine,{ backgroundColor: "#6b7fde" },
+                  activeComponent === "Perusahaan" ? styles.activeButtonLine : styles.inactiveButtonLine,
+                ]}
+              />
+              <Fontawesome5 name="briefcase" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Perusahaan</Text>
             </TouchableOpacity>
           </View>
 
-          {/* Animated form rendering */}
+
+
           <Animated.View style={[styles.activeComponentContainer, { opacity: fadeAnim }]}>
             {RenderedComponent}
           </Animated.View>
@@ -245,37 +263,55 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-around",
     alignItems: "center",
-    marginTop: 10,
-    width: "100%",
+    marginTop: 2,
+    width: "95%",
     paddingHorizontal: 10,
-  },
-  buttonBox: {
-    width: 100,
-    height: 100,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "white",
-    borderRadius: 10,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 5,
-    elevation: 6,
-    margin: 10,
-    position: "relative",
   },
   activeButtonBox: {
     backgroundColor: "#e1e7ff",
   },
   buttonText: {
     color: "#6b7fde",
-    fontSize: 14,
+    fontSize: 12,
     fontWeight: "bold",
-    marginTop: 5,
+    marginLeft: 5,    
   },
   activeComponentContainer: {
     flex: 1,
     width: "100%",
     paddingHorizontal: 20,
+  },
+  buttonLine: {
+    position: "absolute",
+    top: 1,
+    width: "100%",
+    height: 4,
+    borderRadius: 0,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    zIndex: 1,
+  },
+  activeButtonLine: {
+    backgroundColor: "#312e81", 
+  },
+  inactiveButtonLine: {
+    backgroundColor: "#6b7fde", 
+  },
+
+  buttonBox: {
+    width: 100,
+    height: 60,
+    flexDirection: "row",        // Mengatur elemen secara horizontal
+    alignItems: "center",        // Menyelaraskan elemen di tengah secara vertikal
+    justifyContent: "center",    // Menyelaraskan elemen di tengah secara horizontal
+    backgroundColor: "white",
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0,
+    shadowRadius: 0,
+    elevation: 0,
+    margin: 10,
+    position: "relative",
   },
 });
