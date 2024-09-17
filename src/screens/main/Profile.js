@@ -14,6 +14,7 @@ import Perusahaan from "./Perusahaan";
 import Keamanan from "./Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default function Profile() {
   const [activeComponent, setActiveComponent] = useState(null);
@@ -79,7 +80,7 @@ export default function Profile() {
               {userData ? (
                 <>
                   <View style={styles.iconTextRow}>
-                    <Fontawesome5 name="user-circle" color="#64748b" />
+                    <MaterialIcons name="check-decagram" color="#64748b" size={13}/>
                     <Text style={styles.text}>{userData.user.nama}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
@@ -87,11 +88,11 @@ export default function Profile() {
                     <Text style={styles.text}>{userData.user.email}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
-                    <Fontawesome5 name="phone-alt" color="#64748b" />
+                    <Fontawesome5 name="phone-alt" color="#64748b" size={11}/>
                     <Text style={styles.text}>{userData.user.phone}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
-                    <Fontawesome5 name="user-check" color="#64748b" />
+                    <Ionicons name="person-circle-outline" color="#64748b" size={14}/>
                     <Text style={styles.text}>{userData.user.golongan.nama}</Text>
                   </View>
                 </>
@@ -271,7 +272,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#e1e7ff",
   },
   buttonText: {
-    color: "#6b7fde",
+    color: "black",
     fontSize: 12,
     fontWeight: "bold",
     marginLeft: 5,    
@@ -283,8 +284,8 @@ const styles = StyleSheet.create({
   },
   buttonLine: {
     position: "absolute",
-    top: 1,
-    width: "100%",
+    top: 0,
+    width: "97%",
     height: 4,
     borderRadius: 0,
     borderTopLeftRadius: 10,
@@ -301,16 +302,16 @@ const styles = StyleSheet.create({
   buttonBox: {
     width: 100,
     height: 60,
-    flexDirection: "row",        // Mengatur elemen secara horizontal
-    alignItems: "center",        // Menyelaraskan elemen di tengah secara vertikal
-    justifyContent: "center",    // Menyelaraskan elemen di tengah secara horizontal
+    flexDirection: "row",        
+    alignItems: "center",       
+    justifyContent: "center",  
     backgroundColor: "white",
-    borderRadius: 10,
+    borderRadius: 8,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0,
-    shadowRadius: 0,
-    elevation: 0,
+    shadowOpacity: .1,        
+    shadowRadius: 1,          
+    elevation: 1,              
     margin: 10,
     position: "relative",
   },

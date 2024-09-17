@@ -9,19 +9,19 @@ import {
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import { useForm, Controller } from "react-hook-form";
-import { create } from "zustand";
+import { useForm, Controller } from "react-hook-form";  
 import { TextField, Colors, Button } from "react-native-ui-lib";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
-import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
+import { launchImageLibrary } from "react-native-image-picker";
+import { API_URL } from "@env";
 
-const Akun = ({ onCancel }) => {
+const Akun = ({onCancel}) => {
   const [file, setFile] = React.useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
 
-  // put process
   const {
     handleSubmit,
     control,
@@ -30,78 +30,118 @@ const Akun = ({ onCancel }) => {
     reset,
   } = useForm();
 
-  const useFormPut = create(set => ({
-    credential: {
-      nama: "",
-      photo: "",
-    },
-  }));
-
-  const { setAkun } = useFormPut();
-
-  // get data profile
+  // FETCH DATA USER
   useEffect(() => {
     axios
       .get("/auth")
       .then(response => {
-        console.log("Response Data user akun:", response.data.user); // Log data response
         setUserData(response.data);
       })
       .catch(error => {
-        console.error("Error fetching data:", error); // Log error
+        console.error("Error fetching data:", error);
       });
   }, []);
 
-  // Update data pengguna
+  // FETCH PHOTO USER 
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data);
+        if (response.data.user && response.data.user.photo) {
+          const photoUrl = `${API_URL}${response.data.user.photo}`;
+          setCurrentPhotoUrl(photoUrl);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  // UPDATE DATA USER
+  const updateUser = async () => {
+    const formData = new FormData();
+    formData.append("nama", getValues("nama"));
+
+    if (file) {
+      formData.append("photo", {
+        uri: file.uri,
+        type: file.type || "image/jpeg",
+        name: file.fileName || "profile_photo.jpg",
+      });
+    }
+
+    try {
+      const response = await axios.post("/user/account", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      const { photo } = response.data.user;
+      const updatedImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
+      setCurrentPhotoUrl(updatedImageUrl);
+    } catch (error) {
+      console.error("Update failed:", error.message);
+    }
+  };
+
   const {
     mutate: update,
     isLoading,
-    isSuccess,
-  } = useMutation(
-    () => {
-      const requestData = {
-        nama: getValues("nama"),
-        photo: userData?.photo, // Jika Anda menyertakan foto dalam update
-      };
-      return axios.put("/user/updateAkun", requestData).then(res => res.data);
+  } = useMutation(updateUser, {
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Data Berhasil Di Kirim",
+      });
+      
+      // Menambahkan auto reload halaman setelah data di-submit
+      navigation.reset({
+        index: 0,
+        routes: [{ name: "Profile" }],
+      });
+
+      reset();
+      setFile(null);
     },
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Data Berhasil Di Kirim",
-        });
-        navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
-        reset();
-      },
-      onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-      },
+    onError: error => {
+      console.error(error.message);
+      Toast.show({
+        type: "error",
+        text1: error.message,
+      });
     },
-  );
+  });
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0].uri;
-        setFile(selectedImage);
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorMessage) {
+        console.log("ImagePicker Error: ", response.errorMessage);
+      } else {
+        console.log("Chosen file:", response.assets[0]);
+        setFile(response.assets[0]);
       }
     });
   };
 
   const handleDeletePhoto = () => {
     setFile(null);
+    setCurrentPhotoUrl(null);
   };
 
+  const handleCancel = () => {
+    reset();
+    setFile(null);
+  };
 
   return (
     <View style={styles.container}>
       {userData ? (
         <>
+          <Text style={{ color: "black" }}>Nama</Text>
           <Controller
             control={control}
             name="nama"
@@ -109,52 +149,7 @@ const Akun = ({ onCancel }) => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 placeholder={userData.user.nama}
-                enableErrors
-                fieldStyle={styles.textField}
-                onChangeText={onChange}
-                value={value}></TextField>
-            )}
-          />
-          {errors.nama && (
-            <Text style={{ color: "red" }}>{errors.nama.message}</Text>
-          )}
-
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-          </TouchableOpacity>
-
-          <Controller
-            control={control}
-            name="photo"
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.textFieldContainer}>
-                <TextField
-                  enableErrors
-                  fieldStyle={styles.textField}
-                  onChangeText={onChange}
-                  value={value}
-                />
-                {file && (
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: file }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={handleDeletePhoto}>
-                      <Text style={styles.deleteButtonText}>Hapus Gambar</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                placeholder={userData.user.email}
-                editable={false} // Disables the TextInput
+                placeholderTextColor="black"
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
@@ -162,6 +157,66 @@ const Akun = ({ onCancel }) => {
               />
             )}
           />
+          {errors.nama && (
+            <Text style={{ color: "red" }}>{errors.nama.message}</Text>
+          )}
+          
+          {/* Bagian Foto Profil */}
+          <Text style={{ color: "black" }}>Foto Profil</Text>
+          <Controller
+            control={control}
+            name="photo"
+            render={({ field: { value } }) => (
+              <View style={styles.signatureContainer}>
+                <View style={styles.signatureField}>
+                  {currentPhotoUrl || file ? (
+                    <View style={styles.imageContainer}>
+                      <Image
+                        source={{ uri: file ? file.uri : currentPhotoUrl }}
+                        style={styles.signaturePreview}
+                        onError={e => console.log("Error loading image:", e.nativeEvent.error)}
+                      />
+                      <TouchableOpacity
+                        style={styles.changeButton}
+                        onPress={handleChoosePhoto}>
+                        <Text style={styles.buttonText}>Ubah</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={handleDeletePhoto}>
+                        <Text style={styles.deleteButtonText}>X</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addSignatureButton}
+                      onPress={handleChoosePhoto}>
+                      <Text style={styles.addSignatureText}>Tambah Foto</Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            )}
+          />
+
+          <Text style={{ color: "black" }}>Email</Text>
+          <Controller
+            control={control}
+            name="email"
+            render={({ field: { onChange, value } }) => (
+              <TextField
+                placeholder={userData.user.email}
+                editable={false}
+                enableErrors
+                fieldStyle={styles.textField}
+                placeholderTextColor="gray"
+                onChangeText={onChange}
+                value={value}
+              />
+            )}
+          />
+          
+          <Text style={{ color: "black" }}>Nomor Telepon</Text>
           <Controller
             control={control}
             name="phone"
@@ -171,6 +226,7 @@ const Akun = ({ onCancel }) => {
                 enableErrors
                 editable={false}
                 fieldStyle={styles.textField}
+                placeholderTextColor="gray"
                 onChangeText={onChange}
                 value={value}
               />
@@ -178,26 +234,28 @@ const Akun = ({ onCancel }) => {
           />
         </>
       ) : (
-        <Text style={styles.text}>Loading...</Text>
+        <Text style={[styles.text, { color: "black", marginVertical: 10 }]}>
+          Memuat...
+        </Text>
       )}
 
-      <View style={styles.buttonContainer}>
-        <Button
-          label="Batal"
-          backgroundColor="#fca5a5"
-          borderRadius={5}
-          style={styles.button}
-          onPress={onCancel}
-        />
-        <Button
-          label="Perbarui"
-          backgroundColor={Colors.brand}
-          borderRadius={5}
-          style={styles.button}
-          onPress={handleSubmit(update)}
-          disabled={isLoading || isSuccess}
-        />
-      </View>
+      <Button
+        label="Simpan"
+        style={{ marginBottom: 20 }}
+        backgroundColor={Colors.brand}
+        borderRadius={5}
+        onPress={handleSubmit(update)}
+        disabled={isLoading}
+      />
+
+      {/* Tombol Cancel */}
+      <Button
+        label="Cancel"
+        style={{ marginBottom: 40 }}
+        backgroundColor={Colors.red30}
+        borderRadius={5}
+        onPress={onCancel}
+      />
     </View>
   );
 };
@@ -217,11 +275,14 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textField: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    borderColor: "#ccc",
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
+    borderColor: Colors.grey50,
+    borderRadius: 5,
+    paddingHorizontal: 20,
+    height: 46, // Increase the height
+    paddingVertical: 5, // Add vertical padding for a bigger input area
   },
   imagePreview: {
     width: 100,
@@ -250,6 +311,71 @@ const styles = StyleSheet.create({
   button: {
     width: "100%",
     marginBottom: 10,
+  },
+  signatureContainer: {
+    marginBottom: 20,
+  },
+  signatureField: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  imageContainer: {
+    alignItems: "center",
+    position: "relative",
+  },
+  signaturePreview: {
+    width: 200,
+
+    height: 100,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  changeButton: {
+    backgroundColor: "#4682B4",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "red",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  addSignatureButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 2,
+    borderColor: "#4682B4",
+    borderStyle: "dashed",
+    borderRadius: 8,
+  },
+  addSignatureText: {
+    marginLeft: 10,
+    color: "#4682B4",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 
