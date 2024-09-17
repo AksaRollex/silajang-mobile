@@ -17,6 +17,12 @@ return (
         onPress={() => navigation.navigate("Metode")}
         />
       <AccordionItem 
+        title="Peraturan"
+        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+        className='bg-white border-b-2 border-[#ececec]'
+        onPress={() => navigation.navigate("Peraturan")}
+        />
+      <AccordionItem 
         title="JasaPengambilan"
         right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
         className='bg-white border-b-2 border-[#ececec]'
@@ -63,12 +69,6 @@ return (
         right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
         className='bg-white border-b-2 border-[#ececec]'
         onPress={() => navigation.navigate("Pengawetan")}
-        />
-      <AccordionItem 
-        title="Peraturan"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("Peraturan")}
         />
       <AccordionItem 
         title="RadiusPengambilan"

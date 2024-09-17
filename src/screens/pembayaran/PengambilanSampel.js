@@ -2,8 +2,9 @@ import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'rea
 import React, { useState } from 'react'
 import { Searchbar } from "react-native-paper";
 import { Button, Colors } from "react-native-ui-lib";
-import Icon from "react-native-vector-icons/Entypo";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import MonthYearPicker from 'react-native-simple-month-year-picker';
+import { useNavigation } from '@react-navigation/native';
 
 export default function PengambilanSampel() {
   const [searchQuery, setSearchQuery] = useState("");
@@ -16,232 +17,172 @@ export default function PengambilanSampel() {
 
   return (
     <View style={styles.container}>
+      {/* Header Section */}
+      <View style={styles.headerContainer}>
+        <Text style={styles.headerTitle}>Pengambilan Sampel</Text>
+      </View>
+
+      {/* Search and Filter Section */}
       <View style={styles.searchRow}>
         <View style={styles.search}>
-          <Searchbar
+          <Searchbar 
             placeholder="Search"
             onChangeText={setSearchQuery}
             value={searchQuery}
             style={styles.searchbar}
+            iconColor="#6e6e6e"
           />
-
-          <Button style={styles.buttonSearch}>
-            <Image
-              source={require("../../../assets/images/search.png")}
-              style={styles.searchIcon}
-            />
-          </Button>
         </View>
 
-        <View>
-          <TouchableOpacity onPress={toggleDropdown}>
-            <Icon
-              name={"dots-three-vertical"}
-              size={25}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
-
-          {/* Tampilkan dropdown jika state dropdownVisible bernilai true */}
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity style={styles.dropdownItem}>
-                <Text style={styles.dropdownText}>Menunnggu Konfirmasi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownItem}>
-                <Text style={styles.dropdownText}>Telah diterima</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
+        <TouchableOpacity style={styles.filterButton} onPress={toggleDropdown}>
+          <Icon name="filter-menu-outline" size={25} color="white" />
+        </TouchableOpacity>
       </View>
-      <View>
-        <Button style={styles.yearpick} title="Show Picker" onPress={() => setIsShow(true)} />
+
+      {/* Dropdown */}
+      {dropdownVisible && (
+        <View style={styles.dropdown}>
+          <TouchableOpacity style={styles.dropdownItem}>
+            <Text style={styles.dropdownText}>Menunggu Konfirmasi</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.dropdownItem}>
+            <Text style={styles.dropdownText}>Telah diterima</Text>
+          </TouchableOpacity>
+        </View>
+      )}
+
+      {/* Year Picker Section */}
+      <View style={styles.yearPickerContainer}>
+        <Button
+          style={styles.yearpick}
+          title="Pilih Tahun"
+          onPress={() => setIsShow(true)}
+        />
         <MonthYearPicker
           isShow={isShow}
-          close={() => setIsShow(false)} // setState isShow to false
-          onChangeYear={(year) =>  console.log(year)}
-          onChangeMonth={(month) => {
-        console.log(month)
-    }}
+          close={() => setIsShow(false)}
+          onChangeYear={(year) => console.log(year)}
+          onChangeMonth={(month) => console.log(month)}
         />
       </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.row}>
-          <View style={[styles.card, { marginTop: 10}]}>
-            <View style={styles.cards}>
-              <View>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              </View>
 
-              <Button
-              style={[styles.eye, {}]}>
-              <Icon 
-                name={"eye"}
-                size={20}
-                style={[ {color: "#fff"}]}
-              />
-              </Button>
-            </View>
-          </View>
-          <View style={[styles.card, { marginTop: 25}]}>
-            <View style={styles.cards}>
-              <View>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              </View>
+      {/* Content Section */}
+      <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+        <View style={styles.card}>
+          <View style={styles.cardContent}>
+            <Text style={styles.cardText}>Sample Text 1</Text>
+            <Text style={styles.cardText}>Sample Text 2</Text>
+            <Text style={styles.cardText}>Sample Text 3</Text>
 
-              <Button
-              style={[styles.eye, {}]}>
-              <Icon 
-                name={"eye"}
-                size={20}
-                style={[ {color: "#fff"}]}
-              />
-              
+            <View style={styles.cardIcons}>
+              <Button style={styles.eye}>
+                <Icon name="eye" size={20} color="white" />
               </Button>
-              
+              <TouchableOpacity>
+                <Icon name="dots-vertical" size={25} color="black" />
+              </TouchableOpacity>
             </View>
           </View>
         </View>
-      
       </ScrollView>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  searchRow: {
-    flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "92%",
-    marginStart: "2%",
-  },
-  searchIcon: {
-    width: 24,
-    height: 24,
-  },
   container: {
     flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: "#f0f0f0",
+  },
+  headerContainer: {
+    marginTop: 40,
     alignItems: "center",
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    marginBottom: 20,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: "bold",
+    color: "#333",
+  },
+  searchRow: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    marginBottom: 20,
   },
   search: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 0, 
-    backgroundColor: "white",
+    flex: 1,
+    marginRight: 10,
+    backgroundColor: 'white',
     borderRadius: 10,
-    marginVertical: 10,
-    width: "86%",
-    marginTop: 20,
   },
   searchbar: {
-    flex: 1, 
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 10,
-    marginRight: 10,
   },
-  buttonSearch: {
-    backgroundColor: "#0D47A1", 
+  filterButton: {
+    backgroundColor: "#007BFF",
     padding: 10,
-    borderRadius: 10,
-    minWidth: "15%",
-  },
-  icon: {
-    color: "black",
-    marginTop: 10.5,
+    borderRadius: 8,
+    justifyContent: "center",
+    alignItems: "center",
   },
   dropdown: {
-    position: "absolute",
-    top: 60,
-    right: 5,
     backgroundColor: "white",
     borderRadius: 8,
+    marginTop: 10,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
     shadowRadius: 3.84,
-    width: "700%",
-    zIndex: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
   },
   dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
+    paddingVertical: 10,
   },
   dropdownText: {
-    fontSize: 14,
-    color: "black",
+    fontSize: 16,
+    color: "#333",
   },
-  scrollViewContent: {
-    flexGrow: 1, 
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  card: {
-    width: 360,
-    marginVertical: 1,
-    borderRadius: 15,
-    padding: 20,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
-  },
-  cards: {
-    borderRadius: 10,
-    width: "70%",
-    marginBottom: 4,
-    flexDirection: "row",
-  },
-  cardTexts: {
-    fontSize: 15,
-    color: "black",
-  },
-
-  eye: {
-    backgroundColor: "#0D47A1",
-    marginTop: 40,
-    height: 40,
-    borderRadius: 10,
-    minWidth: 10,
-    marginStart: 250,
-    position: "absolute",
+  yearPickerContainer: {
+    marginBottom: 20,
+    alignItems: "flex-end",
   },
   yearpick: {
-    marginTop: 25,
-    // marginStart: 270,/
-    backgroundColor: "white",
-    height: 31,
+    backgroundColor: "#007BFF",
+    borderRadius: 8,
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    color: "white",
+  },
+  scrollViewContent: {
+    flexGrow: 1,
+  },
+  card: {
+    backgroundColor: "#fff",
+    borderRadius: 15,
+    padding: 20,
+    marginBottom: 15,
+    elevation: 3,
+  },
+  cardContent: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+  },
+  cardText: {
+    fontSize: 16,
+    color: "#333",
+  },
+  cardIcons: {
+    flexDirection: "row",
+    alignItems: "center",
+  },
+  eye: {
+    backgroundColor: "#007BFF",
     borderRadius: 5,
-  }
+    padding: 8,
+    marginRight: 10,
+  },
 });
