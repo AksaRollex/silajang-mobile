@@ -17,6 +17,7 @@ const Select2 = ({ onChangeValue, items, value, placeholder }) => {
       />
     </View>
   );
+  
 };
 
 const styles = StyleSheet.create({
