@@ -232,7 +232,7 @@ const Dashboard = () => {
                 </View>
               </>
             )}
-          <TextFooter />
+  
           </>
         ) : (
           <View className="h-full justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
