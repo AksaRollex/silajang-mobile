@@ -12,6 +12,7 @@
   "dependencies": {
     "@hookform/resolvers": "^3.4.2",
     "@monterosa/react-native-parallax-scroll": "^1.8.0",
+    "@nyashanziramasanga/react-native-horizontal-scroll-menu": "^1.0.11",
     "@react-native-async-storage/async-storage": "^1.23.1",
     "@react-native-community/blur": "^4.4.0",
     "@react-native-community/datetimepicker": "^8.0.1",
