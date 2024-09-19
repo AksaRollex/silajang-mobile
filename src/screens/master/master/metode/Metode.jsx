@@ -1,39 +1,21 @@
-import axios from "@/src/libs/axios";
-import { useNavigation } from "@react-navigation/native";
-import React, { useState, useEffect } from "react";
-import { FlatList, Text, View, ActivityIndicator } from "react-native";
-import Icon from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
-import { MenuView } from "@react-native-menu/menu";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDelete } from '@/src/hooks/useDelete';
 import SearchInput from "@/src/screens/components/SearchInput";
-
-// Custom hook for debounce
-const useDebounce = (value, delay) => {
-  const [debouncedValue, setDebouncedValue] = useState(value);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setDebouncedValue(value);
-    }, delay);
-
-    return () => {
-      clearTimeout(handler);
-    };
-  }, [value, delay]);
-
-  return debouncedValue;
-};
+import { MenuView } from "@react-native-menu/menu";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import Icon from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import Paginate from '@/src/screens/components/Paginate';
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
-  const [searchInput, setSearchInput] = useState("");
-  const debouncedSearchQuery = useDebounce(searchInput, 300);
+  const paginateRef = useRef();
 
   const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(['metode']);
+      paginateRef.current?.refetch()
     },
     onError: (error) => {
       console.error('Delete error:', error);
@@ -49,23 +31,9 @@ const Metode = ({ navigation }) => {
     { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
   ];
 
-  const fetchMetode = async ({ queryKey }) => {
-    const [_, search] = queryKey;
-    const response = await axios.post('/master/acuan-metode', { search });
-    return response.data.data;
-  };
 
-  const { data, isLoading: isLoadingData } = useQuery(
-    ['metode', debouncedSearchQuery],
-    fetchMetode,
-    {
-      onError: (error) => {
-        console.error(error);
-      }
-    }
-  );
 
-  const TabelMetode = ({ item }) => {
+  const renderItem = ({ item }) => {
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -97,27 +65,15 @@ const Metode = ({ navigation }) => {
     );
   };
 
-  if (isLoadingData) {
-    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
-  }
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="bg-white p-4">
-      <SearchInput 
-        onChangeText={setSearchInput}
-        value={searchInput}
-        placeholder={"Cari Metode"}
-        className="bg-[#f1f1f1] flex-1"
-        size={26} action={() => navigation.goBack()} 
+      <Paginate
+        ref={paginateRef}
+        url="/master/acuan-metode"
+        payload={{}}
+        renderItem={renderItem}  
       />
-        <FlatList
-          className="mt-4"
-          data={data}
-          renderItem={({ item }) => <TabelMetode item={item} />}
-          keyExtractor={item => item.id.toString()}
-        />
-      </View>
       <Icon
         name="plus"
         size={28}
