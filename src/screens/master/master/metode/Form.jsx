@@ -1,6 +1,6 @@
 import { View, Text, Button, TextField } from 'react-native-ui-lib'
 import { useForm, Controller } from 'react-hook-form'
-import { useMutation, useQuery } from '@tanstack/react-query'
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { ScrollView } from 'react-native-gesture-handler'
 import React, { memo } from 'react'
 import { ActivityIndicator } from 'react-native'
@@ -31,6 +31,7 @@ export default memo(function Form({ route, navigation }) {
     }
   })
 
+  const queryClient = useQueryClient()
   const { mutate: update, isLoading: isUpdating } = useMutation(
     (data) => axios.post(`/master/acuan-metode/${uuid}/update`, data),
     {
@@ -39,6 +40,9 @@ export default memo(function Form({ route, navigation }) {
           type: 'success',
           text1: 'Success',
           text2: 'Data updated successfully'
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["metode"]
         })
         navigation.navigate("Metode")
       },
@@ -61,6 +65,9 @@ export default memo(function Form({ route, navigation }) {
           type: 'success',
           text1: 'Success',
           text2: 'Data created successfully'
+        })
+        queryClient.invalidateQueries({
+          queryKey: ["metode"]
         })
         navigation.navigate("Metode")
       },

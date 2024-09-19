@@ -22,30 +22,48 @@ return (
         className='bg-white border-b-2 border-[#ececec]'
         onPress={() => navigation.navigate("Peraturan")}
         />
+        <AccordionItem 
+          title="Parameter"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("Parameter")}
+        />
+        <AccordionItem 
+          title="Paket"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("Paket")}
+        />
+        <AccordionItem 
+          title="Pengawetan"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("Pengawetan")}
+          />
+        <AccordionItem 
+          title="JenisSampel"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("JenisSampel")}
+          />
+        <AccordionItem 
+          title="JenisWadah"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("JenisWadah")}
+          />
       <AccordionItem 
         title="JasaPengambilan"
         right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
         className='bg-white border-b-2 border-[#ececec]'
         onPress={() => navigation.navigate("JasaPengambilan")}
         />
-      <AccordionItem 
-        title="JenisSampel"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("JenisSampel")}
-        />
-      <AccordionItem 
-        title="JenisWadah"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("JenisWadah")}
-        />
-      <AccordionItem 
-        title="KodeRetribusi"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("KodeRetribusi")}
-      />
+        <AccordionItem 
+          title="RadiusPengambilan"
+          right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
+          className='bg-white border-b-2 border-[#ececec]'
+          onPress={() => navigation.navigate("RadiusPengambilan")}
+          />
       <AccordionItem 
         title="LiburCuti"
         right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
@@ -53,29 +71,11 @@ return (
         onPress={() => navigation.navigate("LiburCuti")}
         />
       <AccordionItem 
-        title="Paket"
+        title="KodeRetribusi"
         right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
         className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("Paket")}
+        onPress={() => navigation.navigate("KodeRetribusi")}
       />
-      <AccordionItem 
-        title="Parameter"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("Parameter")}
-      />
-      <AccordionItem 
-        title="Pengawetan"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("Pengawetan")}
-        />
-      <AccordionItem 
-        title="RadiusPengambilan"
-        right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-        className='bg-white border-b-2 border-[#ececec]'
-        onPress={() => navigation.navigate("RadiusPengambilan")}
-        />
         <TextFooter />
     </View>
  )
