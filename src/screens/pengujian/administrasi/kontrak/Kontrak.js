@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 // import SearchInput from "@/src/screens/components/SearchInput";
 import BackButton from "@/src/screens/components/BackButton";
 import { Searchbar } from "react-native-paper";
+import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -42,6 +43,7 @@ const Kontrak = ({ navigation }) => {
   // const queryClient = useQueryClient();
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [selectedKesimpulan, setSelectedKesimpulan] = useState(0);
   const debouncedSearchQuery = useDebounce(searchInput, 300);
 
   // const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
@@ -55,6 +57,12 @@ const Kontrak = ({ navigation }) => {
 
   const filterOptions = generateYears();
 
+  const kesimpulanOptions = [
+    { id: 0, name: "Menunggu Konfirmasi" },
+    { id: 1, name: "Telah Konfirmasi" },
+    { id: 2, name: "Konfirmasi Ditolak" },
+  ];
+
   const dropdownOptions = [
     // {
     //   id: "Edit",
@@ -66,11 +74,11 @@ const Kontrak = ({ navigation }) => {
   ];
 
   const fetchKontrak = async ({ queryKey }) => {
-    const [_, search, year] = queryKey;
+    const [_, search, year, kesimpulan] = queryKey;
     const response = await axios.post('/administrasi/kontrak', { 
       search,
       tahun: year,
-      kesimpulan_kontrak: 1,
+      kesimpulan_kontrak: kesimpulan,
       page: 1,
       per: 10 
     });
@@ -79,11 +87,12 @@ const Kontrak = ({ navigation }) => {
   };
 
   const { data, isLoading: isLoadingData } = useQuery(
-    ['kontrak', debouncedSearchQuery, selectedYear],
+    ['kontrak', debouncedSearchQuery, selectedYear, selectedKesimpulan],
     fetchKontrak,
     {
       onSuccess: (data) => {
         console.log(selectedYear)
+        console.log(selectedKesimpulan)
         console.log(data);
       },
       onError: (error) => {
@@ -182,6 +191,17 @@ const Kontrak = ({ navigation }) => {
                     <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
                   </View>
                 </MenuView>
+            </View>
+            <View className="flex-row items-start space-x-2 mt-4">
+              <HorizontalScrollMenu
+                items={kesimpulanOptions}
+                selected={selectedKesimpulan}
+                onPress={item => setSelectedKesimpulan(item.id)} // Update selectedKesimpulan
+                itemWidth={185}
+                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                activeBackgroundColor={ "#312e81" }
+                buttonStyle={{ marginRight: 10, borderRadius: 20, justifyContent: 'flex-start' }}
+              />
             </View>
             <FlatList
               className="mt-4"
