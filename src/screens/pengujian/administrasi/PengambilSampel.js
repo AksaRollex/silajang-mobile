@@ -23,7 +23,7 @@ export default function PengambilSampel() {
     tahun: selectedYear,
   };
 
-  axios
+  axios                                                                                                 
     .post("/administrasi/pengambil-sample", payload)
     .then(response => {
       setPengambil(response.data.data);
@@ -49,13 +49,20 @@ const generateYears = () => {
   
 
   return (
-    <View style={styles.container} className="bg-[#ececec]">
-      <View style={styles.searchRow}>
+    <View className="bg-[#ececec]">
+      <View className="bg-white p-4 ">
 
-        <View style={styles.backButton}>
+      <View style={styles.searchRow} className="">
+        <View>
           <BackButton action={() => navigation.goBack()} size={24} />
         </View>
 
+        <View>
+          <Text className="font-bold ml-28 mt-1 text-lg">Pengambil Sampel</Text>
+        </View>        
+      </View>
+
+      <View className="flex-row justify-between mt-10">
         <View style={styles.search}>
           <Searchbar
             placeholder="Search"
@@ -63,30 +70,11 @@ const generateYears = () => {
             value={searchQuery}
             style={styles.searchbar}
             iconColor="#6e6e6e"
+            className="bg-[#f2f2f2] flex-1"
           />
-        </View>
-
-      </View>
-        
-
-      <View className="flex-row mt-7 mr-4">
-      {/* DropDownPicker Container */}
-      <View className="flex-1">
-        <DropDownPicker
-          open={open}
-          value={selectedYear}
-          items={generateYears()}
-          setOpen={setOpen}
-          setValue={setSelectedYear}
-          placeholder="Pilih Tahun"
-          style={styles.dropdownPicker}
-          textStyle={styles.dropdownText}
-          containerStyle={styles.dropdownContainer}
-        />
       </View>
 
-      {/* MenuView */}
-      <View className="mt-2">
+      <View className="mt-3">
         <MenuView 
           className="ml-2"
           onPressAction={({ nativeEvent }) => {
@@ -104,25 +92,38 @@ const generateYears = () => {
           <Icon name="dots-vertical" size={30} color="black"/>
         </MenuView>
       </View>
+      </View>
+        
 
+      <View className="flex-row mt-6">
+        <View className="flex-1 ml-12">
+          <DropDownPicker
+            open={open}
+            value={selectedYear}
+            items={generateYears()}
+            setOpen={setOpen}
+            setValue={setSelectedYear}
+            placeholder="Pilih Tahun"
+            style={styles.dropdownPicker}
+            textStyle={styles.dropdownText}
+            containerStyle={styles.dropdownContainer}
+          />
+        </View>
       </View>
 
-      {/* Bagian Switch Ternary Berdasarkan Filter */}
-      <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
+      <ScrollView className="mt-4" showsVerticalScrollIndicator={false}>
         {selectedFilter === "Menunggu Konfirmasi" ? (
-          <View style={[styles.card, { marginTop: 10 }]} className="bg-[#f8f8f8]">
+          <View style={[styles.card, { marginTop: 10 }]} className="ml-1 bg-[#f8f8f8] flex-1">
             <View style={styles.cards}>
               {pengambil ? (
                 <>
-                
               <View>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
-                <Text style={[styles.cardTexts, { fontSize: 14 }]}>{ pengambil.industri }</Text>
+                <Text style={[styles.cardTexts, { fontSize: 24 }]}>{}</Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
+                <Text style={[styles.cardTexts, { fontSize: 14 }]}></Text>
               </View>
-              <Button style={styles.eye}>
+              <Button style={styles.eye} className="">
                 <Icon name={"eye"} size={14} style={[{ color: "#fff" }]} />
               </Button>
               <View>
@@ -175,6 +176,7 @@ const generateYears = () => {
           </View>
         )}
       </ScrollView>
+      </View>
     </View>
   );
 }
@@ -183,10 +185,6 @@ const styles = StyleSheet.create({
   searchIcon: {
     width: 24,
     height: 24,
-  },
-  backButton: {
-    marginTop: "4%",
-    marginEnd: "3%"
   },
 
   pickerContainer: {
@@ -206,7 +204,7 @@ const styles = StyleSheet.create({
   dropdownContainer: {
     height: 40,
     width: "25%",
-    marginStart: "71%"
+    marginStart: "72%"
   },
   dropdownText: {
     fontSize: 16,
@@ -224,14 +222,8 @@ const styles = StyleSheet.create({
   },
   searchRow: {
     flexDirection: "row",
-    justifyContent: "space-between",
-    width: "93%",
-    marginStart: "2%",
-    marginTop: 20
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
+    justifyContent: "space-beetwen",
+    marginTop: 5,
   },
   search: {
     flexDirection: "row",
@@ -239,12 +231,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 10,
     flex: 1,
-    backgroundColor: 'white',
     borderRadius: 100,
-    marginRight: 10
+    marginRight: 10,
   },
   searchbar: {
-    backgroundColor: 'white',
     borderRadius: 100,
   },
   filterButton: {
@@ -252,20 +242,12 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  scrollViewContent: {
-    flexGrow: 1,
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
   card: {
     width: 380,
     borderRadius: 15,
     padding: 20,
-    backgroundColor: "#fff",
     flexDirection: "row",
-    borderTopColor: Colors.brand,
     borderTopWidth: 7,
-    shadowColor: "#000",
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
     shadowRadius: 4.65,
@@ -295,26 +277,5 @@ const styles = StyleSheet.create({
     minWidth: 10,
     marginStart: 315,
     position: "absolute",
-  },
-  dropdown: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    paddingHorizontal: 15,
-    paddingVertical: 5,
-    marginStart: 200,
-    marginTop: "33%",
-    position: "absolute"
-  },
-  dropdownItem: {
-    paddingVertical: 5,
-  },
-  dropdownText: {
-    fontSize: 16,
-    color: "#333",
   },
 });
