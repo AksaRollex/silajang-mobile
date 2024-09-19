@@ -1,41 +1,69 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { FlatList, Text, View, ScrollView } from "react-native";
-import { Searchbar } from "react-native-paper";
+import React, { useState, useEffect } from "react";
+import { FlatList, Text, View, ActivityIndicator } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { MenuView } from "@react-native-menu/menu";
-import BackButton from "@/src/screens/components/BackButton";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDelete } from '@/src/hooks/useDelete';
+import SearchInput from "@/src/screens/components/SearchInput";
+
+// Custom hook for debounce
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
 const Metode = ({ navigation }) => {
+  const queryClient = useQueryClient();
+  const [searchInput, setSearchInput] = useState("");
+  const debouncedSearchQuery = useDebounce(searchInput, 300);
+
+  const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
+    onSuccess: () => {
+      queryClient.invalidateQueries(['metode']);
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+    }
+  });
+
   const dropdownOptions = [
     {
       id: "Edit",
       title: "Edit",
       action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
     },
-    { id: "Hapus", title: "Hapus", action: item => console.log("Hapus") },
-    {
-      id: "Deletedaowkoakowk",
-      title: "Deletedaowkoakowk",
-      action: item => console.log("Husep"),
-    },
+    { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
   ];
 
-  const [metode, setMetode] = useState([]);
+  const fetchMetode = async ({ queryKey }) => {
+    const [_, search] = queryKey;
+    const response = await axios.post('/master/acuan-metode', { search });
+    return response.data.data;
+  };
 
-  async function getMetode() {
-    try {
-      const res = await axios.post("/master/acuan-metode");
-      setMetode(res.data.data);
-    } catch (err) {
-      console.log(err);
+  const { data, isLoading: isLoadingData } = useQuery(
+    ['metode', debouncedSearchQuery],
+    fetchMetode,
+    {
+      onError: (error) => {
+        console.error(error);
+      }
     }
-  }
-
-  useEffect(() => {
-    getMetode();
-  }, []);
+  );
 
   const TabelMetode = ({ item }) => {
     return (
@@ -69,36 +97,35 @@ const Metode = ({ navigation }) => {
     );
   };
 
+  if (isLoadingData) {
+    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+  }
+
   return (
-    <View>
-      {metode ? (
-        <View className="bg-[#ececec] w-full h-full">
-          <View className="bg-white p-4 rounded">
-            <View className="flex-row w-full items-center space-x-2">
-              <BackButton action={() => navigation.goBack()} size={24} />
-              <Searchbar
-                className="bg-[#f2f2f2] flex-1"
-                placeholder="Cari Metode"
-              />
-            </View>
-            <FlatList
-              className="mt-4"
-              data={metode}
-              renderItem={({ item }) => <TabelMetode item={item} />}
-              keyExtractor={item => item.id.toString()}
-            />
-          </View>
-          <Icon
-            name="plus"
-            size={28}
-            color="black"
-            style={{ position: "absolute", bottom: 20, right: 20 }}
-            onPress={() => navigation.navigate("FormMetode")}
-          />
-        </View>
-      ) : (
-        <Text className="text-2xl font-bold text-center">Loading...</Text>
-      )}
+    <View className="bg-[#ececec] w-full h-full">
+      <View className="bg-white p-4">
+      <SearchInput 
+        onChangeText={setSearchInput}
+        value={searchInput}
+        placeholder={"Cari Metode"}
+        className="bg-[#f1f1f1] flex-1"
+        size={26} action={() => navigation.goBack()} 
+      />
+        <FlatList
+          className="mt-4"
+          data={data}
+          renderItem={({ item }) => <TabelMetode item={item} />}
+          keyExtractor={item => item.id.toString()}
+        />
+      </View>
+      <Icon
+        name="plus"
+        size={28}
+        color="#fff"
+        style={{ position: "absolute", bottom: 20, right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+        onPress={() => navigation.navigate("FormMetode")}
+      />
+      <DeleteConfirmationModal />
     </View>
   );
 };
