@@ -21,7 +21,7 @@ export default function PengambilanSampel() {
           <Searchbar
             placeholder="Search"
             onChangeText={setSearchQuery}
-            value={searchQuery}
+            value={searchQuery} 
             style={styles.searchbar}
           />
 

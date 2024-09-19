@@ -31,7 +31,7 @@ const Metode = ({ navigation }) => {
     } catch (err) {
       console.log(err);
     }
-  }
+  } 
 
   useEffect(() => {
     getMetode();
