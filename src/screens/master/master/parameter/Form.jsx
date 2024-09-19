@@ -16,13 +16,20 @@ export default memo(function Form({ route, navigation }) {
   const [pengawetan, setPengawetan] = useState([]);
   const [selectedJenisParameter, setSelectedJenisParameter] = useState([]);
   const [selectedPengawetan, setSelectedPengawetan] = useState([]);
+  const queryClient = useQueryClient()
   const { uuid } = route.params || {};
   const {
     handleSubmit,
     control,
     formState: { errors },
     setValue,
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      is_akreditasi: false,
+      is_dapat_diuji: false,
+      pengawetan_ids: []
+    }
+  });
 
   const onSelectedItemsChange = selectedItems => {
     setSelectedPengawetan(selectedItems);
@@ -47,12 +54,12 @@ export default memo(function Form({ route, navigation }) {
             "harga",
             data.harga.toString().replace(/\B(?=(\d{3})+(?!\d))/g, "."),
           );
-          setValue("pengawetan", data.pengawetan_ids);
-          setSelectedPengawetan(data.pengawetan_ids);
+          setValue("pengawetan", data.pengawetan_ids || []);
+          setSelectedPengawetan(data.pengawetan_ids || []);
           setValue("satuan", data.satuan);
           setValue("mdl", data.mdl);
-          setValue("is_akreditasi", data.is_akreditasi);
-          setValue("is_dapat_diuji", data.is_dapat_diuji);
+          setValue("is_akreditasi", Boolean(data.is_akreditasi));
+          setValue("is_dapat_diuji", Boolean(data.is_dapat_diuji));
         }
       },
     },
@@ -92,6 +99,9 @@ export default memo(function Form({ route, navigation }) {
           text1: "Success",
           text2: "Data updated successfully",
         });
+        queryClient.invalidateQueries({
+          queryKey: ["parameter"],
+        })
         navigation.navigate("Parameter");
       },
       onError: error => {
@@ -114,6 +124,9 @@ export default memo(function Form({ route, navigation }) {
           text1: "Success",
           text2: "Data created successfully",
         });
+        queryClient.invalidateQueries({
+          queryKey: ["parameter"],
+        })
         navigation.navigate("Parameter");
       },
       onError: error => {
@@ -128,10 +141,16 @@ export default memo(function Form({ route, navigation }) {
   );
 
   const onSubmit = data => {
+    const formattedData = {
+      ...data,
+      is_akreditasi: data.is_akreditasi ? 1 : 0,
+      is_dapat_diuji: data.is_dapat_diuji ? 1 : 0,
+      pengawetan_ids: data.pengawetan || []
+    }
     if (uuid) {
-      update(data);
+      update(formattedData);
     } else {
-      create(data);
+      create(formattedData);
     }
   };
 
@@ -271,7 +290,7 @@ export default memo(function Form({ route, navigation }) {
                     onChange(items);
                     setSelectedPengawetan(items);
                   }}
-                  selectedItems={selectedPengawetan}
+                  selectedItems={value || []}
                   selectText="Pilih pengawetan"
                   searchInputPlaceholderText="Cari pengawetan..."
                   onChangeInput={text => console.log(text)}
@@ -301,7 +320,6 @@ export default memo(function Form({ route, navigation }) {
               <Controller
                 control={control}
                 name="is_akreditasi"
-                rules={{ required: "Terakreditasi is required" }}
                 render={({ field: { onChange, value } }) => (
                   <Switch
                     value={Boolean(value)}
@@ -324,7 +342,6 @@ export default memo(function Form({ route, navigation }) {
               <Controller
                 control={control}
                 name="is_dapat_diuji"
-                rules={{ required: "Dapat diuji di Lab is required" }}
                 render={({ field: { onChange, value } }) => (
                   <Switch
                     value={Boolean(value)}
