@@ -67,7 +67,7 @@ const Kontrak = ({ navigation }) => {
 
   const fetchKontrak = async ({ queryKey }) => {
     const [_, search, year] = queryKey;
-    const response = await axios.post('/administrasi/kontrak', { 
+    const response = await axios.post('/administrasi/kontrak', {
       search,
       tahun: year,
       kesimpulan_kontrak: 1,

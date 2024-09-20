@@ -326,10 +326,6 @@ const Perusahaan = () => {
     );
   };
   return (
-    <ScrollView
-    scrollEventThrottle={16} // Menetapkan pembaruan event scroll lebih halus
-    decelerationRate="normal" // Mengatur kecepatan scroll lebih lambat agar lebih lembut
-  >
     <View style={styles.container}>
       {userData ? (
         <>
@@ -651,7 +647,6 @@ const Perusahaan = () => {
         onPress={handleSubmit(update)}
         disabled={isLoading}></Button>
     </View>
-  </ScrollView>
   );
 };
 
@@ -703,17 +698,12 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   textField: {
-    // padding: 12,
-    // backgroundColor: "#f0f0f0",
-    // borderRadius: 8,
-    // color: "black",
-    // borderColor: "#ccc",
-    // borderWidth: 1,
-    borderWidth: 1,
-    borderColor: Colors.gray,
-    padding: 10,
+    padding: 12,
+    backgroundColor: "#f0f0f0",
     borderRadius: 8,
-    fontSize: 16,
+    color: "black",
+    borderColor: "#ccc",
+    borderWidth: 1,
   },
   imagePreview: {
     width: 100,
