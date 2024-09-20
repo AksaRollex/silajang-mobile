@@ -1,22 +1,18 @@
-import React, { useState, useEffect } from "react";
+import axios from "@/src/libs/axios";
+import { rupiah } from "@/src/libs/utils";
+import { useUser } from "@/src/services";
+import React, { useEffect, useState } from "react";
 import {
-  View,
-  Text,
+  ActivityIndicator,
   ScrollView,
   StyleSheet,
-  Image,
-  Dimensions,
+  Text,
+  View
 } from "react-native";
-import { Colors } from "react-native-ui-lib";
-import { Picker } from "@react-native-picker/picker";
-import { LineChart } from "react-native-chart-kit";
-import axios from "@/src/libs/axios";
-import { useUser } from "@/src/services";
-import { rupiah } from "@/src/libs/utils";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
 
 const Dashboard = () => {
@@ -68,48 +64,6 @@ const Dashboard = () => {
   }, []);
 
   return (
-    <View className={user.role.name === 'customer' ? 'flex-1 bg-[#0d47a133]' : 'flex-1 bg-[#ececec]'}>
-      {/* <View
-        style={[
-          styles.searchFilterContainer,
-          { backgroundColor: Colors.brand },
-        ]}>
-        <Picker
-          selectedValue={selectedRequestType}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedRequestType(itemValue)}>
-          <Picker.Item label="Pilih Jenis Permohonan" value="" />
-          {requestTypes.map(type => (
-            <Picker.Item
-              key={type.value}
-              label={type.label}
-              value={type.value}
-            />
-          ))}
-        </Picker>
-        <Picker
-          selectedValue={selectedYear}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedYear(itemValue)}>
-          <Picker.Item label="Tahun" value="" />
-          {years.map(year => (
-            <Picker.Item key={year} label={year} value={year} />
-          ))}
-        </Picker>
-        <Picker
-          selectedValue={selectedMonth}
-          style={styles.picker}
-          onValueChange={itemValue => setSelectedMonth(itemValue)}>
-          <Picker.Item label="Bulan" value="" />
-          {months.map(month => (
-            <Picker.Item
-              key={month.value}
-              label={month.label}
-              value={month.value}
-            />
-          ))}
-        </Picker>
-      </View> */}
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
@@ -164,6 +118,8 @@ const Dashboard = () => {
                     Total Permohonan
                   </Text>
                 </View>
+          <TextFooter />
+
               </> 
             ) : (
               <>
@@ -276,17 +232,14 @@ const Dashboard = () => {
                 </View>
               </>
             )}
+  
           </>
         ) : (
-          <View className="w-full flex justify-center">
-            <Text className="text-2xl font-bold text-center">Loading...</Text>
-          </View>
+          <View className="h-full justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
         )}
 
-       <TextFooter />
       </ScrollView>
-    </View>
-  );
+  )
 };
 
 const styles = StyleSheet.create({
