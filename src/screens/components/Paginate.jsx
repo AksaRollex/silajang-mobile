@@ -4,12 +4,16 @@ import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from 'react-native-vector-icons/Feather'
+import BackButton from "./BackButton";
+import { useNavigation } from "@react-navigation/native";
 
 const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
   const { control, handleSubmit } = useForm();
+
+  const navigation = useNavigation()
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: [url],
@@ -39,7 +43,8 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
     );
   }, [data.current_page, data.last_page])
   const ListHeader = () => (
-    <View className="flex-row mb-4">
+    <View className="flex-row mb-4 items-center">
+      <BackButton size={24} action={() => navigation.goBack()} className="mr-2" />
       <Controller
         control={control}
         name="search"
@@ -53,7 +58,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
         )}
       />
       <TouchableOpacity
-        className="bg-[#312e81] px-4 py-2 rounded-md justify-center"
+        className="bg-[#312e81] p-4 rounded-md justify-center"
         onPress={handleSubmit(data => setSearch(data.search))}
       >
         <Icon name="search" size={18} color={"white"} />
@@ -68,14 +73,14 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
           key={i}
           className={`px-3 py-2 rounded-md border ${
             i == data.current_page
-              ? "bg-blue-500 border-blue-500"
-              : "border-blue-500"
+              ? "bg-indigo-900 border-indigo-900"
+              : "border-indigo-900"
           }`}
           onPress={() => setPage(i)}
         >
           <Text
             className={`${
-              i == data.current_page ? "text-white" : "text-blue-500"
+              i == data.current_page ? "text-white" : "text-indigo-900"
             } font-semibold`}
           >
             {i}
@@ -88,7 +93,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   if (isFetching) {
     return (
       <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#4299e1" />
+        <ActivityIndicator size="large" color="#312e81" />
       </View>
     );
   }
