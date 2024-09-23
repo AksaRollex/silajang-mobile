@@ -87,8 +87,12 @@ export default function MainScreen() {
         component={Persetujuan}
       />
       <Stack.Screen
-        name="PenerimaSampel"
-        component={PenerimaSampel}
+        name="IndexPenerima"
+        component={IndexPenerima}
+      />
+      <Stack.Screen
+        name="DetailPenerima"
+        component={DetailPenerima}
       />
       <Stack.Screen
         name="PengambilSampel"
