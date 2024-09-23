@@ -1,16 +1,13 @@
-import axios from "@/src/libs/axios";
-import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { MenuView } from "@react-native-menu/menu";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useDelete } from '@/src/hooks/useDelete';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
-import { white } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
-import { useDelete } from '@/src/hooks/useDelete';
+import { MenuView } from "@react-native-menu/menu";
+import React, { useRef, useState } from "react";
+import { Text, View } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 
 const currentYear = new Date().getFullYear()
@@ -22,16 +19,6 @@ const generateYears = () => {
   return years
 }
 
-const { delete: DeleteConfirmationModal } = useDelete({
-    onSuccess: () => {
-    //   queryClient.invalidateQueries(['pengambil-sample']);
-    //   paginateRef.current?.refetch()
-    },
-    onError: (error) => {
-      console.error('Delete error:', error);
-    }
-  });
-
 const pengambilOptions = [
   { id: 0, name: "Menunggu Konfirmasi" },
   { id: 1, name: "Telah Konfirmasi" },
@@ -42,6 +29,17 @@ const PengambilSampel = ({ navigation }) => {
   const filterOptions = generateYears();
   const [selectedPengambil, setSelectedPengambil] = useState(0);
   const paginateRef = useRef();
+
+  const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
+
+    onSuccess: () => {
+      queryClient.invalidateQueries(['pengambil-sample']);
+      paginateRef.current?.refetch()
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+    }
+  });
 
   const dropdownOptions1 = [
     { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
@@ -72,33 +70,6 @@ const PengambilSampel = ({ navigation }) => {
     }
   ];
 
-  const fetchPengambilSample = async ({ queryKey }) => {
-    const [_, search, year] = queryKey;
-    const response = await axios.post('/administrasi/pengambil-sample', {
-      search,
-      tahun: year,
-      status: 0,
-      page: 1,
-      per: 10
-    });
-    return response.data.data;
-  };
-
-  const { data, isLoading: isLoadingData } = useQuery(
-    ['pengambil-sample', selectedYear],
-    fetchPengambilSample,
-    {
-      onSuccess: (data) => {
-        // queryClient.invalidateQueries(['pengambil-sample']);
-        // paginateRef.current?.refetch()
-        // console.log(selectedYear)
-        // console.log(data);
-      },
-      onError: (error) => {
-        console.error(error);
-      }
-    }
-  );
 
   const renderItem = ({ item }) => {
     const isDiterima = item.kesimpulan_permohonan;
@@ -159,9 +130,6 @@ const PengambilSampel = ({ navigation }) => {
     );
   };
 
-  if (isLoadingData) {
-    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
-  }
 
   return (
     <View className="bg-[#ececec] w-full h-full">
