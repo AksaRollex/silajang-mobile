@@ -1,19 +1,27 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
-import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
+import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import Icon from "react-native-vector-icons/Entypo";
 
-import TrackingList from "./TrackingList";
 import Pengujian from "./Pengujian";
+
+import TrackingList from "./TrackingList";
 import TitikUji from "./TitikUji";
 import Parameter from "./Parameter";
 import EditPermohonan from "../formComponent/EditPermohonan";
 import EditTitikUji from "../formComponent/EditTitikUji";
 import EditPembayaran from "../formComponent/EditPembayaran";
 import TambahPermohonan from "../formComponent/TambahPermohonan";
-import Penerima from "./Penerima";
-const Tab = createBottomTabNavigator();
+
+import Kontrak from "./administrasi/Kontrak"
+import Persetujuan from "./administrasi/Persetujuan"
+import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
+import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
+import PengambilSampel from "./administrasi/PengambilSampel"
+import CetakLHU from "./administrasi/CetakLHU"
+
+const Stack = createNativeStackNavigator();
 
 const screenOptions = {
   tabBarShowLabel: false,
@@ -31,187 +39,67 @@ const screenOptions = {
 
 export default function MainScreen() {
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator screenOptions={screenOptions}>
-        <Tab.Screen
-          name="Pengujian"
-          component={Pengujian}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Pengujian
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="TrackingList"
-          component={TrackingList}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Tracking List
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="TitikUji"
-          component={TitikUji}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Titik Uji
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Parameter"
-          component={Parameter}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Parameter
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="EditPermohonan"
-          component={EditPermohonan}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  EditPermohonan
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="EditTitikUji"
-          component={EditTitikUji}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  EditTitikUji
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="EditPembayaran"
-          component={EditPembayaran}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  EditPembayaran
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="TambahPermohonan"
-          component={TambahPermohonan}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  TambahPermohonan
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Penerima"
-          component={Penerima}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View>
-                <Icon
-                  name="user"
-                  size={24}
-                  color={focused ? "#16247d" : "#111"}
-                />
-                <Text
-                  style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>
-                  Penerima
-                </Text>
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
-    </NavigationContainer>
+  <NavigationContainer independent={true}>
+    <Stack.Navigator screenOptions={screenOptions}>
+      <Stack.Screen
+        name="PengujianIndex"
+        component={Pengujian}
+      />
+      
+      <Stack.Screen
+        name="TrackingList"
+        component={TrackingList}
+      />
+      <Stack.Screen
+        name="TitikUji"
+        component={TitikUji}
+      />
+      <Stack.Screen
+        name="Parameter"
+        component={Parameter}
+      />
+      <Stack.Screen
+        name="EditPermohonan"
+        component={EditPermohonan}
+      />
+      <Stack.Screen
+        name="EditTitikUji"
+        component={EditTitikUji}
+      />
+      <Stack.Screen
+        name="EditPembayaran"
+        component={EditPembayaran}
+      />
+      <Stack.Screen
+        name="TambahPermohonan"
+        component={TambahPermohonan}
+      />
+
+      <Stack.Screen
+        name="Kontrak"
+        component={Kontrak}
+      />
+      <Stack.Screen
+        name="Persetujuan"
+        component={Persetujuan}
+      />
+      <Stack.Screen
+        name="IndexPenerima"
+        component={IndexPenerima}
+      />
+      <Stack.Screen
+        name="DetailPenerima"
+        component={DetailPenerima}
+      />
+      <Stack.Screen
+        name="PengambilSampel"
+        component={PengambilSampel}
+      />
+      <Stack.Screen
+        name="CetakLHU"
+        component={CetakLHU}
+      />
+    </Stack.Navigator>
+  </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: "center",
-    justifyContent: "center",
-  },
-});

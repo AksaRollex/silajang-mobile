@@ -6,8 +6,8 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { TouchableOpacity } from "react-native";
-import IonIcons from "react-native-vector-icons/Ionicons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import { TouchableOpacity } from "react-native-ui-lib";
 
 export default memo(function WithEmail() {
   const {
@@ -35,8 +35,7 @@ export default memo(function WithEmail() {
         remember_me: 1,
       }),
     {
-      onSuccess: async res => {
-        console.log(res.data.token);
+      onSuccess: async (res) => {
         await AsyncStorage.setItem("@auth-token", res.data.token);
         queryClient.invalidateQueries({
           queryKey: ["auth", "user"],
@@ -118,9 +117,10 @@ export default memo(function WithEmail() {
                   position: "absolute",
                   right: 10,
                   top: 12,
-                }}>
-                <IonIcons
-                  name={isPasswordVisible ? "eye-off-outline" : "eye-outline"}
+                }}
+              >
+                <Ionicons
+                  name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
                   size={20}
                   color={Colors.brand}
                 />
