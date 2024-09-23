@@ -14,20 +14,29 @@ import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
+import { useNavigation } from '@react-navigation/native';
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
-
   const requestTypes = [
     { label: "Permohonan Baru", value: "new" },
     { label: "Permohonan Proses", value: "process" },
     { label: "Permohonan Selesai", value: "completed" },
     { label: "Total Permohonan", value: "total" },
   ];
-
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
+  const navigation = useNavigation();
+
+  const Penerima = () => {
+    navigation.navigate("Penerima");
+  };
+
+  const handlePress = () => {
+    const uuid = '7cd62078-6101-4ef3-ad6f-28afe23d81b9';
+    navigation.navigate("Penerima", { uuid });
+  }
 
   useEffect(() => {
     const years = [];
@@ -232,7 +241,7 @@ const Dashboard = () => {
                 </View>
               </>
             )}
-          <TextFooter />
+  
           </>
         ) : (
           <View className="h-full justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>

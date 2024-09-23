@@ -1,188 +1,203 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView } from 'react-native'
-import React, { useState } from 'react'
-import { Searchbar } from "react-native-paper";
-import { Button, Colors } from "react-native-ui-lib";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
-import MonthYearPicker from 'react-native-simple-month-year-picker';
-import { useNavigation } from '@react-navigation/native';
+import axios from "@/src/libs/axios";
+import React, { useState, useEffect, useRef } from "react";
+import { FlatList, Text, View, ActivityIndicator } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MenuView } from "@react-native-menu/menu";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import BackButton from "@/src/screens/components/BackButton";
+// import { Searchbar } from "react-native-paper";
+// import Paginate from '@/src/screens/components/Paginate';
 
-export default function PengambilanSampel() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isShow, setIsShow] = useState(false);
 
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
-  };
-
-  return (
-    <View style={styles.container}>
-      {/* Header Section */}
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerTitle}>Pengambilan Sampel</Text>
-      </View>
-
-      {/* Search and Filter Section */}
-      <View style={styles.searchRow}>
-        <View style={styles.search}>
-          <Searchbar 
-            placeholder="Search"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            style={styles.searchbar}
-            iconColor="#6e6e6e"
-          />
-        </View>
-
-        <TouchableOpacity style={styles.filterButton} onPress={toggleDropdown}>
-          <Icon name="filter-menu-outline" size={25} color="white" />
-        </TouchableOpacity>
-      </View>
-
-      {/* Dropdown */}
-      {dropdownVisible && (
-        <View style={styles.dropdown}>
-          <TouchableOpacity style={styles.dropdownItem}>
-            <Text style={styles.dropdownText}>Menunggu Konfirmasi</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.dropdownItem}>
-            <Text style={styles.dropdownText}>Telah diterima</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-
-      {/* Year Picker Section */}
-      <View style={styles.yearPickerContainer}>
-        <Button
-          style={styles.yearpick}
-          title="Pilih Tahun"
-          onPress={() => setIsShow(true)}
-        />
-        <MonthYearPicker
-          isShow={isShow}
-          close={() => setIsShow(false)}
-          onChangeYear={(year) => console.log(year)}
-          onChangeMonth={(month) => console.log(month)}
-        />
-      </View>
-
-      {/* Content Section */}
-      <ScrollView contentContainerStyle={styles.scrollViewContent} showsVerticalScrollIndicator={false}>
-        <View style={styles.card}>
-          <View style={styles.cardContent}>
-            <Text style={styles.cardText}>Sample Text 1</Text>
-            <Text style={styles.cardText}>Sample Text 2</Text>
-            <Text style={styles.cardText}>Sample Text 3</Text>
-
-            <View style={styles.cardIcons}>
-              <Button style={styles.eye}>
-                <Icon name="eye" size={20} color="white" />
-              </Button>
-              <TouchableOpacity>
-                <Icon name="dots-vertical" size={25} color="black" />
-              </TouchableOpacity>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
+const currentYear = new Date().getFullYear()
+const generateYears = () => {
+  let years = []
+  for (let i = currentYear; i >= 2022; i--) {
+    years.push({ id: i, title: String(i) })
+  }
+  return years
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    paddingHorizontal: 20,
-    backgroundColor: "#f0f0f0",
-  },
-  headerContainer: {
-    marginTop: 40,
-    alignItems: "center",
-    marginBottom: 20,
-  },
-  headerTitle: {
-    fontSize: 24,
-    fontWeight: "bold",
-    color: "#333",
-  },
-  searchRow: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 20,
-  },
-  search: {
-    flex: 1,
-    marginRight: 10,
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-  searchbar: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-  },
-  filterButton: {
-    backgroundColor: "#007BFF",
-    padding: 10,
-    borderRadius: 8,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  dropdown: {
-    backgroundColor: "white",
-    borderRadius: 8,
-    marginTop: 10,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    paddingHorizontal: 15,
-    paddingVertical: 10,
-  },
-  dropdownItem: {
-    paddingVertical: 10,
-  },
-  dropdownText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  yearPickerContainer: {
-    marginBottom: 20,
-    alignItems: "flex-end",
-  },
-  yearpick: {
-    backgroundColor: "#007BFF",
-    borderRadius: 8,
-    paddingHorizontal: 20,
-    paddingVertical: 10,
-    color: "white",
-  },
-  scrollViewContent: {
-    flexGrow: 1,
-  },
-  card: {
-    backgroundColor: "#fff",
-    borderRadius: 15,
-    padding: 20,
-    marginBottom: 15,
-    elevation: 3,
-  },
-  cardContent: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-  },
-  cardText: {
-    fontSize: 16,
-    color: "#333",
-  },
-  cardIcons: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  eye: {
-    backgroundColor: "#007BFF",
-    borderRadius: 5,
-    padding: 8,
-    marginRight: 10,
-  },
-});
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+const PengambilSampel = ({ navigation }) => {
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const debouncedSearchQuery = useDebounce(searchInput, 300);
+  const filterOptions = generateYears();
+  const queryClient = useQueryClient();
+  const paginateRef = useRef();
+
+  const dropdownOptions = [
+    // {
+    //   id: "Edit",
+    //   title: "Edit",
+    //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
+    // },
+    // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
+    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailKontrak", { uuid: item.uuid }) }
+  ];
+
+  const fetchPengambilSample = async ({ queryKey }) => {
+    const [_, search, year] = queryKey;
+    const response = await axios.post('/administrasi/pengambil-sample', { 
+      search,
+      tahun: year,
+      status: 0,
+      page: 1,
+      per: 10 
+    });
+    console.log(response.data.data)  
+    return response.data.data;
+  };
+
+  const { data, isLoading: isLoadingData } = useQuery(
+    ['pengambil-sample', debouncedSearchQuery, selectedYear],
+    fetchPengambilSample,
+    {
+      onSuccess: (data) => {
+        // queryClient.invalidateQueries(['pengambil-sample']);
+        // paginateRef.current?.refetch()
+        console.log(selectedYear)
+        console.log(data);
+      },
+      onError: (error) => {
+        console.error(error);
+      }
+    }
+  );
+
+  const TabelPengambilSample = ({ item }) => {
+    return (
+<View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+        style={{
+          elevation: 4,
+        }}>
+        <View className="flex-row justify-between items-center p-4 relative">
+            <View className="flex-shrink mr-20">
+                <Text className="text-[20px] font-extrabold mb-3">{item.permohonan.industri}</Text>
+                <Text className="text-[14px] mb-2"></Text>
+            </View>
+            <View className="absolute right-1 flex-col items-center">
+                <Text className="text-[12px] text-white font-bold bg-green-400 px-2 py-1 rounded-sm mb-3">Menunggu</Text>
+                <View className="my-2 ml-10">
+                    <MenuView
+                      title="dropdownOptions"
+                      actions={dropdownOptions.map(option => ({
+                        ...option,
+                      }))}
+                      onPressAction={({ nativeEvent }) => {
+                        const selectedOption = dropdownOptions.find(
+                          option => option.title === nativeEvent.event,
+                        );
+                        if (selectedOption) {
+                          selectedOption.action(item);
+                        }
+                      }}
+                      shouldOpenOnLongPress={false}
+                    >
+                      <View>
+                        <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+                      </View>
+                    </MenuView>
+                </View>
+            </View>
+        </View>
+
+      </View>
+
+    )
+  };
+
+  if (isLoadingData) {
+    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+  }
+
+  return (
+    <View className="bg-[#ececec] w-full h-full">
+      <View className="bg-white p-4">
+        <View className="flex-row items-center space-x-2">
+          <View className="flex-col w-full">
+
+            <View className="flex-row items-center space-x-2 mb-4">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <View className="absolute left-0 right-2 items-center">
+              <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
+            </View>
+            </View>
+
+            <View className="flex-row justify-content-center">
+                <MenuView
+                  title="filterOptions"
+                  actions={filterOptions.map(option => ({
+                    id: option.id.toString(),
+                    title: option.title,
+                  }))}
+                  onPressAction={({ nativeEvent }) => {
+                    const selectedOption = filterOptions.find(
+                      option => option.title === nativeEvent.event,
+                    );
+                    if (selectedOption) {
+                      setSelectedYear(selectedOption.title)
+                      // console.log(selectedOption.title)
+                    }
+                  }}
+                  shouldOpenOnLongPress={false}
+                >
+                  <View>
+                    <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+                  </View>
+                </MenuView>
+            </View>
+            <FlatList
+              className="mt-4"
+              data={data}
+              renderItem={({ item }) => <TabelPengambilSample item={item} />}
+              keyExtractor={item => item.id.toString()}
+              />
+
+          </View>
+        </View>
+      </View>
+        
+      {/* <Paginate
+        ref={paginateRef}
+        url="/administrasi/pengambil-sample"
+        payload={{ 
+          // status: 0,
+          // tahun: year,
+          page: 1,
+          per: 10,
+        }}
+        TabelPengambilSample={TabelPengambilSample}  
+      /> */}
+
+    <AntDesign
+      name="plus"
+      size={28}
+      color="white"
+      style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+      // onPress={() => navigation.navigate("FormMetode")}
+      />
+  </View>
+  );
+};
+
+export default PengambilSampel; 
