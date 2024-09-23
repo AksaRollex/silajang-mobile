@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient , useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -220,6 +220,8 @@ const DrawerContent = (props) => {
   const [expandedMenus, setExpandedMenus] = useState({});
   const heightRef = useRef({});
   const queryClient = useQueryClient();
+
+  const { data: user } = useUser();
 
   const Logout = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -440,7 +442,7 @@ const DrawerContent = (props) => {
 
   const customDrawerItems = [
     { name: "Home", screen: "Home", ionIcon: "home" },
-    { name: "Profile", screen: "Profile", ionIcon: "person" },
+    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", ionIcon: "person" }] : []),
     {
       name: "Master",
       setIcon: "grid",
@@ -495,7 +497,6 @@ const Admin = () =>  (
       </Drawer.Navigator>
     </NavigationContainer>
   )
-
 
 const NonAdmin = () => (
     <NavigationContainer independent={true}>

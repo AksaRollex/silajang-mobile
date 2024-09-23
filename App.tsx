@@ -9,10 +9,6 @@ import Toast from "react-native-toast-message";
 // Import your screens
 import Main from "./src/screens/main/Index";
 import Auth from "./src/screens/auth/Index";
-import Login from "./src/screens/auth/login/Index";
-import TrackingPengujian from "./src/screens/pengujian/TrackingPengujian";
-import TrackingList from "./src/screens/pengujian/TrackingList";
-
 const Stack = createNativeStackNavigator();
 
 const queryClient = new QueryClient({

@@ -1,248 +1,189 @@
-import { View, Text, StyleSheet, ScrollView, Modal, TouchableOpacity } from 'react-native';
-import React, { useState } from 'react';
-import { Searchbar } from 'react-native-paper';
-import { Button } from 'react-native-ui-lib';
-import FontIcon from 'react-native-vector-icons/FontAwesome5';
-import BackButton from '@/src/screens/components/BackButton';
-import { useNavigation } from '@react-navigation/native';
+import axios from "@/src/libs/axios";
+import React, { useState, useEffect } from "react";
+import { FlatList, Text, View, ActivityIndicator } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MenuView } from "@react-native-menu/menu";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import BackButton from "@/src/screens/components/BackButton";
+import { Searchbar } from "react-native-paper";
 
-export default function CetakLHU() {
-  const navigation = useNavigation();
-  const [searchQuery, setSearchQuery] = useState("");
-  const [modalVisible, setModalVisible] = useState(false);
-
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchRow}>
-        <View style={styles.search} className="flex-row w-full items-center space-x-2">
-          <BackButton action={() => navigation.goBack()} size={25} />
-          <Searchbar
-            className="bg-[#f2f2f2] flex-1"
-            placeholder="Cari ..."
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-          />
-        </View>
-      </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
-        <View>
-          <Text>Laporan Hasil Uji</Text>
-          <View style={styles.row}>
-            <View style={[styles.card, { marginTop: 25 }]}>
-              <View style={styles.cards}>
-                <View>
-                  <Text style={[styles.cardTexts, { fontSize: 15 }]}>.</Text>
-                  <Text style={styles.cardTexts}>.</Text>
-                  <Text style={[styles.cardTexts, { fontSize: 15 }]}>.</Text>
-                  <Text style={styles.cardTexts}>.</Text>
-                  <Text style={[styles.cardTexts, { fontSize: 15 }]}>.</Text>
-                  <Text style={styles.cardTexts}>.</Text>
-                </View>
-
-                <Button
-                  style={[styles.pdf]}
-                  onPress={() => setModalVisible(true)}
-                >
-                  <FontIcon
-                    name={"file-pdf"}
-                    size={20}
-                    style={{ color: "#fff" }}
-                  />
-                </Button>
-
-                <Modal
-                  animationType="fade"
-                  transparent={true}
-                  visible={modalVisible}
-                  onRequestClose={() => setModalVisible(false)}
-                >
-                  <View style={styles.modalBackground}>
-                    <View style={styles.modalmodil}>
-                      <Text style={styles.cardTitle}>Preview LHU</Text>
-                      <View style={styles.cardDivider} />
-                      <Text style={styles.cardContent}>IKI NIATE PDF</Text>
-                      <TouchableOpacity
-                        style={styles.buttonClose}
-                        onPress={() => setModalVisible(false)}
-                      >
-                        <Text style={styles.textStyle}>Tutup</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </Modal>
-              </View>
-            </View>
-          </View>
-        </View>
-      </ScrollView>
-    </View>
-  );
+const currentYear = new Date().getFullYear()
+const generateYears = () => {
+  let years = []
+  for (let i = currentYear; i >= 2022; i--) {
+    years.push({ id: i, title: String(i) })
+  }
+  return years
 }
 
-const styles = StyleSheet.create({
-  searchRow: {
-    flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "92%",
-    marginStart: "2%",
-  },
-  searchIcon: {
-    width: 24,
-    height: 24,
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#ffffff",
-  },
-  search: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 5,
-    paddingVertical: 0, 
-    // backgroundColor: "white",
-    borderRadius: 10,
-    marginVertical: 5,
-    width: "100%",
-    marginTop: 10,
-  },
-  searchbar: {
-    flex: 1, 
-    backgroundColor: "white",
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  buttonSearch: {
-    backgroundColor: "#0D47A1", 
-    padding: 10,
-    borderRadius: 10,
-    minWidth: "15%",
-  },
-  icon: {
-    backgroundColor : "black",
-    marginTop: 10.5,
-  },
-  dropdown: {
-    position: "absolute",
-    top: 60,
-    right: 5,
-    backgroundColor: "white",
-    borderRadius: 8,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: "700%",
-    zIndex: 10,
-  },
-  dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: "black",
-  },
-  scrollViewContent: {
-    flexGrow: 1, 
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  card: {
-    width: 360,
-    marginVertical: 1,
-    borderRadius: 15,
-    padding: 20,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    borderTopWidth: 7,
-  },
-  cards: {
-    borderRadius: 10,
-    width: "70%",
-    marginBottom: 4,
-    flexDirection: "row",
-    backgroundColor: '#f8f8f8'
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
 
-  },
-  cardTexts: {
-    fontSize: 15,
-    color: "black",
-  },
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
 
-  pdf: {
-    backgroundColor: "#0D47A1",
-    marginTop: 40,
-    height: 40,
-    borderRadius: 10,
-    minWidth: 10,
-    marginStart: 250,
-    position: "absolute",
-  },
-  yearpick: {
-    marginTop: 25,
-    // marginStart: 270,/
-    backgroundColor: "white",
-    height: 31,
-    borderRadius: 5,
-  },
-  pdfButton: {
-    backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 5,
-  },
-  icon: {
-    color: '#fff',
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparansi untuk modal background
-  },
-  modalmodil: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: '',
-    elevation: 5,
-    width: '90%',
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'left',
-    color: 'black'
-  },
-  cardDivider: {
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  cardContent: {
-    fontSize: 30,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  buttonClose: {
-    backgroundColor: '#ececec',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    color: 'black',
-    width: '20%'
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+const CetakLHU = ({ navigation }) => {
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const [selectedItem, setSelectedItem] = useState(null);
+  const debouncedSearchQuery = useDebounce(searchInput, 300);
+  const filterOptions = generateYears();
+
+  const dropdownOptions = [
+    // {
+    //   id: "Edit",
+    //   title: "Edit",
+    //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
+    // },
+    // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
+    { id: "cetak", title: "cetak", action: item => navigation.navigate("cetak") }
+  ];
+
+  const fetchCetakLHU = async ({ queryKey }) => {
+    const [_, search, year] = queryKey;
+    const response = await axios.post('/administrasi/cetak-lhu', { 
+      search,
+      tahun: year,
+      status: 5,
+      page: 1,
+      per: 10 
+    });
+    console.log({data: response.data.data})
+    return response.data.data;
+  };
+
+  const { data, isLoading: isLoadingData } = useQuery(
+    ['cetak-lhu', debouncedSearchQuery, selectedYear],
+    fetchCetakLHU,
+    {
+      onSuccess: (data) => {
+        console.log(selectedYear)
+        console.log(data);
+      },
+      onError: (error) => {
+        console.error(error);
+      }
+    }
+  );
+
+  const TabelCetakLHU = ({ item }) => {
+    return (
+<View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+        style={{
+          elevation: 4,
+        }}>
+        <View className="flex-row justify-between items-center p-4 relative">
+            <View className="flex-shrink mr-20">
+                <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
+                <Text className="text-[14px] font-boldr mb-2">{item.permohonan.user.nama}</Text>
+                <Text className="text-[14px] mb-2">{item.tanggal_diterima}</Text>
+            </View>
+            <View className="absolute right-1 flex-col items-center">
+                <Text className="text-[12px] text-white font-bold bg-green-400 px-2 py-1 rounded-sm mb-3">halo</Text>
+                <View className="my-2 ml-10">
+                    <MenuView
+                      title="dropdownOptions"
+                      actions={dropdownOptions.map(option => ({
+                        ...option,
+                      }))}
+                      onPressAction={({ nativeEvent }) => {
+                        const selectedOption = dropdownOptions.find(
+                          option => option.title === nativeEvent.event,
+                        );
+                        if (selectedOption) {
+                          selectedOption.action(item);
+                        }
+                      }}
+                      shouldOpenOnLongPress={false}
+                    >
+                      <View>
+                        <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+                      </View>
+                    </MenuView>
+                </View>
+            </View>
+        </View>
+
+      </View>
+
+    )
+  };
+
+  if (isLoadingData) {
+    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+  }
+
+  return (
+    <View className="bg-[#ececec] w-full h-full">
+      <View className="bg-white p-4">
+        <View className="flex-row items-center space-x-2">
+          <View className="flex-col w-full">
+
+            <View className="flex-row items-center space-x-2 mb-4">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <View className="absolute left-0 right-2 items-center">
+              <Text className="text-[20px] font-bold">Cetak LHU</Text>
+            </View>
+            </View>
+
+            <View className="flex-row justify-content-center">
+                <MenuView
+                  title="filterOptions"
+                  actions={filterOptions.map(option => ({
+                    id: option.id.toString(),
+                    title: option.title,
+                  }))}
+                  onPressAction={({ nativeEvent }) => {
+                    const selectedOption = filterOptions.find(
+                      option => option.title === nativeEvent.event,
+                    );
+                    if (selectedOption) {
+                      setSelectedYear(selectedOption.title)
+                      // console.log(selectedOption.title)
+                    }
+                  }}
+                  shouldOpenOnLongPress={false}
+                >
+                  <View>
+                    <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+                  </View>
+                </MenuView>
+            </View>
+            <FlatList
+              className="mt-4"
+              data={data}
+              renderItem={({ item }) => <TabelCetakLHU item={item} />}
+              keyExtractor={item => item.id.toString()}
+              />
+
+          </View>
+        </View>
+      </View>
+        
+
+
+    <AntDesign
+      name="plus"
+      size={28}
+      color="white"
+      style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+      // onPress={() => navigation.navigate("FormMetode")}
+      />
+  </View>
+  );
+};
+
+export default CetakLHU; 

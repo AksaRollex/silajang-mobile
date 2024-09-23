@@ -1,43 +1,39 @@
-import axios from "@/src/libs/axios";
-import { useNavigation } from "@react-navigation/native";
-import React, { useEffect, useState } from "react";
-import { FlatList, Text, View, ScrollView } from "react-native";
-import { Searchbar } from "react-native-paper";
+import { useDelete } from '@/src/hooks/useDelete';
+import SearchInput from "@/src/screens/components/SearchInput";
+import { MenuView } from "@react-native-menu/menu";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import { ActivityIndicator, FlatList, Text, View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import { MenuView } from "@react-native-menu/menu";
-import BackButton from "@/src/screens/components/BackButton";
+import Paginate from '@/src/screens/components/Paginate';
+
 const Metode = ({ navigation }) => {
+  const queryClient = useQueryClient();
+  const paginateRef = useRef();
+
+  const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
+    onSuccess: () => {
+      queryClient.invalidateQueries(['metode']);
+      paginateRef.current?.refetch()
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+    }
+  });
+
   const dropdownOptions = [
     {
       id: "Edit",
       title: "Edit",
       action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
     },
-    { id: "Hapus", title: "Hapus", action: item => console.log("Hapus") },
-    {
-      id: "Deletedaowkoakowk",
-      title: "Deletedaowkoakowk",
-      action: item => console.log("Husep"),
-    },
+    { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
   ];
 
-  const [metode, setMetode] = useState([]);
 
-  async function getMetode() {
-    try {
-      const res = await axios.post("/master/acuan-metode");
-      setMetode(res.data.data);
-    } catch (err) {
-      console.log(err);
-    }
-  } 
 
-  useEffect(() => {
-    getMetode();
-  }, []);
-
-  const TabelMetode = ({ item }) => {
+  const renderItem = ({ item }) => {
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -69,36 +65,23 @@ const Metode = ({ navigation }) => {
     );
   };
 
+
   return (
-    <View>
-      {metode ? (
-        <View className="bg-[#ececec] w-full h-full">
-          <View className="bg-white p-4 rounded">
-            <View className="flex-row w-full items-center space-x-2">
-              <BackButton action={() => navigation.goBack()} size={24} />
-              <Searchbar
-                className="bg-[#f2f2f2] flex-1"
-                placeholder="Cari Metode"
-              />
-            </View>
-            <FlatList
-              className="mt-4"
-              data={metode}
-              renderItem={({ item }) => <TabelMetode item={item} />}
-              keyExtractor={item => item.id.toString()}
-            />
-          </View>
-          <Icon
-            name="plus"
-            size={28}
-            color="black"
-            style={{ position: "absolute", bottom: 20, right: 20 }}
-            onPress={() => navigation.navigate("FormMetode")}
-          />
-        </View>
-      ) : (
-        <Text className="text-2xl font-bold text-center">Loading...</Text>
-      )}
+    <View className="bg-[#ececec] w-full h-full">
+      <Paginate
+        ref={paginateRef}
+        url="/master/acuan-metode"
+        payload={{}}
+        renderItem={renderItem}  
+      />
+      <Icon
+        name="plus"
+        size={28}
+        color="#fff"
+        style={{ position: "absolute", bottom: 20, right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+        onPress={() => navigation.navigate("FormMetode")}
+      />
+      <DeleteConfirmationModal />
     </View>
   );
 };

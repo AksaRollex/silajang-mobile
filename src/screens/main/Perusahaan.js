@@ -9,44 +9,42 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
+  ScrollView,
 } from "react-native";
-import { TextInput } from "react-native-paper";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { create } from "zustand";
 import { Controller } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
-import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
-
-import DropDownPicker from "react-native-dropdown-picker";
-
-const Perusahaan = ({onCancel}) => {
+import { launchImageLibrary } from "react-native-image-picker"; 
+import RNPickerSelect from "react-native-picker-select";
+import { useNavigation } from "@react-navigation/native";
+import Icon from "react-native-vector-icons/Ionicons";
+import { API_URL } from "@env";
+rem = multiplier => baseRem * multiplier;
+const baseRem = 16;
+const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
+  const navigation = useNavigation();
 
   const [kotaKabupaten, setKotaKabupaten] = useState([[]]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
-  const [openKotaKabupaten, setOpenKotaKabupaten] = useState(false);
 
   const [kecamatan, setKecamatan] = useState([]);
   const [selectedKecamatan, setSelectedKecamatan] = useState(null);
-  const [openKecamatan, setOpenKecamatan] = useState(false);
 
   const [kelurahan, setKelurahan] = useState([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState(null);
-  const [openKelurahan, setOpenKelurahan] = useState(false);
 
-  // geo location
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
 
-  const [text, setText] = React.useState("");
-
+  // START GEO LOCATION
   const [location, setLocation] = useState({
     lat: "",
     long: "",
   });
-
   const requestLocationPermission = async () => {
     try {
       const granted = await PermissionsAndroid.request(
@@ -68,7 +66,6 @@ const Perusahaan = ({onCancel}) => {
       console.warn(err);
     }
   };
-
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
@@ -78,7 +75,7 @@ const Perusahaan = ({onCancel}) => {
         });
         Alert.alert(
           "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
+          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`
         );
       },
       error => {
@@ -87,7 +84,6 @@ const Perusahaan = ({onCancel}) => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
-
   const handleLocationPress = () => {
     if (Platform.OS === "android") {
       requestLocationPermission();
@@ -95,9 +91,17 @@ const Perusahaan = ({onCancel}) => {
       getLocation();
     }
   };
+  // END GEO LOCATOIN
 
-  // end geo location
+  // GEO LOCATION COLUMN
+  useEffect(() => {
+    if (location.lat && location.long) {
+      setValue("lat", location.lat);
+      setValue("long", location.long);
+    }
+  }, [location.lat, location.long]);
 
+  // FETCH KOTA-KABUPATEN
   useEffect(() => {
     axios
       .get("/master/kota-kabupaten")
@@ -113,53 +117,53 @@ const Perusahaan = ({onCancel}) => {
       });
   }, []);
 
+  // FETCH KECAMATAN
+  useEffect(() => {
+    if (selectedKotaKabupaten) {
+      axios
+        .get('/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan')
+        .then(response => {
+          console.log("Response data:", response.data);
+          if (response.data && response.data.data) {
+            const formattedKecamatan = response.data.data.map(item => ({
+              label: item.nama,
+              value: item.id,
+            }));
+            setKecamatan(formattedKecamatan);
+          } else {
+            console.warn("No data found for kecamatan");
+            setKecamatan([]);
+          }
+        })
+        .catch(error => {
+          console.error("Error fetching data kecamatan:", error);
+        });
+    } else {
+      setKecamatan([]);
+    }
+  }, [selectedKotaKabupaten]);
 
-  // fetching kecamatan v.1
-  useEffect (() => {
-    axios.get("/master/kecamatan").then((response) => {
-      console.log("response data kecamatan : ", response.data.data);
-      setKecamatan(response.data)
-    })
-    .catch(error => {
-      console.error("error fetching data kecamatan : ",error)
-    })
-  },[])
+  // FETCH KELURAHAN
+  useEffect(() => {
+    if (selectedKecamatan) {
+      axios
+        .get("/wilayah/kecamatan/${selectedKecamatan}/kelurahan")
+        .then(response => {
+          const formattedKelurahan = response.data.data.map(item => ({
+            label: item.nama,
+            value: item.id,
+          }));
+          setKelurahan(formattedKelurahan);
+        })
+        .catch(error => {
+          console.error("error fetching data kelurahan : ", error);
+        });
+    } else {
+      setKelurahan([]);
+    }
+  }, [selectedKecamatan]);
 
-
-  // fetching kecamatan v.2
-  // useEffect(() => {
-  //   if (selectedKotaKabupaten) {
-  //     axios
-  //       .get(`/master/kecamatan/${selectedKotaKabupaten}`)
-  //       .then(response => {
-  //         const formattedKecamatan = response.data.data.map(item => ({
-  //           label : item.nama,
-  //           value: item.id
-  //         }));
-  //         setKecamatan(formattedKecamatan);
-  //       })
-  //       .catch(error => {
-  //         console.error("Error fetching data kecamatan : ", error);
-  //       });
-  //   } else {
-  //     setKecamatan([]);
-  //   }
-  // }, [selectedKotaKabupaten]); 
-
-
-  // fetching kelurahan
-  // useEffect (() => {
-  //   axios
-  //   .get("/master/kelurahan")
-  //   .then((response) => {
-  //     console.log("response data kelurahan : ", response.data)
-  //     setKelurahan(response.data)
-  //   })
-  //   .catch(error => {
-  //     console.error("error fetching data kelurahan : ", error)
-  //   })
-  // },[])
-
+  // FETCH DATA DETAIL USER
   useEffect(() => {
     axios
       .get("/auth")
@@ -167,13 +171,33 @@ const Perusahaan = ({onCancel}) => {
         console.log(
           "Response Data detail user akun:",
           response.data.user.detail,
-        ); // Log data response
+        );
         setUserData(response.data.user.detail);
       })
       .catch(error => {
-        console.error("Error fetching data:", error); // Log error
+        console.error("Error fetching data:", error);
       });
   }, []);
+
+  // FETCH DATA TANDA TANGAN
+  // useEffect(() => {
+  //   axios
+  //     .get("/auth")
+  //     .then(response => {
+  //       setUserData(response.data.user.detail);
+  //       console.log({ API_URL });
+  //       if (
+  //         response.data.user.detail &&
+  //         response.data.user.detail.tanda_tangan
+  //       ) {
+  //         const photoUrl = `${API_URL}${response.data.user.detail.tanda_tangan}`;
+  //         setCurrentPhotoUrl(photoUrl);
+  //       }
+  //     })
+  //     .catch(error => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   const {
     handleSubmit,
@@ -181,357 +205,359 @@ const Perusahaan = ({onCancel}) => {
     formState: { errors },
     getValues,
     reset,
-  } = useForm();
+    setValue,
+  } = useForm({
+    values: { ...userData },
+  });
 
-  const useFormPut = create(set => ({
-    credential: {
-      tanda_tangan: "",
-      instansi: "",
-      pimpinan: "",
-      alamat: "",
-      pj_mutu: "",
-      telepon: "",
-      fax: "",
-      email: "",
-      jenis_kegiatan: "",
-      lat: "",
-      long: "",
-      // kab_kota_id: "",
-      // kecamatan_id: "",
-      // kelurahan_id: "",
-    },
-  }));
+  // FUNCTION UPDATE DATA
+  const updateUser = async () => {
+    const formData = new FormData();
+    formData.append("instansi", getValues("instansi"));
+    formData.append("pimpinan", getValues("pimpinan"));
+    formData.append("pj_mutu", getValues("pj_mutu"));
+    formData.append("alamat", getValues("alamat"));
+    formData.append("telepon", getValues("telepon"));
+    formData.append("fax", getValues("fax"));
+    formData.append("email", getValues("email"));
+    formData.append("jenis_kegiatan", getValues("jenis_kegiatan"));
+    formData.append("lat", getValues("lat"));
+    formData.append("long", getValues("long"));
+    formData.append("kab_kota_id", getValues("kab_kotas"));
+    formData.append("kecamatan_id", getValues("kecamatans"));
+    formData.append("kelurahan_id", getValues("kelurahans"));
 
-  const { setAkun } = useFormPut();
+    try {
+      const response = await axios.post("/user/company", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+      const { tanda_tangan } = response.data;
+      const updatedImageUrl =` ${API_URL}${tanda_tangan}?t=${new Date().getTime()}`;
+      setImageUrl(updatedImageUrl);
+      setData(prevData => ({
+        ...prevData,
+        tanda_tangan: getValues("tanda_tangan"),
+      }));
+    } catch (error) {
+      console.error("Update failed:", error.message);
+    }
+  };
 
+  // RESPONSE SETELAH UPDATE
   const {
     mutate: update,
     isLoading,
     isSuccess,
-  } = useMutation(
-    () => {
-      const requestData = {
-        tanda_tangan: getValues("tanda_tangan"),
-        instansi: getValues("instansi"),
-        pimpinan: getValues("pimpinan"),
-        pj_mutu: getValues("pj_mutu"),
-        alamat: getValues("alamat"),
-        telepon: getValues("telepon"),
-        fax: getValues("fax"),
-        email: getValues("email"),
-        jenis_kegiatan: getValues("jenis_kegiatan"),
-        lat: getValues("lat"),
-        long: getValues("long"),
-        // kab_kota_id: getValues("kab_kota_id"),
-        // kecamatan_id: getValues("kecamatan_id"),
-        // kelurahan_id: getValues("kelurahan_id"),
-      };
-      return axios
-        .put("/user/updatePerusahaan", requestData)
-        .then(res => res.data);
+  } = useMutation(updateUser, {
+    onSuccess: () => {
+      Toast.show({
+        type: "success",
+        text1: "Data Berhasil Di Kirim",
+      });
+      navigation.navigate("Profile");
+      reset();
+      setFile(null);
     },
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Data Berhasil Di Kirim",
-        });
-        reset();
-        navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
-      },
-      onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-      },
+    onError: error => {
+      console.error(error.message);
+      Toast.show({
+        type: "error",
+        text1: error.message,
+      });
     },
-  );
+  });
 
-  // Gambar
-
-  const [file, setFile] = React.useState(null);
-
-  const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.assets && response.assets.length > 0) {
-        const selectedImage = response.assets[0].uri;
-        setFile(selectedImage);
-      }
-    });
-  };
-
-  const handleDeletePhoto = () => {
-    setFile(null);
-  };
-
+  
   return (
     <View style={styles.container}>
       {userData ? (
         <>
-          <TouchableOpacity onPress={handleChoosePhoto}>
-            <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-          </TouchableOpacity>
-          <Controller
-            control={control}
-            name="tanda_tangan"
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.textFieldContainer}>
-                <TextField
-                  enableErrors
-                  fieldStyle={styles.textField}
-                  onChangeText={onChange}
-                  value={value}
-                />
-                {file && (
-                  <View style={styles.imageContainer}>
-                    <Image source={{ uri: file }} style={styles.imagePreview} />
-                    <TouchableOpacity
-                      style={styles.deleteButton}
-                      onPress={handleDeletePhoto}>
-                      <Text style={styles.deleteButtonText}>Hapus Gambar</Text>
-                    </TouchableOpacity>
-                  </View>
-                )}
-              </View>
-            )}
-          />
-
+       
+          <Text style={{ color: "black" }}>Instansi</Text>
           <Controller
             control={control}
             name="instansi"
             rules={{ required: "Instansi Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                placeholderTextColor="black"
                 placeholder={userData.instansi}
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
-                value={value}
               />
             )}
           />
           {errors.instansi && (
             <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>Alamat</Text>
           <Controller
             control={control}
             name="alamat"
             rules={{ required: "Alamat Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
+                placeholderTextColor="black"
                 placeholder={userData.alamat}
                 onChangeText={onChange}
-                value={value}
               />
             )}></Controller>
           {errors.alamat && (
             <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>Pimpinan</Text>
           <Controller
             control={control}
             name="pimpinan"
             rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
+                placeholderTextColor="black"
                 placeholder={userData.pimpinan}
                 onChangeText={onChange}
-                value={value}
               />
             )}></Controller>
           {errors.pimpinan && (
             <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>PJ Mutu</Text>
           <Controller
             control={control}
             name="pj_mutu"
             rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                // onChangeText={handleNumberChange}
-                mode="outlined"
-                style={styles.textInput}
-                keyboardType="text-input" // Ensures number keyboard
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
+                keyboardType="text-input"
+                placeholderTextColor="black"
                 placeholder={userData.pj_mutu}
                 onChangeText={onChange}
-                value={value}
               />
             )}></Controller>
           {errors.pj_mutu && (
             <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>Nomor Telepon</Text>
           <Controller
             control={control}
             name="telepon"
             rules={{ required: "Telepon Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
+              <TextField
                 onChangeText={onChange}
-                value={value}
-                style={styles.textInput}
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="phone-pad"
+                placeholderTextColor="black"
                 placeholder={userData.telepon}
               />
             )}></Controller>
           {errors.telepon && (
             <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}>Fax</Text>
           <Controller
             control={control}
             name="fax"
             render={({ field: { onChange, value } }) => (
-              <TextInput
+              <TextField
                 onChangeText={onChange}
-                value={value}
-                mode="outlined"
-                style={styles.textInput}
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="phone-pad"
+                placeholderTextColor="black"
                 placeholder={userData.fax}
               />
             )}></Controller>
-          {errors.fax && (
-            <Text style={{ color: "red" }}>{errors.fax.message}</Text>
-          )}
-
+          <Text style={{ color: "black" }}>Email</Text>
           <Controller
             control={control}
             name="email"
             rules={{ required: "Email Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="email-address"
                 onChangeText={onChange}
-                value={value}
+                placeholderTextColor="black"
                 placeholder={userData.email}
               />
             )}></Controller>
           {errors.email && (
             <Text style={{ color: "red" }}>{errors.email.message}</Text>
           )}
-
+          <Text style={{ color: "black" }}> Jenis Kegiatan</Text>
           <Controller
             control={control}
             name="jenis_kegiatan"
             rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                mode="outlined"
-                style={styles.textInput}
+              <TextField
+                fieldStyle={styles.textField}
+                enableErrors
                 keyboardType="text-input"
                 onChangeText={onChange}
-                value={value}
+                placeholderTextColor="black"
                 placeholder={userData.jenis_kegiatan}
               />
             )}></Controller>
-
-          <View style={{ display: "flex", flexDirection: "row" }}>
-            <Controller
-              control={control}
-              name="lat"
-              rules={{ required: "Latitude Tidak Boleh Kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  mode="outlined"
-                  style={{ width: "48%" }}
-                  enableErrors
-                  keyboardType="text-input"
-                  onChangeText={onChange}
-                  value={location.lat}
-                  placeholder={userData.lat}
-                />
-              )}></Controller>
-            <Controller
-              control={control}
-              name="long"
-              rules={{ required: "Longitude Tidak Boleh Kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <TextInput
-                  mode="outlined"
-                  style={{ width: "48%", marginHorizontal: "4%" }}
-                  keyboardType="text-input"
-                  onChangeText={onChange}
-                  enableErrors
-                  value={location.long}
-                  placeholder={userData.long}
-                />
-              )}></Controller>
+          {errors.jenis_kegiatan && (
+            <Text style={{ color: "red" }}>
+              {errors.jenis_kegiatan.message}
+            </Text>
+          )}
+          <Text
+            style={{ alignSelf: "center", marginBottom: 5, color: "black" }}>
+            Lokasi
+          </Text>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}>
+            <View style={{ flex: 1, marginRight: 5 }}>
+              <Controller
+                control={control}
+                name="lat"
+                rules={{ required: "Latitude Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    fieldStyle={styles.textField}
+                    enableErrors
+                    keyboardType="numeric"
+                    onChangeText={onChange}
+                    value={value || location.lat}
+                    placeholderTextColor="gray"
+                    placeholder={userData.lat}
+                  />
+                )}
+              />
+            </View>
+            <View style={{ flex: 1, marginLeft: 5 }}>
+              <Controller
+                control={control}
+                name="long"
+                rules={{ required: "Longitude Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    fieldStyle={styles.textField}
+                    keyboardType="numeric"
+                    onChangeText={onChange}
+                    enableErrors
+                    value={value || location.long}
+                    placeholderTextColor="gray"
+                    placeholder={userData.long}
+                  />
+                )}
+              />
+            </View>
           </View>
+
           <TouchableOpacity
             style={styles.buttonLokasi}
             onPress={handleLocationPress}>
             <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
           </TouchableOpacity>
+          <Text style={styles.label}>Kabupaten/Kota</Text>
           <Controller
+            name="kab_kotas"
             control={control}
-            name="alamat"
+            rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
-              <DropDownPicker
-                open={openKotaKabupaten}
-                value={selectedKotaKabupaten}
-                items={kotaKabupaten}
-                setOpen={setOpenKotaKabupaten}
-                setValue={setSelectedKotaKabupaten}
-                onChangeText={onChange}
-                setItems={setKotaKabupaten}
-                placeholder="Pilih Kota / Kabupaten"
-                style={styles.dropdown}
-              />
-            )}></Controller>
-             <Controller
-        control={control}
-        name="kecamatan_id"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            mode="outlined"
-            style={styles.textInput}
-            keyboardType="text-input"
-            onChangeText={onChange}
-            value={value}
-            // placeholder={userData.kecamatan_id}
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKotaKabupaten(value);
+                  }}
+                  value={value}
+                  items={kotaKabupaten}
+                  style={pickerSelectStyles}
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
+            )}
           />
-        )}></Controller>
-      <Controller
-        control={control}
-        name="kelurahan_id"
-        render={({ field: { onChange, value } }) => (
-          <TextInput
-            mode="outlined"
-            style={styles.textInput}
-            onChangeText={onChange}
-            value={value}
-            keyboardType="text-input"
-            // placeholder={userData.kelurahan_id}
+          {errors.kab_kotas && (
+            <Text style={{ color: "red" }}>{errors.kab_kotas.message}</Text>
+          )}
+          <Text style={styles.label}>Kecamatan</Text>
+          <Controller
+            name="kecamatans"
+            rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
+            control={control}
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKecamatan(value);
+                  }}
+                  value={value}
+                  items={kecamatan}
+                  style={pickerSelectStyles}
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
+            )}
           />
-        )}></Controller>
+          {errors.kecamatans && (
+            <Text style={{ color: "red" }}>{errors.kecamatans.message}</Text>
+          )}
+          <Text style={styles.label}>Kelurahan</Text>
+          <Controller
+            name="kelurahans"
+            control={control}
+            rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View style={styles.inputContainer}>
+                <RNPickerSelect
+                  onValueChange={value => {
+                    onChange(value);
+                    setSelectedKelurahan(value);
+                  }}
+                  value={value}
+                  items={kelurahan}
+                  style={pickerSelectStyles}
+                  Icon={() => {
+                    return <Icon name="chevron-down" size={24} color="gray" />;
+                  }}
+                />
+              </View>
+            )}
+          />
+          {errors.kelurahans && (
+            <Text style={{ color: "red" }}>{errors.kelurahans.message}</Text>
+          )}
         </>
       ) : (
-        <Text>Loading...</Text>
+        <Text style={[styles.text, { fontWeight: "bold" , marginVertical: 10 }]}>
+          Loading...
+        </Text>
       )}
-
-     
 
       <Button
         label="Simpan"
-        style={{ marginBottom: 40 }}
+        style={{ marginBottom: 60 }}
         backgroundColor={Colors.brand}
         borderRadius={5}
         onPress={handleSubmit(update)}
-        disabled={isLoading || isSuccess}></Button>
+        disabled={isLoading}></Button>
     </View>
   );
 };
@@ -542,17 +568,14 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  textInput: {
-    marginBottom: 16, // Adds space between each TextInput
-  },
-  textField: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    borderColor: "#ccc",
-    borderWidth: 1,
-  },
 
+  text: {
+    textAlign: "center",
+    fontSize: 18,
+    fontWeight: "bold",
+    color: "black",
+    marginVertical: 10,
+  },
   submitButton: {
     paddingVertical: 12,
     paddingHorizontal: 20,
@@ -571,17 +594,155 @@ const styles = StyleSheet.create({
   buttonLokasi: {
     width: "100%",
     height: 50,
-    marginVertical: 7,
     fontWeight: "bold",
-    backgroundColor: "#fff",
     display: "flex",
     alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 6,
     justifyContent: "center",
-    marginBottom: 15,
+    marginBottom: rem(1.5),
   },
   buttonLokasiText: {
     color: "#000",
     fontSize: 16,
+  },
+  dropdown: {
+    marginBottom: 16,
+  },
+  textField: {
+    padding: 12,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    color: "black",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  imagePreview: {
+    width: 100,
+    height: 100,
+    marginBottom: 16,
+    borderRadius: 10,
+  },
+  deleteButton: {},
+  deleteButtonText: {
+    color: "red",
+    marginBottom: 15,
+  },
+  selectPhotoText: {
+    color: "black",
+  },
+  textFieldContainer: {},
+  imageContainer: {
+    alignItems: "center",
+  },
+
+  inputContainer: {
+    borderRadius: 8,
+    marginBottom: 16,
+    padding: 1,
+    color: "black",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  signatureContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+  },
+  signatureField: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  imageContainer: {
+    alignItems: "center",
+    position: "relative",
+  },
+  signaturePreview: {
+    width: 200,
+    height: 100,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  changeButton: {
+    backgroundColor: "#4682B4",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "red",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  addSignatureButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 2,
+    borderColor: "#4682B4",
+    borderStyle: "dashed",
+    borderRadius: 8,
+  },
+  addSignatureText: {
+    marginLeft: 10,
+    color: "#4682B4",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  input: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: "black",
+    borderWidth: 1,
+    borderColor: "#ccc",
+  },
+});
+const pickerSelectStyles = StyleSheet.create({
+  inputIOS: {
+    fontSize: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    color: "black",
+  },
+  inputAndroid: {
+    fontSize: 16,
+    borderRadius: 8,
+    color: "black",
+    backgroundColor: "#f0f0f0",
+  },
+  iconContainer: {
+    top: 12,
+    right: 10,
   },
 });
 
