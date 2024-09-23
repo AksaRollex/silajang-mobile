@@ -1,20 +1,15 @@
-import axios from "@/src/libs/axios"
-import { useNavigation } from "@react-navigation/native"
-import React, { useState, useEffect } from "react"
-import { FlatList, Text, View, ActivityIndicator, StyleSheet } from "react-native"
-import Icons from "react-native-vector-icons/AntDesign"
-import Entypo from "react-native-vector-icons/Entypo"
-import { MenuView } from "@react-native-menu/menu"
-import { useQuery, useQueryClient } from "@tanstack/react-query"
-import { useDelete } from "@/src/hooks/useDelete"
-import SearchInput from "@/src/screens/components/SearchInput"
-import useDebounce from "@/src/hooks/useDebounce"
-import { rupiah } from "@/src/libs/utils"
+import { useDelete } from '@/src/hooks/useDelete';
+import Paginate from '@/src/screens/components/Paginate';
+import { MenuView } from "@react-native-menu/menu";
+import { useQueryClient } from "@tanstack/react-query";
+import React, { useRef } from "react";
+import { Text, View } from "react-native";
+import Icon from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 
 const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
-  const [seacrhInput, setSearchInput] = useState("");
-  const debouncedSearchQuery = useDebounce(seacrhInput, 300);
+  const paginateRef = useRef();
   const { delete: deleteParameter, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["parameter"]);
@@ -38,23 +33,7 @@ const Parameter = ({ navigation }) => {
     },
   ];
 
-  const fetchParameter = async ({ queryKey }) => {
-    const [_, search] = queryKey;
-    const response = await axios.post("/master/parameter", { search });
-    return response.data.data;
-  };
-
-  const { data, isLoading: isLoadingParameter } = useQuery(
-    ["parameter", debouncedSearchQuery],
-    fetchParameter,
-    {
-      onError: error => {
-        console.error("Fetch parameter error:", error);
-      },
-    }
-  )
-
-  const CardParameter = ({ item }) => (
+  const renderItem = ({ item }) => (
     <View className="my-2 bg-[#f8f8f8] flex rounded-md 
     border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
@@ -92,32 +71,14 @@ const Parameter = ({ navigation }) => {
     </View>
   )
 
-  if(isLoadingParameter){
-    return (
-      <View className="h-full flex justify-center">
-        <ActivityIndicator size={"large"} color={"#312e81"} />
-      </View>
-    )
-  }
-
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="mb-10 p-4 rounded">
-        <SearchInput 
-        onChangeText={setSearchInput}
-        value={seacrhInput}
-        placeholder={"Cari Parameter..."}
-        className="bg-[#dedede] flex-1"
-        size={26}
-        action={() => navigation.goBack()}
-        />
-        <FlatList
-        className="mt-4"
-        data={data}
-        renderItem={({ item }) => <CardParameter item={item} />}
-        keyExtractor={item => item.uuid}
-        />
-      </View>
+      <Paginate
+        ref={paginateRef}
+        url="/master/parameter"
+        payload={{}}
+        renderItem={renderItem}
+      />
       <Icons 
       name="plus"
       size={28}
@@ -126,6 +87,7 @@ const Parameter = ({ navigation }) => {
       right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
       onPress={() => navigation.navigate("FormParameter")}
       />
+      <DeleteConfirmationModal/>
     </View>
   )
 }
