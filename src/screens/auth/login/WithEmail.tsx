@@ -30,7 +30,11 @@ export default memo(function WithEmail() {
     isSuccess,
   } = useMutation(
     data =>
-      axios.post("/auth/secure/login", { ...data, type: "email", remember_me: 1 }),
+      axios.post("/auth/secure/login", {
+        ...data,
+        type: "email",
+        remember_me: 1,
+      }),
     {
       onSuccess: async (res) => {
         await AsyncStorage.setItem("@auth-token", res.data.token);
@@ -80,6 +84,7 @@ export default memo(function WithEmail() {
             {errors.identifier.message}
           </Text>
         )}
+        
       </View>
       <View marginB-20>
         <Text marginB-5>Password</Text>
@@ -136,8 +141,7 @@ export default memo(function WithEmail() {
         paddingV-12
         borderRadius={5}
         onPress={handleSubmit(login)}
-        disabled={isLoading || isSuccess}
-      ></Button>
+        disabled={isLoading || isSuccess}></Button>
     </View>
   );
 });
