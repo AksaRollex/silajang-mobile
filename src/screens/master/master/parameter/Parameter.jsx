@@ -13,7 +13,7 @@ const Parameter = ({ navigation }) => {
   const paginateRef = useRef();
   const { delete: deleteParameter, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["parameter"]);
+      queryClient.invalidateQueries(["/master/parameter"]);
     },
     onError: error => {
       console.error("Delete error:", error);

@@ -16,6 +16,7 @@ import FormMetode from './metode/Form'
 import FormPeraturan from './peraturan/Form'
 import FormParameter from './parameter/Form'
 import FormPengawetan from './pengawetan/Form'
+import FormJenisSampel from './jenis-sampel/FormJenisSampel'
 import ParameterPeraturan from './peraturan/Parameter'
 
 const Stack = createNativeStackNavigator()
@@ -38,6 +39,7 @@ export default function MainScreen () {
         <Stack.Screen name="FormPeraturan" component={FormPeraturan}/>
         <Stack.Screen name="FormParameter" component={FormParameter}/>
         <Stack.Screen name="FormPengawetan" component={FormPengawetan}/>
+        <Stack.Screen name="FormJenisSampel" component={FormJenisSampel}/>
         <Stack.Screen name="ParameterPeraturan" component={ParameterPeraturan}/>
       </Stack.Navigator>
   )

@@ -13,7 +13,7 @@ const Metode = ({ navigation }) => {
 
   const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(['metode']);
+      queryClient.invalidateQueries(['/master/acuan-metode']);
       paginateRef.current?.refetch()
     },
     onError: (error) => {
@@ -40,7 +40,7 @@ const Metode = ({ navigation }) => {
           elevation: 4,
         }}>
         <View className="flex-row justify-between items-center">
-          <Text className="text-[18px] font-bold">{item.nama}</Text>
+          <Text className="text-[18px] font-poppins-semibold">{item.nama}</Text>
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
