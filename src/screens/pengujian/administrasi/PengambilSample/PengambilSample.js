@@ -10,6 +10,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { white } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
+import { useDelete } from '@/src/hooks/useDelete';
 
 
 const currentYear = new Date().getFullYear()
@@ -20,6 +21,16 @@ const generateYears = () => {
   }
   return years
 }
+
+const { delete: DeleteConfirmationModal } = useDelete({
+    onSuccess: () => {
+    //   queryClient.invalidateQueries(['pengambil-sample']);
+    //   paginateRef.current?.refetch()
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+    }
+  });
 
 const pengambilOptions = [
   { id: 0, name: "Menunggu Konfirmasi" },
@@ -223,8 +234,9 @@ const PengambilSampel = ({ navigation }) => {
         size={28}
         color="white"
         style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-      // onPress={() => navigation.navigate("FormMetode")}
+      onPress={() => navigation.navigate("FormMetode")}
       />
+      <DeleteConfirmationModal />
     </View>
   );
 };

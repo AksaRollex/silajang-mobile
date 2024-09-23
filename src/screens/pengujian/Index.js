@@ -17,13 +17,11 @@ import TambahPermohonan from "../formComponent/TambahPermohonan";
 import Kontrak from "./administrasi/kontrak/Kontrak"
 import DetailKontrak from "./administrasi/kontrak/Detail"
 import Persetujuan from "./administrasi/Persetujuan"
-import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
-import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
-import PengambilSampel from "./administrasi/PengambilSampel"
+import PenerimaSampel from "./administrasi/PenerimaSampel"
+import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
 import CetakLHU from "./administrasi/CetakLHU"
 
 const Stack = createNativeStackNavigator();
-
 const screenOptions = {
   tabBarShowLabel: false,
   headerShown: false,
@@ -98,7 +96,7 @@ export default function MainScreen() {
       />
       <Stack.Screen
         name="PengambilSampel"
-        component={PengambilSampel}
+        component={PengambilSample}
       />
       <Stack.Screen
         name="CetakLHU"
