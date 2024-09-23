@@ -692,7 +692,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}
+                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}  
                   </Text>
                 </View>
               </View>
@@ -723,7 +723,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
-                  <Text style={styles.value}>{data.acuan_metode.nama}</Text>
+                  <Text style={styles.value}>{data?.acuan_metode?.nama || ''}</Text>
                 </View>
               </View>
             </View>
