@@ -13,9 +13,11 @@ import Pengawetan from './pengawetan/Pengawetan'
 import Peraturan from './peraturan/Peraturan'
 import RadiusPengambilan from './radius-pengambilan/RadiusPengambilan'
 import FormMetode from './metode/Form'
+import FormPaket from './paket/Form'
 import FormPeraturan from './peraturan/Form'
 import FormParameter from './parameter/Form'
 import ParameterPeraturan from './peraturan/Parameter'
+import ParameterPaket from './paket/Parameter'
 
 const Stack = createNativeStackNavigator()
 export default function MainScreen () {
@@ -36,6 +38,7 @@ export default function MainScreen () {
         <Stack.Screen name="FormMetode" component={FormMetode}/>
         <Stack.Screen name="FormPeraturan" component={FormPeraturan}/>
         <Stack.Screen name="FormParameter" component={FormParameter}/>
+        <Stack.Screen name="FormPaket" component={FormPaket}/>
         <Stack.Screen name="ParameterPeraturan" component={ParameterPeraturan}/>
       </Stack.Navigator>
   )
