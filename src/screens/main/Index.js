@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { createDrawerNavigator, DrawerContentScrollView } from "@react-navigation/drawer";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient , useQuery } from "@tanstack/react-query";
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, TouchableOpacity, View } from "react-native";
 import Toast from "react-native-toast-message";
@@ -24,6 +24,9 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
+import { ToggleButton } from "react-native-paper";
+const { Navigator, Screen } = createNativeStackNavigator();
+
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
@@ -152,7 +155,7 @@ const ProfileDetail = () => {
   return (
     <View className="text-black p-3 border-b-[1px] m-2">
       <View className="flex gap-2">
-        <Image source={{ uri: user.photo ?? "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+        <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
           className="w-12 h-12 rounded-full" />
         <View className="flex gao-y-0">
           <Text className="text-xl font-bold" >{user.nama}</Text>
@@ -217,6 +220,8 @@ const DrawerContent = (props) => {
   const [expandedMenus, setExpandedMenus] = useState({});
   const heightRef = useRef({});
   const queryClient = useQueryClient();
+
+  const { data: user } = useUser();
 
   const Logout = () => {
     const [modalVisible, setModalVisible] = useState(false);
@@ -437,7 +442,7 @@ const DrawerContent = (props) => {
 
   const customDrawerItems = [
     { name: "Home", screen: "Home", ionIcon: "home" },
-    { name: "Profile", screen: "Profile", ionIcon: "person" },
+    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", ionIcon: "person" }] : []),
     {
       name: "Master",
       setIcon: "grid",
@@ -492,7 +497,6 @@ const Admin = () =>  (
       </Drawer.Navigator>
     </NavigationContainer>
   )
-
 
 const NonAdmin = () => (
     <NavigationContainer independent={true}>

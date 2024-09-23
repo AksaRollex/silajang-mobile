@@ -14,7 +14,8 @@ import EditTitikUji from "../formComponent/EditTitikUji";
 import EditPembayaran from "../formComponent/EditPembayaran";
 import TambahPermohonan from "../formComponent/TambahPermohonan";
 
-import Kontrak from "./administrasi/Kontrak"
+import Kontrak from "./administrasi/kontrak/Kontrak"
+import DetailKontrak from "./administrasi/kontrak/Detail"
 import Persetujuan from "./administrasi/Persetujuan"
 import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
 import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
@@ -78,6 +79,10 @@ export default function MainScreen() {
       <Stack.Screen
         name="Kontrak"
         component={Kontrak}
+      />
+      <Stack.Screen
+        name="DetailKontrak"
+        component={DetailKontrak}
       />
       <Stack.Screen
         name="Persetujuan"

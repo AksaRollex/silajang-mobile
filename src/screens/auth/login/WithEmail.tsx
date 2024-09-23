@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native-ui-lib";
 
+
 export default memo(function WithEmail() {
   const {
     handleSubmit,
@@ -54,7 +55,7 @@ export default memo(function WithEmail() {
   return (
     <View width={"100%"} paddingV-20 paddingH-10>
       <View marginB-20>
-        <Text marginB-5>Email </Text>
+        <Text marginB-5>Email</Text>
         <Controller
           control={control}
           name="identifier"

@@ -1,19 +1,19 @@
 import React from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation } from "@react-navigation/native";
 
-export default function Kontrak() {
+export default function NonPengujian() {
     const navigation = useNavigation();
-    
-    return (
+
+    return( 
         <View style={styles.container}>
-            <Text>KONTRAK</Text>
+            <Text>NON PENGUJIAN</Text>
             <Button
                 title="Go Back!"
                 onPress={() => navigation.goBack()}
             />
         </View>
-    );
+    )
 }
 
 const styles = StyleSheet.create({

@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, TouchableOpacity } from "react-native";
-import { TextInput } from "react-native-paper";
+import { View, StyleSheet, Text, TextInput, TouchableOpacity } from "react-native";
 import { Colors, Button } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -25,8 +24,8 @@ const Keamanan = ({ onCancel }) => {
           type: "success",
           text1: "Password berhasil diperbarui",
         });
-        reset(); // Reset form setelah berhasil
-        navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
+        reset();
+        navigation.navigate("Profile");
       },
       onError: (error) => {
         console.error(error.response.data);
@@ -49,102 +48,104 @@ const Keamanan = ({ onCancel }) => {
     updateKeamanan.mutate(data);
   };
 
-  const renderPasswordField = (label, fieldName, value, onChange, showPassword, togglePasswordVisibility, error) => (
-    <View style={styles.inputContainer}>
-      <TextInput
-        label={label}
-        mode="outlined"
-        secureTextEntry={!showPassword}
-        style={styles.textInput}
-        onChangeText={onChange}
-        value={value}
-        error={!!error}
-        right={
-          <TextInput.Icon
-            name={() => (
-              <TouchableOpacity onPress={togglePasswordVisibility}>
-                <Ionicons
-                  name={showPassword ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={Colors.red}
-                />
-              </TouchableOpacity>
-            )}
-          />
-        }
-      />
-      {error && <Text style={styles.errorText}>{error.message}</Text>}
-    </View>
-  );
-
   return (
     <View style={styles.container}>
+      <Text>Password Lama</Text>
       <Controller
         control={control}
         name="old_password"
         rules={{ required: "Password Lama Harus Diisi" }}
-        render={({ field: { onChange, value } }) =>
-          renderPasswordField(
-            "Password Lama",
-            "old_password",
-            value,
-            onChange,
-            showOldPassword,
-            () => setShowOldPassword(!showOldPassword),
-            errors.old_password
-          )
-        }
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry={!showOldPassword}
+            />
+            <TouchableOpacity onPress={() => setShowOldPassword(!showOldPassword)}>
+              <Ionicons
+                name={showOldPassword ? "eye-outline" : "eye-off-outline"}
+                size={19}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       />
+      {errors.old_password && (
+        <Text style={styles.errorText}>{errors.old_password.message}</Text>
+      )}
 
+      <Text>Password Baru</Text>
       <Controller
         control={control}
         name="password"
         rules={{ required: "Password Baru Harus Diisi", minLength: { value: 12, message: "Password minimal 12 karakter" } }}
-        render={({ field: { onChange, value } }) =>
-          renderPasswordField(
-            "Password Baru",
-            "password",
-            value,
-            onChange,
-            showNewPassword,
-            () => setShowNewPassword(!showNewPassword),
-            errors.password
-          )
-        }
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry={!showNewPassword}
+            />
+            <TouchableOpacity onPress={() => setShowNewPassword(!showNewPassword)}>
+              <Ionicons
+                name={showNewPassword ? "eye-outline" : "eye-off-outline"}
+                size={19}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       />
+      {errors.password && (
+        <Text style={styles.errorText}>{errors.password.message}</Text>
+      )}
 
+      <Text>Konfirmasi Password Baru</Text>
       <Controller
         control={control}
         name="password_confirmation"
         rules={{ required: "Konfirmasi Password Baru Harus Diisi" }}
-        render={({ field: { onChange, value } }) =>
-          renderPasswordField(
-            "Konfirmasi Password Baru",
-            "password_confirmation",
-            value,
-            onChange,
-            showConfirmPassword,
-            () => setShowConfirmPassword(!showConfirmPassword),
-            errors.password_confirmation
-          )
-        }
+        render={({ field: { onChange, value } }) => (
+          <View style={styles.inputContainer}>
+            <TextInput
+              style={styles.input}
+              onChangeText={onChange}
+              value={value}
+              secureTextEntry={!showConfirmPassword}
+            />
+            <TouchableOpacity onPress={() => setShowConfirmPassword(!showConfirmPassword)}>
+              <Ionicons
+                name={showConfirmPassword ? "eye-outline" : "eye-off-outline"}
+                size={19}
+                color="gray"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       />
+      {errors.password_confirmation && (
+        <Text style={styles.errorText}>{errors.password_confirmation.message}</Text>
+      )}
 
       <View style={styles.buttonContainer}>
+        <Button
+          label="Simpan"
+          backgroundColor={Colors.brand}
+          borderRadius={5}
+          style={styles.button}
+          onPress={handleSubmit(onSubmit)}
+          disabled={updateKeamanan.isLoading}
+        />
         <Button
           label="Batal"
           backgroundColor="#fca5a5"
           borderRadius={5}
           style={styles.button}
           onPress={onCancel}
-        />
-        <Button
-          label="Perbarui"
-          backgroundColor={Colors.brand}
-          borderRadius={5}
-          style={styles.button}
-          onPress={handleSubmit(onSubmit)}
-          disabled={updateKeamanan.isLoading}
         />
       </View>
     </View>
@@ -158,10 +159,18 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   inputContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: Colors.grey30,
+    borderRadius: 5,
     marginBottom: 16,
+    paddingHorizontal: 10,
   },
-  textInput: {
-    marginBottom: 16,
+  input: {
+    flex: 1,
+    height: 42,
+    paddingVertical: 8,
   },
   buttonContainer: {
     marginTop: 20,
