@@ -1,12 +1,11 @@
 import { useDelete } from '@/src/hooks/useDelete';
-import SearchInput from "@/src/screens/components/SearchInput";
+import Paginate from '@/src/screens/components/Paginate';
 import { MenuView } from "@react-native-menu/menu";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import React, { useRef } from "react";
+import { Text, View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import Paginate from '@/src/screens/components/Paginate';
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
