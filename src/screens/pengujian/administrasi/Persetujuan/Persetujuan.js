@@ -39,7 +39,7 @@ const Persetujuan = ({ navigation }) => {
     //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
     // },
     // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
-    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid }) },
+    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
     { id: "Cetak Sampling", title: "Cetak Sampling", action: item => navigation.navigate("Cetak Sampling", { uuid: item.uuid }) },
     {
       id: "Berita Acara",
