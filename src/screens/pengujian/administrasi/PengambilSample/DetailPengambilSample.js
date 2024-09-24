@@ -1,12 +1,10 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Paket = () => {
+export default function DetailPengambilSample() {
   return (
     <View>
-      <Text>Paket</Text>
+      <Text>DetailPengambilSample</Text>
     </View>
   )
 }
-
-export default Paket

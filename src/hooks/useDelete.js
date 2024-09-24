@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from 'axios';
+import axios from '../libs/axios';
 
 const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => (
   <Modal

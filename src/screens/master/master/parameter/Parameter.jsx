@@ -4,6 +4,7 @@ import { MenuView } from "@react-native-menu/menu";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef } from "react";
 import { Text, View } from "react-native";
+import { rupiah } from '@/src/libs/utils';
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 
@@ -12,7 +13,7 @@ const Parameter = ({ navigation }) => {
   const paginateRef = useRef();
   const { delete: deleteParameter, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["parameter"]);
+      queryClient.invalidateQueries(["/master/parameter"]);
     },
     onError: error => {
       console.error("Delete error:", error);
@@ -79,7 +80,7 @@ const Parameter = ({ navigation }) => {
         payload={{}}
         renderItem={renderItem}
       />
-      <Icons 
+      <Icon
       name="plus"
       size={28}
       color="#fff"
