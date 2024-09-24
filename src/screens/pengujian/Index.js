@@ -19,11 +19,10 @@ import DetailKontrak from "./administrasi/kontrak/Detail"
 import Persetujuan from "./administrasi/Persetujuan"
 import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
 import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
-import PengambilSampel from "./administrasi/PengambilSampel"
+import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
 import CetakLHU from "./administrasi/CetakLHU"
 
 const Stack = createNativeStackNavigator();
-
 const screenOptions = {
   tabBarShowLabel: false,
   headerShown: false,
@@ -97,8 +96,8 @@ export default function MainScreen() {
         component={DetailPenerima}
       />
       <Stack.Screen
-        name="PengambilSampel"
-        component={PengambilSampel}
+        name="PengambilSample"
+        component={PengambilSample}
       />
       <Stack.Screen
         name="CetakLHU"

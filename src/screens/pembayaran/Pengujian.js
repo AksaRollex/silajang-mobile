@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { Text, View, StyleSheet, TextInput, Image } from "react-native";
 import { useNavigation } from "@react-navigation/native";
-import { SearchBar } from "react-native-screens";
 import { Button } from "react-native-ui-lib";
+import BackButton from "../components/BackButton";
 
 const Pengujian = () => {
     const navigation = useNavigation();
@@ -11,46 +11,32 @@ const Pengujian = () => {
     const [searchQuery, setSearchQuery] = React.useState("");
 
     return(
-        <View style={styles.container}> 
-            <View style={{flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', width: '100%'}}>
-                <SearchBar placeholder="Search" onChangeText={setSearchQuery} value={searchQuery} style={styles.search}/>
-                <Button style={styles.buttonSearch}>
-                    <Image source={require("../../../assets/images/search.png")} style={styles.searchIcon}/>
-                </Button>
-            </View>
-            <Text className="text-xl font-bold">PENGUJIAN</Text>
-            <Button
-                title="Go Back!"
-                onPress={() => navigation.goBack()}
+       <View className="flex-1 bg-gray-100 p-4">
+        <View className="block max-w-sm p-6 bg-[#ffffff] rounded-lg shadow">
+            
+            <Text className="text-2xl font-bold mb-6 text-gray-800 text-center">Pengujian</Text>
+        <View className="w-full flex-row items-center justify-between mb-4 space-x-3">
+        <BackButton action={()=> navigation.goBack()} size={26} />
+            <TextInput
+            placeholder="Cari"
+            className="flex-1 bg-[#e0dbdb] p-3 rounded-lg shadow-md"
+            value={searchQuery}
+            onChangeText={setSearchQuery}
             />
-        </View>
-    )
-}
+            <Button
+             className="p-3 rounded-lg shadow-md">
+                <Image
+                    source={require("../../../assets/images/search.png")}
+                    className="w-6 h-6"
+                    />
+             </Button>
+                    </View>
+       </View>
 
-const styles = StyleSheet.create({
-    container: {
-        flex: 1, 
-        alignItems: 'center', 
-    },
-    buttonSearch: {
-        backgroundColor: 'white',
-        borderRadius: 10,
-        padding: 10
-    },
-    search: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'space-between',
-        paddingHorizontal: 10,
-        paddingVertical: 5,
-        backgroundColor: 'white',
-        borderRadius: 10,
-        marginVertical: 10
-    },
-    searchIcon: {
-        width: 24,
-        height: 24
-    }
-});
+
+       </View>
+    );
+}; 
+
 
 export default Pengujian;
