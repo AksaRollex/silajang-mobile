@@ -335,7 +335,7 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data.kode}</Text>
+                  <Text style={styles.kode}>{data?.kode || ''}</Text>
                 </View>
               </View>
             </View>
@@ -348,7 +348,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
-                  <Text style={styles.value}>{data.permohonan.user.nama}</Text>
+                  <Text style={styles.value}>{data?.permohonan?.user?.nama || ''}</Text>
                 </View>
               </View>
 
@@ -359,7 +359,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.instansi}
+                    {data?.permohonan?.user?.detail?.instansi || ''}
                   </Text>
                 </View>
               </View>
@@ -375,7 +375,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.alamat}
+                    {data?.permohonan?.user?.detail?.alamat || ''}
                   </Text>
                 </View>
               </View>
@@ -387,7 +387,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.telepon}
+                    {data?.permohonan?.user?.detail?.telepon || ''}
                   </Text>
                 </View>
               </View>
@@ -406,7 +406,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Lokasi/Titik Uji</Text>
-                  <Text style={styles.value}>{data.lokasi}</Text>
+                  <Text style={styles.value}>{data?.lokasi || ''}</Text>
                 </View>
               </View>
 
@@ -416,7 +416,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
-                  <Text style={styles.value}>{data.permohonan.industri}</Text>
+                  <Text style={styles.value}>{data?.permohonan?.industri || ''}</Text>
                 </View>
               </View>
 
@@ -426,7 +426,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
-                  <Text style={styles.value}>{data.permohonan.alamat}</Text>
+                  <Text style={styles.value}>{data?.permohonan?.alamat || ''}</Text>
                 </View>
               </View>
 
@@ -437,7 +437,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.jenis_kegiatan}
+                    {data?.permohonan?.user?.detail?.jenis_kegiatan || ''}
                   </Text>
                 </View>
               </View>
@@ -447,7 +447,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
-                  <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
+                  <Text style={styles.value}>{data?.jenis_sampel?.nama || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -612,7 +612,7 @@ export default function Detail({ route, navigation }) {
               <View>
                 {!isAbnormal && (
                   <TextInput
-                    placeholder={data.keterangan_kondisi_sampel}
+                    placeholder={data?.keterangan_kondisi_sampel || ""}
                     style={styles.input}
                     onChangeText={handleKeteranganChange}
                     onBlur={handleInputBlur}
@@ -714,7 +714,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Tanggal/Jam</Text>
-                  <Text style={styles.value}>{data.tanggal_pengambilan}</Text>
+                  <Text style={styles.value}>{data?.tanggal_pengambilan || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -735,7 +735,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
-                  <Text style={styles.value}>{data.south}</Text>
+                  <Text style={styles.value}>{data?.south || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -744,7 +744,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
-                  <Text style={styles.value}>{data.east}</Text>
+                  <Text style={styles.value}>{data?.east || ''}</Text>
                 </View>
               </View>
             </View>

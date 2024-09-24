@@ -1,14 +1,23 @@
 import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator } from "react-native";
+import {
+  FlatList,
+  Text,
+  View,
+  ActivityIndicator,
+  Modal,
+  Button,
+  Alert,
+} from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MenuView } from "@react-native-menu/menu";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
+import { MouseButton, TextInput } from "react-native-gesture-handler";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -19,9 +28,11 @@ const generateYears = () => {
   return years;
 };
 
+
+
 const pengambilOptions = [
-  { id: 0, name: "Menunggu Konfirmasi" },
-  { id: 1, name: "Telah Konfirmasi" },
+  { id: 1, name: "Menunggu Konfirmasi" },
+  { id: 3, name: "Telah Konfirmasi" },
 ];
 
 const useDebounce = (value, delay) => {
@@ -40,21 +51,36 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
+
+
 const PenerimaSampel = ({ navigation }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const debouncedSearchQuery = useDebounce(searchInput, 300);
   const filterOptions = generateYears();
-  const [selectedPengambil, setSelectedPengambil] = useState(0);
+  const [selectedPengambil, setSelectedPengambil] = useState(1);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [deskripsi, setDeskripsi] = useState("");
   const paginateRef = useRef();
 
+const kembali = () => {
+  simpanRevisi();
+  setModalVisible(false);
+};
+
+const simpanRevisi = async () => {
+  if (selectedItem && selectedItem.uuid) {
+      const response = await axios.post(
+        `/administrasi/penerima-sample/${selectedItem.uuid}/revisi`,
+        {
+          keterangan_revisi: deskripsi, // Kirim `deskripsi` sebagai `keterangan_revisi`
+        },
+      );
+};
+}
+
   const dropdownOptions = [
-    // {
-    //   id: "Edit",
-    //   title: "Edit",
-    //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
-    // },
-    // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
     {
       id: "Detail",
       title: "Detail",
@@ -62,10 +88,12 @@ const PenerimaSampel = ({ navigation }) => {
         navigation.navigate("DetailPenerima", { uuid: item.uuid }),
     },
     {
-      id: "Cetak Sampling",
-      title: "Cetak Sampling",
-      action: item =>
-        navigation.navigate("Cetak Sampling", { uuid: item.uuid }),
+      id: "Revisi",
+      title: "Revisi",
+      action: item => {
+        setSelectedItem(item);
+        setModalVisible(true);
+      },
     },
     {
       id: "Berita Acara",
@@ -92,7 +120,6 @@ const PenerimaSampel = ({ navigation }) => {
       page: 1,
       per: 10,
     });
-    console.log(response.data.data);
     return response.data.data;
   };
 
@@ -100,15 +127,8 @@ const PenerimaSampel = ({ navigation }) => {
     ["penerima-sample", debouncedSearchQuery, selectedYear],
     fetchPenerimaSample,
     {
-      onSuccess: data => {
-        // queryClient.invalidateQueries(['pengambil-sample']);
-        // paginateRef.current?.refetch()
-        console.log(selectedYear);
-        console.log(data);
-      },
-      onError: error => {
-        console.error(error);
-      },
+      onSuccess: data => console.log(data),
+      onError: error => console.error(error),
     },
   );
 
@@ -118,9 +138,7 @@ const PenerimaSampel = ({ navigation }) => {
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
-        style={{
-          elevation: 4,
-        }}>
+        style={{ elevation: 4 }}>
         <View className="flex-row justify-between items-center p-4 relative">
           <View className="flex-shrink mr-20">
             {isDiterima ? (
@@ -160,9 +178,7 @@ const PenerimaSampel = ({ navigation }) => {
             <View className="my-2 ml-10">
               <MenuView
                 title="dropdownOptions"
-                actions={dropdownOptions.map(option => ({
-                  ...option,
-                }))}
+                actions={dropdownOptions.map(option => ({ ...option }))}
                 onPressAction={({ nativeEvent }) => {
                   const selectedOption = dropdownOptions.find(
                     option => option.title === nativeEvent.event,
@@ -220,7 +236,6 @@ const PenerimaSampel = ({ navigation }) => {
                   );
                   if (selectedOption) {
                     setSelectedYear(selectedOption.title);
-                    // console.log(selectedOption.title)
                   }
                 }}
                 shouldOpenOnLongPress={false}>
@@ -243,7 +258,7 @@ const PenerimaSampel = ({ navigation }) => {
               <HorizontalScrollMenu
                 items={pengambilOptions}
                 selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)} // Update selectedKesimpulan
+                onPress={item => setSelectedPengambil(item.id)}
                 itemWidth={185}
                 scrollAreaStyle={{ height: 30, justifyContent: "flex-start" }}
                 activeBackgroundColor={"#312e81"}
@@ -254,12 +269,6 @@ const PenerimaSampel = ({ navigation }) => {
                 }}
               />
             </View>
-            {/* <FlatList
-              className="mt-4"
-              data={data}
-              renderItem={({ item }) => <TabelPengambilSample item={item} />}
-              keyExtractor={item => item.id.toString()}
-            /> */}
           </View>
         </View>
       </View>
@@ -274,6 +283,7 @@ const PenerimaSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
+        className="mb-14"
       />
 
       <AntDesign
@@ -284,14 +294,72 @@ const PenerimaSampel = ({ navigation }) => {
           position: "absolute",
           bottom: 90,
           right: 30,
-          backgroundColor: "#312e81",
+          backgroundColor: "#4f46e5",
+          borderRadius: 100,
           padding: 10,
-          borderRadius: 50,
         }}
-        // onPress={() => navigation.navigate("FormMetode")}
+        onPress={() => navigation.navigate("FormPenerima")}
       />
+
+      {/* Modal for Revisi */}
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text className="text-lg font-bold">Revisi Data</Text>
+            <Text className="font-bold text-lg">
+              {selectedItem ? selectedItem.kode : ""}
+            </Text>
+            <TextInput
+              style={styles.longInput}
+              placeholder="Masukkan Revisi"
+              value={deskripsi}
+              onChangeText={setDeskripsi}
+              multiline={true} // Mengaktifkan input untuk beberapa baris
+              numberOfLines={4} // Mengatur tinggi input untuk 4 baris
+            />
+            <Button title="Tutup" onPress={kembali} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
+};
+
+const styles = {
+  modalOverlay: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+  },
+  modalContainer: {
+    width: 300,
+    padding: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    alignItems: "center",
+  },
+  longInput: {
+    display: "flex",
+    textAlign: "center", // Menempatkan placeholder dan teks di tengah horizontal
+    textAlignVertical: "center",
+    marginBottom: 30,
+    marginTop: 20,
+    borderWidth: 1, // Membuat kotakan
+    borderColor: "#d1d5db", // Warna border abu-abu terang
+    borderRadius: 10, // Membuat sudut border melengkung
+    padding: 10, // Memberikan ruang di dalam kotakan
+    fontSize: 16, // Ukuran teks lebih besar
+    backgroundColor: "#ffffff", // Background putih untuk teks input
+    marginVertical: 10, // Jarak vertikal antar elemen
+    elevation: 3, // Memberikan efek bayangan pada Android
+    maxWidth: "100%",
+    width: 350,
+  },
 };
 
 export default PenerimaSampel;
