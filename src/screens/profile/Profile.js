@@ -6,228 +6,246 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  RefreshControl, // Import RefreshControl
+  Animated,
 } from "react-native";
 import axios from "@/src/libs/axios";
-import Akun from "./Akun";
-import Perusahaan from "./Perusahaan";
-import Keamanan from "./Keamanan";
-import { Colors } from "react-native-ui-lib";
-import {
-  useNavigation,
-  useNavigationContainerRef,
-} from "@react-navigation/native";
-import { useQueryClient, useMutation } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Toast from "react-native-toast-message";
-
+import Akun from "./tabs/Akun";
+import Perusahaan from "./tabs/Perusahaan";
+import Keamanan from "./tabs/Keamanan";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { API_URL } from "@env";
 export default function Profile() {
-  const [activeComponent, setActiveComponent] = useState(null);
+  const [activeComponent, setActiveComponent] = useState("Akun");
+  const [userData, setUserData] = useState(null);
+  const [fadeAnim] = useState(new Animated.Value(0));
   const [data, setData] = useState(null);
-  const [imageUrl, setImageUrl] = useState("");
   const [loading, setLoading] = useState(true);
-  const [refreshing, setRefreshing] = useState(false); // State for refreshing
-  const navigation = useNavigation();
-  const QueryClient = useQueryClient();
+  const [imageUrl, setImageUrl] = useState("");
+  const fetchData = async () => {
+    try {
+      const response = await axios.get("/auth");
+      const { nama, email, phone, golongan, photo } = response.data.user;
+      console.log(response.data.user);
+      setData({ nama, email, phone, golongan });
+      setLoading(false);
 
+      // Buat URL gambar dinamis dengan template literal yang benar
+      console.log("photo: ", photo);
+      const fullImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
+      setImageUrl(fullImageUrl);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
   useEffect(() => {
     fetchData();
   }, []);
 
-  // Fungsi untuk mengambil data dari API
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("/auth"); // Memanggil API
-      const { nama, email, phone, golongan } = response.data.user;
-      console.log(response.data.user);
-      setData({ nama, email, phone, golongan });
-      setLoading(false); // Menonaktifkan loading setelah data berhasil diambil
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
-      //gambar 
-      const { photo } = response.data.user
-      const fullImageUrl = `http://192.168.61.240:8000${photo}?t=${new Date().getTime()}`;
-      
-
-      // Set URL gambar
-      setImageUrl(fullImageUrl);
-      setLoading(false);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false); // Menonaktifkan loading saat terjadi error
-    }
+  const handlePress = component => {
+    setActiveComponent(component);
+    Animated.timing(fadeAnim, {
+      toValue: 1,
+      duration: 500,
+      useNativeDriver: true,
+    }).start();
   };
 
-  // REFRESH
-  const onRefresh = () => {
-    setRefreshing(true);
-    fetchData();
-    setRefreshing(false);
+  const handleCancel = () => {
+    setActiveComponent(null);
   };
 
-  // COMPONENT PROFILE
   let RenderedComponent;
   switch (activeComponent) {
     case "Akun":
-      RenderedComponent = <Akun />;
+      RenderedComponent = <Akun onCancel={handleCancel} />;
       break;
     case "Perusahaan":
-      RenderedComponent = <Perusahaan />;
+      RenderedComponent = <Perusahaan onCancel={handleCancel} />;
       break;
     case "Keamanan":
-      RenderedComponent = <Keamanan />;
+      RenderedComponent = <Keamanan onCancel={handleCancel} />;
       break;
     default:
       RenderedComponent = null;
       break;
   }
 
-  // LOGOUT
-  const {
-    mutate: logout,
-    isLoading,
-    isSuccess,
-    isError,
-  } = useMutation(() => axios.post("/auth/logout"), {
-    onSuccess: async () => {
-      await AsyncStorage.removeItem("@auth-token");
-      Toast.show({
-        type: "success",
-        text1: "Logout Berhasil",
-      });
-      QueryClient.invalidateQueries(["auth", "user"]);
-      navigation.navigate("Login"); // Redirect to login page
-    },
-    onError: error => {
-      Toast.show({
-        type: "error",
-        text1: "Gagal Logout",
-      });
-    },
-  });
-
   return (
-    <ScrollView
-      style={styles.container}
-      refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-      }>
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.headerText}>SI - LAJANG</Text>
-      </View>
-      <TouchableOpacity style={styles.buttonLogout} hyperlink onPress={logout}>
-        <Text style={styles.buttonLogoutText}>Logout</Text>
-      </TouchableOpacity>
-      <View style={styles.cardContainer}>
-        <View style={[styles.profileCard, { backgroundColor: Colors.brand }]}>
-          <View style={styles.photoProfileCard}>
-            <Image
-              style={styles.image}
-              source={{ uri: imageUrl }}
-              resizeMode="cover"
-            />
+    <View style={styles.container}>
+      <ScrollView>
+        <View style={styles.header} />
+        <View style={styles.cardContainer}>
+          <View style={[styles.profileCard, styles.shadow]}>
+            <View style={styles.photoProfileCard}>
+              <Image
+                style={styles.image}
+                source={{ uri: imageUrl }}
+                resizeMode="cover"
+              />
+            </View>
+            <View style={styles.ProfileCardText}>
+              {userData ? (
+                <>
+                  <View style={styles.iconTextRow}>
+                    <MaterialIcons
+                      name="check-decagram"
+                      color="#64748b"
+                      size={13}
+                    />
+                    <Text style={styles.text}>{userData.user.nama}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Ionicons name="mail" color="#64748b" />
+                    <Text style={styles.text}>{userData.user.email}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Fontawesome5 name="phone-alt" color="#64748b" size={11} />
+                    <Text style={styles.text}>{userData.user.phone}</Text>
+                  </View>
+                  <View style={styles.iconTextRow}>
+                    <Ionicons
+                      name="person-circle-outline"
+                      color="#64748b"
+                      size={14}
+                    />
+                    <Text style={styles.text}>
+                      {userData.user.golongan.nama}
+                    </Text>
+                  </View>
+                </>
+              ) : (
+                <Text style={styles.text}>Loading...</Text>
+              )}
+            </View>
           </View>
-          <View style={styles.ProfileCardText}>
-            {data ? (
-              <>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/checked.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{data.nama}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/verification.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{data.email}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/phone.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{data.phone}</Text>
-                </View>
-                <View style={styles.iconTextRow}>
-                  <Image
-                    source={require("@/assets/images/gear-assembly.png")}
-                    style={styles.icon}
-                  />
-                  <Text style={styles.text}>{data.golongan?.nama}</Text>
-                </View>
-              </>
-            ) : (
-              <Text style={styles.text}>Loading...</Text>
-            )}
+
+          <View style={styles.editProfileTextContainer}></View>
+          <View style={styles.divider} />
+
+          <View style={styles.buttonContainer}>
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Akun" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Akun")}>
+              <View
+                style={[
+                  styles.buttonLine,
+                  { backgroundColor: "#6b7fde" },
+                  activeComponent === "Akun"
+                    ? styles.activeButtonLine
+                    : styles.inactiveButtonLine,
+                ]}
+              />
+              <Ionicons name="person" color="#6b7fde" size={15} />
+              <Text style={styles.buttonText}>Akun</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Keamanan" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Keamanan")}>
+              <View
+                style={[
+                  styles.buttonLine,
+                  { backgroundColor: "#6b7fde" },
+                  activeComponent === "Keamanan"
+                    ? styles.activeButtonLine
+                    : styles.inactiveButtonLine,
+                ]}
+              />
+              <Fontawesome5 name="lock" color="#6b7fde" size={15} />
+              <Text style={styles.buttonText}>Keamanan</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[
+                styles.buttonBox,
+                activeComponent === "Perusahaan" && styles.activeButtonBox,
+              ]}
+              onPress={() => handlePress("Perusahaan")}>
+              <View
+                style={[
+                  styles.buttonLine,
+                  { backgroundColor: "#6b7fde" },
+                  activeComponent === "Perusahaan"
+                    ? styles.activeButtonLine
+                    : styles.inactiveButtonLine,
+                ]}
+              />
+              <Fontawesome5 name="briefcase" color="#6b7fde" size={15} />
+              <Text style={styles.buttonText}>Perusahaan</Text>
+            </TouchableOpacity>
           </View>
+
+          <Animated.View
+            style={[styles.activeComponentContainer, { opacity: fadeAnim }]}>
+            {RenderedComponent}
+          </Animated.View>
         </View>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Akun")}>
-            <Text style={styles.buttonText}>Akun</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Keamanan")}>
-            <Text style={styles.buttonText}>Keamanan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={styles.button}
-            onPress={() => setActiveComponent("Perusahaan")}>
-            <Text style={styles.buttonText}>Perusahaan</Text>
-          </TouchableOpacity>
-        </View>
-        <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-      </View>
-    </ScrollView>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#f8f8f8",
   },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: Colors.brand,
-    alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    elevation: 4,
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    marginTop: 8,
-  },
-  headerText: {
-    fontSize: 22,
-    color: "white",
-    fontWeight: "bold",
-    marginLeft: 10,
-    alignSelf: "center",
+  header: {
+    height: 220,
+    backgroundColor: "#312e81",
+    justifyContent: "flex-end",
+    zIndex: 1,
   },
   cardContainer: {
-    flex: 1,
+    marginTop: -30,
+    backgroundColor: "#f8f8f8",
+    borderTopLeftRadius: 25,
+    borderTopRightRadius: 28,
+    paddingTop: 20,
+    zIndex: 2,
     alignItems: "center",
   },
   profileCard: {
-    height: 140,
-    width: 380,
-    borderRadius: 10,
+    height: 150,
+    width: 375,
+    borderRadius: 20,
     flexDirection: "row",
-    backgroundColor: "#6b7fde",
     alignItems: "center",
     justifyContent: "flex-start",
+    marginVertical: 20,
+    backgroundColor: "white",
+    overflow: "hidden",
+    marginTop: -187,
+  },
+  shadow: {
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 4,
+    },
+    shadowOpacity: 0.3,
+    shadowRadius: 4.65,
+    elevation: 8,
   },
   photoProfileCard: {
     height: 120,
@@ -241,70 +259,92 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   ProfileCardText: {
-    width: 230,
+    width: 220,
     height: 120,
-    borderRadius: 10,
     justifyContent: "center",
     alignItems: "flex-start",
   },
   iconTextRow: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 4,
-  },
-  icon: {
-    width: 16,
-    height: 16,
-    marginRight: 8,
   },
   text: {
-    color: "white",
+    color: "#333",
     fontSize: 14,
-    paddingLeft: 10,
-    padding: 4,
+    paddingVertical: 4,
+    paddingHorizontal: 12,
+    fontWeight: "600",
+    lineHeight: 24,
+  },
+  editProfileTextContainer: {
+    marginBottom: 10,
+    alignItems: "center",
+  },
+  editProfileText: {
+    color: "#64748b",
+    fontSize: 19,
     fontWeight: "bold",
+  },
+  divider: {
+    width: "90%",
+    height: 1,
+    backgroundColor: "#e0e0e0",
+    marginVertical: 10,
+    alignSelf: "center",
   },
   buttonContainer: {
     flexDirection: "row",
     justifyContent: "space-around",
-  },
-  button: {
-    width: 115,
-    height: 35,
     alignItems: "center",
-    justifyContent: "center",
-    borderRadius: 10,
-    margin: 10,
-    backgroundColor: "#6b7fde",
+    marginTop: 2,
+    width: "95%",
+    paddingHorizontal: 10,
+  },
+  activeButtonBox: {
+    backgroundColor: "#e1e7ff",
   },
   buttonText: {
-    color: "white",
-    fontSize: 14,
+    color: "black",
+    fontSize: 12,
     fontWeight: "bold",
-  },
-  buttonLogout: {
-    backgroundColor: "#C0392B",
-    paddingVertical: 10,
-    paddingHorizontal: 25,
-    borderRadius: 8,
-    alignItems: "center",
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.3,
-    shadowRadius: 5,
-    elevation: 5,
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  buttonLogoutText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
+    marginLeft: 5,
   },
   activeComponentContainer: {
-    marginTop: 10,
-    marginBottom: 20,
+    flex: 1,
     width: "100%",
-    paddingHorizontal: 10,
+    paddingHorizontal: 20,
+  },
+  buttonLine: {
+    position: "absolute",
+    top: 0,
+    width: "97%",
+    height: 4,
+    borderRadius: 0,
+    borderTopLeftRadius: 10,
+    borderTopRightRadius: 10,
+    zIndex: 1,
+  },
+  activeButtonLine: {
+    backgroundColor: "#312e81",
+  },
+  inactiveButtonLine: {
+    backgroundColor: "#6b7fde",
+  },
+
+  buttonBox: {
+    width: 100,
+    height: 60,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    backgroundColor: "white",
+    borderRadius: 8,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.1,
+    shadowRadius: 1,
+    elevation: 1,
+    margin: 10,
+    position: "relative",
   },
 });

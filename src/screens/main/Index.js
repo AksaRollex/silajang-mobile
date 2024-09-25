@@ -2,18 +2,13 @@ import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Entypo";
 import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-const { Navigator, Screen } = createNativeStackNavigator();
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Profile";
 import Index from "../pengujian/Index";
 import IndexPembayaran from "../pembayaran/Index";
-import Login from "../auth/login/Index";
-import IndexLogin from "../auth/Index";
-import IndexLogout from "./IndexLogout";
 
 const Tab = createBottomTabNavigator();
 
@@ -28,7 +23,7 @@ const screenOptions = {
     elevation: 0,
     height: 60,
     backgroundColor: Colors.brand,
-    borderTopWidth: 0, // Hilangkan border top untuk membuat tampilan lebih clean
+    borderTopWidth: 0, 
   },
 };
 
@@ -62,7 +57,7 @@ export default function MainScreen() {
           name="Pengujian.Index"
           component={Index}
           options={{
-            tabBarIcon: ({ focused }) => (
+            tabBarIcon: ({ focused }) => (  
               <View
                 style={[
                   styles.iconContainer,
@@ -134,27 +129,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
-    borderRadius: 50, // Membuat ikon dan gambar menjadi lebih bulat
-    backgroundColor: "transparent", // Awalnya tanpa background
-    paddingHorizontal: 10, // Menambahkan padding horizontal untuk ikon
+    borderRadius: 50, 
+    backgroundColor: "transparent", 
+    paddingHorizontal: 10, 
   },
   iconContainerFocused: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)", // Warna background ketika tab aktif
+    backgroundColor: "rgba(255, 255, 255, 0.2)", 
   },
   logo: {
     width: 21,
     height: 21,
     marginBottom: 4,
-    tintColor: "white", // Warna gambar default
+    tintColor: "white", 
   },
   logoFocused: {
-    tintColor: "white", // Warna gambar ketika fokus
+    tintColor: "white", 
   },
   label: {
     fontSize: 12,
-    color: "white", // Warna teks default
+    color: "white", 
   },
   labelFocused: {
-    color: "white", // Warna teks ketika fokus
+    color: "white", 
   },
 });

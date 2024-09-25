@@ -9,6 +9,7 @@ module.exports = {
         path: ".env",
       },
     ],
+    ["nativewind/babel"],
     "react-native-reanimated/plugin",
     [
       "module-resolver",

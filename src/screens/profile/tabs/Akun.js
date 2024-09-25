@@ -6,23 +6,25 @@ import {
   TouchableOpacity,
   Text,
   Image,
+  ActivityIndicator,
   onChange,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import { useForm, Controller } from "react-hook-form";
-import { create } from "zustand";
+import { useForm, Controller } from "react-hook-form";  
 import { TextField, Colors, Button } from "react-native-ui-lib";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
+import { API_URL } from "@env";
+
 const Akun = () => {
   const [file, setFile] = React.useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
 
-  // put process
   const {
     handleSubmit,
     control,
@@ -31,7 +33,7 @@ const Akun = () => {
     reset,
   } = useForm();
 
-  // get data profile untuk di tampilkan di placeholder
+  // FETCH DATA USER
   useEffect(() => {
     axios
       .get("/auth")
@@ -39,19 +41,35 @@ const Akun = () => {
         setUserData(response.data);
       })
       .catch(error => {
-        console.error("Error fetching data:", error); // Log error
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+  
+  // FETCH PHOTO USER 
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data);
+        if (response.data.user && response.data.user.photo) {
+          const photoUrl = `${API_URL}${response.data.user.photo}`;
+          setCurrentPhotoUrl(photoUrl);
+          console.log({API_URL})
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
       });
   }, []);
 
-  //update data nama
+  // UPDATE DATA USER
   const updateUser = async () => {
     const formData = new FormData();
-    formData.append("nama", getValues("nama")); // Menambahkan nama ke FormData
+    formData.append("nama", getValues("nama"));
 
     if (file) {
-      // Periksa apakah file.uri adalah string dan valid
       formData.append("photo", {
-        uri: file.uri, // Pastikan ini adalah path file yang benar
+        uri: file.uri,
         type: file.type || "image/jpeg",
         name: file.fileName || "profile_photo.jpg",
       });
@@ -64,9 +82,8 @@ const Akun = () => {
         },
       });
 
-      // Setelah update berhasil, ambil URL gambar baru
       const { photo } = response.data.user;
-      const updatedImageUrl = `http://192.168.61.240:8000${photo}?t=${new Date().getTime()}`;
+      const updatedImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
       setImageUrl(updatedImageUrl);
       setData(prevData => ({ ...prevData, nama: getValues("nama") }));
     } catch (error) {
@@ -74,7 +91,6 @@ const Akun = () => {
     }
   };
 
-  // UPDATE DATA PENGGUNA V.2
   const {
     mutate: update,
     isLoading,
@@ -85,8 +101,9 @@ const Akun = () => {
         type: "success",
         text1: "Data Berhasil Di Kirim",
       });
-      navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
+      navigation.navigate("Profile");
       reset();
+      setFile(null);
     },
     onError: error => {
       console.error(error.message);
@@ -112,6 +129,7 @@ const Akun = () => {
 
   const handleDeletePhoto = () => {
     setFile(null);
+    setCurrentPhotoUrl(null);
   };
 
   return (
@@ -130,52 +148,46 @@ const Akun = () => {
                 enableErrors
                 fieldStyle={styles.textField}
                 onChangeText={onChange}
-                value={value}></TextField>
+                value={value}
+              />
             )}
           />
           {errors.nama && (
             <Text style={{ color: "red" }}>{errors.nama.message}</Text>
           )}
           <Text style={{ color: "black" }}>Foto Profil</Text>
-
           <Controller
             control={control}
             name="photo"
             render={({ field: { value } }) => (
-              <View style={styles.textFieldContainer}>
-                <View
-                  style={[
-                    styles.textField,
-                    {
-                      backgroundColor: file ? "#D4D4D4" : "#fff",
-                      padding: 20,
-                      marginBottom: 20,
-                      borderRadius: 7,
-                    },
-                  ]}
-                  value={value}>
-                  {/* Tampilkan tombol "Pilih Gambar" hanya jika tidak ada gambar */}
-                  {!file && (
-                    <TouchableOpacity onPress={handleChoosePhoto}>
-                      <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* Tampilkan gambar dan tombol hapus jika ada gambar */}
-                  {file && (
+              <View style={styles.signatureContainer}>
+                <View style={styles.signatureField}>
+                  {currentPhotoUrl || file ? (
                     <View style={styles.imageContainer}>
                       <Image
-                        source={{ uri: file.uri }} // Pastikan file.uri adalah path yang benar
-                        style={styles.imagePreview}
+                        source={{ uri: file ? file.uri : currentPhotoUrl }}
+                        style={styles.signaturePreview}
+                        onError={e => console.log("Error loading image:", e.nativeEvent.error)}
                       />
+                      <TouchableOpacity
+                        style={styles.changeButton}
+                        onPress={handleChoosePhoto}>
+                        <Text style={styles.buttonText}>Ubah</Text>
+                      </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.deleteButton}
                         onPress={handleDeletePhoto}>
-                        <Text style={styles.deleteButtonText}>
-                          Hapus Gambar
-                        </Text>
+                        <Text style={styles.deleteButtonText}>X</Text>
                       </TouchableOpacity>
                     </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addSignatureButton}
+                      onPress={handleChoosePhoto}>
+                      <Text style={styles.addSignatureText}>
+                        Tambah Foto
+                      </Text>
+                    </TouchableOpacity>
                   )}
                 </View>
               </View>
@@ -190,7 +202,7 @@ const Akun = () => {
             render={({ field: { onChange, value } }) => (
               <TextField
                 placeholder={userData.user.email}
-                editable={false} // Disables the TextInput
+                editable={false}
                 enableErrors
                 fieldStyle={styles.textField}
                 placeholderTextColor="black"
@@ -217,9 +229,9 @@ const Akun = () => {
           />
         </>
       ) : (
-        <Text style={[styles.text, { color: "black", marginVertical: 10 }]}>
-          Loading...
-        </Text>
+        <View className="h-full flex justify-center">
+        <ActivityIndicator size={"large"} color={"#312e81"} />
+      </View>
       )}
 
       <Button
@@ -228,7 +240,7 @@ const Akun = () => {
         backgroundColor={Colors.brand}
         borderRadius={5}
         onPress={handleSubmit(update)}
-        disabled={isLoading || isSuccess}
+        disabled={isLoading}
       />
     </View>
   );
@@ -277,10 +289,22 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 10,
   },
-  deleteButton: {},
+  deleteButton: {
+    position: "absolute",
+    right: 10,
+    top: 10,
+    backgroundColor: "red",
+    borderRadius: 50,
+    padding: 5,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   deleteButtonText: {
-    color: "red",
-    marginBottom: 15,
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
   },
   selectPhotoText: {
     color: "black",
@@ -288,6 +312,76 @@ const styles = StyleSheet.create({
   textFieldContainer: {},
   imageContainer: {
     alignItems: "center",
+  },
+  signatureContainer: {
+    marginBottom: 20,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "bold",
+    color: "#333",
+    marginBottom: 8,
+  },
+  signatureField: {
+    borderWidth: 1,
+    borderColor: "#ccc",
+    borderRadius: 8,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  imageContainer: {
+    alignItems: "center",
+    position: "relative",
+  },
+  signaturePreview: {
+    width: 200,
+    height: 100,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  changeButton: {
+    backgroundColor: "#4682B4",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "red",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  addSignatureButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 2,
+    borderColor: "#4682B4",
+    borderStyle: "dashed",
+    borderRadius: 8,
+  },
+  addSignatureText: {
+    marginLeft: 10,
+    color: "#4682B4",
+    fontSize: 16,
+    fontWeight: "bold",
   },
 });
 

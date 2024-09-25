@@ -9,21 +9,23 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
+  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { create } from "zustand";
 import { Controller } from "react-hook-form";
 import { useForm } from "react-hook-form";
 import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
-import { launchImageLibrary } from "react-native-image-picker"; // Perbaikan Import
+import { launchImageLibrary } from "react-native-image-picker";
 import RNPickerSelect from "react-native-picker-select";
-import DropDownPicker from "react-native-dropdown-picker";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
+import { API_URL } from "@env";
+rem = multiplier => baseRem * multiplier;
+const baseRem = 16;
 const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
@@ -37,9 +39,9 @@ const Perusahaan = () => {
   const [kelurahan, setKelurahan] = useState([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState(null);
 
-  const [text, setText] = React.useState("");
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
 
-  // geo location
+  // START GEO LOCATION
   const [location, setLocation] = useState({
     lat: "",
     long: "",
@@ -90,9 +92,9 @@ const Perusahaan = () => {
       getLocation();
     }
   };
-  // end geo location
+  // END GEO LOCATOIN
 
-  // Geo Location
+  // GEO LOCATION COLUMN
   useEffect(() => {
     if (location.lat && location.long) {
       setValue("lat", location.lat);
@@ -100,7 +102,7 @@ const Perusahaan = () => {
     }
   }, [location.lat, location.long]);
 
-  // fetching kota-kabupaten
+  // FETCH KOTA-KABUPATEN
   useEffect(() => {
     axios
       .get("/master/kota-kabupaten")
@@ -116,13 +118,13 @@ const Perusahaan = () => {
       });
   }, []);
 
-  // FETCHING kecamatan
+  // FETCH KECAMATAN
   useEffect(() => {
     if (selectedKotaKabupaten) {
       axios
         .get(`/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan`)
         .then(response => {
-          console.log("Response data:", response.data); // Log untuk debugging
+          console.log("Response data:", response.data);
           if (response.data && response.data.data) {
             const formattedKecamatan = response.data.data.map(item => ({
               label: item.nama,
@@ -142,29 +144,27 @@ const Perusahaan = () => {
     }
   }, [selectedKotaKabupaten]);
 
-  // fetch data kelurahan
+  // FETCH KELURAHAN
   useEffect(() => {
     if (selectedKecamatan) {
-      // Pastikan ada kecamatan yang dipilih
       axios
         .get(`/wilayah/kecamatan/${selectedKecamatan}/kelurahan`)
         .then(response => {
-          // Format data kelurahan yang diterima dari API
           const formattedKelurahan = response.data.data.map(item => ({
-            label: item.nama, // Nama kelurahan untuk label
-            value: item.id, // ID kelurahan untuk value
+            label: item.nama,
+            value: item.id,
           }));
-          setKelurahan(formattedKelurahan); // Simpan data kelurahan ke state
+          setKelurahan(formattedKelurahan);
         })
         .catch(error => {
-          console.error("error fetching data kelurahan : ", error); // Tampilkan error jika terjadi
+          console.error("error fetching data kelurahan : ", error);
         });
     } else {
-      setKelurahan([]); // Kosongkan data kelurahan jika tidak ada kecamatan yang dipilih
+      setKelurahan([]);
     }
-  }, [selectedKecamatan]); // useEffect akan dijalankan setiap kali selectedKecamatan berubah
+  }, [selectedKecamatan]);
 
-  // fetch data detail user
+  // FETCH DATA DETAIL USER
   useEffect(() => {
     axios
       .get("/auth")
@@ -172,11 +172,31 @@ const Perusahaan = () => {
         console.log(
           "Response Data detail user akun:",
           response.data.user.detail,
-        ); // Log data response
+        );
         setUserData(response.data.user.detail);
       })
       .catch(error => {
-        console.error("Error fetching data:", error); // Log error
+        console.error("Error fetching data:", error);
+      });
+  }, []);
+
+  // FETCH DATA TANDA TANGAN
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data.user.detail);
+        console.log({ API_URL });
+        if (
+          response.data.user.detail &&
+          response.data.user.detail.tanda_tangan
+        ) {
+          const photoUrl = `${API_URL}${response.data.user.detail.tanda_tangan}`;
+          setCurrentPhotoUrl(photoUrl);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
       });
   }, []);
 
@@ -191,7 +211,7 @@ const Perusahaan = () => {
     values: { ...userData },
   });
 
-  // function update data
+  // FUNCTION UPDATE DATA
   const updateUser = async () => {
     const formData = new FormData();
     formData.append("instansi", getValues("instansi"));
@@ -222,7 +242,7 @@ const Perusahaan = () => {
         },
       });
       const { tanda_tangan } = response.data;
-      const updatedImageUrl = `http://192.168.18.14:8000${tanda_tangan}?t=${new Date().getTime()}`;
+      const updatedImageUrl = `${API_URL}${tanda_tangan}?t=${new Date().getTime()}`;
       setImageUrl(updatedImageUrl);
       setData(prevData => ({
         ...prevData,
@@ -233,7 +253,7 @@ const Perusahaan = () => {
     }
   };
 
-  // respone setelah update
+  // RESPONSE SETELAH UPDATE
   const {
     mutate: update,
     isLoading,
@@ -244,8 +264,9 @@ const Perusahaan = () => {
         type: "success",
         text1: "Data Berhasil Di Kirim",
       });
-      navigation.navigate("Profile"); // Navigasi kembali untuk refresh halaman
+      navigation.navigate("Profile");
       reset();
+      setFile(null);
     },
     onError: error => {
       console.error(error.message);
@@ -256,7 +277,7 @@ const Perusahaan = () => {
     },
   });
 
-  // Gambar
+  // GAMBAR
   const [file, setFile] = React.useState(null);
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
@@ -272,13 +293,40 @@ const Perusahaan = () => {
   };
   const handleDeletePhoto = () => {
     setFile(null);
+    setCurrentPhotoUrl(null);
   };
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/user/tanda_tangan`);
+        if (response.data && response.data.photo_url) {
+          setCurrentPhotoUrl(response.data.photo_url);
+        }
+      } catch (error) {
+        console.log("Error fetching photo:", error);
+      }
+    };
 
+    fetchPhoto();
+  }, []);
+
+  const ImageComponent = () => {
+    const imageSource = file?.uri || currentPhotoUrl;
+
+    if (!imageSource) {
+      return <Text>Tidak ada gambar yang dipilih</Text>;
+    }
+
+    return (
+      <Image
+        source={{ uri: imageSource }}
+        style={styles.signaturePreview}
+        onError={e => console.log("Error loading image:", e.nativeEvent.error)}
+      />
+    );
+  };
   return (
     <View style={styles.container}>
-      {/* <ScrollView nestedScrollEnabled={true} style={styles.container}
-       contentContainerStyle={styles.scrollViewContainer}
-       showsVerticalScrollIndicator={false}> */}
       {userData ? (
         <>
           <Text style={{ color: "black" }}>Tanda Tangan</Text>
@@ -286,46 +334,35 @@ const Perusahaan = () => {
             control={control}
             name="tanda_tangan"
             render={({ field: { value } }) => (
-              <View style={styles.textFieldContainer}>
-                <View
-                  style={[
-                    styles.textField,
-                    {
-                      backgroundColor: file ? "#D4D4D4" : "#fff",
-                      padding: 20,
-                      marginBottom: 20,
-                      borderRadius: 7,
-                    },
-                  ]}
-                  value={value}>
-                  {/* Tampilkan tombol "Pilih Gambar" hanya jika tidak ada gambar */}
-                  {!file && (
-                    <TouchableOpacity onPress={handleChoosePhoto}>
-                      <Text style={styles.selectPhotoText}>Pilih Gambar</Text>
-                    </TouchableOpacity>
-                  )}
-
-                  {/* Tampilkan gambar dan tombol hapus jika ada gambar */}
-                  {file && (
+              <View style={styles.signatureContainer}>
+                <View style={styles.signatureField}>
+                  {file || currentPhotoUrl ? (
                     <View style={styles.imageContainer}>
-                      <Image
-                        source={{ uri: file.uri }} // Pastikan file.uri adalah path yang benar
-                        style={styles.imagePreview}
-                      />
+                      <ImageComponent />
+                      <TouchableOpacity
+                        style={styles.changeButton}
+                        onPress={handleChoosePhoto}>
+                        <Text style={styles.buttonText}>Ubah</Text>
+                      </TouchableOpacity>
                       <TouchableOpacity
                         style={styles.deleteButton}
                         onPress={handleDeletePhoto}>
-                        <Text style={styles.deleteButtonText}>
-                          Hapus Gambar
-                        </Text>
+                        <Text style={styles.deleteButtonText}>X</Text>
                       </TouchableOpacity>
                     </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addSignatureButton}
+                      onPress={handleChoosePhoto}>
+                      <Text style={styles.addSignatureText}>
+                        Tambah Tanda Tangan
+                      </Text>
+                    </TouchableOpacity>
                   )}
                 </View>
               </View>
             )}
           />
-          {/* <Text>{JSON.stringify(userData)}</Text> ->  "menampilkan data user" */}
           <Text style={{ color: "black" }}>Instansi</Text>
           <Controller
             control={control}
@@ -387,11 +424,9 @@ const Perusahaan = () => {
             rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
               <TextField
-                // onChangeText={handleNumberChange}
-
                 fieldStyle={styles.textField}
                 enableErrors
-                keyboardType="text-input" // Ensures number keyboard
+                keyboardType="text-input"
                 placeholderTextColor="black"
                 placeholder={userData.pj_mutu}
                 onChangeText={onChange}
@@ -474,50 +509,59 @@ const Perusahaan = () => {
             style={{ alignSelf: "center", marginBottom: 5, color: "black" }}>
             Lokasi
           </Text>
-          <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-  <Controller
-    control={control}
-    name="lat"
-    rules={{ required: "Latitude Tidak Boleh Kosong" }}
-    render={({ field: { onChange, value } }) => (
-      <TextField
-        style={{ flex: 1, backgroundColor: "white", marginRight: 10 }} // Memberikan margin antar field
-        enableErrors
-        keyboardType="text-input"
-        onChangeText={onChange}
-        value={value || location.lat}
-        placeholderTextColor="black"
-        placeholder={userData.lat}
-      />
-    )}
-  />
-  <Controller
-    control={control}
-    name="long"
-    rules={{ required: "Longitude Tidak Boleh Kosong" }}
-    render={({ field: { onChange, value } }) => (
-      <TextField
-        style={{ flex: 1, backgroundColor: "white" }} // Menggunakan flex untuk mengisi ruang
-        keyboardType="text-input"
-        onChangeText={onChange}
-        enableErrors
-        value={value || location.long}
-        placeholderTextColor="black"
-        placeholder={userData.long}
-      />
-    )}
-  />
-</View>
+          <View
+            style={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+            }}>
+            <View style={{ flex: 1, marginRight: 5 }}>
+              <Controller
+                control={control}
+                name="lat"
+                rules={{ required: "Latitude Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    fieldStyle={styles.textField}
+                    enableErrors
+                    keyboardType="numeric"
+                    onChangeText={onChange}
+                    value={value || location.lat}
+                    placeholderTextColor="gray"
+                    placeholder={userData.lat}
+                  />
+                )}
+              />
+            </View>
+            <View style={{ flex: 1, marginLeft: 5 }}>
+              <Controller
+                control={control}
+                name="long"
+                rules={{ required: "Longitude Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <TextField
+                    fieldStyle={styles.textField}
+                    keyboardType="numeric"
+                    onChangeText={onChange}
+                    enableErrors
+                    value={value || location.long}
+                    placeholderTextColor="gray"
+                    placeholder={userData.long}
+                  />
+                )}
+              />
+            </View>
+          </View>
 
           <TouchableOpacity
             style={styles.buttonLokasi}
             onPress={handleLocationPress}>
             <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
           </TouchableOpacity>
-          <Text style={styles.label}>Select Kabupaten/Kota:</Text>
+          <Text style={styles.label}>Kabupaten/Kota</Text>
           <Controller
             name="kab_kotas"
             control={control}
+            rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
               <View style={styles.inputContainer}>
                 <RNPickerSelect
@@ -527,10 +571,10 @@ const Perusahaan = () => {
                   }}
                   value={value}
                   items={kotaKabupaten}
-                  style={pickerSelectStyles} // Tambahkan style khusus
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  style={pickerSelectStyles}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -538,9 +582,10 @@ const Perusahaan = () => {
           {errors.kab_kotas && (
             <Text style={{ color: "red" }}>{errors.kab_kotas.message}</Text>
           )}
-          <Text style={styles.label}>Select Kecamatan:</Text>
+          <Text style={styles.label}>Kecamatan</Text>
           <Controller
             name="kecamatans"
+            rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
             control={control}
             render={({ field: { onChange, value } }) => (
               <View style={styles.inputContainer}>
@@ -551,10 +596,10 @@ const Perusahaan = () => {
                   }}
                   value={value}
                   items={kecamatan}
-                  style={pickerSelectStyles} // Tambahkan style khusus
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  style={pickerSelectStyles}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -562,10 +607,11 @@ const Perusahaan = () => {
           {errors.kecamatans && (
             <Text style={{ color: "red" }}>{errors.kecamatans.message}</Text>
           )}
-          <Text style={styles.label}>Select Kelurahan:</Text>
+          <Text style={styles.label}>Kelurahan</Text>
           <Controller
             name="kelurahans"
             control={control}
+            rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
             render={({ field: { onChange, value } }) => (
               <View style={styles.inputContainer}>
                 <RNPickerSelect
@@ -575,10 +621,10 @@ const Perusahaan = () => {
                   }}
                   value={value}
                   items={kelurahan}
-                  style={pickerSelectStyles} // Tambahkan style khusus
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  style={pickerSelectStyles}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -588,7 +634,9 @@ const Perusahaan = () => {
           )}
         </>
       ) : (
-        <Text style={text}>Loading...</Text>
+        <View className="h-full flex justify-center">
+          <ActivityIndicator size={"large"} color={"#312e81"} />
+        </View>
       )}
 
       <Button
@@ -597,8 +645,7 @@ const Perusahaan = () => {
         backgroundColor={Colors.brand}
         borderRadius={5}
         onPress={handleSubmit(update)}
-        disabled={isLoading || isSuccess}></Button>
-      {/* </ScrollView> */}
+        disabled={isLoading}></Button>
     </View>
   );
 };
@@ -609,9 +656,7 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  TextField: {
-    marginBottom: 16, // Adds space between each TextField
-  },
+
   text: {
     textAlign: "center",
     fontSize: 18,
@@ -637,13 +682,13 @@ const styles = StyleSheet.create({
   buttonLokasi: {
     width: "100%",
     height: 50,
-    marginVertical: 7,
     fontWeight: "bold",
-    backgroundColor: "#fff",
     display: "flex",
     alignItems: "center",
+    backgroundColor: "#f0f0f0",
+    borderRadius: 6,
     justifyContent: "center",
-    marginBottom: 15,
+    marginBottom: rem(1.5),
   },
   buttonLokasiText: {
     color: "#000",
@@ -678,17 +723,93 @@ const styles = StyleSheet.create({
   imageContainer: {
     alignItems: "center",
   },
+
+  inputContainer: {
+    borderRadius: 8,
+    marginBottom: 16,
+    padding: 1,
+    color: "black",
+    borderColor: "#ccc",
+    borderWidth: 1,
+  },
+  signatureContainer: {
+    marginBottom: 20,
+  },
   label: {
     fontSize: 16,
-    marginBottom: 8,
+    fontWeight: "bold",
     color: "#333",
+    marginBottom: 8,
   },
-  inputContainer: {
+  signatureField: {
     borderWidth: 1,
     borderColor: "#ccc",
     borderRadius: 8,
-    padding: 8,
-    marginBottom: 16,
+    padding: 16,
+    backgroundColor: "#f9f9f9",
+  },
+  imageContainer: {
+    alignItems: "center",
+    position: "relative",
+  },
+  signaturePreview: {
+    width: 200,
+    height: 100,
+    resizeMode: "contain",
+    marginBottom: 10,
+  },
+  changeButton: {
+    backgroundColor: "#4682B4",
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    borderRadius: 4,
+    marginTop: 10,
+  },
+  buttonText: {
+    color: "#fff",
+    fontWeight: "bold",
+    textAlign: "center",
+  },
+  deleteButton: {
+    position: "absolute",
+    top: -10,
+    right: -10,
+    backgroundColor: "red",
+    borderRadius: 15,
+    width: 30,
+    height: 30,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  deleteButtonText: {
+    color: "white",
+    fontSize: 14,
+    fontWeight: "bold",
+  },
+  addSignatureButton: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    padding: 20,
+    borderWidth: 2,
+    borderColor: "#4682B4",
+    borderStyle: "dashed",
+    borderRadius: 8,
+  },
+  addSignatureText: {
+    marginLeft: 10,
+    color: "#4682B4",
+    fontSize: 16,
+    fontWeight: "bold",
+  },
+  input: {
+    backgroundColor: "#f0f0f0",
+    borderRadius: 5,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    color: "black",
+    borderWidth: 1,
+    borderColor: "#ccc",
   },
 });
 const pickerSelectStyles = StyleSheet.create({
@@ -700,17 +821,12 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: "#ccc",
     borderRadius: 8,
     color: "black",
-    paddingRight: 30, // untuk memberi ruang bagi icon
   },
   inputAndroid: {
     fontSize: 16,
-    paddingVertical: 8,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 8,
     color: "black",
-    paddingRight: 30, // untuk memberi ruang bagi icon
+    backgroundColor: "#f0f0f0",
   },
   iconContainer: {
     top: 12,

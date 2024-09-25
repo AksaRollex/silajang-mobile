@@ -16,11 +16,17 @@ import { create } from "zustand";
 import Toast from "react-native-toast-message";
 import DropDownPicker from "react-native-dropdown-picker";
 import axios from "@/src/libs/axios";
+import Back from "../../components/Back";
+import Header from "../../components/Header";
 
 const TambahPermohonan = () => {
   const [jasaPengambilan, setJasaPengambilan] = useState([]);
   const [selectedJasaPengambilan, setSelectedJasaPengambilan] = useState(null);
   const [OpenJasaPengambilan, setOpenJasaPengambilan] = useState(false);
+
+  const [radiusPengambilan, setRadiusPengambilan] = useState([]);
+  const [selectedRadiusPengambilan, setSelectedRadiusPengambilan] = useState(null);
+  const [OpenRadiusPengambilan, setOpenRadiusPengambilan] = useState(false);
 
   useEffect(() => {
     axios
@@ -36,6 +42,23 @@ const TambahPermohonan = () => {
         console.error("Error fetching data :", error);
       });
   }, []);
+
+  // FETCH RADIUS PENGAMBILAN
+  // useEffect(() => {
+  //   axios
+  //     .get("/master/radius-pengambilan")
+  //     .then(response => {
+  //       const formattedRadiusPengambilan = response.data.data.map(item => ({
+  //         label: item.nama,
+  //         value: item.id,
+  //       }));
+  //       setRadiusPengambilan(formattedRadiusPengambilan);
+  //       console.log("response data radius pengambilan", response.data.data);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error fetching data :", error);
+  //     });
+  // }, []);
 
   const navigation = useNavigation();
   const {
@@ -55,6 +78,7 @@ const TambahPermohonan = () => {
       is_mandiri: "",
       pembayaran: "",
       jasa_pengambilan_id: "",
+      // radius_pengambilan_id: "",
     },
   }));
   const { setPermohonan } = useFormStore();
@@ -64,7 +88,6 @@ const TambahPermohonan = () => {
     isSuccess,
   } = useMutation(
     () => {
-      // Tentukan nilai sesuai pilihan pengguna
       const requestData = {
         industri: getValues("industri"),
         alamat: getValues("alamat"),
@@ -72,10 +95,10 @@ const TambahPermohonan = () => {
         keterangan: getValues("keterangan"),
         is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
         pembayaran: selectedPembayaran === "transfer" ? "transfer" : "tunai",
-        jasa_pengambilan_id: selectedJasaPengambilan, // Correct this line
+        jasa_pengambilan_id: selectedJasaPengambilan,
+        // radius_pengambilan_id: selectedRadiusPengambilan,
       };
 
-      // Kirim data ke backend
       return axios.post("/permohonan/store", requestData).then(res => res.data);
     },
     {
@@ -84,9 +107,9 @@ const TambahPermohonan = () => {
           type: "success",
           text1: "Data Berhasil Di Kirim",
         });
-        reset(); // Reset form setelah sukses
-        setSelectedCara(null); // Reset pilihan cara pengambilan
-        setSelectedPembayaran(null); // Reset pilihan opsi pembayaran
+        reset();
+        setSelectedCara(null);
+        setSelectedPembayaran(null);
         navigation.goBack();
       },
       onError: error => {
@@ -95,7 +118,7 @@ const TambahPermohonan = () => {
           type: "error",
           text1: error.response.data.message,
         });
-        setSubmitted(false); // Reset meskipun ada error
+        setSubmitted(false);
       },
     },
   );
@@ -117,30 +140,20 @@ const TambahPermohonan = () => {
   };
 
   return (
-    <ScrollView style={styles.container}>
-      <TouchableOpacity
-        style={styles.backButton}
-        onPress={() => navigation.goBack()}>
-        <Text style={styles.backButtonText}>Kembali</Text>
-      </TouchableOpacity>
-
-      <View marginB-20>
-        <Text marginB-5 style={{ color : 'black' }}>Nama Industri</Text>
+    <>
+    <Header />
+      <ScrollView className="bg-[#ececec] w-full h-full p-7 ">
+        <Back />
         <Controller
           control={control}
           name="industri"
           rules={{ required: "Nama Industri tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"Nama Industri"}
               enableErrors
-              fieldStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 15,
-                borderWidth: 1,
-              }}
-              containerStyle={{}}
+              placeholder="Masukkan Nama Industri"
               onChangeText={onChange}
+              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
               value={value}
             />
           )}
@@ -148,24 +161,18 @@ const TambahPermohonan = () => {
         {errors.industri && (
           <Text style={{ color: "red" }}>{errors.industri.message}</Text>
         )}
-      </View>
-      <View marginB-20>
-        <Text marginB-5 style={{ color : 'black' }}>Alamat</Text>
+
         <Controller
           control={control}
           name="alamat"
           rules={{ required: "alamat industri tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"Alamat Industri"}
               enableErrors
-              fieldStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 15,
-                borderWidth: 1,
-              }}
+              className="p-3 bg-[#bebcbc] rounded-md"
               containerStyle={{}}
               onChangeText={onChange}
+              placeholder="Masukkan Alamat"
               value={value}
             />
           )}
@@ -173,23 +180,17 @@ const TambahPermohonan = () => {
         {errors.alamat && (
           <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
         )}
-      </View>
-      <View marginB-20>
-        <Text marginB-5 style={{ color : 'black' }}>Kegiatan Industri</Text>
+
         <Controller
           control={control}
           name="kegiatan"
           rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"Kegiatan Industri"}
               enableErrors
-              fieldStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 15,
-                borderWidth: 1,
-              }}
+              placeholder="Masukkan Kegiatan Industri"
               containerStyle={{}}
+              className="p-3 bg-[#bebcbc] rounded-md"
               onChangeText={onChange}
               value={value}
             />
@@ -198,24 +199,17 @@ const TambahPermohonan = () => {
         {errors.kegiatan && (
           <Text style={{ color: "red" }}>{errors.kegiatan.message}</Text>
         )}
-      </View>
 
-      <View marginB-20>
-        <Text marginB-5 style={{ color : 'black' }}>Keterangan</Text>
         <Controller
           control={control}
           name="keterangan"
           rules={{ required: "Keterangan tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"Keterangan"}
               enableErrors
-              fieldStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 15,
-                borderWidth: 1,
-              }}
               containerStyle={{}}
+              placeholder="Masukkan Keterangan"
+              className="p-3 bg-[#bebcbc] rounded-md"
               onChangeText={onChange}
               value={value}
             />
@@ -224,114 +218,97 @@ const TambahPermohonan = () => {
         {errors.keterangan && (
           <Text style={{ color: "red" }}>{errors.keterangan.message}</Text>
         )}
-      </View>
 
-      <View>
-        <Text style={[styles.sectionTitle, { color : "black"}] }>Cara Pengambilan</Text>
-        <View style={styles.cardContainer}>
+        <View>
+          <Text style={[styles.sectionTitle, { color: "black" }]}>
+            Cara Pengambilan
+          </Text>
+          <View style={styles.cardContainer}>
+            <TouchableOpacity
+              style={[
+                styles.cardPengambilan,
+                selectedCara === "kirimMandiri" && styles.selectedCard,
+              ]}
+              onPress={() => handleSelectCara("kirimMandiri")}>
+              <Image
+                source={require("@/assets/images/give-money.png")}
+                style={styles.icon}
+              />
+              <Text style={styles.CardTitleText}>Kirim Mandiri</Text>
+              <Text style={styles.cardText}>
+                Kirim Sampel Uji Anda Ke Laboratorium Dinas
+              </Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[
+                styles.cardPengambilan,
+                selectedCara === "ambilPetugas" && styles.selectedCard,
+              ]}
+              onPress={() => handleSelectCara("ambilPetugas")}>
+              <Image
+                source={require("@/assets/images/delivery-truck.png")}
+                style={styles.icon}
+              />
+              <Text style={styles.CardTitleText}>Ambil Petugas</Text>
+              <Text style={styles.cardText}>
+                Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi
+                Pengambilan
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+        {/* Conditionally Render TextField based on selectedCara */}
+        {selectedCara === "ambilPetugas" && (
+          <DropDownPicker
+            open={OpenJasaPengambilan}
+            value={selectedJasaPengambilan}
+            items={jasaPengambilan}
+            name="jasa_pengambilan_id"
+            setOpen={setOpenJasaPengambilan}
+            setValue={setSelectedJasaPengambilan}
+            setItems={setJasaPengambilan}
+            placeholder="Pilih Jenis Pengambilan"
+          />
+        )}
+        <View>
+          <Text style={[styles.sectionTitle, { color: "black" }]}>
+            Opsi Pembayaran
+          </Text>
           <TouchableOpacity
             style={[
-              styles.cardPengambilan,
-              selectedCara === "kirimMandiri" && styles.selectedCard,
+              styles.cardPembayaran,
+              selectedPembayaran === "transfer" && styles.selectedCard,
             ]}
-            onPress={() => handleSelectCara("kirimMandiri")}>
+            onPress={() => handleSelectPembayaran("transfer")}>
             <Image
-              source={require("@/assets/images/give-money.png")}
+              source={require("@/assets/images/wallets.png")}
               style={styles.icon}
             />
-            <Text style={styles.CardTitleText}>Kirim Mandiri</Text>
-            <Text style={styles.cardText}>
-              Kirim Sampel Uji Anda Ke Laboratorium Dinas
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[
-              styles.cardPengambilan,
-              selectedCara === "ambilPetugas" && styles.selectedCard,
-            ]}
-            onPress={() => handleSelectCara("ambilPetugas")}>
-            <Image
-              source={require("@/assets/images/delivery-truck.png")}
-              style={styles.icon}
-            />
-            <Text style={styles.CardTitleText}>Ambil Petugas</Text>
-            <Text style={styles.cardText}>
-              Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi Pengambilan
+            <Text style={styles.CardTitleText}>Transfer (Non Tunai)</Text>
+            <Text style={[styles.cardText]}>
+              Transfer Virtual Account Bank Jatim, Untuk Nomor VA Akan Di
+              Informasikan Oleh Bendahara UPT
             </Text>
           </TouchableOpacity>
         </View>
-      </View>
-      {/* Conditionally Render TextField based on selectedCara */}
-      {selectedCara === "ambilPetugas" && (
-        <DropDownPicker
-          open={OpenJasaPengambilan}
-          value={selectedJasaPengambilan}
-          items={jasaPengambilan}
-          name="jasa_pengambilan_id"
-          setOpen={setOpenJasaPengambilan}
-          setValue={setSelectedJasaPengambilan}
-          setItems={setJasaPengambilan}
-          placeholder="Pilih Jenis Pengambilan"
-          style={styles.dropdown}
-        />
-      )}
-      <View>
-        <Text style={[styles.sectionTitle, { color : "black"}]}>Opsi Pembayaran</Text>
-        <TouchableOpacity
-          style={[
-            styles.cardPembayaran,
-            selectedPembayaran === "transfer" && styles.selectedCard,
-          ]}
-          onPress={() => handleSelectPembayaran("transfer")}>
-          <Image
-            source={require("@/assets/images/wallets.png")}
-            style={styles.icon}
-          />
-          <Text style={styles.CardTitleText}>Transfer (Non Tunai)</Text>
-          <Text style={[styles.cardText]}>
-            Transfer Virtual Account Bank Jatim, Untuk Nomor VA Akan Di
-            Informasikan Oleh Bendahara UPT
-          </Text>
-        </TouchableOpacity>
-      </View>
-
-      <Button
-        label="Kirim"
-        style={{ marginBottom: 80 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(send)}
-        disabled={isLoading}></Button>
-    </ScrollView>
+        <Button
+          label="Kirim"
+          className="mb-32"
+          backgroundColor={Colors.brand}
+          borderRadius={5}
+          onPress={handleSubmit(send)}
+          disabled={isLoading}></Button>
+      </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 16,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#ececec",
   },
-  textInput: {
-    marginBottom: 16,
-  },
-  textInputKeterangan: {
-    marginVertical: 10,
-    paddingVertical: 10,
-  },
-  backButton: {
-    padding: 10,
-    backgroundColor: "#6b7fde",
-    borderRadius: 5,
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 20,
-  },
-  backButtonText: {
-    color: "white",
-    fontSize: 16,
-    fontWeight: "bold",
-  },
+
   sectionTitle: {
     fontSize: 20,
     fontWeight: "bold",
@@ -348,8 +325,6 @@ const styles = StyleSheet.create({
     paddingVertical: 50,
     paddingHorizontal: 10,
     borderRadius: 7,
-    borderWidth: 1,
-    borderColor: "#000",
     alignItems: "center",
     marginHorizontal: 5,
     backgroundColor: "#3b5998",
@@ -359,9 +334,7 @@ const styles = StyleSheet.create({
     paddingVertical: 50,
     paddingHorizontal: 10,
     borderRadius: 7,
-    borderWidth: 1,
-    marginBottom : 10,
-    borderColor: "#000",
+    marginBottom: 10,
     alignItems: "center",
     marginHorizontal: 5,
     backgroundColor: "#34A853",
@@ -391,8 +364,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     marginBottom: 90,
-
-    backgroundColor: "#2196F3",
   },
   submitButtonText: {
     color: "#fff",

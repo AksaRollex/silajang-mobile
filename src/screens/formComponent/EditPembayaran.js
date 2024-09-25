@@ -4,7 +4,7 @@ import { TextInput } from 'react-native-paper';
 import { useNavigation } from '@react-navigation/native';
 
 const EditPembayaran = () => {
-  const navigation = useNavigation(); // Deklarasi navigation
+  const navigation = useNavigation(); 
 
   const [text, setText] = React.useState("");
   const [number, setNumber] = React.useState("");
@@ -17,7 +17,7 @@ const EditPembayaran = () => {
     <View style={styles.container}>
       <TouchableOpacity
         style={styles.backButton}
-        onPress={() => navigation.goBack()} // Gunakan navigation yang telah dideklarasikan
+        onPress={() => navigation.goBack()}
       >
         <Text style={styles.backButtonText}>Kembali</Text>
       </TouchableOpacity>
@@ -75,7 +75,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#6b7fde",
     borderRadius: 5,
     alignItems: "center",
-    width: '100%', // Mengatur lebar agar mengisi ruang yang tersedia
+    width: '100%',
     marginBottom: 20,
   },
   backButtonText: {

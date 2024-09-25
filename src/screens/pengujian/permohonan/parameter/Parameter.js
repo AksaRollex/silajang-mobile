@@ -10,13 +10,14 @@ import {
   Image,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
-
+import Back from "@/src/screens/components/Back";
+import Header from "@/src/screens/components/Header";
 const Parameter = ({ navigation }) => {
   const [peraturanData, setPeraturanData] = useState([]);
   const [parameterData, setParameterData] = useState([]);
   const [paketData, setPaketData] = useState([]);
   const [selectedParameters, setSelectedParameters] = useState([]);
-  navigation.pop(2); // This will pop two screens from the stack.
+  // navigation.pop(2);
 
   // FETCH DATA PARAMETER
   useEffect(() => {
@@ -37,7 +38,7 @@ const Parameter = ({ navigation }) => {
       .get("/master/paket")
       .then(response => {
         console.log("Response Data Paket:", response.data);
-        setPaketData(response.data.data); // Pastikan response.data berisi array paket
+        setPaketData(response.data.data);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -50,7 +51,7 @@ const Parameter = ({ navigation }) => {
       .get("/master/peraturan/get")
       .then(response => {
         console.log("Response Data Peraturan:", response.data);
-        setPeraturanData(response.data.peraturan); // Pastikan response.data berisi array paket
+        setPeraturanData(response.data.peraturan);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -129,91 +130,83 @@ const Parameter = ({ navigation }) => {
   );
 
   return (
-    <View style={styles.container}>
-      {/* Button Back */}
-      <TouchableOpacity
-        style={[styles.backButton, { backgroundColor: Colors.brand }]}
-        onPress={() => navigation.goBack()}
-        >
-        <Image
-          source={require("../../../assets/images/backss.png")}
-          style={{ height: 20, width: 20, tintColor: "white" }}></Image>
-      </TouchableOpacity>
+    <>
+      <Header />
+      <View className="p-7 bg-[#ececec]">
+        {/* Button Back */}
+        <Back />
 
-      <ScrollView>
-        {/* Card Peraturan */}
-        <View
-          style={[
-            styles.headerTopBar,
-            { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}>
-          <Text style={styles.headerTopBarText}>
-            Pilih Berdasarkan Peraturan
-          </Text>
-        </View>
-        <FlatList
-          data={peraturanData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItemPeraturan}
-          scrollEnabled={false}
-        />
+        <ScrollView>
+          {/* Card Peraturan */}
+          <View
+            style={[
+              styles.headerTopBar,
+              { backgroundColor: Colors.brand, marginTop: 20 },
+            ]}>
+            <Text style={styles.headerTopBarText}>
+              Pilih Berdasarkan Peraturan
+            </Text>
+          </View>
+          <FlatList
+            data={peraturanData}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItemPeraturan}
+            scrollEnabled={false}
+          />
 
-        {/* Card Paket */}
-        <View
-          style={[
-            styles.headerTopBar,
-            { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}>
-          <Text style={styles.headerTopBarText}>Pilih Berdasarkan Paket</Text>
-        </View>
-        <FlatList
-          data={paketData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItemPaket}
-          scrollEnabled={false}
-        />
+          {/* Card Paket */}
+          <View
+            style={[
+              styles.headerTopBar,
+              { backgroundColor: Colors.brand, marginTop: 20 },
+            ]}>
+            <Text style={styles.headerTopBarText}>Pilih Berdasarkan Paket</Text>
+          </View>
+          <FlatList
+            data={paketData}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItemPaket}
+            scrollEnabled={false}
+          />
 
-        {/* Card Parameter Tersedia */}
-        <View
-          style={[
-            styles.headerTopBar,
-            { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}>
-          <Text style={styles.headerTopBarText}>Parameter Tersedia</Text>
-        </View>
-        <FlatList
-          data={parameterData}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderItemLangsung}
-          scrollEnabled={false}
-        />
+          {/* Card Parameter Tersedia */}
+          <View
+            style={[
+              styles.headerTopBar,
+              { backgroundColor: Colors.brand, marginTop: 20 },
+            ]}>
+            <Text style={styles.headerTopBarText}>Parameter Tersedia</Text>
+          </View>
+          <FlatList
+            data={parameterData}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderItemLangsung}
+            scrollEnabled={false}
+          />
 
-        {/* Card Parameter Di Pilih */}
-        <View
-          style={[
-            styles.headerTopBar,
-            { backgroundColor: Colors.brand, marginTop: 20 },
-          ]}>
-          <Text style={styles.headerTopBarText}>Parameter Di Pilih</Text>
-        </View>
-        <FlatList
-          data={selectedParameters}
-          keyExtractor={item => item.id.toString()}
-          renderItem={renderSelectedParameter}
-          scrollEnabled={false}
-          style={styles.parameterDiPilih}
-        />
-      </ScrollView>
-    </View>
+          {/* Card Parameter Di Pilih */}
+          <View
+            style={[
+              styles.headerTopBar,
+              { backgroundColor: Colors.brand, marginTop: 20 },
+            ]}>
+            <Text style={styles.headerTopBarText}>Parameter Di Pilih</Text>
+          </View>
+          <FlatList
+            data={selectedParameters}
+            keyExtractor={item => item.id.toString()}
+            renderItem={renderSelectedParameter}
+            scrollEnabled={false}
+            style={styles.parameterDiPilih}
+          />
+        </ScrollView>
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
-  },
+
   backButton: {
     padding: 4,
     borderRadius: 5,

@@ -1,79 +1,22 @@
-import React from 'react';
-import { Text, View, StyleSheet } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
-import Icon from 'react-native-vector-icons/Entypo';
+import React from "react";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { NavigationContainer } from "@react-navigation/native";
+import PaymentDetail from "./pengujian/PaymentDetail";
+import Pembayaran from "./Pembayaran";
+import PengujianPembayaran from "../pembayaran/pengujian/Pengujian";
+import Multipayment from "./multipayment/Multipayment";
 
-import Pembayaran from './Pembayaran';
-import EditPembayaran from '../formComponent/EditPembayaran'
-import Detail from './Detail';
-
-const Tab = createBottomTabNavigator();
-
-const screenOptions = {
-  tabBarShowLabel: false,
-  headerShown: false,
-  tabBarStyle: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    left: 0,
-    elevation: 0,
-    height: 60,
-    backgroundColor: '#fff',
-  },
-};
+const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
   return (
     <NavigationContainer independent={true}>
-      <Tab.Navigator screenOptions={screenOptions}>
-  
-
-        <Tab.Screen
-          name="Pembayaran"
-          component={Pembayaran}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={styles.iconContainer}>
-                <Icon name="user" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>Pembayaran</Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="EditPembayaran"
-          component={EditPembayaran}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={styles.iconContainer}>
-                <Icon name="user" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>EditPembayaran</Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Detail"
-          component={Detail}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View style={styles.iconContainer}>
-                <Icon name="user" size={24} color={focused ? "#16247d" : "#111"} />
-                <Text style={{ fontSize: 12, color: focused ? "#16247d" : "#111" }}>Detail</Text>
-              </View>
-            ),
-          }}
-        />
-      </Tab.Navigator>
+      <Stack.Navigator screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="Pembayaran" component={Pembayaran} />
+        <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
+        <Stack.Screen name="PaymentDetail" component={PaymentDetail} />
+        <Stack.Screen name="Multipayment" component={Multipayment} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-});

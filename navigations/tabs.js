@@ -2,7 +2,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Dashboard from '../src/screens/main/Dashboard';
 import Pengujian from '../src/screens/pengujian/Pengujian';
-import Pembayaran from '../src/screens/pembayaran/Pembayaran';
+import Pembayaran from '../src/screens/pembayaran/Pengujian';
 import Profile from '../src/screens/profile/Profile';
 
 const Tab = createBottomTabNavigator();

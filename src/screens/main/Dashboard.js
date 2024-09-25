@@ -5,19 +5,19 @@ import {
   ScrollView,
   StyleSheet,
   Image,
+  ActivityIndicator,
   RefreshControl,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
-import { Picker } from "@react-native-picker/picker";
-import { LineChart } from "react-native-chart-kit";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
+import Header from "../components/Header";
+import FooterText from "../components/FooterText";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
 
-  // refresh
   useEffect(() => {
     fetchUserData();
   }, []);
@@ -27,13 +27,6 @@ const Dashboard = () => {
     setRefreshing(false);
     fetchUserData();
   };
-
-  const requestTypes = [
-    { label: "Permohonan Baru", value: "new" },
-    { label: "Permohonan Proses", value: "process" },
-    { label: "Permohonan Selesai", value: "completed" },
-    { label: "Total Permohonan", value: "total" },
-  ];
 
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [tahuns, setTahuns] = useState([]);
@@ -51,7 +44,7 @@ const Dashboard = () => {
     axios
       .post("/dashboard/" + user.role.name, { tahun: tahun })
       .then(response => {
-        console.log("response data dashboard : ", response.data);
+        // console.log("response data dashboard : ", response.data);
         setDashboard(response.data);
       })
       .catch(error => {
@@ -61,18 +54,12 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
-        <Text style={styles.headerText}>SI - LAJANG</Text>
-      </View>
+      <Header />
       <ScrollView
         refreshControl={
           <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
         }
-        contentContainerStyle={styles.scrollViewContainer} // Updated styles
+        contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
         <View style={styles.gridContainer}>
           {dashboard ? (
@@ -135,11 +122,12 @@ const Dashboard = () => {
               </View>
             </>
           ) : (
-            <Text style={{ color: "black", fontSize: 15, textAlign: "center" }}>
-              Loading...
-            </Text>
+            <View className="h-full flex justify-center">
+              <ActivityIndicator size={"large"} color={"#312e81"} />
+            </View>
           )}
         </View>
+        <FooterText />
       </ScrollView>
     </View>
   );
@@ -148,7 +136,7 @@ const Dashboard = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#ececec",
   },
   headerContainer: {
     width: "100%",
@@ -204,15 +192,15 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollViewContainer: {
-padding : 10    
+    padding: 10,
   },
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    justifyContent: "space-between", // Adjust space between items
+    justifyContent: "space-between",
   },
   cardContainer: {
-    width: "48%", // Adjust to ensure it fits in a 2x2 grid
+    width: "48%",
     height: 160,
     marginVertical: 10,
     borderRadius: 7,
@@ -224,9 +212,9 @@ padding : 10
     alignItems: "center",
   },
   cardNew: {
-    backgroundColor: "white",
-    shadowColor: "white",
-    borderTopColor: "white",
+    backgroundColor: "#f8f8f8",
+    shadowColor: "#ffffff",
+    borderTopColor: "#ffffff",
     shadowOffset: {
       width: 0,
       height: 6,
@@ -321,7 +309,7 @@ padding : 10
     fontSize: 16,
     fontWeight: "bold",
     color: "black",
-    marginLeft: 8, // memberikan jarak antara gambar dan teks
+    marginLeft: 8,
   },
   chartStyle: {
     marginTop: 8,

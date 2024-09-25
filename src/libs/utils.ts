@@ -53,23 +53,7 @@ export function formatIndoDate(date: any, time = false): string {
     "Desember",
   ];
 
-  //   export function mapStatusPengujian(status) {
-  //     const statusPengujian = {
-  //         "-1": "Revisi",
-  //         0: "Mengajukan Permohonan",
-  //         1: "Menyerahkan Sampel",
-  //         2: "Menyerahkan Surat Perintah Pengujian",
-  //         3: "Menyerahkan sampel untuk Proses Pengujian",
-  //         4: "Menyerahkan RDPS",
-  //         5: "Menyerahkan RDPS untuk Pengetikan LHU",
-  //         6: "Menyerahkan LHU untuk Diverifikasi",
-  //         7: "Mengesahkan LHU",
-  //         8: "Pembayaran",
-  //         9: "Penyerahan LHU",
-  //         10: "Penyerahan LHU Amandemen (Jika ada)",
-  //         11: "Selesai"
-  //     };
-
+ 
   //     return statusPengujian[status] || "Sedang Diproses";
   // }
 
@@ -92,4 +76,30 @@ export function formatIndoDate(date: any, time = false): string {
   } else {
     return day + " " + months[month] + " " + year;
   }
+}
+
+
+type StatusPengujian = {
+  [key: number]: string;
+  "-1": string;
+};
+
+export function mapStatusPengujian(status: number): string {
+  const statusPengujian: StatusPengujian = {
+    "-1": "Revisi",
+    0: "Mengajukan Permohonan",
+    1: "Menyerahkan Sampel",
+    2: "Menyerahkan Surat Perintah Pengujian",
+    3: "Menyerahkan sampel untuk Proses Pengujian",
+    4: "Menyerahkan RDPS",
+    5: "Menyerahkan RDPS untuk Pengetikan LHU",
+    6: "Menyerahkan LHU untuk Diverifikasi",
+    7: "Mengesahkan LHU",
+    8: "Pembayaran",
+    9: "Penyerahan LHU",
+    10: "Penyerahan LHU Amandemen (Jika ada)",
+    11: "Selesai",
+  };
+
+  return statusPengujian[status] || "Sedang Diproses";
 }

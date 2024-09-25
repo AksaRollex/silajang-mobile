@@ -10,8 +10,8 @@ import { useUser } from "./src/services";
 // Import your screens
 import Main from "./src/screens/main/Index";
 import Auth from "./src/screens/auth/Index";
-import TrackingPengujian from "./src/screens/pengujian/TrackingPengujian";
-import TrackingList from "./src/screens/pengujian/TrackingList";
+import TrackingPengujian from "./src/screens/pengujian/trackingPengujian/TrackingPengujian";
+import TrackingList from "./src/screens/pengujian/trackingPengujian/TrackingList";
 
 const Stack = createNativeStackNavigator();
 
@@ -38,8 +38,6 @@ function Navigation(): React.JSX.Element {
         {user && isSuccess ? (
           <>
             <Stack.Screen name="main" component={Main} />
-            <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
-            <Stack.Screen name="TrackingList" component={TrackingList} />
           </>
         ) : (
           <Stack.Screen name="auth" component={Auth} />

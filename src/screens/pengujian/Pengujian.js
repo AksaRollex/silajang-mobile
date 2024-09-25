@@ -1,123 +1,120 @@
-import { View, Text, ScrollView, StyleSheet, TouchableOpacity, Image, RefreshControl } from "react-native";
 import React, { useState } from "react";
-import { Colors } from "react-native-ui-lib";
-import Permohonan from "./Permohonan";
-import TrackingPengujian from "./TrackingPengujian";
-
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  RefreshControl,
+} from "react-native";
+import Header from "../components/Header";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { useNavigation } from "@react-navigation/native";
+import FooterText from "../components/FooterText";
 export default function Pengujian() {
+  const [refreshing, setRefreshing] = useState(false);
+  const [accordionExpanded, setAccordionExpanded] = useState(false);
   const [activeComponent, setActiveComponent] = useState(null);
-  const [ refreshing, setRefreshing ] = useState(false);
-
+  const navigation = useNavigation();
   const onRefresh = () => {
     setRefreshing(false);
     setRefreshing(true);
-  }
-  let RenderedComponent;
-  switch (activeComponent) {
-    case "Permohonan":
-      RenderedComponent = <Permohonan />;
-      break;
-    case "Tracking Pengujian":
-      RenderedComponent = <TrackingPengujian />;
-      break;
-    default:
-      RenderedComponent = null;
-      break;
-  }
+  };
+
+  const toggleAccordion = () => {
+    setAccordionExpanded(!accordionExpanded);
+  };
+
+  const handleMenuSelection = option => {
+    setActiveComponent(option);
+  };
+
+  const buttonPressPermohonan = () => {
+    navigation.navigate("Permohonan");
+  };
+
+  const buttonPressTrackingPengujian = () => {
+    navigation.navigate("TrackingPengujian");
+  };
 
   return (
-    <View style={styles.container} >
-      <ScrollView contentContainerStyle={styles.contentContainer} refreshControl={
-      <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-    }>
-        <View style={styles.headerContainer}>
-          <Image
-            source={require("@/assets/images/logo.png")}
-            style={styles.logo}
-          />
-          <Text style={styles.headerText}>SI - LAJANG</Text>
-        </View>
-        {/* Render the active component here */}
-        {/* <View style={{ display : 'flex', alignItems : 'center', justifyContent : 'center' }}>
-          <Text style={{ fontSize : 20, }}>
+    <>
+      <Header />
+      <View style={styles.container}>
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+
+        {/* Accordion for Pengujian */}
+        <TouchableOpacity
+          style={styles.accordionItem}
+          onPress={toggleAccordion}>
+          <Text style={styles.title} className="font-bold">
             Pilih Menu Pengujian
           </Text>
-        </View> */}
-        <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-      </ScrollView>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setActiveComponent("Permohonan")}>
-          <Text style={styles.buttonText}>Permohonan</Text>
+
+          <MaterialIcons
+            name={
+              accordionExpanded ? "keyboard-arrow-down" : "keyboard-arrow-right"
+            }
+            size={20}
+            color="#808080"
+          />
         </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.button}
-          onPress={() => setActiveComponent("Tracking Pengujian")}>
-          <Text style={styles.buttonText}>Tracking Pengujian</Text>
-        </TouchableOpacity>
+
+        {accordionExpanded && (
+          <View style={styles.subMenu}>
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={buttonPressPermohonan}>
+              <Text style={styles.subMenuText}>Permohonan</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={styles.subMenuItem}
+              onPress={buttonPressTrackingPengujian}>
+              <Text style={styles.subMenuText}>Tracking Pengujian</Text>
+            </TouchableOpacity>
+          </View>
+        )}
       </View>
-    </View>
+
+    </>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
-    justifyContent: "flex-start", // Ensure content starts from the top
+    backgroundColor: "#ececec",
   },
-  contentContainer: {
-    paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
-  },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: Colors.brand,
+  accordionItem: {
+    backgroundColor: "white",
+    borderBottomWidth: 2,
+    borderBottomColor: "#ececec",
+    paddingVertical: 15,
+    paddingHorizontal: 20,
+    flexDirection: "row",
+    justifyContent: "space-between",
     alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    elevation: 4,
   },
-  logo: {
-    width: 40,
-    height: 40,
-    marginTop: 8,
-  },
-  headerText: {
-    fontSize: 22,
-    color: "white",
-    fontWeight: "bold",
-    marginLeft: 10,
-    alignSelf: "center",
-  },
-  buttonContainer: {
-    position: "absolute",
-    bottom: 0, // Position buttons at the bottom
-    width: "100%",
-    flexDirection: "row",
-    justifyContent: "space-around",
-    padding: 10,
-    marginBottom : 60,
-    // backgroundColor: "rgba(255, 255, 255, 0.9)", // Optional: Semi-transparent background
-  },
-  button: {
-    paddingVertical: 10,
-    width: 190,
-    borderRadius: 10,
-    margin: 10,
-    borderWidth : 1,
-    borderColor : "rgba(13, 71, 161, 0.2)",
-    backgroundColor: "#6b7fde",
-  },
-  buttonText: {
-    color: "white",
+  title: {
     fontSize: 16,
-    alignSelf: "center",
-    fontWeight: "bold",
+    color: "#000",
   },
-  activeComponentContainer: {
-    flex: 1,
-    width: "100%",
+  subMenu: {},
+  subMenuItem: {
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    backgroundColor: "white",
+  },
+  subMenuText: {
+    fontSize: 14,
+    color: "black",
+  },
+  defaultView: {
+    marginTop: 20,
+    alignItems: "center",
+  },
+  defaultText: {
+    fontSize: 16,
+    color: "#808080",
   },
 });
