@@ -9,21 +9,6 @@ const baseRem = 16;
 const Multipayment = () => {
   const paginateRef = useRef(false);
 
-  const bulanNama = [
-    "Januari",
-    "Februari",
-    "Maret",
-    "April",
-    "Mei",
-    "Juni",
-    "Juli",
-    "Agustus",
-    "September",
-    "Oktober",
-    "November",
-    "Desember",
-  ];
-
   const dropdownOptions = [
     {
       id: "Edit",
@@ -39,7 +24,6 @@ const Multipayment = () => {
     },
   ];
 
-  const bulan = bulanNama[new Date().getMonth()];
   const cardMultiPayment = ({ item }) => {
     return (
       <View style={styles.card}>
@@ -85,12 +69,7 @@ const Multipayment = () => {
           ref={paginateRef}
           renderItem={cardMultiPayment}
           url="/pembayaran/multi-payment"
-          payload={{
-            tahun: new Date().getFullYear(),
-            bulan: bulan,
-            page : 1,
-            per : 10
-          }}></Paginate>
+          payload={{}}></Paginate>
       </View>
     </>
   );
@@ -133,7 +112,6 @@ const styles = StyleSheet.create({
     marginBottom: rem(4),
     borderRadius: 50,
   },
-})
-
+});
 
 export default Multipayment;

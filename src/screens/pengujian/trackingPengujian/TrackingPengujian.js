@@ -1,122 +1,172 @@
-import React, { useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
-import Header from "../../components/Header";
-import Entypo from "react-native-vector-icons/Entypo";
-import { MenuView } from "@react-native-menu/menu";
-import { Colors } from "react-native-ui-lib";
-import Paginate from "../../components/Paginate";
-
-const rem = multiplier => baseRem * multiplier;
-const baseRem = 16;
+import React, { useState, useCallback } from 'react';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
+import { Picker } from '@react-native-picker/picker';
+import { MenuView } from '@react-native-menu/menu';
+import Entypo from 'react-native-vector-icons/Entypo';
+import Paginate from '../../components/Paginate'; // Assume this component exists
 
 const TrackingPengujian = ({ navigation }) => {
-  const paginateRef = useRef(false);
+  const [tahun, setTahun] = useState(new Date().getFullYear());
+  const [bulan, setBulan] = useState(new Date().getMonth() + 1);
+  const [refreshKey, setRefreshKey] = useState(0);
 
-  const dropdownOptions = [
-    {
-      id: "Tracking",
-      title: "Tracking",
-      action: item => navigation.navigate("TrackingList", { uuid: item.uuid }),
-      Icon: "list",
-    },
+  const tahuns = Array.from({ length: new Date().getFullYear() - 2021 }, (_, i) => ({
+    id: 2022 + i,
+    text: `${2022 + i}`
+  }));
+
+  const bulans = [
+    { id: 1, text: "Januari" },
+    { id: 2, text: "Februari" },
+    { id: 3, text: "Maret" },
+    { id: 4, text: "April" },
+    { id: 5, text: "Mei" },
+    { id: 6, text: "Juni" },
+    { id: 7, text: "Juli" },
+    { id: 8, text: "Agustus" },
+    { id: 9, text: "September" },
+    { id: 10, text: "Oktober" },
+    { id: 11, text: "November" },
+    { id: 12, text: "Desember" },
   ];
 
-  const CardTrackingPengujian = ({ item }) => (
-    <View style={styles.card}>
-      <View style={styles.cards}>
-        <View className="p-1 my-2 bg-slate-200 rounded-md">
-          <Text className="text-indigo-700 text-xs">{item.text_status}</Text>
-        </View>
-        <Text style={styles.cardTexts} className="text-sm">
-          {item.lokasi}
-        </Text>
-        <Text style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
-          {item.kode}
-        </Text>
+  const handleYearChange = useCallback((itemValue) => {
+    setTahun(itemValue);
+    setRefreshKey(prevKey => prevKey + 1);
+  }, []);
 
-        <Text style={[styles.cardTexts]} className="mt-2">
-          Tanggal Diterima : {item.tanggal_diterima}
+  const handleMonthChange = useCallback((itemValue) => {
+    setBulan(itemValue);
+    setRefreshKey(prevKey => prevKey + 1);
+  }, []);
+
+  const mapStatusPengujian = (status) => {
+    // Implement your status mapping logic here
+    return status < 0 ? 'Revisi' : 'Dalam Proses';
+  };
+
+  const renderItem = ({ item }) => (
+    <View style={styles.card}>
+      <View style={styles.cardContent}>
+        <Text style={[styles.badge, { backgroundColor: item.status < 0 ? '#fef08a' : '#e0f2fe' }]}>
+          {item.text_status}
         </Text>
-        <Text style={[styles.cardTexts]}>
-          Tanggal Selesai : {item.tanggal_selesai}
-        </Text>
+        <Text style={styles.lokasi}>{item.lokasi}</Text>
+        <Text style={styles.kode}>{item.kode}</Text>
+        <Text style={styles.date}>Tanggal Diterima: {item.tanggal_diterima}</Text>
+        <Text style={styles.date}>Tanggal Selesai: {item.tanggal_selesai}</Text>
       </View>
-      <View style={styles.cards2}>
+      <View style={styles.cardActions}>
         <MenuView
-          title="Menu Title"
-          actions={dropdownOptions.map(option => ({
-            ...option,
-          }))}
-          onPressAction={({ nativeEvent }) => {
-            const selectedOption = dropdownOptions.find(
-              option => option.title === nativeEvent.event,
-            );
-            if (selectedOption) {
-              selectedOption.action(item);
-            }
+          actions={[
+            {
+              id: 'Tracking',
+              title: 'Tracking',
+              systemIcon: 'list.bullet',
+            },
+          ]}
+          onPressAction={() => {
+            navigation.navigate('TrackingList', { selected : item });
           }}
-          shouldOpenOnLongPress={false}>
-          <View>
-            <Entypo name="dots-three-vertical" size={16} color="#312e81" />
-          </View>
+        >
+          <Entypo name="dots-three-vertical" size={16} color="#312e81" />
         </MenuView>
       </View>
     </View>
   );
 
   return (
-    <>
-      <Header />
-      <View className=" bg-[#ececec] h-full w-full ">
-        <Paginate
-          ref={paginateRef}
-          payload={{ tahun: new Date().getFullYear() }}
-          url="/tracking"
-          renderItem={CardTrackingPengujian}></Paginate>
+    <ScrollView style={styles.container}>
+      <View style={styles.header}>
+        <Text style={styles.title}>Tracking Pengujian</Text>
+        <View style={styles.filters}>
+          <Picker
+            selectedValue={tahun}
+            style={styles.picker}
+            onValueChange={handleYearChange}
+          >
+            {tahuns.map((item) => (
+              <Picker.Item key={item.id} label={item.text} value={item.id} />
+            ))}
+          </Picker>
+          <Picker
+            selectedValue={bulan}
+            style={styles.picker}
+            onValueChange={handleMonthChange} 
+          >
+            {bulans.map((item) => (
+              <Picker.Item key={item.id} label={item.text} value={item.id} />
+            ))}
+          </Picker>
+        </View>
       </View>
-    </>
+      <Paginate
+        key={refreshKey}
+        url="/tracking"
+        payload={{ tahun, bulan }}
+        renderItem={renderItem}
+      />
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
-  searchContainer: {
-    flexDirection: "row",
-    marginVertical: 10,
-    width: "100%",
-  },
-  searchInput: {
+  container: {
     flex: 1,
-    borderWidth: 1,
-    borderColor: "#ccc",
-    padding: 8,
-    marginRight: 10,
+    backgroundColor: '#f3f4f6',
+  },
+  header: {
+    padding: 16,
+    backgroundColor: '#fff',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 16,
+  },
+  filters: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  picker: {
+    flex: 1,
+    marginHorizontal: 4,
   },
   card: {
-    marginVertical: 10,
-    borderRadius: 15,
-    padding: rem(0.7),
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
+    flexDirection: 'row',
+    backgroundColor: '#fff',
+    borderRadius: 8,
+    padding: 16,
+    marginVertical: 8,
+    marginHorizontal: 16,
+    borderTopWidth: 4,
+    borderTopColor: '#4f46e5',
   },
-  cards: {
-    borderRadius: 10,
-    width: "70%",
+  cardContent: {
+    flex: 1,
+  },
+  cardActions: {
+    justifyContent: 'center',
+  },
+  badge: {
+    alignSelf: 'flex-start',
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginBottom: 8,
+  },
+  lokasi: {
+    fontSize: 14,
     marginBottom: 4,
   },
-  cards2: {
-    borderRadius: 10,
-    width: "30%",
-    marginBottom: 4,
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
+  kode: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    marginBottom: 8,
   },
-
-  cardTexts: {
-    fontSize: rem(0.8),
-    color: "black",
+  date: {
+    fontSize: 12,
+    color: '#6b7280',
   },
 });
 

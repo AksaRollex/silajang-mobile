@@ -55,7 +55,7 @@ const TitikUji = ({ navigation, route, status }) => {
             style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
             {item.kode}
           </Text>
-          <Text style={[styles.cardTexts]} className="mt-2" >
+          <Text style={[styles.cardTexts]} className="mt-2">
             Diambil : {item.tanggal_pengambilan || "-"}
           </Text>
           <Text style={[styles.cardTexts]}>
@@ -64,8 +64,9 @@ const TitikUji = ({ navigation, route, status }) => {
           <Text style={[styles.cardTexts]}>
             Selesai : {item.tanggal_selesai_uji || "-"}
           </Text>
-          <Text
-            className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mt-2 mb-1 
+          <View className="">
+            <Text
+              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mt-2 mb-1 
             ${
               status == 0
                 ? "bg-green-400"
@@ -93,34 +94,34 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "bg-red-500"
                 : "bg-purple-600"
             }`}>
-            {status == 0
-              ? "Mengakan Permohonan"
-              : status == 1
-              ? "Menyerahkan Sampel"
-              : status == 2
-              ? "Menyerahkan Surat Perintah Pengujian"
-              : status == 3
-              ? "Menyerahkan sampel untuk Proses Pengujian"
-              : status == 4
-              ? "Menyerahkan RDPS"
-              : status == 5
-              ? "Menyerahkan RDPS untuk Pengetikan LHU"
-              : status == 6
-              ? "Menyerahkan LHU untuk Diverifikasi"
-              : status == 7
-              ? "Mengesahkan LHU"
-              : status == 8
-              ? "Pembayaran"
-              : status == 9
-              ? "Penyerahan LHU"
-              : status == 10
-              ? "Penyerahan LHU Amandemen (Jika ada)"
-              : status == 11
-              ? "Selesai"
-              : "Menunggu"}
-          </Text>
-          <Text
-            className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
+              {status == 0
+                ? "Mengakan Permohonan"
+                : status == 1
+                ? "Menyerahkan Sampel"
+                : status == 2
+                ? "Menyerahkan Surat Perintah Pengujian"
+                : status == 3
+                ? "Menyerahkan sampel untuk Proses Pengujian"
+                : status == 4
+                ? "Menyerahkan RDPS"
+                : status == 5
+                ? "Menyerahkan RDPS untuk Pengetikan LHU"
+                : status == 6
+                ? "Menyerahkan LHU untuk Diverifikasi"
+                : status == 7
+                ? "Mengesahkan LHU"
+                : status == 8
+                ? "Pembayaran"
+                : status == 9
+                ? "Penyerahan LHU"
+                : status == 10
+                ? "Penyerahan LHU Amandemen (Jika ada)"
+                : status == 11
+                ? "Selesai"
+                : "Menunggu"}
+            </Text>
+            <Text
+              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
             ${
               status == 0
                 ? "bg-green-400"
@@ -148,34 +149,34 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "bg-red-500"
                 : "bg-purple-600"
             }`}>
-            {status == 0
-              ? "Mengakan Permohonan"
-              : status == 1
-              ? "Menyerahkan Sampel"
-              : status == 2
-              ? "Menyerahkan Surat Perintah Pengujian"
-              : status == 3
-              ? "Menyerahkan sampel untuk Proses Pengujian"
-              : status == 4
-              ? "Menyerahkan RDPS"
-              : status == 5
-              ? "Menyerahkan RDPS untuk Pengetikan LHU"
-              : status == 6
-              ? "Menyerahkan LHU untuk Diverifikasi"
-              : status == 7
-              ? "Mengesahkan LHU"
-              : status == 8
-              ? "Pembayaran"
-              : status == 9
-              ? "Penyerahan LHU"
-              : status == 10
-              ? "Penyerahan LHU Amandemen (Jika ada)"
-              : status == 11
-              ? "Selesai"
-              : "Menunggu"}
-          </Text>
-          <Text
-            className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
+              {status == 0
+                ? "Mengakan Permohonan"
+                : status == 1
+                ? "Menyerahkan Sampel"
+                : status == 2
+                ? "Menyerahkan Surat Perintah Pengujian"
+                : status == 3
+                ? "Menyerahkan sampel untuk Proses Pengujian"
+                : status == 4
+                ? "Menyerahkan RDPS"
+                : status == 5
+                ? "Menyerahkan RDPS untuk Pengetikan LHU"
+                : status == 6
+                ? "Menyerahkan LHU untuk Diverifikasi"
+                : status == 7
+                ? "Mengesahkan LHU"
+                : status == 8
+                ? "Pembayaran"
+                : status == 9
+                ? "Penyerahan LHU"
+                : status == 10
+                ? "Penyerahan LHU Amandemen (Jika ada)"
+                : status == 11
+                ? "Selesai"
+                : "Menunggu"}
+            </Text>
+            <Text
+              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
             ${
               status == 0
                 ? "bg-green-400"
@@ -203,32 +204,33 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "bg-red-500"
                 : "bg-purple-600"
             }`}>
-            {status == 0
-              ? "Mengakan Permohonan"
-              : status == 1
-              ? "Menyerahkan Sampel"
-              : status == 2
-              ? "Menyerahkan Surat Perintah Pengujian"
-              : status == 3
-              ? "Menyerahkan sampel untuk Proses Pengujian"
-              : status == 4
-              ? "Menyerahkan RDPS"
-              : status == 5
-              ? "Menyerahkan RDPS untuk Pengetikan LHU"
-              : status == 6
-              ? "Menyerahkan LHU untuk Diverifikasi"
-              : status == 7
-              ? "Mengesahkan LHU"
-              : status == 8
-              ? "Pembayaran"
-              : status == 9
-              ? "Penyerahan LHU"
-              : status == 10
-              ? "Penyerahan LHU Amandemen (Jika ada)"
-              : status == 11
-              ? "Selesai"
-              : "Menunggu"}
-          </Text>
+              {status == 0
+                ? "Mengakan Permohonan"
+                : status == 1
+                ? "Menyerahkan Sampel"
+                : status == 2
+                ? "Menyerahkan Surat Perintah Pengujian"
+                : status == 3
+                ? "Menyerahkan sampel untuk Proses Pengujian"
+                : status == 4
+                ? "Menyerahkan RDPS"
+                : status == 5
+                ? "Menyerahkan RDPS untuk Pengetikan LHU"
+                : status == 6
+                ? "Menyerahkan LHU untuk Diverifikasi"
+                : status == 7
+                ? "Mengesahkan LHU"
+                : status == 8
+                ? "Pembayaran"
+                : status == 9
+                ? "Penyerahan LHU"
+                : status == 10
+                ? "Penyerahan LHU Amandemen (Jika ada)"
+                : status == 11
+                ? "Selesai"
+                : "Menunggu"}
+            </Text>
+          </View>
         </View>
         <View style={styles.cards2}>
           <MenuView

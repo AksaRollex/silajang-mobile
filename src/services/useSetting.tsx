@@ -1,12 +1,10 @@
 import { useQuery } from "@tanstack/react-query";
 import axios from "../libs/axios";
 
-export function useParameter() {
+export function useSetting() {
   return useQuery({
-    queryKey: ["master", "paket"],
-    queryFn: () => axios.get("/master/paket").then(res => res.data.pakets),
-    staleTime: 0,
-    cacheTime: 0,
+    queryKey: ["app", "setting"],
+    queryFn: () => axios.get("/setting").then(res => res.data),
     onError: async (error: any) => {
       console.error(error);
     },

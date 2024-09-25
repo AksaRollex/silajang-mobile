@@ -55,7 +55,7 @@ const TrackingList = ({ route, selected, onClose }) => {
           </View>
         </View>
         <ScrollView style={styles.cardBody}>
-          {selected.tracking.map(tracking => (
+          {selected.trackings.map(tracking => (
             <View key={tracking.id} style={styles.trackingItem}>
               <View style={styles.iconContainer}>
                 <Icon name={icon(tracking.status)} size={24} color="#007bff" />

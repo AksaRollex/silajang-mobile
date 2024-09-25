@@ -67,7 +67,7 @@ const Permohonan = ({ navigation }) => {
           </Text>
 
           <View className="flex-row my-2 ">
-            <View className="p-1 w-16  bg-slate-200 rounded-md justify-center">
+            <View className="p-1   bg-slate-200 rounded-md justify-center">
               <Text className="text-indigo-700 text-xs text-center font-bold ">
                 {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
               </Text>

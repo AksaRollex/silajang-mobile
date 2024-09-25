@@ -1,73 +1,51 @@
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  FlatList,
-} from "react-native";
+import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "react-native-ui-lib";
-import React from "react";
-import axios from "@/src/libs/axios";
-import { useQuery } from "@tanstack/react-query";
+import React, { useRef } from "react";
 import Header from "../../components/Header";
 import { rupiah } from "@/src/libs/utils";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
-import Back from "../../components/Back";
+import Paginate from "../../components/Paginate";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Pengujian = ({ navigation }) => {
-  const fetchPembayaran = async () => {
-    const response = await axios.post("/pembayaran/pengujian", {
-      page: 1,
-      per: 10,
-      tahun : 2023,
-    });
-    return response.data.data;
-  };
-
-  const { data, isLoading, error } = useQuery(["pembayaran"], fetchPembayaran);
-
-  if (isLoading || error) {
-    return (
-      <View className="h-full flex justify-center">
-        {isLoading ? (
-          <ActivityIndicator size={"large"} color={"#312e81"} />
-        ) : (
-          <Text style={{ color: "red", fontSize: 16 }}>
-            Error: {error.message}
-          </Text>
-        )}
-      </View>
-    );
-  }
-
-  if (error) {
-    return <Text>Error: {error.message}</Text>;
-  }
-
-  const dropdownOptions = [
-    {
-      id: "Pembayaran",
-      title: "Pembayaran",
-      action: item => navigation.navigate("PaymentDetail", { uuid: item.uuid }),
-    },
-    {
-      id: "Tagihan",
-      title: "Tagihan",
-      action: item => navigation.navigate("Detail", { uuid: item.uuid }),
-    },
-  ];
+  const PaginateRef = useRef();
 
   const CardPembayaran = ({ item }) => {
+    const isExpired = item.payment?.is_expired;
+    // const status = item.payment?.status;
+    // const statusStyle = isExpired
+    //   ? "bg-red-500 text-white"
+    //   : status === "pending"
+    //   ? "bg-blue-500 text-white"
+    //   : status === "success"
+    //   ? "bg-green-500 text-white"
+    //   : "bg-gray-500 text-white";
+
+    const shouldShowTagihan =
+      !!item.payment?.id && item.payment?.status !== "success";
+    const dropdownOptions = [
+      {
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: item =>
+          navigation.navigate("PaymentDetail", { uuid: item.uuid }),
+      },
+      shouldShowTagihan && {
+        id: "Tagihan",
+        title: "Tagihan",
+        action: item => navigation.navigate("Detail", { uuid: item.uuid }),
+      },
+    ].filter(Boolean); 
+
+    const statusText = isExpired ? "Kedaluwarsa" : item.text_status_pembayaran;
+
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <View className="p-1 my-2 bg-slate-200 rounded-md">
-            <Text className="text-indigo-700 text-xs">
-              {item.text_status_pembayaran}
-            </Text>
+          <View className="p-1 my-2 flex-start bg-slate-200 rounded-md">
+            <Text className="text-xs">{statusText}</Text>
           </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
@@ -107,13 +85,12 @@ const Pengujian = ({ navigation }) => {
   return (
     <>
       <Header />
-      <View className="p-7 bg-[#ececec] mb-16/">
-        <Back />
-        <FlatList
-          data={data}
-          renderItem={({ item }) => <CardPembayaran item={item} />}
-          keyExtractor={item => item.id.toString()}
-        />
+      <View className=" w-full h-full bg-[#ececec] ">
+        <Paginate
+          url="/pembayaran/pengujian"
+          payload={{ tahun: 2023 }}
+          renderItem={CardPembayaran}
+          ref={PaginateRef}></Paginate>
       </View>
     </>
   );
