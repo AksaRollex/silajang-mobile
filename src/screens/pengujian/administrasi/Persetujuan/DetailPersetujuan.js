@@ -27,6 +27,14 @@ import RNPickerSelect from "react-native-picker-select";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
 
+
+const currency = (number) => {
+  return number.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+};
+
 export default function DetailPersetujuan({ route, navigation }) {
   const { uuid } = route.params;
   const [data, setData] = useState(null);
@@ -41,6 +49,13 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isDateSelected, setIsDateSelected] = useState(false);
+  const [radiusPengambilan, setRadiusPengambilan] = useState([]);
+  const [selectedRadius, setSelectedRadius] = useState(null);
+  const [pengambilSample, setPengambilSample] = useState([]);
+  const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
+  const [Metode, setMetode] = useState([]);
+  const [selectedMetode, setSelectedMetode] = useState(null);
+
   const [modalVisible, setModalVisible] = useState({
     visible: false,
     selectedParameter: null,
@@ -61,6 +76,45 @@ export default function DetailPersetujuan({ route, navigation }) {
     setModalState({ visible: false, selectedParameter: null });
   };
 
+  useEffect(() => {
+    const fetchRadiusPengambilan = async () => {
+      try {
+        const response = await axios.get("/master/radius-pengambilan");
+        setRadiusPengambilan(response.data.data);
+      } catch (error) {
+        console.error("Error fetching RadiusPengambilan data:", error);
+      }
+    };
+  
+    fetchRadiusPengambilan();
+  }, []);
+
+  useEffect(() => {
+    const fetchPengambilSample = async () => {
+      try {
+        const response = await axios.get("/administrasi/pengambil-sample/petugas");
+        setPengambilSample(response.data.data);
+      } catch (error) {
+        console.error("Error fetching Metode data:", error);
+      }
+    };
+  
+    fetchPengambilSample();
+  }, []);
+
+  useEffect(() => {
+    const fetchMetode = async () => {
+      try {
+        const response = await axios.get("/master/acuan-metode");
+        setMetode(response.data.data);
+      } catch (error) {
+        console.error("Error fetching Metode data:", error);
+      }
+    };
+  
+    fetchMetode();
+  }, []);
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -178,11 +232,11 @@ export default function DetailPersetujuan({ route, navigation }) {
     );
   }
  
-  const jenisWadahValues = data.jenis_wadahs
-    ? data.jenis_wadahs
-        .map(item => `${item.nama} (${item.keterangan})`)
-        .join(", ")
-    : "Tidak ada data";
+  // const jenisWadahValues = data.jenis_wadahs
+  //   ? data.jenis_wadahs
+  //       .map(item => `${item.nama} (${item.keterangan})`)
+  //       .join(", ")
+  //   : "Tidak ada data";
 
   const parameters = data.parameters ? data.parameters : [];
 
@@ -212,22 +266,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     savePengawetan(value);
   };
 
-  const savePengawetan = async status => {
-    try {
-      const response = await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          pengawetan_oleh: status,
-        },
-      );
-      console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
-    }
-  };
   const saveInterpretasi = value => {
     setInterpretasi(value);
     saveInter(value);
@@ -300,19 +338,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
-  const handleKeteranganChange = text => {
-    setKeterangan(text);
-    if (isAbnormal) {
-      console.log(text);
-      updateKondisiSampel(0, text);
-    }
-  };
-
-  const handleInputBlur = () => {
-    if (!isAbnormal) {
-      updateKondisiSampel(0, keterangan);
-    }
-  };
 
   return (
     <ScrollView
@@ -598,7 +623,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </Modal>
               </View>
             </View>
-            <View style={styles.cardContainer}>
+            <View style={styles.pengambilanContainer}>
               <Text style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -617,56 +642,40 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
 
               <View style={styles.infoItem}>
-                  <View style={styles.iconContainer}>
-                    <FontAwesome6
-                      name="id-card-clip"
-                      size={30}
-                      color="black"
-                    />
-                  </View>
-                  <View style={styles.textContainer}>
-                    <Text style={styles.label}>Radius Pengambilan</Text>
-                    <RNPickerSelect
-                      onValueChange={(value) => console.log(value)}
-                      items={[
-                        { label: 'Wilayah 1', value: 'wilayah1' },
-                        { label: 'Wilayah 2', value: 'wilayah2' },
-                      ]}
+                <View style={styles.iconContainer}>
+                  <FontAwesome6
+                    name="id-card-clip"
+                    size={30}
+                    color="black"
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.label}>Radius Pengambilan</Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Radius', value: null }}
+                      onValueChange={(value) => setSelectedRadius(value)}
+                      items={radiusPengambilan.map(item => ({
+                        label: `${item.nama} (${item.radius}m) - ${currency(item.harga)}`,
+                        value: item.id
+                      }))}
                       style={{
-                        inputIOS: {
-                          fontSize: 12,
-                          paddingVertical: 5,
-                          paddingHorizontal: 8,
-                          borderWidth: 1,
-                          borderColor: '#cccccc',
-                          borderRadius: 15,
-                          backgroundColor: '#ffffff',
-                          color: '#333333',
-                          paddingRight: 35, // Memberikan ruang untuk ikon di sebelah kanan
-                          width: 120,
-                        },
-                        inputAndroid: {
-                          fontSize: 12,
-                          paddingVertical: 5,
-                          paddingHorizontal: 8,
-                          borderWidth: 1,
-                          borderColor: '#cccccc',
-                          borderRadius: 15,
-                          backgroundColor: '#ffffff',
-                          color: '#333333',
-                          paddingRight: 35, // Memberikan ruang untuk ikon di sebelah kanan
-                          width: 120,
-                        },
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
                         iconContainer: {
                           top: 10,
-                          right: 10,
-                        },
+                          right: 12,
+                        },  
                       }}
-                      value={data?.permohonan?.jasa_pengambilan?.wilayah || ''}
+                      value={selectedRadius}
                       useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}/>;
+                      }}
                     />
                   </View>
                 </View>
+              </View>
 
                 
               <View style={styles.infoItem}>
@@ -674,8 +683,30 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <FontAwesome6 name="id-card-clip" size={30} color="black" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Petugas Pengambil</Text>
-                  <Text style={styles.value}>{data?.pengambil?.nama || ''}</Text>
+                  <Text style={styles.label}>Petugas</Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Petugas', value: null }}
+                      onValueChange={(value) => setSelectedPengambilSample(value)}
+                      items={pengambilSample.map(item => ({
+                        label: `${item.nama}`,
+                        value: item.id
+                      }))}
+                      style={{
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
+                        iconContainer: {
+                          top: 10,
+                          right: 12,
+                        },  
+                      }}
+                      value={selectedPengambilSample}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}  />;
+                      }}
+                    />
+                  </View>
                 </View>
               </View>
 
@@ -691,14 +722,50 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.value}>{data.tanggal_pengambilan}</Text>
                 </View>
               </View>
+              
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="pricetags" size={33} color="black" />
                 </View>
-                <View style={styles.textContainer}>
+                <View style={styles.textContainer} >
                   <Text style={styles.label}>Metode</Text>
-                  <Text style={styles.value}>{data?.acuan_metode?.nama || ''}</Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Metode', value: null }}
+                      onValueChange={(value) => setSelectedMetode(value)}
+                      items={Metode.map(item => ({
+                        label: `${item.nama}`,
+                        value: item.id
+                      }))}
+                      style={{
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
+                        iconContainer: {
+                          top: 10,
+                          right: 12,
+                        },  
+                      }}
+                      value={selectedMetode}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}  />;
+                      }}
+                    />
+                  </View>
                 </View>
+              </View>
+              <View style={styles.infoItem}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome6 name="landmark-dome" size={33} color="black" />
+                </View>
+                <View style={styles.textContainer}>
+                <Text style={styles.label}>Obyek Pelayanan</Text>
+                <TextInput 
+                  style={styles.inputStyle} 
+                  value={data.tanggal_pengambilan} 
+                  keyboardType="default"
+                />
+               </View>
               </View>
             </View>
           </>
@@ -711,6 +778,15 @@ export default function DetailPersetujuan({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  pengambilanContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 15,
+    width: "90%",
+    elevation: 3,
+    marginVertical: 10,
+    marginBottom: 70,
+  },  
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -921,4 +997,40 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 9,
   },
+  pickerContainer: { 
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    width: 200,  // Memperluas lebar picker
+    overflow: 'hidden',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  pickerStyle: {
+    fontSize: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 15,  // Menambah padding horizontal agar lebih lebar
+    color: '#333333',
+    width: '100%',
+    height: 40,  // Membuat picker lebih tinggi
+  },
+
+  inputStyle: {
+    fontSize: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 15, 
+    color: '#333333',
+    width: '72.5%',
+    height: 40,  // Sama dengan tinggi picker
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  
 });
