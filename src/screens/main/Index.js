@@ -4,7 +4,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import { NavigationContainer } from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Profile";
 import Index from "../pengujian/Index";

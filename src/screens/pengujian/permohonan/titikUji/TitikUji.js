@@ -1,18 +1,36 @@
-import React, { useRef } from "react";
-import { View, Text, StyleSheet } from "react-native";
+import React, { useCallback, useRef, useState } from "react";
+import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import { useQuery, useQueryClient } from "@tanstack/react-query";
+import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
-import Back from "@/src/screens/components/Back";
 import Header from "@/src/screens/components/Header";
 import Entypo from "react-native-vector-icons/Entypo";
 import { MenuView } from "@react-native-menu/menu";
 import { useDelete } from "@/src/hooks/useDelete";
 import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
+import { Picker } from "@react-native-picker/picker";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
 const TitikUji = ({ navigation, route, status }) => {
+  const [tahun, setTahun] = useState(2023);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const tahuns = Array.from(
+    { length: new Date().getFullYear() - 2021 },
+    (_, i) => ({
+      id: 2022 + i,
+      text: `${2022 + i}`,
+    }),
+  );
+
+  const handleYearChange = useCallback(itemValue => {
+    setTahun(itemValue);
+    setRefreshKey(prevKey => prevKey + 1);
+  }, []);
+
   const { uuid } = route.params || {};
   const paginateRef = useRef();
 
@@ -27,6 +45,10 @@ const TitikUji = ({ navigation, route, status }) => {
   });
 
   const dropdownOptions = [
+    {
+      id : "Report",
+      title : "Report",
+    },
     {
       id: "Parameter",
       title: "Parameter",
@@ -260,8 +282,7 @@ const TitikUji = ({ navigation, route, status }) => {
     <>
       <Header />
       <View className="bg-[#ececec] w-full h-full">
-        {/* <Back /> */}
-        {/* {data ? (
+      {/* {titikUji ? (
           <View
             style={{
               flexDirection: "row",
@@ -271,7 +292,7 @@ const TitikUji = ({ navigation, route, status }) => {
             }}>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.topText}>
-                {data[0]?.permohonan?.industri}, Titik Pengujian{" "}
+                {titikUji[0]?.permohonan?.industri}, Titik Pengujian{" "}
               </Text>
             </View>
           </View>
@@ -280,10 +301,25 @@ const TitikUji = ({ navigation, route, status }) => {
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
         )} */}
+        <View className="p-4 ">
+          <View className="flex flex-row justify-between bg-[#fff]">
+            <Picker
+              selectedValue={tahun}
+              style={styles.picker}
+              onValueChange={handleYearChange}>
+              {tahuns.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+       
         <Paginate
+          key={refreshKey}
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}
           url="/permohonan/titik"
+          className="mb-28"
           renderItem={CardTitikUji}></Paginate>
       </View>
 
@@ -321,7 +357,10 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "center",
   },
-
+  picker: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
   card: {
     marginVertical: 10,
     borderRadius: 15,

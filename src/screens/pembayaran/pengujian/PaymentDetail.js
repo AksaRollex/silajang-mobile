@@ -20,7 +20,7 @@ const PaymentDetail = ({ route }) => {
   const [countdownExp, setCountdownExp] = useState("");
   const { uuid } = route.params;
   const { data: setting } = useSetting();
-  // console.log(setting);
+  console.log(setting);
 
   const copyToClipboard = text => {
     Clipboard.setString(text);
@@ -136,7 +136,7 @@ const PaymentDetail = ({ route }) => {
                     <View className="flex flex-row items-center justify-center my-3">
                       <MaterialIcons name="email" size={24} color="#ececec" />
                       <Text className="mx-2 text-white font-bold">
-                        {setting?.email}
+                        {setting?.email || "-"}
                       </Text>
                     </View>
                     <View className="flex flex-row items-center justify-center mb-3">
@@ -146,7 +146,7 @@ const PaymentDetail = ({ route }) => {
                         color="#ececec"
                       />
                       <Text className="mx-2 text-white font-bold">
-                        {setting?.telepon}
+                        {setting?.telepon || "-"}
                       </Text>
                     </View>
                   </View>

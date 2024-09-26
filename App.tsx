@@ -10,8 +10,6 @@ import { useUser } from "./src/services";
 // Import your screens
 import Main from "./src/screens/main/Index";
 import Auth from "./src/screens/auth/Index";
-import TrackingPengujian from "./src/screens/pengujian/trackingPengujian/TrackingPengujian";
-import TrackingList from "./src/screens/pengujian/trackingPengujian/TrackingList";
 
 const Stack = createNativeStackNavigator();
 

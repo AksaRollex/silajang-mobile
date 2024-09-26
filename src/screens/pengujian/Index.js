@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { NavigationContainer, useNavigation } from "@react-navigation/native";
 
 import Pengujian from "./Pengujian";
-import TrackingList from "./trackingPengujian/TrackingList";
+import TrackingList from "./trackingPengujian/Detail";
 import Parameter from "./permohonan/parameter/Parameter";
 import TitikUji from "./permohonan/titikUji/TitikUji";
 import EditPembayaran from "../formComponent/EditPembayaran";

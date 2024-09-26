@@ -4,9 +4,10 @@ import Icon from "react-native-vector-icons/FontAwesome";
 import moment from "moment";
 import { mapStatusPengujian } from "@/src/libs/utils";
 import Header from "../../components/Header";
-import { TouchableOpacity } from "react-native-ui-lib";
+import Back from "../../components/Back";
 
-const TrackingList = ({ route, selected, onClose }) => {
+const TrackingList = ({ route, onClose }) => {
+  const {selected} = route.params
   const icon = status => {
     switch (status) {
       case -1:
@@ -43,33 +44,39 @@ const TrackingList = ({ route, selected, onClose }) => {
   return (
     <>
       <Header />
-      <View style={styles.card}>
+      <View style={styles.card} className="mb-56">
         <View style={styles.cardHeader}>
           <View style={styles.headerContent}>
-            <TouchableOpacity onPress={onClose} style={styles.closeButton}>
-              <Icon name="arrow-left" size={20} color="#dc3545" />
-            </TouchableOpacity>
-            <Text style={styles.headerTitle}>
+            <Back />  
+            <Text className="my-2 font-bold text-xl text-center text-black">
               ({selected?.kode}) {selected?.lokasi}
             </Text>
           </View>
         </View>
         <ScrollView style={styles.cardBody}>
-          {selected.trackings.map(tracking => (
-            <View key={tracking.id} style={styles.trackingItem}>
-              <View style={styles.iconContainer}>
-                <Icon name={icon(tracking.status)} size={24} color="#007bff" />
+          {selected && selected.trackings && selected.trackings.length > 0 ? (
+            selected.trackings.map(tracking => (
+              <View key={tracking.id} style={styles.trackingItem}>
+                <View style={styles.iconContainer}>
+                  <Icon
+                    name={icon(tracking.status)}
+                    size={24}
+                    color="#007bff"
+                  />
+                </View>
+                <View style={styles.trackingInfo}>
+                  <Text style={styles.trackingDate}>
+                    {moment(tracking.created_at).format("DD MMMM YYYY, HH:mm")}
+                  </Text>
+                  <Text style={styles.trackingStatus}>
+                    {mapStatusPengujian(tracking.status)}
+                  </Text>
+                </View>
               </View>
-              <View style={styles.trackingInfo}>
-                <Text style={styles.trackingDate}>
-                  {moment(tracking.created_at).format("DD MMMM YYYY, HH:mm")}
-                </Text>
-                <Text style={styles.trackingStatus}>
-                  {mapStatusPengujian(tracking.status)}
-                </Text>
-              </View>
-            </View>
-          ))}
+            ))
+          ) : (
+            <Text>No trackings available</Text>
+          )}
         </ScrollView>
       </View>
     </>

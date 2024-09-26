@@ -21,6 +21,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { memo, useEffect } from "react";
 import { useState } from "react";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const FormTitikUji = ({ route, navigation, props }) => {
   const [sampelData, setSampelData] = useState([]);
@@ -47,7 +48,6 @@ const FormTitikUji = ({ route, navigation, props }) => {
 
   const queryClient = useQueryClient();
 
-  // FETCH DATA
   const { data, isLoading: isLoadingData } = useQuery(
     ["permohonan", uuid],
     () =>
@@ -59,7 +59,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
         if (data) {
           setValue("lokasi", data.lokasi);
           setValue("jenis_sampel_id", data.jenis_sampel_id);
-          setValue("jenis_wadahs", data.jenis_wadahs_id);
+          setValue("jenis_wadahs_id", data.jenis_wadahs_id);
           setValue("keterangan", data.keterangan);
           setValue("nama_pengambil", data.nama_pengambil);
           setValue("tanggal_pengambilan", data.tanggal_pengambilan);
@@ -91,30 +91,6 @@ const FormTitikUji = ({ route, navigation, props }) => {
     },
   );
 
-  // UPDATE DATA
-  const { mutate: update, isLoading: isUpdating } = useMutation(
-    data => axios.post(`/permohonan/titik/${uuid}/update`, data),
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Data updated successfully",
-        });
-        queryClient.invalidateQueries(["permohonan"]);
-        navigation.navigate("Permohonan");
-      },
-      onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.response?.data?.message || "Failed to update data",
-        });
-        console.error(error.response?.data || error);
-      },
-    },
-  );
-
   const { mutate: createOrUpdate, isLoading } = useMutation(data => {
     axios.post(
       uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titikuji/store",
@@ -127,7 +103,6 @@ const FormTitikUji = ({ route, navigation, props }) => {
             text1: "Success",
             text2: "Data updated successfully",
           });
-          queryClient.invalidateQueries(["/ma"]);
           navigation.navigate("Permohonan");
         },
         onError: error => {
@@ -149,8 +124,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
     );
   }
   const onSubmit = data => {
-    console.log("Submitting data:", data);
-    update(data);
+    createOrUpdate(data);
   };
 
   // DATETIME PICKER
@@ -204,7 +178,6 @@ const FormTitikUji = ({ route, navigation, props }) => {
         setSampelData(formattedSampelData);
         setJenisWadah(formattedJenisWadah);
         setMetode(formattedAcuanMetode);
-        
       } catch (error) {
         console.error("Error fetching data :", error);
       }
@@ -265,12 +238,46 @@ const FormTitikUji = ({ route, navigation, props }) => {
   return (
     <>
       <Header />
+
       <View className="bg-[#ececec] w-full h-full p-7">
+        <Back />
+
         <ScrollView>
-          <Back />
-          <Text className="text-lg font-bold">
-            {data ? "Edit Titik Uji" : "Tambah Titik Uji"}
+          <Text className="text-lg font-bold my-4 text-black">
+            {data ? "Edit Titik Uji" : "Tambah Titik Pengujian"}
           </Text>
+
+          <View className="flex-1 flex-row justify-between ">
+            <View className="w-44 h-48 bg-gray-700 rounded-lg p-4 items-center">
+              <MaterialIcons
+                name="cellphone-text"
+                size={50}
+                color="black"
+                className="my-2"
+              />
+              <Text className="text-white font-bold text-lg text-center">
+                Virtual Account
+              </Text>
+              <Text className="text-white text-justify">
+                Transfer melalui Virtual Account Bank Jatim
+              </Text>
+            </View>
+            <View className="w-44 h-48 bg-gray-700 rounded-lg p-4 items-center">
+              <MaterialIcons
+                name="barcode"
+                size={50}
+                color="black"
+                className="my-2"
+              />
+              <Text className="text-white font-bold text-lg text-center">
+                QRIS
+              </Text>
+              <Text className="text-white text-justify">
+                Scan dan bayar melalui QRIS
+              </Text>
+            </View>
+          </View>
+
           <Text className="text-black  mt-2">Nama Lokasi / Titik Uji</Text>
           <Controller
             name="lokasi"
@@ -304,7 +311,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
           />
           <Text className="text-black mt-2">Jenis Wadah</Text>
           <Controller
-            name="jenis_wadahs"
+            name="jenis_wadahs_id"
             control={control}
             render={({ field: { onChange, value } }) => (
               <DropDownPicker
@@ -335,11 +342,11 @@ const FormTitikUji = ({ route, navigation, props }) => {
             )}
           />
 
-          {/* {permohonan.is_mandiri && (
-          <>
-              <Text className="text-base font-bold text-center my-5">
+          <Text className="text-base font-bold text-center my-5">
             Detail Pengiriman
           </Text>
+          {/* {permohonan && permohonan.is_mandiri && (
+            <> */}
           <Controller
             name="nama_pengambil"
             control={control}
@@ -593,12 +600,12 @@ const FormTitikUji = ({ route, navigation, props }) => {
               />
             )}
           />
-          </>
-        )} */}
+          {/* </>
+          )} */}
 
           <Button
             onPress={handleSubmit(onSubmit)}
-            loading={isUpdating}
+            loading={isLoading}
             className="p-3 rounded-lg my-4 mb-28"
             style={{ backgroundColor: Colors.brand }}>
             <Text className="text-white text-center text-lg font-bold font-sans">

@@ -5,22 +5,38 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import React, { useRef } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import { MenuView } from "@react-native-menu/menu";
-import axios from "@/src/libs/axios";
 import Paginate from "../../components/Paginate";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import Header from "../../components/Header";
-import Back from "../../components/Back";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
+import { Picker } from "@react-native-picker/picker";
 import { Colors } from "react-native-ui-lib";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 
 const Permohonan = ({ navigation }) => {
+  // const [tahun, setTahun] = useState(new Date().getFullYear());
+  const [tahun, setTahun] = useState(2024);
+  const [refreshKey, setRefreshKey] = useState(0);
+
+  const tahuns = Array.from(
+    { length: new Date().getFullYear() - 2021 },
+    (_, i) => ({
+      id: 2022 + i,
+      text: `${2022 + i}`,
+    }),
+  );
+
+  const handleYearChange = useCallback(itemValue => {
+    setTahun(itemValue);
+    setRefreshKey(prevKey => prevKey + 1);
+  }, []);
+
   const paginateRef = useRef();
   const queryClient = useQueryClient();
 
@@ -109,10 +125,24 @@ const Permohonan = ({ navigation }) => {
     <>
       <Header />
       <View className="bg-[#ececec] w-full h-full">
+        <View className="p-4 ">
+          <View className="flex flex-row justify-between bg-[#fff]">
+            <Picker
+              selectedValue={tahun}
+              style={styles.picker}
+              onValueChange={handleYearChange}>
+              {tahuns.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+          </View>
+        </View>
         <Paginate
+          className="mb-28"
           ref={paginateRef}
+          key={refreshKey}
           url="/permohonan"
-          payload={{ tahun: new Date().getFullYear() }}
+          payload={{ tahun : tahun }}
           renderItem={CardPermohonan}></Paginate>
       </View>
       <Icons
@@ -150,7 +180,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
-
+  picker: {
+    flex: 1,
+    marginHorizontal: 4,
+  },
   cardTexts: {
     fontSize: rem(0.9),
     color: "black",

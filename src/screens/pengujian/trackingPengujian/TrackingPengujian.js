@@ -1,19 +1,24 @@
-import React, { useState, useCallback } from 'react';
-import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { Picker } from '@react-native-picker/picker';
-import { MenuView } from '@react-native-menu/menu';
-import Entypo from 'react-native-vector-icons/Entypo';
-import Paginate from '../../components/Paginate'; // Assume this component exists
+import React, { useState, useCallback, useRef } from "react";
+import { View, Text, StyleSheet, ScrollView } from "react-native";
+import { Picker } from "@react-native-picker/picker";
+import { MenuView } from "@react-native-menu/menu";
+import Entypo from "react-native-vector-icons/Entypo";
+import Paginate from "../../components/Paginate"; 
+import Header from "../../components/Header";
 
 const TrackingPengujian = ({ navigation }) => {
+  const paginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [refreshKey, setRefreshKey] = useState(0);
 
-  const tahuns = Array.from({ length: new Date().getFullYear() - 2021 }, (_, i) => ({
-    id: 2022 + i,
-    text: `${2022 + i}`
-  }));
+  const tahuns = Array.from(
+    { length: new Date().getFullYear() - 2021 },
+    (_, i) => ({
+      id: 2022 + i,
+      text: `${2022 + i}`,
+    }),
+  );
 
   const bulans = [
     { id: 1, text: "Januari" },
@@ -30,45 +35,50 @@ const TrackingPengujian = ({ navigation }) => {
     { id: 12, text: "Desember" },
   ];
 
-  const handleYearChange = useCallback((itemValue) => {
+  const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
   }, []);
 
-  const handleMonthChange = useCallback((itemValue) => {
+  const handleMonthChange = useCallback(itemValue => {
     setBulan(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
   }, []);
 
-  const mapStatusPengujian = (status) => {
+  const mapStatusPengujian = status => {
     // Implement your status mapping logic here
-    return status < 0 ? 'Revisi' : 'Dalam Proses';
+    return status < 0 ? "Revisi" : "Dalam Proses";
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardContent}>
-        <Text style={[styles.badge, { backgroundColor: item.status < 0 ? '#fef08a' : '#e0f2fe' }]}>
+        <Text
+          style={[
+            styles.badge,
+            { backgroundColor: item.status < 0 ? "#fef08a" : "#e0f2fe" },
+          ]}>
           {item.text_status}
         </Text>
         <Text style={styles.lokasi}>{item.lokasi}</Text>
         <Text style={styles.kode}>{item.kode}</Text>
-        <Text style={styles.date}>Tanggal Diterima: {item.tanggal_diterima}</Text>
+        <Text style={styles.date}>
+          Tanggal Diterima: {item.tanggal_diterima}
+        </Text>
         <Text style={styles.date}>Tanggal Selesai: {item.tanggal_selesai}</Text>
       </View>
       <View style={styles.cardActions}>
         <MenuView
           actions={[
             {
-              id: 'Tracking',
-              title: 'Tracking',
-              systemIcon: 'list.bullet',
+              id: "Tracking",
+              title: "Tracking",
+              systemIcon: "list.bullet",
             },
           ]}
           onPressAction={() => {
-            navigation.navigate('TrackingList', { selected : item });
-          }}
-        >
+            navigation.navigate("TrackingList", { selected: item });
+          }}>
           <Entypo name="dots-three-vertical" size={16} color="#312e81" />
         </MenuView>
       </View>
@@ -76,80 +86,77 @@ const TrackingPengujian = ({ navigation }) => {
   );
 
   return (
-    <ScrollView style={styles.container}>
-      <View style={styles.header}>
-        <Text style={styles.title}>Tracking Pengujian</Text>
-        <View style={styles.filters}>
-          <Picker
-            selectedValue={tahun}
-            style={styles.picker}
-            onValueChange={handleYearChange}
-          >
-            {tahuns.map((item) => (
-              <Picker.Item key={item.id} label={item.text} value={item.id} />
-            ))}
-          </Picker>
-          <Picker
-            selectedValue={bulan}
-            style={styles.picker}
-            onValueChange={handleMonthChange} 
-          >
-            {bulans.map((item) => (
-              <Picker.Item key={item.id} label={item.text} value={item.id} />
-            ))}
-          </Picker>
+    <>
+      <Header />
+      <ScrollView className="w-full h-full bg-[#ececec]">
+        <View className="p-4 ">
+          <View className="flex flex-row justify-between bg-[#fff]">
+            <Picker
+              selectedValue={tahun}
+              style={styles.picker}
+              onValueChange={handleYearChange}>
+              {tahuns.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={bulan}
+              style={styles.picker}
+              onValueChange={handleMonthChange}>
+              {bulans.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+          </View>
         </View>
-      </View>
-      <Paginate
-        key={refreshKey}
-        url="/tracking"
-        payload={{ tahun, bulan }}
-        renderItem={renderItem}
-      />
-    </ScrollView>
+        <Paginate
+          key={refreshKey}
+          ref={paginateRef}
+          url="/tracking"
+          className="mb-20"
+          payload={{ tahun, bulan }}
+          renderItem={renderItem}
+        />
+      </ScrollView>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: '#f3f4f6',
-  },
   header: {
     padding: 16,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   title: {
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 16,
   },
   filters: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    justifyContent: "space-between",
   },
   picker: {
     flex: 1,
     marginHorizontal: 4,
   },
   card: {
-    flexDirection: 'row',
-    backgroundColor: '#fff',
+    flexDirection: "row",
+    backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
     marginVertical: 8,
-    marginHorizontal: 16,
     borderTopWidth: 4,
-    borderTopColor: '#4f46e5',
+    borderTopColor: "#4f46e5",
   },
   cardContent: {
     flex: 1,
   },
   cardActions: {
-    justifyContent: 'center',
+    justifyContent: "center",
   },
   badge: {
-    alignSelf: 'flex-start',
+    alignSelf: "flex-start",
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
@@ -161,12 +168,12 @@ const styles = StyleSheet.create({
   },
   kode: {
     fontSize: 18,
-    fontWeight: 'bold',
+    fontWeight: "bold",
     marginBottom: 8,
   },
   date: {
     fontSize: 12,
-    color: '#6b7280',
+    color: "#6b7280",
   },
 });
 

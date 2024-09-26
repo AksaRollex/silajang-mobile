@@ -7,6 +7,7 @@ import {
   Image,
   ScrollView,
   Animated,
+  ActivityIndicator,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import Akun from "./tabs/Akun";
@@ -16,13 +17,19 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { API_URL } from "@env";
-export default function Profile() {
+import { useQueryClient, useMutation } from "@tanstack/react-query";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Toast from "react-native-toast-message";
+import { Button } from "react-native-ui-lib";
+import FastImage from "react-native-fast-image";
+export default function Profile({ navigation }) {
   const [activeComponent, setActiveComponent] = useState("Akun");
   const [userData, setUserData] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
+  const QueryClient = useQueryClient();const [imageLoadError, setImageLoadError] = useState(false);
   const fetchData = async () => {
     try {
       const response = await axios.get("/auth");
@@ -31,8 +38,6 @@ export default function Profile() {
       setData({ nama, email, phone, golongan });
       setLoading(false);
 
-      // Buat URL gambar dinamis dengan template literal yang benar
-      console.log("photo: ", photo);
       const fullImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
       setImageUrl(fullImageUrl);
     } catch (error) {
@@ -84,18 +89,69 @@ export default function Profile() {
       break;
   }
 
+  const { mutate: logout } = useMutation(() => axios.post("/auth/logout"), {
+    onSuccess: async () => {
+      await AsyncStorage.removeItem("@auth-token");
+      Toast.show({
+        type: "success",
+        text1: "Logout Berhasil",
+      });
+      QueryClient.invalidateQueries(["auth", "user"]);
+      navigation.navigate("Login");
+    },
+    onError: error => {
+      Toast.show({
+        type: "error",
+        text1: "Gagal Logout",
+      });
+    },
+  });
+
   return (
     <View style={styles.container}>
+      <View
+        style={{
+          backgroundColor: "#312e81",
+          flexDirection: "row",
+          justifyContent: "flex-start",
+        }}>
+        <Button style={{ backgroundColor: "transparent" }} onPress={logout}>
+          <MaterialIcons name="power" size={40} color="red" />
+        </Button>
+      </View>
+
       <ScrollView>
-        <View style={styles.header} />
+        <View style={styles.header} className="pt-52" />
+
         <View style={styles.cardContainer}>
           <View style={[styles.profileCard, styles.shadow]}>
             <View style={styles.photoProfileCard}>
-              <Image
-                style={styles.image}
-                source={{ uri: imageUrl }}
-                resizeMode="cover"
-              />
+              {imageUrl ? (
+                <FastImage
+                  style={styles.image}
+                  source={{
+                    uri: imageUrl,
+                    priority: FastImage.priority.high,
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                  onError={() => {
+                    console.error("Error loading image:", imageUrl);
+                    setImageLoadError(true);
+                  }}
+                />
+              ) : (
+                <View
+                  style={[
+                    styles.image,
+                    {
+                      backgroundColor: "#ddd",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    },
+                  ]}>
+                  <Text>No Image</Text>
+                </View>
+              )}
             </View>
             <View style={styles.ProfileCardText}>
               {userData ? (
@@ -128,7 +184,9 @@ export default function Profile() {
                   </View>
                 </>
               ) : (
-                <Text style={styles.text}>Loading...</Text>
+                <View className="flex-1 justify-center items-center">
+                  <ActivityIndicator size="large" color="#4299e1" />
+                </View>
               )}
             </View>
           </View>
@@ -208,26 +266,23 @@ export default function Profile() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#ececec",
   },
   header: {
-    height: 220,
     backgroundColor: "#312e81",
     justifyContent: "flex-end",
     zIndex: 1,
   },
   cardContainer: {
-    marginTop: -30,
     backgroundColor: "#f8f8f8",
     borderTopLeftRadius: 25,
     borderTopRightRadius: 28,
-    paddingTop: 20,
     zIndex: 2,
     alignItems: "center",
   },
   profileCard: {
-    height: 150,
-    width: 375,
+    paddingVertical: 15,
+    paddingHorizontal: 10,
     borderRadius: 20,
     flexDirection: "row",
     alignItems: "center",
