@@ -1,33 +1,34 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { View, Text, StyleSheet, Switch, TouchableOpacity } from "react-native";
 
 const Parameter = ({ selectedParameter }) => {
   console.log({ selectedParameter });
-  const [personel, setPersonel] = useState(false);
-  const [metode, setMetode] = useState(false);
-  const [peralatan, setPeralatan] = useState(false);
-  const [reagen, setReagen] = useState(false);
-  const [akomodasi, setAkomodasi] = useState(false);
-  const [bebanKerja, setBebanKerja] = useState(false);
+  const [switchStates, setSwitchStates] = useState({
+    personel: false,
+    metode: false,
+    peralatan: false,
+    reagen: false,
+    akomodasi: false,
+    bebanKerja: false,
+  });
 
-  useEffect(() => {
-    if (selectedParameter) {
-      setPersonel(selectedParameter.personel === 1);
-      setMetode(selectedParameter.metode === 1);
-      setPeralatan(selectedParameter.peralatan === 1);
-      setReagen(selectedParameter.reagen === 1);
-      setAkomodasi(selectedParameter.akomodasi === 1);
-      setBebanKerja(selectedParameter.beban_kerja === 1);
-    }
-  }, [selectedParameter]);
+  const toggleSwitch = key => {
+    setSwitchStates(prevState => ({
+      ...prevState,
+      [key]: !prevState[key],
+    }));
+  };
 
-  const checkAllSwitches = () => {
-    setPersonel(true);
-    setMetode(true);
-    setPeralatan(true);
-    setReagen(true);
-    setAkomodasi(true);
-    setBebanKerja(true);
+  const handleCheckAll = () => {
+    const allTrue = Object.values(switchStates).every(state => state);
+    setSwitchStates({
+      personel: !allTrue,
+      metode: !allTrue,
+      peralatan: !allTrue,
+      reagen: !allTrue,
+      akomodasi: !allTrue,
+      bebanKerja: !allTrue,
+    });
   };
 
   return (
@@ -37,7 +38,7 @@ const Parameter = ({ selectedParameter }) => {
       </Text>
 
       {/* Button Check Semua */}
-      <TouchableOpacity style={styles.checkAllButton} onPress={checkAllSwitches}>
+      <TouchableOpacity onPress={handleCheckAll} style={styles.checkAllButton}>
         <Text style={styles.checkAllText}>Check Semua</Text>
       </TouchableOpacity>
 
@@ -45,60 +46,60 @@ const Parameter = ({ selectedParameter }) => {
       <View style={styles.item}>
         <Text style={styles.label}>Personel (Mampu)</Text>
         <Switch
+          value={switchStates.personel}
+          onValueChange={() => toggleSwitch("personel")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={personel ? "#312e81" : "#f4f3f4"}
-          value={selectedParameter.personel}
-          onValueChange={() => setPersonel(!personel)}
+          thumbColor={switchStates.personel ? "#312e81" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.item}>
         <Text style={styles.label}>Metode (Sesuai)</Text>
         <Switch
+          value={switchStates.metode}
+          onValueChange={() => toggleSwitch("metode")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={metode ? "#312e81" : "#f4f3f4"}
-          value={metode}
-          onValueChange={() => setMetode(!metode)}
+          thumbColor={switchStates.metode ? "#312e81" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.item}>
         <Text style={styles.label}>Peralatan (Lengkap)</Text>
         <Switch
+          value={switchStates.peralatan}
+          onValueChange={() => toggleSwitch("peralatan")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={peralatan ? "#312e81" : "#f4f3f4"}
-          value={peralatan}
-          onValueChange={() => setPeralatan(!peralatan)}
+          thumbColor={switchStates.peralatan ? "#312e81" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.item}>
         <Text style={styles.label}>Reagen (Lengkap)</Text>
         <Switch
+          value={switchStates.reagen}
+          onValueChange={() => toggleSwitch("reagen")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={reagen ? "#312e81" : "#f4f3f4"}
-          value={reagen}
-          onValueChange={() => setReagen(!reagen)}
+          thumbColor={switchStates.reagen ? "#312e81" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.item}>
         <Text style={styles.label}>Akomodasi (Baik)</Text>
         <Switch
+          value={switchStates.akomodasi}
+          onValueChange={() => toggleSwitch("akomodasi")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={akomodasi ? "#312e81" : "#f4f3f4"}
-          value={akomodasi}
-          onValueChange={() => setAkomodasi(!akomodasi)}
+          thumbColor={switchStates.akomodasi ? "#312e81" : "#f4f3f4"}
         />
       </View>
 
       <View style={styles.item}>
         <Text style={styles.label}>Beban Kerja (Over)</Text>
         <Switch
+          value={switchStates.bebanKerja}
+          onValueChange={() => toggleSwitch("bebanKerja")}
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={bebanKerja ? "#312e81" : "#f4f3f4"}
-          value={bebanKerja}
-          onValueChange={() => setBebanKerja(!bebanKerja)}
+          thumbColor={switchStates.bebanKerja ? "#312e81" : "#f4f3f4"}
         />
       </View>
     </View>

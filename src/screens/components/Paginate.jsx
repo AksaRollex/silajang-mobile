@@ -31,7 +31,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   }, [search, page, payload]);
 
   useEffect(() => {
-    if(!data.data.length) queryClient.invalidateQueries([url]);
+    if(!data.data?.length) queryClient.invalidateQueries([url]);
   }, [data])
 
   const pagination = useMemo(() => {
@@ -44,7 +44,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   }, [data.current_page, data.last_page])
   const ListHeader = () => (
     <View className="flex-row mb-4 items-center">
-      <BackButton size={24} action={() => navigation.goBack()} className="mr-2" />
+      {/* <BackButton size={24} action={() => navigation.goBack()} className="mr-2" /> */}
       <Controller
         control={control}
         name="search"

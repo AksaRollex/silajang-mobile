@@ -248,14 +248,6 @@ const Akun = ({onCancel}) => {
         disabled={isLoading}
       />
 
-      {/* Tombol Cancel */}
-      <Button
-        label="Cancel"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.red30}
-        borderRadius={5}
-        onPress={onCancel}
-      />
     </View>
   );
 };
@@ -278,7 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: Colors.grey50,
+    borderColor: Colors.grey40,
     borderRadius: 5,
     paddingHorizontal: 20,
     height: 46, // Increase the height
