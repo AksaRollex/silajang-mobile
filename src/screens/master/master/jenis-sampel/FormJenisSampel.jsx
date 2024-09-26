@@ -8,8 +8,8 @@ import Toast from 'react-native-toast-message'
 import BackButton from '@/src/screens/components/BackButton'
 
 export default memo(function FormJenisSampel({ route, navigation }) {
-  const { uuid } = route.params || uuid;
-  const { hendleSubmit, control, formState: {errors}, setValue } = useForm();
+  const { uuid } = route.params || {}
+  const { handleSubmit, control, formState: {errors}, setValue } = useForm();
 
   const { data, isLoading: isLoadingData } = useQuery(["jenis-sampel", uuid], () =>
     uuid ? axios.get(`/master/jenis-sampel/${uuid}/edit`).then(res => res.data.data) : null,
@@ -34,7 +34,7 @@ export default memo(function FormJenisSampel({ route, navigation }) {
   const queryClient = useQueryClient()
 
   const { mutate: createOrUpdate, isLoading } = useMutation(
-    (data) => axios.post(uuid ? `/master/jenis-sampel/${uuid}` : '/master/jenis-sampel/store', data),
+    (data) => axios.post(uuid ? `/master/jenis-sampel/${uuid}/update` : '/master/jenis-sampel/store', data),
     {
       onSuccess: () => {
         Toast.show({

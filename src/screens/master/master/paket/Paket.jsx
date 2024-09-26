@@ -15,7 +15,7 @@ const Paket = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
 
-  const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
+  const { delete: deletePaket, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(['paket']);
       paginateRef.current?.refetch()
@@ -34,7 +34,7 @@ const Paket = ({ navigation }) => {
     {
       id: "Hapus",
       title: "Hapus",
-      action: item => deleteMetode(`/master/paket/${item.uuid}`),
+      action: item => deletePaket(`/master/paket/${item.uuid}`),
     },
     {
       id: "Parameter",
