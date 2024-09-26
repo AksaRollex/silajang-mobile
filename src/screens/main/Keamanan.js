@@ -50,7 +50,7 @@ const Keamanan = ({ onCancel }) => {
 
   return (
     <View style={styles.container}>
-      <Text>Password Lama</Text>
+      <Text style={{ color: "black" }}>Password Lama</Text>
       <Controller
         control={control}
         name="old_password"
@@ -77,7 +77,7 @@ const Keamanan = ({ onCancel }) => {
         <Text style={styles.errorText}>{errors.old_password.message}</Text>
       )}
 
-      <Text>Password Baru</Text>
+      <Text style={{ color: "black" }}>Password Baru</Text>
       <Controller
         control={control}
         name="password"
@@ -104,7 +104,7 @@ const Keamanan = ({ onCancel }) => {
         <Text style={styles.errorText}>{errors.password.message}</Text>
       )}
 
-      <Text>Konfirmasi Password Baru</Text>
+      <Text style={{ color: "black" }}>Konfirmasi Password Baru</Text>
       <Controller
         control={control}
         name="password_confirmation"
@@ -140,13 +140,6 @@ const Keamanan = ({ onCancel }) => {
           onPress={handleSubmit(onSubmit)}
           disabled={updateKeamanan.isLoading}
         />
-        <Button
-          label="Batal"
-          backgroundColor="#fca5a5"
-          borderRadius={5}
-          style={styles.button}
-          onPress={onCancel}
-        />
       </View>
     </View>
   );
@@ -162,7 +155,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: Colors.grey30,
+    borderColor: Colors.grey40,
     borderRadius: 5,
     marginBottom: 16,
     paddingHorizontal: 10,

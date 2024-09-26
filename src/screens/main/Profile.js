@@ -33,16 +33,32 @@ export default function Profile() {
   }, []);
 
   const handlePress = (component) => {
-    setActiveComponent(component);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
+    if (activeComponent === component) {
+      // If the pressed component is already active, close it
+      setActiveComponent(null);
+      Animated.timing(fadeAnim, {
+        toValue: 0,
+        duration: 300,
+        useNativeDriver: true,
+      }).start();
+    } else {
+      // If a different component is pressed, or no component was active
+      setActiveComponent(component);
+      Animated.timing(fadeAnim, {
+        toValue: 1,
+        duration: 500,
+        useNativeDriver: true,
+      }).start();
+    }
   };
 
   const handleCancel = () => {
     setActiveComponent(null);
+    Animated.timing(fadeAnim, {
+      toValue: 0,
+      duration: 300,
+      useNativeDriver: true,
+    }).start();
   };
 
   let RenderedComponent;
@@ -63,7 +79,10 @@ export default function Profile() {
 
   return (
     <View style={styles.container}>
-      <ScrollView>
+       <ScrollView
+            scrollEventThrottle={30} 
+            decelerationRate="normal" 
+        >
         <View style={styles.header} />
         <View style={styles.cardContainer}>
           <View style={[styles.profileCard, styles.shadow]}>

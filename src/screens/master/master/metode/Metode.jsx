@@ -1,12 +1,11 @@
 import { useDelete } from '@/src/hooks/useDelete';
-import SearchInput from "@/src/screens/components/SearchInput";
+import Paginate from '@/src/screens/components/Paginate';
 import { MenuView } from "@react-native-menu/menu";
 import { useQueryClient } from "@tanstack/react-query";
-import React, { useEffect, useRef, useState } from "react";
-import { ActivityIndicator, FlatList, Text, View } from "react-native";
+import React, { useRef } from "react";
+import { Text, View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import Paginate from '@/src/screens/components/Paginate';
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -14,7 +13,7 @@ const Metode = ({ navigation }) => {
 
   const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(['metode']);
+      queryClient.invalidateQueries(['/master/acuan-metode']);
       paginateRef.current?.refetch()
     },
     onError: (error) => {
@@ -41,7 +40,7 @@ const Metode = ({ navigation }) => {
           elevation: 4,
         }}>
         <View className="flex-row justify-between items-center">
-          <Text className="text-[18px] font-bold">{item.nama}</Text>
+          <Text className="text-[18px] font-poppins-semibold">{item.nama}</Text>
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({

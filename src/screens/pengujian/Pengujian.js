@@ -82,13 +82,13 @@ export default function Pengujian() {
                 title="Pengambil Sampel" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("PengambilSampel")}    
+                onPress={() => navigation.navigate("PengambilSample")}    
               />
               <List.Item 
                 title="Penerima Sampel" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("PenerimaSampel")}  
+                onPress={() => navigation.navigate("IndexPenerima")}  
               />
               <List.Item 
                 title="Cetak LHU" 

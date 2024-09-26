@@ -11,6 +11,7 @@ import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, Touchabl
 import Toast from "react-native-toast-message";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
@@ -49,7 +50,7 @@ const screenOptions = {
 const Header = () => {
   return (
     <View className="flex flex-row gap-2 items-center mx-4">
-      <Text className="text-white text-xl font-bold " >SI-LAJANG</Text>
+      <Text className="text-white text-xl font-poppins-bold" >SI-LAJANG</Text>
       <Image
         source={require("@/assets/images/logo.png")}
         className="w-9 h-9"
@@ -58,21 +59,6 @@ const Header = () => {
   );
 };
 
-const customHeaderLeft = () => {
-  const navigation = useNavigation();
-  return (
-    <View className="flex flex-row items-center justify-between">
-      <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-        <IonIcons name="arrow-back" size={24} color="white" />
-      </TouchableOpacity>
-      <Text className="text-white text-xl font-bold " >SI-LAJANG</Text>
-      <Image
-        source={require("@/assets/images/logo.png")}
-        className="w-9 h-9"
-      />
-    </View>
-  )
-}
 
 const TabNavigator = () => {
   return (
@@ -158,15 +144,15 @@ const ProfileDetail = () => {
         <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
           className="w-12 h-12 rounded-full" />
         <View className="flex gao-y-0">
-          <Text className="text-xl font-bold" >{user.nama}</Text>
-          <Text className="text-medium font-bold" >{user.email}</Text>
+          <Text className="text-[17px] font-poppins-semibold" >{user.nama}</Text>
+          <Text className="text-sm font-poppins-semibold" >{user.email}</Text>
         </View>
       </View>
     </View>
   )
 }
 
-const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome, setIcon }) => {
+const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome, fontAwesome6, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
 
   useEffect(() => {
@@ -184,6 +170,9 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
     if(fontAwesome){
       return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#fff' : '#000'} />
     }
+    if(fontAwesome6){
+      return <FontAwesome6Icon name={fontAwesome6} size={19} color={isActive ? '#fff' : '#000'} />
+    }
     if(depth === 0 && hasSubItems && setIcon){
       return <IonIcons name={setIcon} size={21} color={isActive ? '#fff' : '#000'} />
     }
@@ -199,7 +188,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text className={`flex-1 ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text className={`flex-1 font-poppins-regular ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -404,6 +393,7 @@ const DrawerContent = (props) => {
             hasSubItems={hasSubItems}
             ionIcon={item.ionIcon}
             fontAwesome={item.fontAwesome}
+            fontAwesome6={item.fontAwesome6}
             setIcon={item.setIcon}
           />
           {hasSubItems && (
@@ -441,8 +431,8 @@ const DrawerContent = (props) => {
   );
 
   const customDrawerItems = [
-    { name: "Home", screen: "Home", ionIcon: "home" },
-    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", ionIcon: "person" }] : []),
+    { name: "Home", screen: "Home", fontAwesome6: "house" },
+    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", fontAwesome6: "user-large" }] : []),
     {
       name: "Master",
       setIcon: "grid",
