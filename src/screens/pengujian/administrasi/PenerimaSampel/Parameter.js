@@ -54,11 +54,51 @@ const Parameter = ({ selectedParameter, uuid }) => {
     }
   };
 
+  const checkAllSwitches = async () => {
+    const updatedValues = {
+      personel: 1,
+      metode: 1,
+      peralatan: 1,
+      reagen: 1,
+      akomodasi: 1,
+      beban_kerja: 1,
+    };
+  
+    // Update state locally
+    setPersonel(updatedValues.personel);
+    setMetode(updatedValues.metode);  
+    setPeralatan(updatedValues.peralatan);
+    setReagen(updatedValues.reagen);
+    setAkomodasi(updatedValues.akomodasi);
+    setBebanKerja(updatedValues.beban_kerja);
+  
+    // Prepare data for API request
+    const updateData = {
+      id: params.selectedParameter.id, // assuming the parameter has an ID
+      pivot: updatedValues,
+    };
+  
+    try {
+      // Make API request to update the pivot data
+      await axios.post(`/administrasi/penerima-sample/${uuid}/update`, {
+        parameters: [updateData],
+      });
+      console.log("Parameter Terupdate", updateData);
+    } catch (error) {
+      console.error("Error updating parameter:", error);
+    }
+  };
+  
+
   return (
     <View style={styles.container}>
       <Text style={styles.title}>
         Hasil Kaji Ulang Parameter: {selectedParameter.nama}
       </Text>
+
+      <TouchableOpacity style={styles.checkAllButton} onPress={checkAllSwitches}>
+        <Text style={styles.checkAllText}>Check Semua</Text>
+      </TouchableOpacity>
 
       {/* Personel Switch */}
       <View style={styles.item}>
@@ -146,6 +186,17 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
+  },
+  checkAllButton: {
+    alignSelf: "center",
+    padding: 10,
+    backgroundColor: "#dbeafe",
+    borderRadius: 5,
+    marginBottom: 20,
+  },
+  checkAllText: {
+    color: "#312e81",
+    fontWeight: "bold",
   },
 });
 
