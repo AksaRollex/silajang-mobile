@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather'
 import BackButton from "./BackButton";
 import { useNavigation } from "@react-navigation/native";
 
-const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
+const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, ref) => {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -16,8 +16,11 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const navigation = useNavigation()
 
   const { data, isFetching, refetch } = useQuery({
-    queryKey: [url],
-    queryFn: () => axios.post(url, { ...payload, page, search}).then(res => res.data),
+    queryKey: queryKey ? queryKey :  [url],
+    queryFn: () => axios.post(url, { ...payload, page, search}).then(res => {
+      // console.log(res.data)
+      return res.data
+    }),
     placeholderData: {data: []},
     onError: error => console.error(error.response?.data),
   });
@@ -26,7 +29,12 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
     refetch,
   }))
 
+  // useEffect(() => {
+  //   console.log({url})
+  // }, [url])
+
   useEffect(() => {
+    console.log({search, page, payload})
     refetch();
   }, [search, page, payload]);
 

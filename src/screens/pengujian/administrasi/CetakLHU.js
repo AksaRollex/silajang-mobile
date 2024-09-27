@@ -1,291 +1,237 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, ScrollView, Modal } from 'react-native'
-import React, { useState } from 'react'
-import { Searchbar } from "react-native-paper";
-import { Button, Colors } from "react-native-ui-lib";
-import Icon from "react-native-vector-icons/Entypo";
-import MonthYearPicker from 'react-native-simple-month-year-picker';
+import axios from "@/src/libs/axios";
+import React, { useState, useEffect, useRef, useMemo } from "react";
+import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
 import FontIcon from "react-native-vector-icons/FontAwesome5";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { MenuView } from "@react-native-menu/menu";
+import { useQuery } from "@tanstack/react-query";
+import BackButton from "@/src/screens/components/BackButton";
+import Paginate from '@/src/screens/components/Paginate';
+import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 
-export default function PengambilanSampel() {
-  const [searchQuery, setSearchQuery] = useState("");
-  const [dropdownVisible, setDropdownVisible] = useState(false);
-  const [isShow, setIsShow] = useState(false);
-  const [modalVisible , setModalVisible] = useState(false);
+const currentYear = new Date().getFullYear();
+const generateYears = () => {
+  let years = [];
+  for (let i = currentYear; i >= 2022; i--) {
+    years.push({ id: i, title: String(i) });
+  }
+  return years;
+};
 
-  const toggleDropdown = () => {
-    setDropdownVisible(!dropdownVisible);
+const cetakOptions = [
+  { id: 0, name: "Belum Cetak/Revisi" },
+  { id: 1, name: "Sudah Dicetak" },
+];
+
+const useDebounce = (value, delay) => {
+  const [debouncedValue, setDebouncedValue] = useState(value);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedValue(value);
+    }, delay);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [value, delay]);
+
+  return debouncedValue;
+};
+
+const CetakLHU = ({ navigation }) => {
+  const [searchInput, setSearchInput] = useState("");
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+  const debouncedSearchQuery = useDebounce(searchInput, 300);
+  const filterOptions = generateYears();
+  const [selectedCetak, setSelectedCetak] = useState(1);
+  const paginateRef = useRef();
+  const [modalVisible, setModalVisible] = useState(false);
+
+  const dropdownOptions = [
+  ];
+
+  const fetchCetak = async ({ queryKey }) => {
+    const [_, search, year] = queryKey;
+    const response = await axios.post('/administrasi/cetak-lhu', {
+      search,
+      tahun: year,
+      status: 5,
+      page: 1,
+      per: 10
+    });
+    return response.data.data;
   };
 
-  return (
-    <View style={styles.container}>
-      <View style={styles.searchRow}>
-        <View style={styles.search}>
-          <Searchbar
-            placeholder="Search"
-            onChangeText={setSearchQuery}
-            value={searchQuery}
-            style={styles.searchbar}
-          />
-        </View>
+  // const { data, isLoading: isLoadingData } = useQuery(
+  //   ['cetak-lhu', debouncedSearchQuery, selectedYear, selectedCetak], 
+  //   fetchCetak,
+  //   {
+  //     onSuccess: (data) => {
+  //       console.log(selectedYear);
+  //       console.log(data);
+  //     },
+  //     onError: (error) => {
+  //       console.error(error);
+  //     }
+  //   }
+  // );
 
-        <View>
-          <TouchableOpacity onPress={toggleDropdown}>
-            <Icon
-              name={"dots-three-vertical"}
-              size={25}
-              style={styles.icon}
-            />
-          </TouchableOpacity>
+  const renderItem = ({ item }) => {
+    const isDicetak = item.text_status;
 
-          {/* Tampilkan dropdown jika state dropdownVisible bernilai true */}
-          {dropdownVisible && (
-            <View style={styles.dropdown}>
-              <TouchableOpacity style={styles.dropdownItem}>
-                <Text style={styles.dropdownText}>Menunnggu Konfirmasi</Text>
-              </TouchableOpacity>
-              <TouchableOpacity style={styles.dropdownItem}>
-                <Text style={styles.dropdownText}>Telah diterima</Text>
-              </TouchableOpacity>
-            </View>
-          )}
-        </View>
-      </View>
-      <View>
-        <Button style={styles.yearpick} title="Show Picker" onPress={() => setIsShow(true)} />
-        <MonthYearPicker
-          isShow={isShow}
-          close={() => setIsShow(false)} // setState isShow to false
-          onChangeYear={(year) =>  console.log(year)}
-          onChangeMonth={(month) => {
-        console.log(month)
-    }}
-        />
-      </View>
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContent}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.row}>
-          <View style={[styles.card, { marginTop: 25}]}>
-            <View style={styles.cards}>
-              <View>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-                .{" "}
-              </Text>
-              <Text style={styles.cardTexts}>.</Text>
-              </View>
-
-              <Button
-              style={[styles.pdf, {}]}
-              onPress={() => setModalVisible(true)} 
+    return (
+      <View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+        style={{
+          elevation: 4,
+        }}>
+        <View className="flex-row justify-between items-center p-4 relative">
+          <View className="flex-shrink mr-20">
+            {isDicetak ? (
+              <Text className="text-[18px] font-extrabold mb-2">{item.permohonan.user.nama}</Text>
+            ) : (
+              <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
+            )}
+            <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
+            <Text className="text-[15px] mb-2">Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text></Text>
+            <Text className="text-[15px] mb-2">Tanggal Diterima: <Text className="font-bold ">{item.tanggal_diterima}</Text></Text>
+          </View>
+          <View className="absolute right-1 flex-col items-center">
+            <Text className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${isDicetak == 1 ? 'bg-green-400' : isDicetak == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
+              {isDicetak == 1 ? 'Selesai' : isDicetak == 2 ? 'Pembayaran' : 'Penyerahan LHU'}
+            </Text>
+            <View className="my-2 ml-10">
+              <MenuView
+                title="dropdownOptions"
+                actions={dropdownOptions.map(option => ({
+                  ...option,
+                }))}
+                onPressAction={({ nativeEvent }) => {
+                  const selectedOption = dropdownOptions.find(
+                    option => option.title === nativeEvent.event,
+                  );
+                  if (selectedOption) {
+                    selectedOption.action(item);
+                  }
+                }}
+                shouldOpenOnLongPress={false}
               >
-              <FontIcon 
-                name={"file-pdf"}
-                size={20}
-                style={[ {color: "#fff"}]}
-              />
-              </Button>
-
-              <Modal
-                animationType="fade" 
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)} 
-              >
-                <View style={styles.modalBackground}>
-                  <View style={styles.modalmodil}>
-                    <Text style={styles.cardTitle}>Preview LHU</Text>
-                    <View style={styles.cardDivider} />
-                    <Text style={styles.cardContent}>IKI NIATE PDF</Text>
-                    <TouchableOpacity
-                      style={styles.buttonClose}
-                      onPress={() => setModalVisible(false)}
-                    >
-                      <Text style={styles.textStyle}>Tutup</Text>
-                    </TouchableOpacity>
-                  </View>
+                <View>
+                  <TouchableOpacity onPress={() => setModalVisible(true)}>
+                    <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
+                  </TouchableOpacity>                
                 </View>
-              </Modal>
-              
+              </MenuView>
             </View>
           </View>
         </View>
-      
-      </ScrollView>
+      </View>
+    );
+  };
+
+  const payload = useMemo(() => {
+// console.log({
+//   status: selectedCetak === 0 ? [-1] : [5],     
+//   tahun: selectedYear,
+//   page: 1,
+//   per: 10,
+// })
+    return {
+      status: selectedCetak === 0 ? [-1, 5] : 5, 
+      tahun: selectedYear,
+      ...(selectedCetak === 0 && {can_upload: 1})
+    }
+  }, [selectedCetak, selectedYear])
+
+  // if (isLoadingData) {
+  //   return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+  // }
+
+  return (
+    <View className="bg-[#ececec] w-full h-full">
+      <View className="bg-white p-4">
+        <View className="flex-row items-center space-x-2">
+          <View className="flex-col w-full">
+            <View className="flex-row items-center space-x-2 mb-4">
+              <BackButton action={() => navigation.goBack()} size={26} />
+              <View className="absolute left-0 right-2 items-center">
+                <Text className="text-[20px] font-bold">Cetak LHU</Text>
+              </View>
+            </View>
+
+            <View className="flex-row justify-content-center">
+              <MenuView
+                title="filterOptions"
+                actions={filterOptions.map(option => ({
+                  id: option.id.toString(),
+                  title: option.title,
+                }))}
+                onPressAction={({ nativeEvent }) => {
+                  const selectedOption = filterOptions.find(
+                    option => option.title === nativeEvent.event,
+                  );
+                  if (selectedOption) {
+                    setSelectedYear(selectedOption.title);
+                  }
+                }}
+                shouldOpenOnLongPress={false}
+              >
+                <View>
+                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+                </View>
+              </MenuView>
+            </View>
+
+            <View className="flex-row items-start space-x-2 mt-4">
+              <HorizontalScrollMenu
+                items={cetakOptions}
+                selected={selectedCetak}
+                onPress={item => setSelectedCetak(item.id)} 
+                itemWidth={185}
+                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                activeBackgroundColor={"#312e81"}
+                buttonStyle={{ marginRight: 10, borderRadius: 20, justifyContent: 'flex-start' }}
+              />
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <Paginate
+        ref={paginateRef}
+        url="/administrasi/cetak-lhu"
+        // queryKey={["/administrasi/cetak-lhu", selectedCetak]}
+        payload={payload}
+        renderItem={renderItem}
+      />
+
+      <AntDesign
+        name="plus"
+        size={28}
+        color="white"
+        style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+      />
+       <Modal
+        transparent={true}
+        animationType="fade"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-80 p-4">
+            <Text className="text-lg font-bold mb-4">Preview LHU</Text>
+            <Text className="text-center mb-4">IKI PDF MENE</Text>
+            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 rounded">
+              <Text className="text-white text-center">Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>    
     </View>
   );
-}
+};
 
-const styles = StyleSheet.create({
-  searchRow: {
-    flexDirection: "row",
-    marginTop: 10,
-    justifyContent: "space-around",
-    alignItems: "center",
-    width: "92%",
-    marginStart: "2%",
-  },
-  searchIcon: {
-    width: 24,
-    height: 24,
-  },
-  container: {
-    flex: 1,
-    alignItems: "center",
-    backgroundColor: "#ececec",
-  },
-  search: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-    paddingHorizontal: 10,
-    paddingVertical: 0, 
-    backgroundColor: "white",
-    borderRadius: 10,
-    marginVertical: 10,
-    width: "86%",
-    marginTop: 20,
-  },
-  searchbar: {
-    flex: 1, 
-    backgroundColor: "white",
-    borderRadius: 10,
-    marginRight: 10,
-  },
-  buttonSearch: {
-    backgroundColor: "#0D47A1", 
-    padding: 10,
-    borderRadius: 10,
-    minWidth: "15%",
-  },
-  icon: {
-    color: "black",
-    marginTop: 10.5,
-  },
-  dropdown: {
-    position: "absolute",
-    top: 60,
-    right: 5,
-    backgroundColor: "white",
-    borderRadius: 8,
-    elevation: 5,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    width: "700%",
-    zIndex: 10,
-  },
-  dropdownItem: {
-    padding: 10,
-    borderBottomWidth: 1,
-    borderBottomColor: "#ddd",
-  },
-  dropdownText: {
-    fontSize: 14,
-    color: "black",
-  },
-  scrollViewContent: {
-    flexGrow: 1, 
-    marginHorizontal: 20,
-    marginVertical: 10,
-  },
-  card: {
-    width: 360,
-    marginVertical: 1,
-    borderRadius: 15,
-    padding: 20,
-    backgroundColor: "#fff",
-    flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
-  },
-  cards: {
-    borderRadius: 10,
-    width: "70%",
-    marginBottom: 4,
-    flexDirection: "row",
-    backgroundColor: '#f8f8f8'
-
-  },
-  cardTexts: {
-    fontSize: 15,
-    color: "black",
-  },
-
-  pdf: {
-    backgroundColor: "#0D47A1",
-    marginTop: 40,
-    height: 40,
-    borderRadius: 10,
-    minWidth: 10,
-    marginStart: 250,
-    position: "absolute",
-  },
-  yearpick: {
-    marginTop: 25,
-    // marginStart: 270,/
-    backgroundColor: "white",
-    height: 31,
-    borderRadius: 5,
-  },
-  pdfButton: {
-    backgroundColor: '#2196F3',
-    padding: 10,
-    borderRadius: 5,
-  },
-  icon: {
-    color: '#fff',
-  },
-  modalBackground: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)', // Transparansi untuk modal background
-  },
-  modalmodil: {
-    backgroundColor: 'white',
-    borderRadius: 10,
-    padding: 20,
-    alignItems: '',
-    elevation: 5,
-    width: '90%',
-  },
-  cardTitle: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    marginBottom: 10,
-    textAlign: 'left',
-    color: 'black'
-  },
-  cardDivider: {
-    borderBottomColor: '#ccc',
-    borderBottomWidth: 1,
-    marginBottom: 10,
-  },
-  cardContent: {
-    fontSize: 30,
-    textAlign: 'center',
-    marginBottom: 20,
-  },
-  buttonClose: {
-    backgroundColor: '#ececec',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    color: 'black',
-    width: '20%'
-  },
-  textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  },
-});
+export default CetakLHU;
