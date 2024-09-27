@@ -31,7 +31,7 @@ const JenisSampel = ({ navigation }) => {
     {
       id: "Hapus",
       title: "Hapus",
-      action: item => useDelete(`/master/jenis-sampel/${item.uuid}`),
+      action: item => deleteJenisSampel(`/master/jenis-sampel/${item.uuid}`),
     },
   ];
 

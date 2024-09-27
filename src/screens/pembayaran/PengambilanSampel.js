@@ -17,8 +17,9 @@ const generateYears = () => {
   for (let i = currentYear; i >= 2022; i--) {
     years.push({ id: i, title: String(i) })
   }
-  return years
-}
+  return years;
+};
+  
 
 const useDebounce = (value, delay) => {
   const [debouncedValue, setDebouncedValue] = useState(value);

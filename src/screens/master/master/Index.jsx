@@ -18,6 +18,11 @@ import FormPeraturan from './peraturan/Form'
 import FormParameter from './parameter/Form'
 import FormPengawetan from './pengawetan/Form'
 import FormJenisSampel from './jenis-sampel/FormJenisSampel'
+import FormJenisWadah from './jenis-wadah/FormJenisWadah'
+import FormJasaPegambilan from './jasa-pengambilan/FormJasaPengambilan'
+import FormRadiusPengambilan from './radius-pengambilan/FormRadiusPengambilan'
+import FormLiburCuti from './libur-cuti/FormLiburCuti'
+import FormKodeRetribusi from './kode-retribusi/FormKodeRetribusi'
 import ParameterPeraturan from './peraturan/Parameter'
 import ParameterPaket from './paket/Parameter'
 
@@ -42,6 +47,11 @@ export default function MainScreen () {
         <Stack.Screen name="FormParameter" component={FormParameter}/>
         <Stack.Screen name="FormPengawetan" component={FormPengawetan}/>
         <Stack.Screen name="FormJenisSampel" component={FormJenisSampel}/>
+        <Stack.Screen name="FormJenisWadah" component={FormJenisWadah}/>
+        <Stack.Screen name="FormJasaPengambilan" component={FormJasaPegambilan}/>
+        <Stack.Screen name="FormRadiusPengambilan" component={FormRadiusPengambilan}/>
+        <Stack.Screen name="FormLiburCuti" component={FormLiburCuti}/>
+        <Stack.Screen name="FormKodeRetribusi" component={FormKodeRetribusi}/>
         <Stack.Screen name="FormPaket" component={FormPaket}/>
         <Stack.Screen name="ParameterPeraturan" component={ParameterPeraturan}/>
       </Stack.Navigator>
