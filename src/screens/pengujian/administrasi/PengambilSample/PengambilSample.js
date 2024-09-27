@@ -9,7 +9,6 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
   let years = []
@@ -82,7 +81,7 @@ const PengambilSampel = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-4 relative">
+        <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
 
             {isDiterima ? (
@@ -133,11 +132,11 @@ const PengambilSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className=" p-4">
+      <View className=" p-3">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
 
-            <View className="flex-row items-center space-x-2 mb-4">
+            <View className="flex-row items-center space-x-2">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
                 <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
@@ -173,8 +172,9 @@ const PengambilSampel = ({ navigation }) => {
                   }
                 }}
                 shouldOpenOnLongPress={false}
+                
               >
-                <View style={{ marginEnd: 50 }}>
+                <View style={{ marginEnd: 60 }}>
                   <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
                 </View>
               </MenuView>
@@ -195,15 +195,16 @@ const PengambilSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
+        // className="mb-12"
       />
 
-      <AntDesign
+      {/* <AntDesign
         name="plus"
         size={28}
         color="white"
         style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
       onPress={() => navigation.navigate("FormMetode")}
-      />
+      /> */}
       <DeleteConfirmationModal />
     </View>
   );

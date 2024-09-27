@@ -20,6 +20,7 @@ import Persetujuan from "./administrasi/Persetujuan"
 import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
 import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
 import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
+import DetailPengambilSample from "./administrasi/PengambilSample/DetailPengambilSample"
 import CetakLHU from "./administrasi/CetakLHU"
 
 const Stack = createNativeStackNavigator();
@@ -98,6 +99,10 @@ export default function MainScreen() {
       <Stack.Screen
         name="PengambilSample"
         component={PengambilSample}
+      />
+      <Stack.Screen
+        name="DetailPengambilSample"
+        component={DetailPengambilSample}
       />
       <Stack.Screen
         name="CetakLHU"

@@ -146,6 +146,7 @@ const TabNavigator = () => {
           ),
         }}
       />
+      
     </Tab.Navigator>
   );
 };
