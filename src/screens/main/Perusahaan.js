@@ -9,6 +9,7 @@ import {
   Alert,
   PermissionsAndroid,
   Platform,
+  ActivityIndicator,
   ScrollView,
 } from "react-native";
 import { useState, useEffect } from "react";
@@ -18,7 +19,7 @@ import { useForm } from "react-hook-form";
 import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
-import { launchImageLibrary } from "react-native-image-picker"; 
+import { launchImageLibrary } from "react-native-image-picker";
 import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
@@ -75,7 +76,7 @@ const Perusahaan = () => {
         });
         Alert.alert(
           "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`
+          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
         );
       },
       error => {
@@ -121,7 +122,7 @@ const Perusahaan = () => {
   useEffect(() => {
     if (selectedKotaKabupaten) {
       axios
-        .get('/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan')
+        .get(`/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan`)
         .then(response => {
           console.log("Response data:", response.data);
           if (response.data && response.data.data) {
@@ -147,7 +148,7 @@ const Perusahaan = () => {
   useEffect(() => {
     if (selectedKecamatan) {
       axios
-        .get("/wilayah/kecamatan/${selectedKecamatan}/kelurahan")
+        .get(`/wilayah/kecamatan/${selectedKecamatan}/kelurahan`)
         .then(response => {
           const formattedKelurahan = response.data.data.map(item => ({
             label: item.nama,
@@ -180,24 +181,24 @@ const Perusahaan = () => {
   }, []);
 
   // FETCH DATA TANDA TANGAN
-  // useEffect(() => {
-  //   axios
-  //     .get("/auth")
-  //     .then(response => {
-  //       setUserData(response.data.user.detail);
-  //       console.log({ API_URL });
-  //       if (
-  //         response.data.user.detail &&
-  //         response.data.user.detail.tanda_tangan
-  //       ) {
-  //         const photoUrl = `${API_URL}${response.data.user.detail.tanda_tangan}`;
-  //         setCurrentPhotoUrl(photoUrl);
-  //       }
-  //     })
-  //     .catch(error => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // }, []);
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data.user.detail);
+        console.log({ API_URL });
+        if (
+          response.data.user.detail &&
+          response.data.user.detail.tanda_tangan
+        ) {
+          const photoUrl = `${API_URL}${response.data.user.detail.tanda_tangan}`;
+          setCurrentPhotoUrl(photoUrl);
+        }
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
 
   const {
     handleSubmit,
@@ -227,6 +228,13 @@ const Perusahaan = () => {
     formData.append("kecamatan_id", getValues("kecamatans"));
     formData.append("kelurahan_id", getValues("kelurahans"));
 
+    if (file) {
+      formData.append("tanda_tangan", {
+        uri: file.uri,
+        type: file.type || "image/jpeg",
+        name: file.fileName || "tanda_tangan.jpg",
+      });
+    }
     try {
       const response = await axios.post("/user/company", formData, {
         headers: {
@@ -234,7 +242,7 @@ const Perusahaan = () => {
         },
       });
       const { tanda_tangan } = response.data;
-      const updatedImageUrl =` ${API_URL}${tanda_tangan}?t=${new Date().getTime()}`;
+      const updatedImageUrl = `${API_URL}${tanda_tangan}?t=${new Date().getTime()}`;
       setImageUrl(updatedImageUrl);
       setData(prevData => ({
         ...prevData,
@@ -269,12 +277,96 @@ const Perusahaan = () => {
     },
   });
 
-  
+  // GAMBAR
+  const [file, setFile] = React.useState(null);
+  const handleChoosePhoto = () => {
+    launchImageLibrary({ mediaType: "photo" }, response => {
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+      } else if (response.errorMessage) {
+        console.log("ImagePicker Error: ", response.errorMessage);
+      } else {
+        console.log("Chosen file:", response.assets[0]);
+        setFile(response.assets[0]);
+      }
+    });
+  };
+  const handleDeletePhoto = () => {
+    setFile(null);
+    setCurrentPhotoUrl(null);
+  };
+  useEffect(() => {
+    const fetchPhoto = async () => {
+      try {
+        const response = await axios.get(`${API_URL}/user/tanda_tangan`);
+        if (response.data && response.data.photo_url) {
+          setCurrentPhotoUrl(response.data.photo_url);
+        }
+      } catch (error) {
+        console.log("Error fetching photo:", error);
+      }
+    };
+
+    fetchPhoto();
+  }, []);
+
+  const ImageComponent = () => {
+    const imageSource = file?.uri || currentPhotoUrl;
+
+    if (!imageSource) {
+      return <Text>Tidak ada gambar yang dipilih</Text>;
+    }
+
+    return (
+      <Image
+        source={{ uri: imageSource }}
+        style={styles.signaturePreview}
+        onError={e => console.log("Error loading image:", e.nativeEvent.error)}
+      />
+    );
+  };
   return (
+    <ScrollView
+    scrollEventThrottle={16} // Menetapkan pembaruan event scroll lebih halus
+    decelerationRate="normal" // Mengatur kecepatan scroll lebih lambat agar lebih lembut
+  >
     <View style={styles.container}>
       {userData ? (
         <>
-       
+          <Text style={{ color: "black" }}>Tanda Tangan</Text>
+          <Controller
+            control={control}
+            name="tanda_tangan"
+            render={({ field: { value } }) => (
+              <View style={styles.signatureContainer}>
+                <View style={styles.signatureField}>
+                  {file || currentPhotoUrl ? (
+                    <View style={styles.imageContainer}>
+                      <ImageComponent />
+                      <TouchableOpacity
+                        style={styles.changeButton}
+                        onPress={handleChoosePhoto}>
+                        <Text style={styles.buttonText}>Ubah</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        style={styles.deleteButton}
+                        onPress={handleDeletePhoto}>
+                        <Text style={styles.deleteButtonText}>X</Text>
+                      </TouchableOpacity>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={styles.addSignatureButton}
+                      onPress={handleChoosePhoto}>
+                      <Text style={styles.addSignatureText}>
+                        Tambah Tanda Tangan
+                      </Text>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              </View>
+            )}
+          />
           <Text style={{ color: "black" }}>Instansi</Text>
           <Controller
             control={control}
@@ -484,9 +576,9 @@ const Perusahaan = () => {
                   value={value}
                   items={kotaKabupaten}
                   style={pickerSelectStyles}
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -509,9 +601,9 @@ const Perusahaan = () => {
                   value={value}
                   items={kecamatan}
                   style={pickerSelectStyles}
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -534,9 +626,9 @@ const Perusahaan = () => {
                   value={value}
                   items={kelurahan}
                   style={pickerSelectStyles}
-                  Icon={() => {
-                    return <Icon name="chevron-down" size={24} color="gray" />;
-                  }}
+                  // Icon={() => {
+                  //   return <Icon name="chevron-down" size={24} color="gray" />;
+                  // }}
                 />
               </View>
             )}
@@ -546,9 +638,9 @@ const Perusahaan = () => {
           )}
         </>
       ) : (
-        <Text style={[styles.text, { fontWeight: "bold" , marginVertical: 10 }]}>
-          Loading...
-        </Text>
+        <View className="h-full flex justify-center">
+          <ActivityIndicator size={"large"} color={"#312e81"} />
+        </View>
       )}
 
       <Button
@@ -559,6 +651,7 @@ const Perusahaan = () => {
         onPress={handleSubmit(update)}
         disabled={isLoading}></Button>
     </View>
+  </ScrollView>
   );
 };
 
@@ -610,12 +703,17 @@ const styles = StyleSheet.create({
     marginBottom: 16,
   },
   textField: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    color: "black",
-    borderColor: "#ccc",
+    // padding: 12,
+    // backgroundColor: "#f0f0f0",
+    // borderRadius: 8,
+    // color: "black",
+    // borderColor: "#ccc",
+    // borderWidth: 1,
     borderWidth: 1,
+    borderColor: Colors.gray,
+    padding: 10,
+    borderRadius: 8,
+    fontSize: 16,
   },
   imagePreview: {
     width: 100,

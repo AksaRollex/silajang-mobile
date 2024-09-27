@@ -432,7 +432,7 @@ const DrawerContent = (props) => {
 
   const customDrawerItems = [
     { name: "Home", screen: "Home", fontAwesome6: "house" },
-    { name: "Profile", screen: "Profile", fontAwesome6: "user-large" },
+    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", fontAwesome6: "user-large" }] : []),
     {
       name: "Master",
       setIcon: "grid",

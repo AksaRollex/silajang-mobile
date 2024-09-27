@@ -16,7 +16,8 @@ import TambahPermohonan from "../formComponent/TambahPermohonan";
 
 import Kontrak from "./administrasi/kontrak/Kontrak"
 import DetailKontrak from "./administrasi/kontrak/Detail"
-import Persetujuan from "./administrasi/Persetujuan"
+import Persetujuan from "./administrasi/Persetujuan/Persetujuan"
+import DetailPersetujuan from "./administrasi/Persetujuan/DetailPersetujuan"
 import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"
 import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
 import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
@@ -86,6 +87,10 @@ export default function MainScreen() {
       <Stack.Screen
         name="Persetujuan"
         component={Persetujuan}
+      />
+      <Stack.Screen
+        name="DetailPersetujuan"
+        component={DetailPersetujuan}
       />
       <Stack.Screen
         name="IndexPenerima"
