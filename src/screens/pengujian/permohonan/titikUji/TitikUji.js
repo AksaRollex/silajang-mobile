@@ -73,9 +73,10 @@ const TitikUji = ({ navigation, route, status }) => {
           <Text style={[styles.cardTexts]}>
             Selesai : {item.tanggal_selesai_uji || "-"}
           </Text>
-          <View style={styles.badge}>
+          <View>
             <Text
-              className={`text-[12px] text-indigo-600 font-bold px-2 py-1 rounded-sm mt-2 mb-1 
+              style={styles.badge}
+              className={`text-[12px] text-indigo-600  mt-2
             ${
               status == 0
                 ? "bg-green-400"
@@ -130,7 +131,8 @@ const TitikUji = ({ navigation, route, status }) => {
                 : "Menunggu"}
             </Text>
             <Text
-              className={`text-[12px] text-indigo-600 font-bold px-2 py-1 rounded-sm mb-1 
+              style={styles.badge}
+              className={`text-[12px] text-indigo-600
             ${
               status == 0
                 ? "bg-green-400"
@@ -184,7 +186,9 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "Selesai"
                 : "Menunggu"}
             </Text>
-            <Text className="text-[12px] text-indigo-600  bg-slate-200  font-bold px-2 py-1 rounded-sm">
+            <Text
+              style={styles.badge}
+              className="text-[12px] text-indigo-600  bg-slate-200 ">
               {item.text_status || "-"}
             </Text>
           </View>
@@ -277,7 +281,10 @@ const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
     paddingVertical: 4,
+    paddingHorizontal: 8,
     borderRadius: 4,
+    marginBottom: 8,
+    fontWeight: "bold",
   },
   row: {
     flexDirection: "row",

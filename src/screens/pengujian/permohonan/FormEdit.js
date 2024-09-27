@@ -71,7 +71,7 @@ const EditPermohonan = ({ route, navigation }) => {
   );
 
   const onSubmit = data => {
-    console.log("Submitting data:", data); 
+    console.log("Submitting data:", data);
     update(data);
   };
 
@@ -79,7 +79,7 @@ const EditPermohonan = ({ route, navigation }) => {
     <>
       <Header />
       <View className="bg-[#ececec] w-full h-full p-7 ">
-        <Back />
+        <Back size={24} action={() => navigation.goBack()} className="mr-2" />
 
         <Controller
           name="industri"
@@ -154,7 +154,6 @@ const EditPermohonan = ({ route, navigation }) => {
             </Text>
           </TouchableOpacity>
         </Button>
-      
       </View>
     </>
   );

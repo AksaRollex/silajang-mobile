@@ -64,18 +64,17 @@ const Multipayment = ({ navigation }) => {
     },
   ];
 
- 
-
   const cardMultiPayment = ({ item }) => {
-
     const isExpired = item.payment?.is_expired;
     const statusText = isExpired ? "Kedaluwarsa" : item.text_status_pembayaran;
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <View className="p-1 my-2 flex-start bg-slate-200 rounded-md">
-            <Text className="text-xs text-indigo-600">{statusText}</Text>
-          </View>
+          <Text
+            style={[styles.badge]}
+            className=" text-indigo-600 bg-slate-200">
+            {statusText}
+          </Text>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
           </Text>
@@ -154,6 +153,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     borderTopColor: Colors.brand,
     borderTopWidth: 7,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginBottom: 8,
   },
   cards: {
     borderRadius: 10,

@@ -8,7 +8,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/index";
 import { Picker } from "@react-native-picker/picker";
-import { API_URL } from "@env"
+import { API_URL } from "@env";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -71,7 +71,8 @@ const Pengujian = ({ navigation }) => {
       shouldShowTagihan && {
         id: "Tagihan",
         title: "Tagihan",
-        action: () => download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: () =>
+          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
       },
     ].filter(Boolean);
 
@@ -80,9 +81,7 @@ const Pengujian = ({ navigation }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <View className="p-1 my-2 flex-start bg-slate-200 rounded-md">
-            <Text className="text-xs text-indigo-600">{statusText}</Text>
-          </View>
+          <Text style={[styles.badge]} className=" text-indigo-600 bg-slate-200">{statusText}</Text>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
           </Text>
@@ -177,6 +176,14 @@ const styles = StyleSheet.create({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginBottom: 8,
+    fontWeight: "bold",
   },
 
   cardTexts: {

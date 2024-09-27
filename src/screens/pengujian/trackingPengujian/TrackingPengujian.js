@@ -161,6 +161,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
+    fontWeight: "bold",
     marginBottom: 8,
   },
   lokasi: {

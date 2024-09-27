@@ -15,7 +15,7 @@ import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const PaymentDetail = ({ route }) => {
+const PaymentDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("");
   const { uuid } = route.params;
@@ -69,7 +69,7 @@ const PaymentDetail = ({ route }) => {
       }, 1000);
     }
     return () => clearInterval(interval);
-  }, [formData.payment, fetchData]);
+  }, [formData?.payment, fetchData]);
 
   const handleGenerateVA = () => {
     axios
@@ -88,28 +88,58 @@ const PaymentDetail = ({ route }) => {
 
   return (
     <ScrollView className="p-7 bg-[#ececec]">
-      <Back />
-
-      <Text style={styles.title}>{formData.kode}</Text>
-
       {!formData.payment ? (
-        <View className="p-3 rounded-lg mt-2 bg-[#aeacac]">
-          <Text className="font-bold text-white text-base text-center bg-slate-500 rounded-md my-1 py-2">
-            Atas Nama : {formData.permohonan?.user?.nama}
-          </Text>
-          <Text className="font-bold text-white text-base text-center bg-slate-500 rounded-md my-1 py-2">
-            Harga: {rupiah(formData.harga)}
+        <View className="p-3 rounded-lg mt-2 bg-[#fff] ">
+          <Back size={24} action={() => navigation.goBack()} className="mr-2" />
+
+          <Text className="text-2xl font-bold text-black text-center rounded-md  border-b border-gray-300 my-2">
+            {formData.kode}
           </Text>
 
-          <Text className="font-bold text-red-500 text-lg text-center my-5 ">
-            VA Pembayaran Belum Dibuat
-          </Text>
-          <Text className="text-center text-sm text-[#333179] mb-5">Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran</Text>
-          <TouchableOpacity
-            className="bg-[#333179] p-5 rounded-lg"
-            onPress={handleGenerateVA}>
-            <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-          </TouchableOpacity>
+          <View
+            style={{
+              borderColor: "#6366f1",
+              borderWidth: 1,
+              borderRadius: 10,
+              marginVertical: 8,
+              padding: 16,
+              backgroundColor: "#e0e7ff",
+            }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}>
+              <Text
+                style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
+                Atas Nama
+              </Text>
+              <Text
+                style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
+                {formData.permohonan?.user?.nama}
+              </Text>
+            </View>
+
+            <View className="flex-row justify-between mt-1">
+              <Text className="font-bold text-black text-base">Harga</Text>
+              <Text className="font-bold text-black text-base">
+                {rupiah(formData.harga)}
+              </Text>
+            </View>
+          </View>
+
+          <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+            <Text className="font-bold text-black text-lg text-justify  ">
+              VA Pembayaran Belum Dibuat
+            </Text>
+            <Text className=" text-sm text-[#333179] text-justify">
+              Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran
+            </Text>
+          </View>
+          <View className="flex items-end my-2">
+            <TouchableOpacity
+              className="bg-indigo-600 p-3 rounded-lg"
+              onPress={handleGenerateVA}>
+              <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       ) : (
         <View className="my-5 bg-[#aeacac] rounded-lg p-3">
@@ -202,11 +232,7 @@ const styles = StyleSheet.create({
     padding: 20,
     backgroundColor: "#ececec",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: "bold",
-    textAlign: "center",
-  },
+
   infoText: {
     fontSize: 16,
     marginBottom: 10,
@@ -281,7 +307,7 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
     textAlign: "center",
-    fontSize: 16,
+    fontSize: 14,
   },
 });
 
