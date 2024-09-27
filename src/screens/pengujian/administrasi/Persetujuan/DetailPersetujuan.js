@@ -125,9 +125,9 @@ export default function DetailPersetujuan({ route, navigation }) {
         setData(response.data.data);
         if (
           response.data.data &&
-          response.data.data.kesimpulan_sampel !== undefined
+          response.data.data.kesimpulan_permohonan !== undefined
         ) {
-          setChecked(response.data.data.kesimpulan_sampel);
+          setChecked(response.data.data.kesimpulan_permohonan);
         }
         if (
           response.data.data &&
@@ -246,20 +246,15 @@ export default function DetailPersetujuan({ route, navigation }) {
   };
 
   const saveStatus = async status => {
-    try {
+   
       const response = await axios.post(
         `/administrasi/pengambil-sample/${uuid}/update`,
         {
-          kesimpulan_sampel: status,
+          kesimpulan_permohonan: status,
         },
       );
       console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
-    }
+    
   };
   const saving = value => {
     setPengawetan(value);
@@ -524,26 +519,14 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
 
               <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
-              <View style={styles.radioContainer2}>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value={1}
-                    status={interpretasi === 1 ? "checked" : "unchecked"}
-                    onPress={() => saveInterpretasi(1)}
-                  />
-                  <Text style={styles.radioLabel}>Ada</Text>
-                </View>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value={0}
-                    status={interpretasi === 0 ? "checked" : "unchecked"}
-                    onPress={() => saveInterpretasi(0)}
-                  />
-                  <Text style={styles.radioLabel}>Tidak Ada</Text>
-                </View>
-              </View>
-
-             
+            <View style={styles.switchContainer}>
+              <Switch
+                value={interpretasi === 1}
+                onValueChange={(value) => saveInterpretasi(value ? 1 : 0)}
+                trackColor={{ false: "#767577", true: "#312e81" }}
+                thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
+              />
+            </View>
 
                 {showDatePicker && (
                   <DateTimePicker
@@ -636,11 +619,13 @@ export default function DetailPersetujuan({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}  
+                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}
+                    {data?.permohonan?.user?.golongan_id == 1 && (
+                      <Text> ({currency(data?.permohonan?.jasa_pengambilan?.harga)})</Text>
+                    )}
                   </Text>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome6
