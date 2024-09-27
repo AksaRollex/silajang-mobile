@@ -8,6 +8,7 @@ import {
   Modal,
   Button,
   Alert,
+  TouchableOpacity,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -27,8 +28,6 @@ const generateYears = () => {
   }
   return years;
 };
-
-
 
 const pengambilOptions = [
   { id: 1, name: "Menunggu Konfirmasi" },
@@ -51,8 +50,6 @@ const useDebounce = (value, delay) => {
   return debouncedValue;
 };
 
-
-
 const PenerimaSampel = ({ navigation }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
@@ -63,53 +60,71 @@ const PenerimaSampel = ({ navigation }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [deskripsi, setDeskripsi] = useState("");
   const paginateRef = useRef();
+  const [previewReport, setPreviewReport] = useState(false);
+  const [reportUrl, setReportUrl] = useState(false);
 
-const kembali = () => {
-  simpanRevisi();
-  setModalVisible(false);
-};
+  const kembali = () => {
+    simpanRevisi();
+    setModalVisible(false);
+  };
 
-const simpanRevisi = async () => {
-  if (selectedItem && selectedItem.uuid) {
+  const simpanRevisi = async () => {
+    if (selectedItem && selectedItem.uuid) {
       const response = await axios.post(
         `/administrasi/penerima-sample/${selectedItem.uuid}/revisi`,
         {
-          keterangan_revisi: deskripsi, // Kirim `deskripsi` sebagai `keterangan_revisi`
+          keterangan_revisi: deskripsi,
         },
       );
-};
-}
+    }
+  };
 
-  const dropdownOptions = [
-    {
-      id: "Detail",
-      title: "Detail",
-      action: item =>
-        navigation.navigate("DetailPenerima", { uuid: item.uuid }),
-    },
-    {
-      id: "Revisi",
-      title: "Revisi",
-      action: item => {
-        setSelectedItem(item);
-        setModalVisible(true);
+  const dropdownOptions = (item) => {
+    const options = [
+      {
+        id: "Detail",
+        title: "Detail",
+        action: () => navigation.navigate("DetailPenerima", { uuid: item.uuid }),
       },
-    },
-    {
-      id: "Berita Acara",
-      title: "Berita Acara",
-      subactions: [
+      {
+        id: "Revisi",
+        title: "Revisi",
+        action: () => {
+          setSelectedItem(item);
+          setModalVisible(true);
+        },
+      },
+    ];
+
+    // Menambahkan opsi "Permohonan Pengujian" dan "Pengamanan Sampel" jika status bukan 1
+    if (item.status !== 1) {
+      options.push(
         {
-          id: "Berita Acara Pengambilan",
-          title: "Berita Acara Pengambilan",
+          id: "Permohonan Pengujian",
+          title: "Permohonan Pengujian",
+          action: () => handleAction(item.uuid),
         },
         {
-          id: "Data Pengambilan",
-          title: "Data Pengambilan",
-        },
-      ],
-    },
-  ];
+          id: "Pengamanan Sampel",
+          title: "Pengamanan Sampel",
+          action: () => handleAction(item.uuid),
+        }
+      );
+    }
+    return options; // Return the options to use in rendering
+  };
+
+  const handleAction = (uuid) => {
+      if (previewReport) {
+        const url = `/api/v1/report/${uuid}/tanda-terima?token=${localStorage.getItem('auth_token')}`;
+        setReportUrl(url);
+        setModalVisible(true);
+      } else {
+        const downloadUrl = `/report/${uuid}/tanda-terima`;
+        console.log('Downloading report from: ', downloadUrl);
+      }
+    
+  };
 
   const fetchPenerimaSample = async ({ queryKey }) => {
     const [_, search, year] = queryKey;
@@ -153,11 +168,11 @@ const simpanRevisi = async () => {
 
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
             <Text className="text-[14px] mb-2">
-              Diambil pada:{" "}
+              Diterima pada:{" "}
               <Text className="font-bold ">{item.tanggal_pengambilan}</Text>
             </Text>
             <Text className="text-[14px] mb-2">
-              Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text>
+              Status: <Text className="font-bold">{item.text_status}</Text>
             </Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
@@ -176,24 +191,19 @@ const simpanRevisi = async () => {
                 : "Menunggu"}
             </Text>
             <View className="my-2 ml-10">
-              <MenuView
+            <MenuView
                 title="dropdownOptions"
-                actions={dropdownOptions.map(option => ({ ...option }))}
+                actions={dropdownOptions(item)}
                 onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
+                  const selectedOption = dropdownOptions(item).find(option => option.title === nativeEvent.event);
                   if (selectedOption) {
-                    selectedOption.action(item);
+                    selectedOption.action();
                   }
                 }}
-                shouldOpenOnLongPress={false}>
+                shouldOpenOnLongPress={false}
+              >
                 <View>
-                  <Entypo
-                    name="dots-three-vertical"
-                    size={18}
-                    color="#312e81"
-                  />
+                  <Entypo name="dots-three-vertical" size={18} color="#312e81" />
                 </View>
               </MenuView>
             </View>
@@ -286,20 +296,7 @@ const simpanRevisi = async () => {
         className="mb-14"
       />
 
-      <AntDesign
-        name="plus"
-        size={28}
-        color="white"
-        style={{
-          position: "absolute",
-          bottom: 90,
-          right: 30,
-          backgroundColor: "#4f46e5",
-          borderRadius: 100,
-          padding: 10,
-        }}
-        onPress={() => navigation.navigate("FormPenerima")}
-      />
+      
 
       {/* Modal for Revisi */}
       <Modal
@@ -321,15 +318,54 @@ const simpanRevisi = async () => {
               multiline={true} // Mengaktifkan input untuk beberapa baris
               numberOfLines={4} // Mengatur tinggi input untuk 4 baris
             />
-            <Button title="Tutup" onPress={kembali} />
+            <TouchableOpacity
+              style={[
+                styles.button,
+                { backgroundColor: '#fbbf24', borderRadius: 10 },
+              ]}
+              onPress={kembali}>
+              <Text style={styles.buttonText}>Kirim Revisi</Text>
+            </TouchableOpacity>
           </View>
         </View>
       </Modal>
+
+      <Modal
+      animationType="slide"
+      transparent={true}
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}>
+      <View style={styles.modalOverlay}>
+        <View style={styles.modalContainer}>
+          <Text style={styles.modalTitle}>Tanda Terima Report</Text>
+          <Text style={styles.modalText}>Report URL: {reportUrl}</Text> {/* Menampilkan URL report */}
+
+          <TouchableOpacity
+            style={styles.buttonClose}
+            onPress={() => setModalVisible(false)}>
+            <Text style={styles.buttonText}>Close Modal</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </Modal>
     </View>
   );
 };
 
 const styles = {
+  button: {
+    padding: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginTop: 10,
+    width: 117,
+    height: 45,
+  },
+  buttonText: {
+    color: 'white',
+    fontSize: 13,
+    fontWeight: 'bold',
+  },
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
