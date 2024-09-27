@@ -6,7 +6,6 @@ import Pengujian from "./Pengujian";
 import TrackingList from "./trackingPengujian/Detail";
 import Parameter from "./permohonan/parameter/Parameter";
 import TitikUji from "./permohonan/titikUji/TitikUji";
-import EditPembayaran from "../formComponent/EditPembayaran";
 import Permohonan from "./permohonan/Permohonan";
 import FormTitikUji from "./permohonan/titikUji/Form";
 import TrackingPengujian from "./trackingPengujian/TrackingPengujian";
@@ -32,7 +31,6 @@ export default function MainScreen() {
         <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
         <Stack.Screen name="Parameter" component={Parameter} />
 
-        <Stack.Screen name="EditPembayaran" component={EditPembayaran} />
       </Stack.Navigator>
     </NavigationContainer>
   );

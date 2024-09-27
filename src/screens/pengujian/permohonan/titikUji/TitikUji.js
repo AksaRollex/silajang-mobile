@@ -9,29 +9,16 @@ import { MenuView } from "@react-native-menu/menu";
 import { useDelete } from "@/src/hooks/useDelete";
 import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
-import { Picker } from "@react-native-picker/picker";
+import { usePermohonan } from "@/src/services/usePermohonan";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
 const TitikUji = ({ navigation, route, status }) => {
-  const [tahun, setTahun] = useState(2023);
-  const [refreshKey, setRefreshKey] = useState(0);
-
-  const tahuns = Array.from(
-    { length: new Date().getFullYear() - 2021 },
-    (_, i) => ({
-      id: 2022 + i,
-      text: `${2022 + i}`,
-    }),
-  );
-
-  const handleYearChange = useCallback(itemValue => {
-    setTahun(itemValue);
-    setRefreshKey(prevKey => prevKey + 1);
-  }, []);
-
   const { uuid } = route.params || {};
+  const { data: permohonan } = usePermohonan(uuid);
+  console.log("data permohonan", permohonan);
+
   const paginateRef = useRef();
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
@@ -46,8 +33,8 @@ const TitikUji = ({ navigation, route, status }) => {
 
   const dropdownOptions = [
     {
-      id : "Report",
-      title : "Report",
+      id: "Report",
+      title: "Report",
     },
     {
       id: "Parameter",
@@ -86,35 +73,35 @@ const TitikUji = ({ navigation, route, status }) => {
           <Text style={[styles.cardTexts]}>
             Selesai : {item.tanggal_selesai_uji || "-"}
           </Text>
-          <View className="">
+          <View style={styles.badge}>
             <Text
-              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mt-2 mb-1 
+              className={`text-[12px] text-indigo-600 font-bold px-2 py-1 rounded-sm mt-2 mb-1 
             ${
               status == 0
                 ? "bg-green-400"
                 : status == 1
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 2
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 3
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 4
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 5
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 6
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 7
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 8
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 9
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 10
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 11
-                ? "bg-red-500"
-                : "bg-purple-600"
+                ? "bg-slate-200"
+                : "bg-slate-200"
             }`}>
               {status == 0
                 ? "Mengakan Permohonan"
@@ -143,33 +130,33 @@ const TitikUji = ({ navigation, route, status }) => {
                 : "Menunggu"}
             </Text>
             <Text
-              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
+              className={`text-[12px] text-indigo-600 font-bold px-2 py-1 rounded-sm mb-1 
             ${
               status == 0
                 ? "bg-green-400"
                 : status == 1
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 2
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 3
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 4
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 5
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 6
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 7
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 8
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 9
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 10
-                ? "bg-red-500"
+                ? "bg-slate-200"
                 : status == 11
-                ? "bg-red-500"
-                : "bg-purple-600"
+                ? "bg-slate-200"
+                : "bg-slate-200"
             }`}>
               {status == 0
                 ? "Mengakan Permohonan"
@@ -197,60 +184,8 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "Selesai"
                 : "Menunggu"}
             </Text>
-            <Text
-              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-1 
-            ${
-              status == 0
-                ? "bg-green-400"
-                : status == 1
-                ? "bg-red-500"
-                : status == 2
-                ? "bg-red-500"
-                : status == 3
-                ? "bg-red-500"
-                : status == 4
-                ? "bg-red-500"
-                : status == 5
-                ? "bg-red-500"
-                : status == 6
-                ? "bg-red-500"
-                : status == 7
-                ? "bg-red-500"
-                : status == 8
-                ? "bg-red-500"
-                : status == 9
-                ? "bg-red-500"
-                : status == 10
-                ? "bg-red-500"
-                : status == 11
-                ? "bg-red-500"
-                : "bg-purple-600"
-            }`}>
-              {status == 0
-                ? "Mengakan Permohonan"
-                : status == 1
-                ? "Menyerahkan Sampel"
-                : status == 2
-                ? "Menyerahkan Surat Perintah Pengujian"
-                : status == 3
-                ? "Menyerahkan sampel untuk Proses Pengujian"
-                : status == 4
-                ? "Menyerahkan RDPS"
-                : status == 5
-                ? "Menyerahkan RDPS untuk Pengetikan LHU"
-                : status == 6
-                ? "Menyerahkan LHU untuk Diverifikasi"
-                : status == 7
-                ? "Mengesahkan LHU"
-                : status == 8
-                ? "Pembayaran"
-                : status == 9
-                ? "Penyerahan LHU"
-                : status == 10
-                ? "Penyerahan LHU Amandemen (Jika ada)"
-                : status == 11
-                ? "Selesai"
-                : "Menunggu"}
+            <Text className="text-[12px] text-indigo-600  bg-slate-200  font-bold px-2 py-1 rounded-sm">
+              {item.text_status || "-"}
             </Text>
           </View>
         </View>
@@ -282,17 +217,18 @@ const TitikUji = ({ navigation, route, status }) => {
     <>
       <Header />
       <View className="bg-[#ececec] w-full h-full">
-      {/* {titikUji ? (
+        {permohonan ? (
           <View
             style={{
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "space-between",
-              marginVertical: rem(1),
+              marginHorizontal: rem(1),
+              marginTop: rem(0.5),
             }}>
             <View style={{ flexDirection: "row" }}>
-              <Text style={styles.topText}>
-                {titikUji[0]?.permohonan?.industri}, Titik Pengujian{" "}
+              <Text style={styles.topText} className="mt-4 mx-1">
+                {permohonan?.industri}, Titik Pengujian
               </Text>
             </View>
           </View>
@@ -300,22 +236,8 @@ const TitikUji = ({ navigation, route, status }) => {
           <View className="h-full flex justify-center">
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
-        )} */}
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff]">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
-       
+        )}
         <Paginate
-          key={refreshKey}
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}
           url="/permohonan/titik"
@@ -351,6 +273,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: "black",
     fontSize: rem(1),
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    borderRadius: 4,
   },
   row: {
     flexDirection: "row",

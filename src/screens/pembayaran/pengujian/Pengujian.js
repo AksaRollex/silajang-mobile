@@ -8,6 +8,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/index";
 import { Picker } from "@react-native-picker/picker";
+import { API_URL } from "@env"
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -50,28 +51,16 @@ const Pengujian = ({ navigation }) => {
     setBulan(itemValue);
   }, []);
 
-  const { download: downloadPDF, PDFConfirmationModal } = useDownloadPDF({
-    onSuccess: () => {
-      navigation.navigate("PengujianPembayaran");
-    },
-    onError: error => {
-      console.log("Delete error : ", error);
-    },
+  const { download, PDFConfirmationModal } = useDownloadPDF({
+    onSuccess: filePath => console.log("Download success:", filePath),
+    onError: error => console.error("Download error:", error),
   });
 
   const CardPembayaran = ({ item }) => {
     const isExpired = item.payment?.is_expired;
-    // const status = item.payment?.status;
-    // const statusStyle = isExpired
-    //   ? "bg-red-500 text-white"
-    //   : status === "pending"
-    //   ? "bg-blue-500 text-white"
-    //   : status === "success"
-    //   ? "bg-green-500 text-white"
-    //   : "bg-gray-500 text-white";
-
     const shouldShowTagihan =
       !!item.payment?.id && item.payment?.status !== "success";
+
     const dropdownOptions = [
       {
         id: "Pembayaran",
@@ -82,8 +71,7 @@ const Pengujian = ({ navigation }) => {
       shouldShowTagihan && {
         id: "Tagihan",
         title: "Tagihan",
-        action: () =>
-          downloadPDF(`/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: () => download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
       },
     ].filter(Boolean);
 
@@ -93,7 +81,7 @@ const Pengujian = ({ navigation }) => {
       <View style={styles.card}>
         <View style={styles.cards}>
           <View className="p-1 my-2 flex-start bg-slate-200 rounded-md">
-            <Text className="text-xs">{statusText}</Text>
+            <Text className="text-xs text-indigo-600">{statusText}</Text>
           </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
@@ -134,7 +122,7 @@ const Pengujian = ({ navigation }) => {
     <>
       <Header />
       <View className=" w-full h-full bg-[#ececec] ">
-      <View className="p-4 ">
+        <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
             <Picker
               selectedValue={tahun}
@@ -158,7 +146,7 @@ const Pengujian = ({ navigation }) => {
           key={refreshKey}
           className="mb-28"
           url="/pembayaran/pengujian"
-          payload={{ tahun, bulan}}
+          payload={{ tahun, bulan }}
           renderItem={CardPembayaran}
           ref={PaginateRef}></Paginate>
       </View>

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import axios from "@/src/libs/axios";
 import {
   View,
@@ -7,56 +7,62 @@ import {
   TouchableOpacity,
   StyleSheet,
   ScrollView,
-  Image,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Back from "@/src/screens/components/Back";
 import Header from "@/src/screens/components/Header";
-const Parameter = ({ navigation }) => {
+import { rupiah } from "@/src/libs/utils";
+import Paginate from "@/src/screens/components/Paginate";
+import { useTitikPermohonan } from "@/src/services/useTitikPermohonan";
+
+const Parameter = ({ navigation, route }) => {
+  const { uuid } = route.params || null;
+  const { data: titik } = useTitikPermohonan(uuid);
+  console.log(titik);
   const [peraturanData, setPeraturanData] = useState([]);
   const [parameterData, setParameterData] = useState([]);
   const [paketData, setPaketData] = useState([]);
   const [selectedParameters, setSelectedParameters] = useState([]);
-  // navigation.pop(2);
+  const paginateRef = useRef(false);
 
   // FETCH DATA PARAMETER
-  useEffect(() => {
-    axios
-      .get("/master/parameter")
-      .then(response => {
-        console.log("Response Data Parameter:", response.data.parameter);
-        setParameterData(response.data.parameter);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("/master/parameter")
+  //     .then(response => {
+  //       console.log("Response Data Parameter:", response.data.parameter);
+  //       setParameterData(response.data.parameter);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   // FETCH DATA PAKET
-  useEffect(() => {
-    axios
-      .get("/master/paket")
-      .then(response => {
-        console.log("Response Data Paket:", response.data);
-        setPaketData(response.data.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("/master/paket")
+  //     .then(response => {
+  //       console.log("Response Data Paket:", response.data);
+  //       setPaketData(response.data.data);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   // FETCH DATA PERATURAN
-  useEffect(() => {
-    axios
-      .get("/master/peraturan/get")
-      .then(response => {
-        console.log("Response Data Peraturan:", response.data);
-        setPeraturanData(response.data.peraturan);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
+  // useEffect(() => {
+  //   axios
+  //     .get("/master/peraturan/get")
+  //     .then(response => {
+  //       console.log("Response Data Peraturan:", response.data);
+  //       setPeraturanData(response.data.peraturan);
+  //     })
+  //     .catch(error => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // }, []);
 
   const handleAddParameter = parameter => {
     setSelectedParameters(prevSelectedParameters => [
@@ -76,7 +82,7 @@ const Parameter = ({ navigation }) => {
     <View style={styles.card}>
       <View style={styles.cardContent}>
         <Text style={styles.cell}>{item.nama}</Text>
-        <Text style={styles.cell}>{item.harga}</Text>
+        <Text style={styles.cell}>{rupiah(item.harga)}</Text>
         <Text style={styles.cell}>{item.nomor}</Text>
       </View>
       <TouchableOpacity
@@ -105,7 +111,7 @@ const Parameter = ({ navigation }) => {
     <View style={styles.card}>
       <View style={styles.cardContent}>
         <Text style={styles.cell}>{item.nama}</Text>
-        <Text style={styles.cell}>{item.harga}</Text>
+        <Text style={styles.cell}>{rupiah(item.harga)}</Text>
       </View>
       <TouchableOpacity
         style={styles.actionButton}
@@ -119,7 +125,7 @@ const Parameter = ({ navigation }) => {
     <View style={[styles.card, { marginBottom: 40 }]}>
       <View style={styles.cardContent}>
         <Text style={styles.cell}>{item.nama}</Text>
-        <Text style={styles.cell}>{item.harga}</Text>
+        <Text style={styles.cell}>{rupiah(item.harga)}</Text>
       </View>
       <TouchableOpacity
         style={[styles.actionButton, { backgroundColor: "#ff5252" }]}
@@ -133,12 +139,20 @@ const Parameter = ({ navigation }) => {
     <>
       <Header />
       <View className="p-7 bg-[#ececec]">
-        {/* Button Back */}
         <Back />
+        {titik ? (
+          <View>
+            <Text className="font-bold text-lg text-black my-2">{titik?.lokasi} {titik?.kode} {"\n"}Pilih Peraturan/Parameter</Text>
+          </View>
+        ) : (
+          <View>
+            <Text className="font-bold text-base text-black">Data Belum tersedia</Text>
+          </View>
+        )}
 
         <ScrollView>
           {/* Card Peraturan */}
-          <View
+          {/* <View
             style={[
               styles.headerTopBar,
               { backgroundColor: Colors.brand, marginTop: 20 },
@@ -147,15 +161,15 @@ const Parameter = ({ navigation }) => {
               Pilih Berdasarkan Peraturan
             </Text>
           </View>
-          <FlatList
-            data={peraturanData}
-            keyExtractor={item => item.id.toString()}
-            renderItem={renderItemPeraturan}
-            scrollEnabled={false}
-          />
+          <Paginate
+          payload={{ page : 1 , per : 10  }}
+          url="`/permohonan/titik/${uuid}/peraturan`"
+          ref={paginateRef}
+          renderItem={renderItemPeraturan}
+          ></Paginate> */}
 
           {/* Card Paket */}
-          <View
+          {/* <View
             style={[
               styles.headerTopBar,
               { backgroundColor: Colors.brand, marginTop: 20 },
@@ -167,10 +181,10 @@ const Parameter = ({ navigation }) => {
             keyExtractor={item => item.id.toString()}
             renderItem={renderItemPaket}
             scrollEnabled={false}
-          />
+          /> */}
 
           {/* Card Parameter Tersedia */}
-          <View
+          {/* <View
             style={[
               styles.headerTopBar,
               { backgroundColor: Colors.brand, marginTop: 20 },
@@ -182,10 +196,10 @@ const Parameter = ({ navigation }) => {
             keyExtractor={item => item.id.toString()}
             renderItem={renderItemLangsung}
             scrollEnabled={false}
-          />
+          /> */}
 
           {/* Card Parameter Di Pilih */}
-          <View
+          {/* <View
             style={[
               styles.headerTopBar,
               { backgroundColor: Colors.brand, marginTop: 20 },
@@ -198,7 +212,7 @@ const Parameter = ({ navigation }) => {
             renderItem={renderSelectedParameter}
             scrollEnabled={false}
             style={styles.parameterDiPilih}
-          />
+          /> */}
         </ScrollView>
       </View>
     </>
@@ -206,7 +220,6 @@ const Parameter = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-
   backButton: {
     padding: 4,
     borderRadius: 5,

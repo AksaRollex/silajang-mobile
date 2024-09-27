@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from '../libs/axios';
+import { View, Text, Modal, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import RNFS from 'react-native-fs';
+import Share from 'react-native-share';
+import FileViewer from 'react-native-file-viewer';
 
 const DownloadPDFModal = ({ visible, onConfirm, onCancel, title, message }) => (
   <Modal
@@ -17,7 +19,7 @@ const DownloadPDFModal = ({ visible, onConfirm, onCancel, title, message }) => (
           <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
             <Text style={styles.textStyle}>Batalkan</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm} className="bg-yellow-500">
+          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
             <Text style={styles.textStyle}>Ya, Download</Text>
           </TouchableOpacity>
         </View>
@@ -41,13 +43,56 @@ export const useDownloadPDF = (callback) => {
   };
 
   const handleConfirm = async () => {
+    const fileName = 'report.pdf';
+    const fileDir = Platform.select({
+      ios: RNFS.DocumentDirectoryPath,
+      android: RNFS.DownloadDirectoryPath,
+    });
+    const filePath = `${fileDir}/${fileName}`;
+
     try {
-      const response = await axios.get(currentUrl);
-      hideConfirmationModal();
-      showToast("Data Berhasil Didownload")
-      onSuccess && onSuccess(response);
+      const options = {
+        fromUrl: currentUrl,
+        toFile: filePath,
+        background: true,
+        begin: (res) => {
+          console.log('Download has begun');
+        },
+        progress: (res) => {
+          const progress = (res.bytesWritten / res.contentLength) * 100;
+          console.log(`Download progress: ${progress.toFixed(2)}%`);
+          // You can update UI here to show download progress
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        hideConfirmationModal();
+
+        // Try to share the file
+        try {
+          await Share.open({
+            url: Platform.OS === 'android' ? `file://${filePath}` : filePath,
+            type: 'application/pdf',
+          });
+          onSuccess && onSuccess(filePath);
+        } catch (shareError) {
+          console.log('User cancelled sharing', shareError);
+          // If sharing fails or is cancelled, try to open the file directly
+          try {
+            await FileViewer.open(filePath, { showOpenWithDialog: true });
+            onSuccess && onSuccess(filePath);
+          } catch (viewerError) {
+            console.error('Error opening file:', viewerError);
+            onError && onError(viewerError);
+          }
+        }
+      } else {
+        throw new Error('Failed to download file');
+      }
     } catch (error) {
-      showToast("Data Gagal Didownload")
+      console.error('Download error:', error);
       onError && onError(error);
     } finally {
       onSettled && onSettled();
@@ -107,20 +152,21 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     width: '100%',
   },
-  confirmButton: {
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    flex: 1,
-    marginLeft: 5,
-  },
   cancelButton: {
-    backgroundColor: '#6c757d',
-    borderRadius: 5,
+    backgroundColor: '#2196F3',
+    borderRadius: 20,
     padding: 10,
     elevation: 2,
     flex: 1,
-    marginRight: 5,
+    marginRight: 10,
+  },
+  confirmButton: {
+    backgroundColor: '#312e81',
+    borderRadius: 20,
+    padding: 10,
+    elevation: 2,
+    flex: 1,
+    marginLeft: 10,
   },
   textStyle: {
     color: 'white',

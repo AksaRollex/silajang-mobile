@@ -3,7 +3,7 @@ import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
-import Paginate from "../../components/Paginate"; 
+import Paginate from "../../components/Paginate";
 import Header from "../../components/Header";
 
 const TrackingPengujian = ({ navigation }) => {
@@ -46,26 +46,27 @@ const TrackingPengujian = ({ navigation }) => {
   }, []);
 
   const mapStatusPengujian = status => {
-    // Implement your status mapping logic here
     return status < 0 ? "Revisi" : "Dalam Proses";
   };
 
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardContent}>
-        <Text
-          style={[
-            styles.badge,
-            { backgroundColor: item.status < 0 ? "#fef08a" : "#e0f2fe" },
-          ]}>
+        <Text style={[styles.badge]} className="text-indigo-600 bg-slate-200">
           {item.text_status}
         </Text>
-        <Text style={styles.lokasi}>{item.lokasi}</Text>
-        <Text style={styles.kode}>{item.kode}</Text>
-        <Text style={styles.date}>
+        <Text style={styles.lokasi} className="text-black">
+          {item.lokasi}
+        </Text>
+        <Text style={styles.kode} className="text-black">
+          {item.kode}
+        </Text>
+        <Text style={styles.date} className="text-black">
           Tanggal Diterima: {item.tanggal_diterima}
         </Text>
-        <Text style={styles.date}>Tanggal Selesai: {item.tanggal_selesai}</Text>
+        <Text style={styles.date} className="text-black">
+          Tanggal Selesai: {item.tanggal_selesai}
+        </Text>
       </View>
       <View style={styles.cardActions}>
         <MenuView
@@ -173,7 +174,6 @@ const styles = StyleSheet.create({
   },
   date: {
     fontSize: 12,
-    color: "#6b7280",
   },
 });
 

@@ -19,17 +19,17 @@ const TrackingList = ({ route, onClose }) => {
       case 2:
         return "folder-open";
       case 3:
-        return "prescription-bottle";
+        return "folder-open";
       case 4:
-        return "clipboard-check";
+        return "book";
       case 5:
-        return "file-alt";
+        return "pen-to-square";
       case 6:
-        return "pen-nib";
+        return "clipboard";
       case 7:
-        return "spell-check";
+        return "font";
       case 8:
-        return "wallet";
+        return "money-bills";
       case 9:
         return "print";
       case 10:
@@ -47,7 +47,7 @@ const TrackingList = ({ route, onClose }) => {
       <View style={styles.card} className="mb-56">
         <View style={styles.cardHeader}>
           <View style={styles.headerContent}>
-            <Back />  
+            <Back/>  
             <Text className="my-2 font-bold text-xl text-center text-black">
               ({selected?.kode}) {selected?.lokasi}
             </Text>

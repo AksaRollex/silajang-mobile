@@ -4,7 +4,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from 'react-native-vector-icons/Feather'
-// import Back from "./Back";
+import Back from "./Back";
 import { useNavigation } from "@react-navigation/native";
 
 const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, ref) => {
@@ -52,7 +52,7 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
   }, [data.current_page, data.last_page])
   const ListHeader = () => (
     <View className="flex-row mb-4 items-center">
-      {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" /> */}
+      <Back size={24} action={() => navigation.goBack()} className="mr-2" />
       <Controller
         control={control}
         name="search"
