@@ -43,7 +43,7 @@ export const useDownloadPDF = (callback) => {
   };
 
   const handleConfirm = async () => {
-    const fileName = 'report.pdf';
+    const fileName = 'pembayaran.pdf';
     const fileDir = Platform.select({
       ios: RNFS.DocumentDirectoryPath,
       android: RNFS.DownloadDirectoryPath,
@@ -105,7 +105,7 @@ export const useDownloadPDF = (callback) => {
       onConfirm={handleConfirm}
       onCancel={hideConfirmationModal}
       title="Apakah anda yakin?"
-      message="Mungkin akan membutuhkan waktu beberapa detik/menit untuk Download PDF"
+      message="Anda akan mendownload file berformat PDF, Mungkin akan membutuhkan waktu beberapa detik"
     />
   );
 

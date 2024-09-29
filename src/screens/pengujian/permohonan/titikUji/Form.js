@@ -240,7 +240,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
       <Header />
 
       <View className="bg-[#ececec] w-full h-full p-7">
-        <Back />
+        <Back size={24} action={() => navigation.goBack()} className="mr-2" />
 
         <ScrollView>
           <Text className="text-lg font-bold my-4 text-black">

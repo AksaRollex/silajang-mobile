@@ -6,7 +6,7 @@ import { rupiah } from "@/src/libs/utils";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
-import { useDownloadPDF } from "@/src/hooks/index";
+import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
 
@@ -57,16 +57,37 @@ const Pengujian = ({ navigation }) => {
   });
 
   const CardPembayaran = ({ item }) => {
+    console.log(item);
     const isExpired = item.payment?.is_expired;
+
+    const showCetak = !!item.payment?.id && item.payment?.status === "success";
     const shouldShowTagihan =
       !!item.payment?.id && item.payment?.status !== "success";
 
     const dropdownOptions = [
-      {
-        id: "Pembayaran",
-        title: "Pembayaran",
+      item.payment?.id && item.payment?.status !== "success"
+        ? {
+            id: "Pembayaran",
+            title: "Pembayaran",
+            action: () =>
+              navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+          }
+        : null,
+
+      item.payment?.id && item.payment?.status === "success"
+        ? {
+            id: "Detail",
+            title: "Detail",
+            action: () =>
+              navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+          }
+        : null,
+
+      showCetak && {
+        id: "Cetak",
+        title: "Cetak",
         action: item =>
-          navigation.navigate("PaymentDetail", { uuid: item.uuid }),
+          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
       },
       shouldShowTagihan && {
         id: "Tagihan",
@@ -76,12 +97,47 @@ const Pengujian = ({ navigation }) => {
       },
     ].filter(Boolean);
 
-    const statusText = isExpired ? "Kedaluwarsa" : item.text_status_pembayaran;
+    const getStatusText = item => {
+      if (item.payment?.is_expired) {
+        return "Kedaluwarsa";
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return "Belum Dibayar";
+        } else if (status === "success") {
+          return "Berhasil";
+        } else {
+          return "Gagal";
+        }
+      }
+    };
+
+    const getStatusStyle = item => {
+      if (item.payment?.is_expired) {
+        return " text-red-500"; // Light red background with dark red text for expired
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return " text-blue-400"; // Light blue background with dark blue text for pending
+        } else if (status === "success") {
+          return "text-green-500"; // Light green background with dark green text for success
+        } else {
+          return " text-red-500"; // Light gray background with dark gray text for other statuses
+        }
+      }
+    };
+
+    const statusText = getStatusText(item);
+    const statusStyle = getStatusStyle(item);
 
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text style={[styles.badge]} className=" text-indigo-600 bg-slate-200">{statusText}</Text>
+          <Text
+            style={[styles.badge, styles[statusStyle]]}
+            className={` bg-slate-100 ${getStatusStyle(item)}`}>
+            {statusText}
+          </Text>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
           </Text>

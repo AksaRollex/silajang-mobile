@@ -20,7 +20,6 @@ const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 
 const Permohonan = ({ navigation }) => {
-  // const [tahun, setTahun] = useState(new Date().getFullYear());
   const [tahun, setTahun] = useState(2024);
   const [refreshKey, setRefreshKey] = useState(0);
 
@@ -74,26 +73,21 @@ const Permohonan = ({ navigation }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text style={[styles.cardTexts, { fontSize: 15 }]}>
+          <Text style={[styles.cardTexts]}>
             {item.tanggal}
           </Text>
           <Text
-            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
+          className="font-bold text-2xl text-black my-1"
+          >
             {item.industri}
           </Text>
 
-          <View className="flex-row my-2 ">
-            <View className="p-1   bg-slate-200 rounded-md justify-center">
-              <Text className="text-indigo-700 text-xs text-center font-bold ">
-                {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
-              </Text>
-            </View>
-            <View className="p-1 w-14  mx-2 bg-green-200 rounded-md justify-center">
-              <Text className="text-green-500 text-xs text-center font-bold ">
-                {item.pembayaran}
-              </Text>
-            </View>
-          </View>
+          <Text style={[styles.badge]} className="bg-indigo-400 text-white">
+            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+          </Text>
+          <Text style={[styles.badge]} className="bg-emerald-400 text-white">
+            Pembayaran : {item.pembayaran}
+          </Text>
 
           <Text style={[styles.cardTexts]}>{item.alamat}</Text>
         </View>
@@ -142,7 +136,7 @@ const Permohonan = ({ navigation }) => {
           ref={paginateRef}
           key={refreshKey}
           url="/permohonan"
-          payload={{ tahun : tahun }}
+          payload={{ tahun: tahun }}
           renderItem={CardPermohonan}></Paginate>
       </View>
       <Icons
@@ -196,6 +190,14 @@ const styles = StyleSheet.create({
     padding: 10,
     marginBottom: rem(4),
     borderRadius: 50,
+  },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginBottom: 4,
+    fontWeight: "bold",
   },
 });
 export default Permohonan;

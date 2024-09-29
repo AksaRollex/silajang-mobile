@@ -23,16 +23,18 @@ const EditPermohonan = ({ route, navigation }) => {
   // FETCH DATA
   const { data, isLoading: isLoadingData } = useQuery(
     ["permohonan", uuid],
-    () => axios.get(`/permohonan/${uuid}/edit`).then(res => res.data.data),
+    () =>
+      uuid
+        ? axios.get(`/permohonan/${uuid}/edit`).then(res => res.data.data)
+        : null,
     {
       enabled: !!uuid,
-      // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
           setValue("industri", data.industri);
           setValue("alamat", data.alamat);
           setValue("kegiatan", data.kegiatan);
-          setValue("keterangan", data.keterangan);
+          // setValue("keterangan", data.keterangan);
         }
       },
       onError: error => {
@@ -56,7 +58,7 @@ const EditPermohonan = ({ route, navigation }) => {
           text1: "Success",
           text2: "Data updated successfully",
         });
-        queryClient.invalidateQueries(["permohonan"]);
+        queryClient.invalidateQueries(["/permohonan"]);
         navigation.navigate("Permohonan");
       },
       onError: error => {
@@ -79,7 +81,12 @@ const EditPermohonan = ({ route, navigation }) => {
     <>
       <Header />
       <View className="bg-[#ececec] w-full h-full p-7 ">
-        <Back size={24} action={() => navigation.goBack()} className="mr-2" />
+        <View className="flex-row mb-4 justify-between">
+          <Back size={24} action={() => navigation.goBack()} className="mr-2" />
+          <Text className="font-bold text-black text-lg ">
+            Edit Permohonan{" "}
+          </Text>
+        </View>
 
         <Controller
           name="industri"
@@ -87,10 +94,10 @@ const EditPermohonan = ({ route, navigation }) => {
           rules={{ required: "Industri is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
+              label="Nama Industri"
+              className="p-3 bg-[#fff] rounded-md"
               placeholder="Industri"
               onChangeText={onChange}
-              onBlur={onBlur}
               value={value}
               error={errors.industri?.message}
             />
@@ -103,10 +110,10 @@ const EditPermohonan = ({ route, navigation }) => {
           rules={{ required: "Alamat is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
+              label="Alamat Industri"
+              className="p-3 bg-[#fff] rounded-md"
               placeholder="Alamat"
               onChangeText={onChange}
-              onBlur={onBlur}
               value={value}
               error={errors.alamat?.message}
             />
@@ -118,30 +125,31 @@ const EditPermohonan = ({ route, navigation }) => {
           control={control}
           rules={{ required: "Kegiatan is required" }}
           render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
-              placeholder="Kegiatan"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              error={errors.kegiatan?.message}
-            />
+            <View>
+              <TextField
+                label="Kegiatan Industri"
+                className="p-3 bg-[#fff] rounded-md"
+                placeholder="Kegiatan"
+                onChangeText={onChange}
+                value={value}
+                error={errors.kegiatan?.message}
+              />
+            </View>
           )}
         />
 
-        <Controller
+        {/* <Controller
           name="keterangan"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
+              className="p-3 bg-[#fff] rounded-md"
               placeholder="Keterangan"
               onChangeText={onChange}
-              onBlur={onBlur}
               value={value}
             />
           )}
-        />
+        /> */}
 
         <Button
           onPress={handleSubmit(onSubmit)}

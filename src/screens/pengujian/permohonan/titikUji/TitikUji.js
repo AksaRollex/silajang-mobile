@@ -17,7 +17,9 @@ const rem = multiplier => baseRem * multiplier;
 const TitikUji = ({ navigation, route, status }) => {
   const { uuid } = route.params || {};
   const { data: permohonan } = usePermohonan(uuid);
-  console.log("data permohonan", permohonan);
+  // console.log("data permohonan", permohonan);
+
+  const queryClient = useQueryClient();
 
   const paginateRef = useRef();
 
@@ -57,20 +59,17 @@ const TitikUji = ({ navigation, route, status }) => {
     <View style={styles.row}>
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-            {item.lokasi}
-          </Text>
-          <Text
-            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
+          <Text className="text-black text-base font-bold">{item.lokasi}</Text>
+          <Text className="font-bold text-2xl text-black my-1">
             {item.kode}
           </Text>
-          <Text style={[styles.cardTexts]} className="mt-2">
+          <Text className="mt-2 text-base text-black ">
             Diambil : {item.tanggal_pengambilan || "-"}
           </Text>
-          <Text style={[styles.cardTexts]}>
+          <Text className="mt-1 text-base text-black ">
             Diterima : {item.tanggal_diterima || "-"}
           </Text>
-          <Text style={[styles.cardTexts]}>
+          <Text className="mt-1 text-base text-black ">
             Selesai : {item.tanggal_selesai_uji || "-"}
           </Text>
           <View>
@@ -81,29 +80,31 @@ const TitikUji = ({ navigation, route, status }) => {
               status == 0
                 ? "bg-green-400"
                 : status == 1
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 2
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 3
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 4
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 5
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 6
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 7
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 8
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 9
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 10
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 11
-                ? "bg-slate-200"
-                : "bg-slate-200"
+                ? "bg-slate-100"
+                : "bg-slate-100"
             }`}>
+              {" "}
+              Pengambilan :
               {status == 0
                 ? "Mengakan Permohonan"
                 : status == 1
@@ -137,29 +138,31 @@ const TitikUji = ({ navigation, route, status }) => {
               status == 0
                 ? "bg-green-400"
                 : status == 1
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 2
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 3
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 4
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 5
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 6
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 7
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 8
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 9
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 10
-                ? "bg-slate-200"
+                ? "bg-slate-100"
                 : status == 11
-                ? "bg-slate-200"
-                : "bg-slate-200"
+                ? "bg-slate-100"
+                : "bg-slate-100 && text-red-500"
             }`}>
+              {" "}
+              Penerimaan :
               {status == 0
                 ? "Mengakan Permohonan"
                 : status == 1
@@ -188,8 +191,8 @@ const TitikUji = ({ navigation, route, status }) => {
             </Text>
             <Text
               style={styles.badge}
-              className="text-[12px] text-indigo-600  bg-slate-200 ">
-              {item.text_status || "-"}
+              className="text-[12px] text-indigo-600  bg-slate-100 ">
+              Pengujian :{item.text_status || "-"}
             </Text>
           </View>
         </View>
@@ -232,7 +235,7 @@ const TitikUji = ({ navigation, route, status }) => {
             }}>
             <View style={{ flexDirection: "row" }}>
               <Text style={styles.topText} className="mt-4 mx-1">
-                {permohonan?.industri}, Titik Pengujian
+                {permohonan?.industri} : Titik Pengujian
               </Text>
             </View>
           </View>
@@ -319,7 +322,7 @@ const styles = StyleSheet.create({
   },
 
   cardTexts: {
-    fontSize: 15,
+    fontSize: 13,
     color: "black",
   },
   plusIcon: {
