@@ -87,9 +87,6 @@ export default function MainScreen() {
       <Stack.Screen
         name="Persetujuan"
         component={Persetujuan}
-        options={{
-          tabBarStyle: { display: "none" }  // Menyembunyikan tab bar di MainScreen
-        }}
       />
       <Stack.Screen
         name="DetailPersetujuan"
