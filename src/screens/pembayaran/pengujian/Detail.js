@@ -6,6 +6,8 @@ import {
   TouchableOpacity,
   ScrollView,
   Alert,
+  ActivityIndicator,
+  Image,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import moment from "moment";
@@ -14,8 +16,7 @@ import Back from "../../components/Back";
 import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Header from "../../components/Header";
-
+import { Colors } from "react-native-ui-lib";
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
@@ -99,28 +100,41 @@ const PengujianDetail = ({ route, navigation }) => {
 
   return (
     <>
-      <Header />
-      <ScrollView className="p-7 bg-[#ececec]">
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+
+          {formData?.kode ? (
+            <View>
+              <Text className="text-2xl font-bold text-white text-center">
+                {formData?.kode}
+              </Text>
+            </View>
+          ) : (
+            <View className="flex-1 justify-center items-center">
+              <ActivityIndicator size="large" color="#312e81" />
+            </View>
+          )}
+        </View>
+      </View>
+      <ScrollView className="px-3 py-1 bg-[#ececec]">
         {!formData?.payment ? (
-          <View className="p-5 rounded-lg mt-2 bg-[#fff] ">
-            <View className="flex-row items-center justify-between   my-3 border-gray-300">
-              <View className="w-1/6 items-start">
-                <Back
-                  size={24}
-                  action={() => navigation.goBack()}
-                  className="mr-2"
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-black text-center">
-                  {formData?.kode}
-                </Text>
-              </View>
+          <View className="py-4 px-3 rounded-md  bg-[#f8f8f8] ">
+            <View className="flex-row items-center justify-between  border-gray-300">
+              <View className="w-1/6 items-start"></View>
+              <View className="flex-1"></View>
               <View className="w-1/6 flex-shrink-0" />
             </View>
 
             <View
-              className="border-t pt-2 border-gray-300"
+              className="  border-gray-300"
               style={{
                 flexDirection: "row",
                 justifyContent: "space-between",
@@ -159,20 +173,8 @@ const PengujianDetail = ({ route, navigation }) => {
             </View>
           </View>
         ) : (
-          <View className="p-5 rounded-lg mt-2 bg-[#fff] ">
-            <View className="flex-row items-center justify-between   my-3 border-gray-300">
-              <View className="w-1/6 items-start">
-                <Back
-                  size={24}
-                  action={() => navigation.goBack()}
-                  className="mr-2"
-                />
-              </View>
-              <View className="flex-1">
-                <Text className="text-2xl font-bold text-black text-center">
-                  {formData?.kode}
-                </Text>
-              </View>
+          <View className="py-4 px-3 rounded-lg  bg-[#f8f8f8] ">
+            <View className="flex-row items-center justify-between   border-gray-300">
               <View className="w-1/6 flex-shrink-0" />
             </View>
             {formData?.payment.status === "success" ? (
@@ -224,6 +226,14 @@ const PengujianDetail = ({ route, navigation }) => {
             <View style={styles.card}>
               <Text style={styles.cardTitle}>Virtual Account</Text>
               <View style={styles.cardContent}>
+                <Image
+                  source={require("@/assets/images/bank-jatim.png")}
+                  style={{
+                    width: 100,
+                    marginLeft : rem(0.8),
+                    height: 30,
+                    resizeMode: "contain",
+                  }}></Image>
                 <Text style={styles.vaNumber} className="text-indigo-600">
                   {formData?.payment?.va_number}
                 </Text>
@@ -266,12 +276,6 @@ const PengujianDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    padding: 20,
-    backgroundColor: "#ececec",
-  },
-
   infoText: {
     fontSize: 16,
     marginBottom: 10,

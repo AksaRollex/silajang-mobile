@@ -73,17 +73,14 @@ const Permohonan = ({ navigation }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text style={[styles.cardTexts]}>
-            {item.tanggal}
-          </Text>
-          <Text
-          className="font-bold text-2xl text-black my-1"
-          >
+          <Text style={[styles.cardTexts]}>{item.tanggal}</Text>
+          <Text className="font-bold text-2xl text-black my-1">
             {item.industri}
           </Text>
 
           <Text style={[styles.badge]} className="bg-indigo-400 text-white">
-            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+            Cara Pengambilan :{" "}
+            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
           </Text>
           <Text style={[styles.badge]} className="bg-emerald-400 text-white">
             Pembayaran : {item.pembayaran}
@@ -177,6 +174,7 @@ const styles = StyleSheet.create({
   picker: {
     flex: 1,
     marginHorizontal: 4,
+    color : 'black'
   },
   cardTexts: {
     fontSize: rem(0.9),
@@ -194,7 +192,7 @@ const styles = StyleSheet.create({
   badge: {
     alignSelf: "flex-start",
     paddingVertical: 2,
-    paddingHorizontal: 8,
+    paddingHorizontal: 4,
     borderRadius: 4,
     marginBottom: 4,
     fontWeight: "bold",

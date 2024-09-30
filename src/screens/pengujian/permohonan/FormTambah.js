@@ -99,174 +99,194 @@ const TambahPermohonan = ({ navigation }) => {
 
   return (
     <>
-      <Header />
-      <ScrollView className="bg-[#ececec] w-full h-full p-7 ">
-        <View className=" flex-row my-2 justify-between">
-          <Back size={24} action={() => navigation.goBack()} className="mr-2" />
-          <Text className="font-bold text-black text-lg ">
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
             Tambah Permohonan
           </Text>
         </View>
-        <Controller
-          control={control}
-          name="industri"
-          rules={{ required: "Nama Industri tidak boleh kosong" }}
-          render={({ field: { onChange, value } }) => (
-            <View className="mt-2">
-              <TextField
-                enableErrors
-                label="Nama Industri"
-                placeholder="Masukkan Nama Industri"
-                onChangeText={onChange}
-                className="p-3  bg-[#fff] rounded-md"
-                value={value}
-              />
-            </View>
+      </View>
+      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
+          <Controller
+            control={control}
+            name="industri"
+            rules={{ required: "Nama Industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black ">
+                  Nama Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholder="Masukkan Nama Industri"
+                  onChangeText={onChange}
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  value={value}
+                />
+              </View>
+            )}
+          />
+          {errors.industri && (
+            <Text style={{ color: "red" }}>{errors.industri.message}</Text>
           )}
-        />
-        {errors.industri && (
-          <Text style={{ color: "red" }}>{errors.industri.message}</Text>
-        )}
 
-        <Controller
-          control={control}
-          name="alamat"
-          rules={{ required: "alamat industri tidak boleh kosong" }}
-          render={({ field: { onChange, value } }) => (
-            <View>
-              <TextField
-                label="Alamat Industri"
-                enableErrors
-                className="p-3 bg-[#fff] rounded-md"
-                onChangeText={onChange}
-                placeholder="Masukkan Alamat"
-                value={value}
-              />
-            </View>
+          <Controller
+            control={control}
+            name="alamat"
+            rules={{ required: "alamat industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black ">
+                  Alamat Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  onChangeText={onChange}
+                  placeholder="Masukkan Alamat"
+                  value={value}
+                />
+              </View>
+            )}
+          />
+          {errors.alamat && (
+            <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
           )}
-        />
-        {errors.alamat && (
-          <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
-        )}
 
-        <Controller
-          control={control}
-          name="kegiatan"
-          rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
-          render={({ field: { onChange, value } }) => (
-            <View>
-              <TextField
-                label="Kegiatan Industri"
-                enableErrors
-                placeholder="Masukkan Kegiatan Industri"
-                className="p-3 bg-[#fff] rounded-md"
-                onChangeText={onChange}
-                value={value}
-              />
-            </View>
+          <Controller
+            control={control}
+            name="kegiatan"
+            rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black ">
+                  Kegiatan Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholder="Masukkan Kegiatan Industri"
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  onChangeText={onChange}
+                  value={value}
+                />
+              </View>
+            )}
+          />
+          {errors.kegiatan && (
+            <Text style={{ color: "red" }}>{errors.kegiatan.message}</Text>
           )}
-        />
-        {errors.kegiatan && (
-          <Text style={{ color: "red" }}>{errors.kegiatan.message}</Text>
-        )}
 
-        <Controller
-          control={control}
-          name="keterangan"
-          rules={{ required: "Keterangan tidak boleh kosong" }}
-          render={({ field: { onChange, value } }) => (
-            <View>
-              <TextField
-                enableErrors
-                label="Keterangan"
-                placeholder="Masukkan Keterangan"
-                className="p-3 bg-[#fff] rounded-md"
-                onChangeText={onChange}
-                value={value}
-              />
+          <Controller
+            control={control}
+            name="keterangan"
+            rules={{ required: "Keterangan tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black ">
+                  Keterangan
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholder="Masukkan Keterangan"
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  onChangeText={onChange}
+                  value={value}
+                />
+              </View>
+            )}
+          />
+          <View>
+            <Text className="text-xl font-bold text-black mb-4 text-center">
+              Cara Pengambilan
+            </Text>
+
+            <View style={styles.cardContainer}>
+              <TouchableOpacity
+                style={[
+                  styles.cardPengambilan,
+                  selectedCara === "kirimMandiri" && styles.selectedCard,
+                ]}
+                onPress={() => handleSelectCara("kirimMandiri")}>
+                <MaterialIcons name="transfer" size={40} color="black" />
+                <Text className="font-bold text-lg text-center text-black my-2">
+                  Kirim Mandiri
+                </Text>
+                <Text className="text-justify text-black text-sm">
+                  Kirim Sampel Uji Anda Ke Laboratorium Dinas
+                </Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.cardPengambilan,
+                  selectedCara === "ambilPetugas" && styles.selectedCard,
+                ]}
+                onPress={() => handleSelectCara("ambilPetugas")}>
+                <MaterialIcons name="truck" size={40} color="black" />
+                <Text className="font-bold text-lg text-center text-black my-2">
+                  Ambil Petugas
+                </Text>
+                <Text className="text-justify text-black text-sm">
+                  Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi
+                  Pengambilan
+                </Text>
+              </TouchableOpacity>
             </View>
+          </View>
+          {/* Conditionally Render TextField based on selectedCara */}
+          {selectedCara === "ambilPetugas" && (
+            <DropDownPicker
+              open={OpenJasaPengambilan}
+              value={selectedJasaPengambilan}
+              items={jasaPengambilan}
+              name="jasa_pengambilan_id"
+              setOpen={setOpenJasaPengambilan}
+              setValue={setSelectedJasaPengambilan}
+              nestedScrollEnabled={true}
+              setItems={setJasaPengambilan}
+              placeholder="Pilih Jenis Pengambilan"
+              className="p-3 bg-[#fff] mb-5"
+            />
           )}
-        />
-        <View>
-          <Text className="text-xl font-bold text-black my-5 text-center">
-            Cara Pengambilan
-          </Text>
-
-          <View style={styles.cardContainer}>
+          <View>
+            <Text className="text-xl font-bold text-black mb-4 text-center">
+              Opsi Pembayaran
+            </Text>
             <TouchableOpacity
               style={[
-                styles.cardPengambilan,
-                selectedCara === "kirimMandiri" && styles.selectedCard,
+                styles.cardPembayaran,
+                selectedPembayaran === "transfer" && styles.selectedCard,
               ]}
-              onPress={() => handleSelectCara("kirimMandiri")}>
-              <MaterialIcons name="transfer" size={40} color="black" />
+              onPress={() => handleSelectPembayaran("transfer")}>
+              <MaterialIcons name="wallet" size={40} color="black" />
+
               <Text className="font-bold text-lg text-center text-black my-2">
-                Kirim Mandiri
+                Transfer (Non Tunai)
               </Text>
               <Text className="text-justify text-black text-sm">
-                Kirim Sampel Uji Anda Ke Laboratorium Dinas
-              </Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={[
-                styles.cardPengambilan,
-                selectedCara === "ambilPetugas" && styles.selectedCard,
-              ]}
-              onPress={() => handleSelectCara("ambilPetugas")}>
-              <MaterialIcons name="truck" size={40} color="black" />
-              <Text className="font-bold text-lg text-center text-black my-2">
-                Ambil Petugas
-              </Text>
-              <Text className="text-justify text-black text-sm">
-                Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi
-                Pengambilan
+                Transfer Virtual Account Bank Jatim, Untuk Nomor VA Akan Di
+                Informasikan Oleh Bendahara UPT
               </Text>
             </TouchableOpacity>
           </View>
-        </View>
-        {/* Conditionally Render TextField based on selectedCara */}
-        {selectedCara === "ambilPetugas" && (
-          <DropDownPicker
-            open={OpenJasaPengambilan}
-            value={selectedJasaPengambilan}
-            items={jasaPengambilan}
-            name="jasa_pengambilan_id"
-            setOpen={setOpenJasaPengambilan}
-            setValue={setSelectedJasaPengambilan}
-            nestedScrollEnabled={true}
-            setItems={setJasaPengambilan}
-            placeholder="Pilih Jenis Pengambilan"
-            className="p-3 bg-[#fff] mb-5"
-          />
-        )}
-        <View>
-          <Text className="text-xl font-bold text-black my-5 text-center">
-            Opsi Pembayaran
-          </Text>
-          <TouchableOpacity
-            style={[
-              styles.cardPembayaran,
-              selectedPembayaran === "transfer" && styles.selectedCard,
-            ]}
-            onPress={() => handleSelectPembayaran("transfer")}>
-            <MaterialIcons name="wallet" size={40} color="black" />
-
-            <Text className="font-bold text-lg text-center text-black my-2">
-              Transfer (Non Tunai)
+          <Button
+            backgroundColor={Colors.brand}
+            className="p-2 rounded-sm mt-4"
+            onPress={handleSubmit(send)}
+            disabled={isLoading}>
+            <Text className="text-white text-center text-base font-bold font-sans">
+              SUBMIT
             </Text>
-            <Text className="text-justify text-black text-sm">
-              Transfer Virtual Account Bank Jatim, Untuk Nomor VA Akan Di
-              Informasikan Oleh Bendahara UPT
-            </Text>
-          </TouchableOpacity>
+          </Button>
         </View>
-        <Button
-          label="Kirim"
-          className="mb-32"
-          backgroundColor={Colors.brand}
-          borderRadius={5}
-          onPress={handleSubmit(send)}
-          disabled={isLoading}></Button>
       </ScrollView>
     </>
   );

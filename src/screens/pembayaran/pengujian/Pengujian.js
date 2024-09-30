@@ -59,39 +59,37 @@ const Pengujian = ({ navigation }) => {
   const CardPembayaran = ({ item }) => {
     console.log(item);
     const isExpired = item.payment?.is_expired;
-
-    const showCetak = !!item.payment?.id && item.payment?.status === "success";
-    const shouldShowTagihan =
-      !!item.payment?.id && item.payment?.status !== "success";
+    const status = item.payment?.status;
 
     const dropdownOptions = [
-      item.payment?.id && item.payment?.status !== "success"
-        ? {
-            id: "Pembayaran",
-            title: "Pembayaran",
-            action: () =>
-              navigation.navigate("PengujianDetail", { uuid: item.uuid }),
-          }
-        : null,
-
-      item.payment?.id && item.payment?.status === "success"
-        ? {
-            id: "Detail",
-            title: "Detail",
-            action: () =>
-              navigation.navigate("PengujianDetail", { uuid: item.uuid }),
-          }
-        : null,
-
-      showCetak && {
-        id: "Cetak",
-        title: "Cetak",
-        action: item =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+      // Opsi Pembayaran
+      (isExpired || status === "pending" || status === "failed") && {
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: () =>
+          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
       },
-      shouldShowTagihan && {
+      
+      // Opsi Tagihan
+      (status === "pending" || status === "failed") && {
         id: "Tagihan",
         title: "Tagihan",
+        action: () =>
+          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+      },
+      
+      // Opsi Detail
+      status === "success" && {
+        id: "Detail",
+        title: "Detail",
+        action: () =>
+          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+      },
+
+      // Opsi Cetak
+      status === "success" && {
+        id: "Cetak",
+        title: "Cetak",
         action: () =>
           download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
       },
@@ -262,6 +260,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+    color: "black",
     marginHorizontal: 4,
   },
 });

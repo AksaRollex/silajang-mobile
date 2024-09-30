@@ -52,7 +52,7 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
   }, [data.current_page, data.last_page])
   const ListHeader = () => (
     <View className="flex-row mb-4 items-center">
-      <Back size={24} action={() => navigation.goBack()} className="mr-2" />
+      <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} />
       <Controller
         control={control}
         name="search"

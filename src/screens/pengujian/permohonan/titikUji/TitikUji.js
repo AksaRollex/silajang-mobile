@@ -63,15 +63,19 @@ const TitikUji = ({ navigation, route, status }) => {
           <Text className="font-bold text-2xl text-black my-1">
             {item.kode}
           </Text>
-          <Text className="mt-2 text-base text-black ">
-            Diambil : {item.tanggal_pengambilan || "-"}
+          <View className="py-1">
+
+          <Text className=" text-sm text-black ">
+            Diambil :  {item.tanggal_pengambilan || "-"}
           </Text>
-          <Text className="mt-1 text-base text-black ">
+          <Text className=" text-sm text-black ">
             Diterima : {item.tanggal_diterima || "-"}
           </Text>
-          <Text className="mt-1 text-base text-black ">
+          <Text className=" text-sm text-black ">
             Selesai : {item.tanggal_selesai_uji || "-"}
           </Text>
+          </View>
+     
           <View>
             <Text
               style={styles.badge}
