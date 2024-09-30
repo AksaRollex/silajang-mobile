@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator  } from "react-native";
 import { Button, Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -12,9 +12,12 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios from "@/src/libs/axios";
-import { TextInput } from "react-native-paper";
 import { launchImageLibrary } from "react-native-image-picker";
 import { useForm, Controller } from "react-hook-form";
+import { rupiah } from "@/src/libs/utils";
+import Geolocation from 'react-native-geolocation-service';
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+
 
 export default function Detail({ route, navigation }) {
   const { uuid } = route.params;
@@ -22,6 +25,51 @@ export default function Detail({ route, navigation }) {
   const [loading, setLoading] = useState(true);
   const [file, setFile] = React.useState(null);
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
+  const { control, handleSubmit } = useForm();
+  const [locationData, setLocationData] = useState({
+    south: '',
+    east: '',
+  });
+
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+          : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+      const result = await request(permission);
+      if (result === RESULTS.GRANTED) {
+        console.log('Location permission granted.');
+      } else {
+        console.log('Location permission denied.');
+        Alert.alert('Permission Denied', 'Location permission is required to access your location.');
+      }
+    } catch (error) {
+      console.log('Error requesting location permission:', error);
+    }
+  };
+
+  const handleCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationData({
+          south: latitude.toString(),
+          east: longitude.toString(),
+        });
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        Alert.alert('Error', 'Unable to retrieve your location.');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,105 +89,61 @@ export default function Detail({ route, navigation }) {
     fetchData();
   }, [uuid]);
 
-  const setByTimezone = time => {
-    const date = new Date();
-    const difference = -date.getTimezoneOffset() / 60;
-    time.setHours(time.getHours() + difference);
-  };
+  function rupiah(value) {
+    return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
 
-  const updateUser = async () => {
-    const formData = new FormData();
-    formData.append("nama", getValues("nama"));
-
-    if (file) {
-      formData.append("photo", {
-        uri: file.uri,
-        type: file.type || "image/jpeg",
-        name: file.fileName || "profile_photo.jpg",
-      });
-    }
-
-    try {
-      const response = await axios.post("/user/account", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      const { photo } = response.data.user;
-      const updatedImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
-      setCurrentPhotoUrl(updatedImageUrl);
-    } catch (error) {
-      console.error("Update failed:", error.message);
-    }
-  };
-
-  const { handleSubmit, control, formState: { errors }, getValues, reset } = useForm();
 
   const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
+    const options = {
+      mediaType: 'photo',
+      quality: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
       if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.errorMessage) {
-        console.log("ImagePicker Error: ", response.errorMessage);
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
       } else {
-        console.log("Chosen file:", response.assets[0]);
-        setFile(response.assets[0]);
+        const source = { uri: response.assets[0].uri };
+        setCurrentPhotoUrl(source.uri);
+        setFile(source);
       }
     });
   };
 
   const handleDeletePhoto = () => {
-    setFile(null);
     setCurrentPhotoUrl(null);
-  };
-
-  const handleCancel = () => {
-    reset();
     setFile(null);
   };
 
-  const handleWaktu = async selectedDateTime => {
-    try {
-      setByTimezone(selectedDateTime);
-      const response = await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          tanggal_diterima: selectedDateTime, // Kirimkan data tanggal dan waktu yang dipilih
-        },
-      );
+  const onSubmit = (data) => {
+    console.log(data);
+  };
 
-      console.log("Data berhasil disimpan:", response.data);
+  const handleSubmitData = async () => {
+    const formData = new FormData();
+    formData.append('status', data.status);
+
+    if (file) {
+      formData.append('photos[]', {
+        uri: file.uri,
+        type: 'image/jpeg',
+        name: 'photo.jpg',
+      });
+    }
+
+    try {
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/update-status`, formData);
+      Alert.alert('Success', 'Data berhasil disimpan.');
     } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+      Alert.alert('Error', error.response.data.message);
     }
   };
 
-  if (loading) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
-    );
-  }
-
-  if (!data) {
-    return (
-      <View style={styles.loadingContainer}>
-        <Text>Data not found</Text>
-      </View>
-    );
-  }
-
-  const jenisWadahValues = data.jenis_wadahs
-    ? data.jenis_wadahs
-      .map(item => `${item.nama} (${item.keterangan})`)
-      .join(", ")
-    : "Tidak ada data";
-
+  
+  
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer} showVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -268,10 +272,7 @@ export default function Detail({ route, navigation }) {
                     color="black"
                   />
                 </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Wadah</Text>
-                  <Text style={styles.value}>{jenisWadahValues}</Text>
-                </View>
+                
               </View>
             </View>
 
@@ -285,9 +286,11 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data.permohonan?.jasa_pengambilan?.wilayah}
+                    {data.permohonan?.jasa_pengambilan?.wilayah} {""}
+                    ({rupiah(data.permohonan?.jasa_pengambilan?.harga || 0)})
                   </Text>
                 </View>
+
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -295,8 +298,18 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Radius Pengambilan</Text>
-                  <Text style={styles.value}>{data.permohonan?.radius_pengambilan?.radius}</Text>
+                  <Text style={styles.value}>
+                    {data.permohonan?.radius_pengambilan?.radius}m
+                    {data.permohonan?.radius_pengambilan?.harga !== undefined && 
+                    data.permohonan?.radius_pengambilan?.harga !== null && 
+                    !isNaN(data.permohonan?.radius_pengambilan?.harga) ? 
+                      ` (${rupiah(data.permohonan.radius_pengambilan.harga)})` : 
+                      ` (RpNaN)`
+                    }
+                  </Text>
                 </View>
+
+
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -329,6 +342,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
             </View>
+
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Detail Lokasi</Text>
               <View style={styles.infoItem}>
@@ -337,20 +351,50 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
-                  <TextInput className="h-10 bg-gray-100 ">{data.south}</TextInput>
+                  {data.south ? (
+                  <TextInput
+                  value={data.south}
+                  editable={true}
+                  className="h-10 bg-slate-50 "></TextInput>
+                ) : (
+                  <TextInput
+                  value={locationData.south}
+                  onChangeText={(value) => setLocationData({ ...locationData, south: value })}
+                  editable={true}
+                  className="h-10 bg-slate-50 ">
+
+                  </TextInput>
+                )}  
                 </View>
               </View>
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="compass-outline" size={30} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
-                  <TextInput className="h-10 bg-gray-100 ">{data.east}</TextInput>
-                </View>
+                  {data.east ? (
+                  <TextInput 
+                  value={data.east}
+                  editable={true}
+                  className="h-10 bg-slate-50 "></TextInput>
+                ) : (
+                  <TextInput
+                  value={locationData.east}
+                  onChangeText={(value) => setLocationData({ ...locationData, east: value })}
+                  editable={true}
+                  className="h-10 bg-slate-50 ">
+                  
+                  </TextInput>
+                )}
+                  </View>
               </View>
+
               <TouchableOpacity>
-                <Text className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
+                <Text 
+                onPress={handleCurrentLocation}
+                className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
               </TouchableOpacity>
             </View>
 
@@ -363,7 +407,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Air (t°C)</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.suhu_air}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -372,7 +416,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>pH</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.ph}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -381,7 +425,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DHL (µS/cm)</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.dhl}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -390,7 +434,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Salinitas (‰)</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.salitinitas}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -399,7 +443,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DO (mg/L)</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.do}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -408,7 +452,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kekeruhan</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.kekeruhan}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -417,7 +461,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Klorin Bebas</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.klorin_bebas}</TextInput>
                 </View>
               </View>
             </View>
@@ -430,7 +474,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Udara (t°C)</Text>
-                  <TextInput className="h-10 bg-gray-100  "></TextInput>
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.suhu_udara}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -439,7 +483,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Cuaca</Text>
-                  <TextInput className="h-10 bg-gray-100 "></TextInput>
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.cuaca}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -448,7 +492,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Arah Angin</Text>
-                  <TextInput className="h-10 bg-gray-100 "></TextInput>
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.arah_angin}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -457,7 +501,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kelembapan (%RH)</Text>
-                  <TextInput className="h-10 bg-gray-100 "></TextInput>
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.kelembapan}</TextInput>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -466,7 +510,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kecepatan Angin</Text>
-                  <TextInput className="h-10 bg-gray-100 "></TextInput>
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.kecepatan_angin}</TextInput>
                 </View>
               </View>
             </View>
@@ -476,44 +520,43 @@ export default function Detail({ route, navigation }) {
                 <Controller
                   control={control}
                   name="photo"
-                  render={({ field: { value } }) => (
+                  render={({ field: { onChange } }) => (
                     <View className="w-full">
-                      <View style={styles.signatureField}>
-                        {currentPhotoUrl || file ? (
-                          <View style={styles.imageContainer}>
-                            <Image
-                              source={{ uri: file ? file.uri : currentPhotoUrl }}
-                              style={styles.signaturePreview}
-                              onError={e => console.log("Error loading image:", e.nativeEvent.error)}
-                            />
-                            <TouchableOpacity style={styles.changeButton} onPress={handleChoosePhoto}>
-                              <Text style={styles.buttonText}>Ubah</Text>
-                            </TouchableOpacity>
-                            <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePhoto}>
-                              <Text style={styles.deleteButtonText}>X</Text>
-                            </TouchableOpacity>
-                          </View>
-                          ) : (
-                          <TouchableOpacity style={styles.addSignatureButton} onPress={handleChoosePhoto}>
-                            <Text style={styles.addSignatureText}>Tambah Foto</Text>
+                      {currentPhotoUrl || file ? (
+                        <View style={styles.imageContainer}>
+                          <Image
+                            source={{ uri: file ? file.uri : currentPhotoUrl }}
+                            style={styles.signaturePreview}
+                          />
+                          <TouchableOpacity style={styles.changeButton} onPress={handleChoosePhoto}>
+                            <Text style={styles.buttonText}>Ubah</Text>
                           </TouchableOpacity>
-
-                        )}
-                      </View>
-                      <View className="w-full mt-5" style={styles.infoItem}>
-                      <TouchableOpacity>
-                        <Text className="flex bg-blue-500 text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8, textAlign: 'center'}}>Simpan & Upload</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity>
-                        <Text className="bg-blue-500 ml-3 text-center text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8,}}>Konfirmasi 
-                          <FontAwesome6 name="check" className="" size={23}></FontAwesome6>
-                        </Text>
-                      </TouchableOpacity>
-                      </View>
+                          <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePhoto}>
+                            <Text style={styles.deleteButtonText}>X</Text>
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        <TouchableOpacity style={styles.addSignatureButton} onPress={handleChoosePhoto}>
+                          <Text style={styles.addSignatureText}>Tambah Foto</Text>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   )}
                 />
               </View>
+
+              <View className="w-full mt-5" style={styles.infoItem}>
+              <TouchableOpacity>
+                        <Text
+                        className="flex bg-blue-500 text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8, textAlign: 'center'}}>Simpan & Upload</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity>
+                        <Text className="bg-blue-500 ml-3 text-center  text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8,}}>Konfirmasi {""}
+                          <FontAwesome6 name="check" className="" size={23}></FontAwesome6>
+                        </Text>
+                      </TouchableOpacity>
+                      </View>
+
             </View>
           </>
         ) : (

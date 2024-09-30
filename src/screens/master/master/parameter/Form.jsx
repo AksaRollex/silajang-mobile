@@ -90,55 +90,28 @@ export default memo(function Form({ route, navigation }) {
     name: item.nama,
   }));
 
-  const { mutate: update, isLoading: isUpdating } = useMutation(
-    data => axios.post(`/master/parameter/${uuid}/update`, data),
+  const { mutate: createOrUpdate, isLoading } = useMutation(
+    (data) => axios.post(uuid ? `/master/parameter/${uuid}/update` : '/master/parameter/store', data),
     {
       onSuccess: () => {
         Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Data updated successfully",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["parameter"],
+          type: 'success',
+          text1: 'Success',
+          text2: uuid ? 'Success update data' : 'Success create data'
         })
-        navigation.navigate("Parameter");
+        queryClient.invalidateQueries(["/master/parameter"])
+        navigation.navigate("Parameter")
       },
-      onError: error => {
+      onError: (error) => {
         Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Failed to update data",
-        });
-        console.error(error.response?.data || error);
-      },
-    },
-  );
-
-  const { mutate: create, isLoading: isCreating } = useMutation(
-    data => axios.post(`/master/parameter/store`, data),
-    {
-      onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Data created successfully",
-        });
-        queryClient.invalidateQueries({
-          queryKey: ["parameter"],
+          type: 'error',
+          text1: 'Success',
+          text2: uuid ? 'Failed update data' : 'Failed create data'
         })
-        navigation.navigate("Parameter");
-      },
-      onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Failed to create data",
-        });
-        console.error(error.response?.data || error);
-      },
-    },
-  );
+        console.error(error)
+      }
+    }
+  )
 
   const onSubmit = data => {
     const formattedData = {
@@ -147,11 +120,7 @@ export default memo(function Form({ route, navigation }) {
       is_dapat_diuji: data.is_dapat_diuji ? 1 : 0,
       pengawetan_ids: data.pengawetan || []
     }
-    if (uuid) {
-      update(formattedData);
-    } else {
-      create(formattedData);
-    }
+    createOrUpdate(formattedData)
   };
 
   if (isLoadingData && uuid) {

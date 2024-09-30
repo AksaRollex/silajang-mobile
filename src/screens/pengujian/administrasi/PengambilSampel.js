@@ -158,12 +158,12 @@ const PengambilSampel = ({ navigation }) => {
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
 
-            <View className="flex-row items-center space-x-2 mb-4">
+            {/* <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
                 <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
               </View>
-            </View>
+            </View> */}
 
             <View className="flex-row justify-center">
               <View className=" mt-3 ml-12 mr-2">
@@ -216,6 +216,7 @@ const PengambilSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
+        className="mb-14"
       />
 
       <AntDesign

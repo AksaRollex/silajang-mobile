@@ -9,14 +9,14 @@ import {
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
-import { useForm, Controller } from "react-hook-form";  
+import { useForm, Controller } from "react-hook-form";
 import { TextField, Colors, Button } from "react-native-ui-lib";
 import { useMutation } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { API_URL } from "@env";
 
-const Akun = ({onCancel}) => {
+const Akun = ({ onCancel }) => {
   const [file, setFile] = React.useState(null);
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
@@ -95,7 +95,7 @@ const Akun = ({onCancel}) => {
         type: "success",
         text1: "Data Berhasil Di Kirim",
       });
-      
+
       // Menambahkan auto reload halaman setelah data di-submit
       navigation.reset({
         index: 0,
@@ -160,7 +160,7 @@ const Akun = ({onCancel}) => {
           {errors.nama && (
             <Text style={{ color: "red" }}>{errors.nama.message}</Text>
           )}
-          
+
           {/* Bagian Foto Profil */}
           <Text style={{ color: "black" }}>Foto Profil</Text>
           <Controller
@@ -215,7 +215,7 @@ const Akun = ({onCancel}) => {
               />
             )}
           />
-          
+
           <Text style={{ color: "black" }}>Nomor Telepon</Text>
           <Controller
             control={control}
@@ -248,14 +248,6 @@ const Akun = ({onCancel}) => {
         disabled={isLoading}
       />
 
-      {/* Tombol Cancel */}
-      <Button
-        label="Cancel"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.red30}
-        borderRadius={5}
-        onPress={onCancel}
-      />
     </View>
   );
 };
@@ -278,7 +270,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     borderWidth: 1,
-    borderColor: Colors.grey50,
+    borderColor: Colors.grey40,
     borderRadius: 5,
     paddingHorizontal: 20,
     height: 46, // Increase the height

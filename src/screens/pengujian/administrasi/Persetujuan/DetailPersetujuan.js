@@ -23,11 +23,19 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import RNPickerSelect from "react-native-picker-select";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
-import { rupiah } from "@/src/libs/utils";
 
-export default function Detail({ route, navigation }) {
+
+const currency = (number) => {
+  return number.toLocaleString("id-ID", {
+    style: "currency",
+    currency: "IDR",
+  });
+};
+
+export default function DetailPersetujuan({ route, navigation }) {
   const { uuid } = route.params;
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -41,6 +49,13 @@ export default function Detail({ route, navigation }) {
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isDateSelected, setIsDateSelected] = useState(false);
+  const [radiusPengambilan, setRadiusPengambilan] = useState([]);
+  const [selectedRadius, setSelectedRadius] = useState(null);
+  const [pengambilSample, setPengambilSample] = useState([]);
+  const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
+  const [Metode, setMetode] = useState([]);
+  const [selectedMetode, setSelectedMetode] = useState(null);
+
   const [modalVisible, setModalVisible] = useState({
     visible: false,
     selectedParameter: null,
@@ -50,11 +65,10 @@ export default function Detail({ route, navigation }) {
     selectedParameter: null,
   });
 
-  const handleParameter = (parameter, uuid) => {
+  const handleParameter = parameter => {
     setModalState({
       visible: true,
       selectedParameter: parameter,
-      uuid: uuid,
     });
   };
 
@@ -63,10 +77,49 @@ export default function Detail({ route, navigation }) {
   };
 
   useEffect(() => {
+    const fetchRadiusPengambilan = async () => {
+      try {
+        const response = await axios.get("/master/radius-pengambilan");
+        setRadiusPengambilan(response.data.data);
+      } catch (error) {
+        console.error("Error fetching RadiusPengambilan data:", error);
+      }
+    };
+  
+    fetchRadiusPengambilan();
+  }, []);
+
+  useEffect(() => {
+    const fetchPengambilSample = async () => {
+      try {
+        const response = await axios.get("/administrasi/pengambil-sample/petugas");
+        setPengambilSample(response.data.data);
+      } catch (error) {
+        console.error("Error fetching Metode data:", error);
+      }
+    };
+  
+    fetchPengambilSample();
+  }, []);
+
+  useEffect(() => {
+    const fetchMetode = async () => {
+      try {
+        const response = await axios.get("/master/acuan-metode");
+        setMetode(response.data.data);
+      } catch (error) {
+        console.error("Error fetching Metode data:", error);
+      }
+    };
+  
+    fetchMetode();
+  }, []);
+  
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(
-          `/administrasi/penerima-sample/${uuid}`,
+          `/administrasi/pengambil-sample/${uuid}`,
         );
         console.log("Response data:", response.data);
         setData(response.data.data);
@@ -148,7 +201,7 @@ export default function Detail({ route, navigation }) {
       setByTimezone(selectedDateTime);
       // Lakukan request POST ke endpoint yang sesuai
       const response = await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
+        `/administrasi/pengambil-sample/${uuid}/update`,
         {
           tanggal_diterima: selectedDateTime, // Kirimkan data tanggal dan waktu yang dipilih
         },
@@ -178,12 +231,12 @@ export default function Detail({ route, navigation }) {
       </View>
     );
   }
-
-  const jenisWadahValues = data.jenis_wadahs
-    ? data.jenis_wadahs
-        .map(item => `${item.nama} (${item.keterangan})`)
-        .join(", ")
-    : "Tidak ada data";
+ 
+  // const jenisWadahValues = data.jenis_wadahs
+  //   ? data.jenis_wadahs
+  //       .map(item => `${item.nama} (${item.keterangan})`)
+  //       .join(", ")
+  //   : "Tidak ada data";
 
   const parameters = data.parameters ? data.parameters : [];
 
@@ -195,7 +248,7 @@ export default function Detail({ route, navigation }) {
   const saveStatus = async status => {
     try {
       const response = await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
+        `/administrasi/pengambil-sample/${uuid}/update`,
         {
           kesimpulan_sampel: status,
         },
@@ -213,22 +266,6 @@ export default function Detail({ route, navigation }) {
     savePengawetan(value);
   };
 
-  const savePengawetan = async status => {
-    try {
-      const response = await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
-        {
-          pengawetan_oleh: status,
-        },
-      );
-      console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
-    }
-  };
   const saveInterpretasi = value => {
     setInterpretasi(value);
     saveInter(value);
@@ -237,7 +274,7 @@ export default function Detail({ route, navigation }) {
   const saveInter = async status => {
     try {
       const response = await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
+        `/administrasi/pengambil-sample/${uuid}/update`,
         {
           hasil_pengujian: status,
         },
@@ -257,7 +294,7 @@ export default function Detail({ route, navigation }) {
 
   const saveBak = async status => {
     const response = await axios.post(
-      `/administrasi/penerima-sample/${uuid}/update`,
+      `/administrasi/pengambil-sample/${uuid}/update`,
       {
         baku_mutu: status,
       },
@@ -270,7 +307,7 @@ export default function Detail({ route, navigation }) {
 
   const saveDateAndTime = async status => {
     const response = await axios.post(
-      `/administrasi/penerima-sample/${uuid}/update`,
+      `/administrasi/pengambil-sample/${uuid}/update`,
       {
         tanggal_diterima: status,
       },
@@ -286,7 +323,7 @@ export default function Detail({ route, navigation }) {
   const updateKondisiSampel = async (kondisiSampel, keterangan = "") => {
     try {
       const response = await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
+        `/administrasi/pengambil-sample/${uuid}/update`,
         {
           kondisi_sampel: kondisiSampel,
           keterangan_kondisi_sampel: keterangan,
@@ -301,19 +338,6 @@ export default function Detail({ route, navigation }) {
     }
   };
 
-  const handleKeteranganChange = text => {
-    setKeterangan(text);
-    if (isAbnormal) {
-      console.log(text);
-      updateKondisiSampel(0, text);
-    }
-  };
-
-  const handleInputBlur = () => {
-    if (!isAbnormal) {
-      updateKondisiSampel(0, keterangan);
-    }
-  };
 
   return (
     <ScrollView
@@ -337,7 +361,7 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data?.kode || ""}</Text>
+                  <Text style={styles.kode}>{data.kode}</Text>
                 </View>
               </View>
             </View>
@@ -350,9 +374,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
-                  <Text style={styles.value}>
-                    {data?.permohonan?.user?.nama || ""}
-                  </Text>
+                  <Text style={styles.value}>{data.permohonan.user.nama}</Text>
                 </View>
               </View>
 
@@ -363,7 +385,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.instansi || ""}
+                    {data.permohonan.user.detail.instansi}
                   </Text>
                 </View>
               </View>
@@ -379,7 +401,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.alamat || ""}
+                    {data.permohonan.user.detail.alamat}
                   </Text>
                 </View>
               </View>
@@ -391,7 +413,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.telepon || ""}
+                    {data.permohonan.user.phone}
                   </Text>
                 </View>
               </View>
@@ -410,7 +432,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Lokasi/Titik Uji</Text>
-                  <Text style={styles.value}>{data?.lokasi || ""}</Text>
+                  <Text style={styles.value}>{data.lokasi}</Text>
                 </View>
               </View>
 
@@ -420,9 +442,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
-                  <Text style={styles.value}>
-                    {data?.permohonan?.industri || ""}
-                  </Text>
+                  <Text style={styles.value}>{data.permohonan.industri}</Text>
                 </View>
               </View>
 
@@ -432,9 +452,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
-                  <Text style={styles.value}>
-                    {data?.permohonan?.alamat || ""}
-                  </Text>
+                  <Text style={styles.value}>{data.permohonan.alamat}</Text>
                 </View>
               </View>
 
@@ -445,7 +463,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.jenis_kegiatan || ""}
+                    {data.permohonan.kegiatan}
                   </Text>
                 </View>
               </View>
@@ -455,9 +473,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
-                  <Text style={styles.value}>
-                    {data?.jenis_sampel?.nama || ""}
-                  </Text>
+                  <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -474,11 +490,11 @@ export default function Detail({ route, navigation }) {
                 </View> */}
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Wadah</Text>
-                  <Text style={styles.value}>{jenisWadahValues}</Text>
+                  <Text style={styles.value}>{data.jenis_wadah?.nama}</Text>
                 </View>
               </View>
 
-              <Text style={styles.value}>Kesimpulan Sampel</Text>
+              <Text style={styles.value}>Kesimpulan Permohonan</Text>
 
               <View style={styles.radioContainer}>
                 <View style={styles.radioItem}>
@@ -507,31 +523,6 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Pengawetan Dilakukan Oleh</Text>
-
-              <View style={styles.radioContainer2}>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value="Pelanggan"
-                    status={
-                      pengawetan === "Pelanggan" ? "checked" : "unchecked"
-                    }
-                    onPress={() => saving("Pelanggan")}
-                  />
-                  <Text style={styles.radioLabel}>Pelanggan</Text>
-                </View>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value="Laboratorium"
-                    status={
-                      pengawetan === "Laboratorium" ? "checked" : "unchecked"
-                    }
-                    onPress={() => saving("Laboratorium")}
-                  />
-                  <Text style={styles.radioLabel}>Laboratorium</Text>
-                </View>
-              </View>
-
               <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
@@ -552,43 +543,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Baku Mutu</Text>
-              <View style={styles.radioContainer2}>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value={1}
-                    status={baku === 1 ? "checked" : "unchecked"}
-                    onPress={() => saveBaku(1)}
-                  />
-                  <Text style={styles.radioLabel}>Ada</Text>
-                </View>
-                <View style={styles.radioItem}>
-                  <RadioButton
-                    value={0}
-                    status={baku === 0 ? "checked" : "unchecked"}
-                    onPress={() => saveBaku(0)}
-                  />
-                  <Text style={styles.radioLabel}>Tidak Ada</Text>
-                </View>
-              </View>
-
-              <Text style={styles.value}>Tanggal Diterima</Text>
-              <View>
-                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                  <View style={styles.dateTimeButton}>
-                    <Text style={styles.dateTimeText}>
-                      {date
-                        ? `Tanggal/Waktu: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-                        : "Pilih Tanggal dan Waktu"}
-                    </Text>
-                    <FontAwesome
-                      name="calendar"
-                      size={30}
-                      color="#000"
-                      style={styles.dateTimeIcon}
-                    />
-                  </View>
-                </TouchableOpacity>
+             
 
                 {showDatePicker && (
                   <DateTimePicker
@@ -610,27 +565,6 @@ export default function Detail({ route, navigation }) {
                   />
                 )}
               </View>
-
-              <Text style={styles.mt}>Kondisi Sampel Saat Diterima</Text>
-              <View style={styles.switchContainer}>
-                <Text style={styles.value}>Abnormal</Text>
-                <Switch value={isAbnormal} onValueChange={handleSwitchChange} />
-                <View style={styles.normal}>
-                  <Text style={styles.value}>Normal</Text>
-                </View>
-              </View>
-              <View>
-                {!isAbnormal && (
-                  <TextInput
-                    placeholder={data?.keterangan_kondisi_sampel || ""}
-                    style={styles.input}
-                    onChangeText={handleKeteranganChange}
-                    onBlur={handleInputBlur}
-                    value={keterangan}
-                  />
-                )}
-              </View>
-            </View>
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
@@ -640,8 +574,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
                   <Text style={styles.value}>
-                    {data?.peraturan?.nama || ""} -{" "}
-                    {data?.peraturan?.nomor || ""}
+                    {data?.peraturan?.nama || ''} - {data?.peraturan?.nomor || ''}
                   </Text>
                 </View>
               </View>
@@ -653,34 +586,15 @@ export default function Detail({ route, navigation }) {
                   <Text style={styles.label}>Parameter</Text>
                   <Text style={styles.value}>Nama</Text>
                 </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      marginTop: 23,
-                      color: Colors.black,
-                    }}>
-                    Harga
-                  </Text>
-                </View>
               </View>
               <View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
                     <View key={index} style={styles.paramContainer}>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.param}>{item.nama}</Text>
-                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
-                          <EvilIcons
-                            style={{ marginLeft: 8, marginTop: 2 }}
-                            name="pencil"
-                            size={20}
-                            color="black"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <Text style={styles.param}>{rupiah(item.harga)}</Text>
+                      <Text style={styles.param}>{item.nama}</Text>
+                      <TouchableOpacity onPress={() => handleParameter(item)}>
+                        <EvilIcons name="pencil" size={20} color="black" />
+                      </TouchableOpacity>
                     </View>
                   ))
                 ) : (
@@ -696,9 +610,8 @@ export default function Detail({ route, navigation }) {
                   <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                       <Parameter
-                        data={data}
+                      data={data}
                         selectedParameter={modalState.selectedParameter}
-                        uuid={modalState.uuid}
                       />
                       <TouchableOpacity
                         onPress={handleCloseModal}
@@ -710,7 +623,7 @@ export default function Detail({ route, navigation }) {
                 </Modal>
               </View>
             </View>
-            <View style={styles.cardContainer}>
+            <View style={styles.pengambilanContainer}>
               <Text style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -723,21 +636,80 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.jasa_pengambilan?.wilayah || ""}
+                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}  
                   </Text>
                 </View>
               </View>
+
+              <View style={styles.infoItem}>
+                <View style={styles.iconContainer}>
+                  <FontAwesome6
+                    name="id-card-clip"
+                    size={30}
+                    color="black"
+                  />
+                </View>
+                <View style={styles.textContainer}>
+                  <Text style={styles.label}>Radius Pengambilan</Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Radius', value: null }}
+                      onValueChange={(value) => setSelectedRadius(value)}
+                      items={radiusPengambilan.map(item => ({
+                        label: `${item.nama} (${item.radius}m) - ${currency(item.harga)}`,
+                        value: item.id
+                      }))}
+                      style={{
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
+                        iconContainer: {
+                          top: 10,
+                          right: 12,
+                        },  
+                      }}
+                      value={selectedRadius}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}/>;
+                      }}
+                    />
+                  </View>
+                </View>
+              </View>
+
+                
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome6 name="id-card-clip" size={30} color="black" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Petugas Pengambil</Text>
-                  <Text style={styles.value}>
-                    {data?.pengambil?.nama || ""}
-                  </Text>
+                  <Text style={styles.label}>Petugas</Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Petugas', value: null }}
+                      onValueChange={(value) => setSelectedPengambilSample(value)}
+                      items={pengambilSample.map(item => ({
+                        label: `${item.nama}`,
+                        value: item.id
+                      }))}
+                      style={{
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
+                        iconContainer: {
+                          top: 10,
+                          right: 12,
+                        },  
+                      }}
+                      value={selectedPengambilSample}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}  />;
+                      }}
+                    />
+                  </View>
                 </View>
               </View>
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <MaterialIcons
@@ -747,42 +719,53 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Tanggal/Jam</Text>
-                  <Text style={styles.value}>
-                    {data?.tanggal_pengambilan || ""}
-                  </Text>
+                  <Text style={styles.value}>{data.tanggal_pengambilan}</Text>
                 </View>
               </View>
+              
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="pricetags" size={33} color="black" />
                 </View>
-                <View style={styles.textContainer}>
+                <View style={styles.textContainer} >
                   <Text style={styles.label}>Metode</Text>
-                  <Text style={styles.value}>
-                    {data?.acuan_metode?.nama || ""}
-                  </Text>
+                  <View style={styles.pickerContainer}>
+                  <RNPickerSelect
+                      placeholder={{ label: 'Pilih Metode', value: null }}
+                      onValueChange={(value) => setSelectedMetode(value)}
+                      items={Metode.map(item => ({
+                        label: `${item.nama}`,
+                        value: item.id
+                      }))}
+                      style={{
+                        inputIOS: styles.pickerStyle,
+                        inputAndroid: styles.pickerStyle,
+                        iconContainer: {
+                          top: 10,
+                          right: 12,
+                        },  
+                      }}
+                      value={selectedMetode}
+                      useNativeAndroidPickerStyle={false}
+                      Icon={() => {
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}  />;
+                      }}
+                    />
+                  </View>
                 </View>
               </View>
-            </View>
-            <View style={styles.lokasiContainer}>
-              <Text style={styles.title}>Detail Lokasi</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
+                  <FontAwesome6 name="landmark-dome" size={33} color="black" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>South</Text>
-                  <Text style={styles.value}>{data?.south || ""}</Text>
-                </View>
-              </View>
-              <View style={styles.infoItem}>
-                <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>East</Text>
-                  <Text style={styles.value}>{data?.east || ""}</Text>
-                </View>
+                <Text style={styles.label}>Obyek Pelayanan</Text>
+                <TextInput 
+                  style={styles.inputStyle} 
+                  value={data.tanggal_pengambilan} 
+                  keyboardType="default"
+                />
+               </View>
               </View>
             </View>
           </>
@@ -795,6 +778,15 @@ export default function Detail({ route, navigation }) {
 }
 
 const styles = StyleSheet.create({
+  pengambilanContainer: {
+    backgroundColor: "white",
+    borderRadius: 10,
+    padding: 15,
+    width: "90%",
+    elevation: 3,
+    marginVertical: 10,
+    marginBottom: 70,
+  },  
   modalOverlay: {
     flex: 1,
     justifyContent: "center",
@@ -822,6 +814,11 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 16,
   },
+  paramContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 5,
+  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -838,14 +835,13 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 30,
-    justifyContent: "space-between",
   },
   param: {
     fontSize: 16,
     fontWeight: "bold",
     color: Colors.black,
-    // marginRight: 10,
-    // marginLeft: 59,
+    marginRight: 10,
+    marginLeft: 59,
   },
   scrollViewContainer: {
     flexDirection: "row",
@@ -884,7 +880,7 @@ const styles = StyleSheet.create({
   infoItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 8,
+    marginBottom: 15,
   },
   iconContainer: {
     backgroundColor: "rgba(76, 175, 80, 0.1)", // Light green background
@@ -1001,4 +997,40 @@ const styles = StyleSheet.create({
     padding: 10,
     marginTop: 9,
   },
+  pickerContainer: { 
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    width: 200,  // Memperluas lebar picker
+    overflow: 'hidden',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  pickerStyle: {
+    fontSize: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 15,  // Menambah padding horizontal agar lebih lebar
+    color: '#333333',
+    width: '100%',
+    height: 40,  // Membuat picker lebih tinggi
+  },
+
+  inputStyle: {
+    fontSize: 12,
+    paddingVertical: 8,
+    paddingHorizontal: 15, 
+    color: '#333333',
+    width: '72.5%',
+    height: 40,  // Sama dengan tinggi picker
+    borderWidth: 1,
+    borderColor: '#cccccc',
+    borderRadius: 8,
+    backgroundColor: '#ffffff',
+    shadowOpacity: 0.1,
+    shadowRadius: 3,
+    elevation: 2,
+  },
+  
 });

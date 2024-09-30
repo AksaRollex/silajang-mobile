@@ -195,7 +195,7 @@ const PengambilSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        // className="mb-12"
+        className="mb-14"
       />
 
       {/* <AntDesign

@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Paket = () => {
+const Revisi = () => {
   return (
     <View>
-      <Text>Paket</Text>
+      <Text>Revisi</Text>
     </View>
   )
 }
 
-export default Paket
+export default Revisi

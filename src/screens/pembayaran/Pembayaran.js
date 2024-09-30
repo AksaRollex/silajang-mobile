@@ -19,6 +19,7 @@ import { List } from "react-native-paper";
 import Pengujian from "./Pengujian";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
+import { TextFooter } from "../components/TextFooter";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
@@ -96,7 +97,7 @@ const Global = () => {
           title="Pembayaran Dengan Pengujian"
           left={props => <FontAwesome5Icon {...props} name="wallet" size={22} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
-          className='bg-slate-50 border-black p-2'
+          className='bg-[#ffffff] border-black p-2'
           onPress={Pengujian}
           />
           
@@ -104,7 +105,7 @@ const Global = () => {
             title="Pembayaran Non Pengujian"
             left={props => <FontAwesome5Icon {...props} name="credit-card" size={22}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-slate-50 border-black p-2'
+            className='bg-[#ffffff] border-black p-2'
             onPress={NonPengujian}
             />
 
@@ -112,7 +113,7 @@ const Global = () => {
             title="Pembayaran Global"
             left={props => <FontAwesome6Icon {...props} name="building-columns" size={22}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-slate-50 border-black p-2'
+            className='bg-[#ffffff] border-black p-2'
             onPress={Global}
             />
 
@@ -144,7 +145,7 @@ const Global = () => {
             </Text>
           </TouchableOpacity>
         </View> */}
-      
+      <TextFooter/>
       </ScrollView>
       {/* <View
           style={[
@@ -160,7 +161,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // alignItems: "center",
-    backgroundColor: "rgba(13, 71, 161, 0.2)",
+    backgroundColor: "#ececec",
     justifyContent: "flex-start", // Ensure content starts from the top
   },
   headerContainer: {
