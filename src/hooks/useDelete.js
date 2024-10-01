@@ -59,8 +59,14 @@ export const useDelete = (callback) => {
       visible={modalVisible}
       onConfirm={handleConfirm}
       onCancel={hideConfirmationModal}
-      title="Apakah anda yakin?"
-      message="Data yang dihapus tidak dapat dikembalikan!"
+      title={
+        <Text style={{ color: "black"}}>Apakah anda yakin?</Text>
+      }
+      message={
+        <Text style={{ color: "#6B7280"}}>
+         Data yang telah dihapus tidak dapat dikembalikan !
+        </Text>
+      }
     />
   );
 

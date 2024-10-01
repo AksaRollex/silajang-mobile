@@ -62,6 +62,10 @@ const Pengujian = ({ navigation }) => {
     const status = item.payment?.status;
 
     const dropdownOptions = [
+      //  Jika expired, pending, atau gagal: Tampilkan "Pembayaran"
+      //  Jika berhasil: Tampilkan "Detail" dan "Cetak"
+      //  Jika pending atau gagal: Tampilkan "Tagihan" (selain "Pembayaran")
+
       // Opsi Pembayaran
       (isExpired || status === "pending" || status === "failed") && {
         id: "Pembayaran",
@@ -69,7 +73,7 @@ const Pengujian = ({ navigation }) => {
         action: () =>
           navigation.navigate("PengujianDetail", { uuid: item.uuid }),
       },
-      
+
       // Opsi Tagihan
       (status === "pending" || status === "failed") && {
         id: "Tagihan",
@@ -77,7 +81,7 @@ const Pengujian = ({ navigation }) => {
         action: () =>
           download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
       },
-      
+
       // Opsi Detail
       status === "success" && {
         id: "Detail",

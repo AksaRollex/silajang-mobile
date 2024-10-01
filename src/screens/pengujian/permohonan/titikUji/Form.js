@@ -258,7 +258,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
         </View>
       </View>
 
-      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1">
+      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1" nestedScrollEnabled={true}>
         <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
           <Text className="text-base font-bold text-center  text-black">
             Detail Pengiriman
