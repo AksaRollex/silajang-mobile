@@ -5,9 +5,11 @@ import moment from "moment";
 import { mapStatusPengujian } from "@/src/libs/utils";
 import Header from "../../components/Header";
 import Back from "../../components/Back";
+import { useNavigation } from "@react-navigation/native";
 
 const TrackingList = ({ route, onClose }) => {
-  const {selected} = route.params
+  const { selected } = route.params;
+  const navigation = useNavigation();
   const icon = status => {
     switch (status) {
       case -1:
@@ -43,17 +45,19 @@ const TrackingList = ({ route, onClose }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View style={styles.card} className="mb-56">
         <View style={styles.cardHeader}>
-          <View style={styles.headerContent}>
-            <Back/>  
-            <Text className="my-2 font-bold text-xl text-center text-black">
-              ({selected?.kode}) {selected?.lokasi}
+          <View className="flex-row justify-between items-center">
+            <Back size={24} color={"black"} className="mr-2" />
+            <Text className="my-2 font-bold text-xl text-black flex-row justify-between">
+              <Text>
+                ({selected?.kode}) {selected?.lokasi}
+              </Text>
             </Text>
           </View>
         </View>
-        <ScrollView style={styles.cardBody}>
+        <ScrollView style={styles.cardBody} className="py-4">
           {selected && selected.trackings && selected.trackings.length > 0 ? (
             selected.trackings.map(tracking => (
               <View key={tracking.id} style={styles.trackingItem}>

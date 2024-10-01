@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import { memo, useEffect } from "react";
 import { useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const FormTitikUji = ({ route, navigation, props }) => {
   const [sampelData, setSampelData] = useState([]);
@@ -35,6 +36,11 @@ const FormTitikUji = ({ route, navigation, props }) => {
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handleCardPress = card => {
+    setSelectedCard(card);
+  };
 
   const { uuid } = route.params || {};
   // const { permohonan } = props;
@@ -272,7 +278,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
                 name="cellphone-text"
                 size={50}
                 color="black"
-                className="my-2"
+                style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
               <Text className="text-black font-bold text-lg text-center">
                 Virtual Account
@@ -289,7 +295,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
                 name="barcode"
                 size={50}
                 color="black"
-                className="my-2"
+                style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
               <Text className="text-black font-bold text-lg text-center">
                 QRIS
@@ -363,6 +369,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
             )}
           />
 
+          <Text className="text-black mt-2">Keterangan</Text>
           <Controller
             name="keterangan"
             control={control}

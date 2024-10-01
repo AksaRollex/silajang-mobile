@@ -31,5 +31,6 @@ const styles = StyleSheet.create({
   },
   footerText: {
     alignSelf: "center",
+    color : 'black'
   },
 });

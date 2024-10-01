@@ -4,42 +4,50 @@ import { TextInput } from "react-native-paper";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import Toast from 'react-native-toast-message';
-import { useNavigation } from '@react-navigation/native';
+import Toast from "react-native-toast-message";
+import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
-import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Back from "../../components/Back";
+
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Keamanan = () => {
-  const { handleSubmit, control, formState: { errors }, reset } = useForm();
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    reset,
+    isLoading,
+  } = useForm();
   const navigation = useNavigation();
-  
+
   const [showOldPassword, setShowOldPassword] = useState(false);
   const [showNewPassword, setShowNewPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const updateKeamanan = useMutation(
-    (data) => axios.put("/user/updateKeamanan", data),
+    data => axios.put("/user/updateKeamanan", data),
     {
       onSuccess: () => {
         Toast.show({
           type: "success",
           text1: "Password berhasil diperbarui",
         });
-        reset(); 
-        navigation.navigate("Profile"); 
+        reset();
+        navigation.navigate("Profile");
       },
-      onError: (error) => {
+      onError: error => {
         console.error(error.response.data);
         Toast.show({
           type: "error",
           text1: error.response.data.message || "Gagal memperbarui password",
         });
       },
-    }
+    },
   );
 
-  const onSubmit = (data) => {
+  const onSubmit = data => {
     if (data.password !== data.password_confirmation) {
       Toast.show({
         type: "error",
@@ -51,140 +59,157 @@ const Keamanan = () => {
   };
 
   return (
-    <View style={styles.container}>
-      <Text style={{ color: "black" }}>Password Lama</Text>
-      <Controller
-        control={control}
-        name="old_password"
-        rules={{ required: "Password Lama Harus Diisi" }}
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            mode="outlined"
-            secureTextEntry={!showOldPassword}
-            fieldStyle={styles.textInput}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.old_password}
-            right={
-              <TextInput.Icon
-                name={showOldPassword ? "eye-off" : "eye"}
-                render={() => (
-                  <Icon
-                    name={showOldPassword ? "eye-off" : "eye"}
-                    size={24}
-                    color="black"
-                    onPress={() => setShowOldPassword(!showOldPassword)}
-                  />
-                )}
-              />
-            }
+    <>
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
           />
-        )}
-      />
-      {errors.old_password && (
-        <Text style={styles.errorText}>{errors.old_password.message}</Text>
-      )}
+          <Text className="font-bold text-white text-lg ">Ganti Password</Text>
+        </View>
+      </View>
+      <View className="bg-[#ececec] w-full h-full px-3 py-1 ">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-6">
+          <Controller
+            control={control}
+            name="old_password"
+            rules={{ required: "Password Lama Harus Diisi" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="text-black font-sans font-bold mb-2">
+                  Password Lama
+                </Text>
+                <TextField
+                  // secureTextEntry={!showOldPassword}
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.old_password}
+                  right={
+                    <TextInput.Icon
+                      name={showOldPassword ? "eye-off" : "eye"}
+                      render={() => (
+                        <Icon
+                          name={showOldPassword ? "eye-off" : "eye"}
+                          size={24}
+                          color="black"
+                          onPress={() => setShowOldPassword(!showOldPassword)}
+                        />
+                      )}
+                    />
+                  }
+                />
+              </View>
+            )}
+          />
+          {errors.old_password && (
+            <Text style={styles.errorText}>{errors.old_password.message}</Text>
+          )}
 
-      <Text style={{ color: "black" }}>Password Baru</Text>
-      <Controller
-        control={control}
-        name="password"
-        rules={{ required: "Password Baru Harus Diisi", minLength: { value: 12, message: "Password minimal 12 karakter" } }}
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            mode="outlined"
-            secureTextEntry={!showNewPassword}
-            fieldStyle={styles.textInput}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.password}
-            right={
-              <TextInput.Icon
-                name={showNewPassword ? "eye-off" : "eye"}
-                render={() => (
-                  <Icon
-                    name={showNewPassword ? "eye-off" : "eye"}
-                    size={24}
-                    color="black"
-                    onPress={() => setShowNewPassword(!showNewPassword)}
-                  />
-                )}
-              />
-            }
+          <Controller
+            control={control}
+            name="password"
+            rules={{
+              required: "Password Baru Harus Diisi",
+              minLength: { value: 12, message: "Password minimal 12 karakter" },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-sans font-bold my-2 text-black">
+                  Password Baru
+                </Text>
+                <TextField
+                  mode="outlined"
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  // secureTextEntry={!showNewPassword}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.password}
+                  right={
+                    <TextInput.Icon
+                      name={showNewPassword ? "eye-off" : "eye"}
+                      render={() => (
+                        <Icon
+                          name={showNewPassword ? "eye-off" : "eye"}
+                          size={24}
+                          color="black"
+                          onPress={() => setShowNewPassword(!showNewPassword)}
+                        />
+                      )}
+                    />
+                  }
+                />
+              </View>
+            )}
           />
-        )}
-      />
-      {errors.password && (
-        <Text style={styles.errorText}>{errors.password.message}</Text>
-      )}
+          {errors.password && (
+            <Text style={styles.errorText}>{errors.password.message}</Text>
+          )}
 
-      <Text style={{ color: "black" }}>Konfirmasi Password Baru</Text>
-      <Controller
-        control={control}
-        name="password_confirmation"
-        rules={{ required: "Konfirmasi Password Baru Harus Diisi" }}
-        render={({ field: { onChange, value } }) => (
-          <TextField
-            mode="outlined"
-            secureTextEntry={!showConfirmPassword}
-            fieldStyle={styles.textInput}
-            onChangeText={onChange}
-            value={value}
-            error={!!errors.password_confirmation}
-            right={
-              <TextInput.Icon
-                name={showConfirmPassword ? "eye-off" : "eye"}
-                render={() => (
-                  <Icon
-                    name={showConfirmPassword ? "eye-off" : "eye"}
-                    size={24}
-                    color="black"
-                    onPress={() => setShowConfirmPassword(!showConfirmPassword)}
-                  />
-                )}
-              />
-            }
+          <Controller
+            control={control}
+            name="password_confirmation"
+            rules={{ required: "Konfirmasi Password Baru Harus Diisi" }}
+            render={({ field: { onChange, value } }) => (
+              <View className="mt-2">
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Konfirmasi Password Baru
+                </Text>
+                <TextField
+                  mode="outlined"
+                  // secureTextEntry={!showConfirmPassword}
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.password_confirmation}
+                  right={
+                    <TextInput.Icon
+                      name={showConfirmPassword ? "eye-off" : "eye"}
+                      render={() => (
+                        <Icon
+                          name={showConfirmPassword ? "eye-off" : "eye"}
+                          size={24}
+                          color="black"
+                          onPress={() =>
+                            setShowConfirmPassword(!showConfirmPassword)
+                          }
+                        />
+                      )}
+                    />
+                  }
+                />
+              </View>
+            )}
           />
-        )}
-      />
-      {errors.password_confirmation && (
-        <Text style={styles.errorText}>{errors.password_confirmation.message}</Text>
-      )}
-   
-      <Button
-        label="Perbarui"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(onSubmit)}
-        disabled={updateKeamanan.isLoading}
-      />
-    </View>
+          {errors.password_confirmation && (
+            <Text style={styles.errorText}>
+              {errors.password_confirmation.message}
+            </Text>
+          )}
+
+          <Button
+            className="p-2 rounded-sm mt-2"
+            backgroundColor={Colors.brand}
+            borderRadius={5}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isLoading}>
+            <Text className="text-white text-center text-base font-bold font-sans">
+              PERBARUI
+            </Text>
+          </Button>
+        </View>
+      </View>
+    </>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    justifyContent: "center",
-    padding: 16,
-  },
-  textInput: {
-    padding: 12,
-    backgroundColor: "#f0f0f0",
-    borderRadius: 8,
-    color: "black",
-    borderColor: "#ccc",
-    borderWidth: 1,
-    marginBottom : rem(1.5)
-  },
-  icon: {
-    width: 24,
-    height: 24,
-  },
-  errorText: {
-    color: 'red',
-  },
+ 
 });
 
 export default Keamanan;

@@ -37,7 +37,7 @@ export default function Pembayaran() {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => {navigation.navigate("Profile")}} />
       <View style={styles.container}>
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 

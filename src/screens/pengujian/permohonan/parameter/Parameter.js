@@ -179,7 +179,7 @@ const Parameter = ({ route, navigation }) => {
           className="flex-row mb-4 p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back size={24} color="white" action={() => navigation.goBack()} />
-          <Text className="font-bold text-white text-sm">
+          <Text className="font-bold text-white text-xs">
             {titik?.lokasi} {titik?.kode} Pilih Peraturan/Parameter
           </Text>
         </View>
