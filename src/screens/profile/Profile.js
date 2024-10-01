@@ -9,57 +9,27 @@ import {
   Animated,
   ActivityIndicator,
 } from "react-native";
-import axios from "@/src/libs/axios";
+import { useUser } from "@/src/services/userUser"; 
 import Akun from "./tabs/Akun";
 import Perusahaan from "./tabs/Perusahaan";
 import Keamanan from "./tabs/Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import { API_URL } from "@env";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import { Button } from "react-native-ui-lib";
 import FastImage from "react-native-fast-image";
+
 export default function Profile({ navigation }) {
   const [activeComponent, setActiveComponent] = useState("Akun");
-  const [userData, setUserData] = useState(null);
   const [fadeAnim] = useState(new Animated.Value(0));
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState("");
-  const QueryClient = useQueryClient();const [imageLoadError, setImageLoadError] = useState(false);
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("/auth");
-      const { nama, email, phone, golongan, photo } = response.data.user;
-      console.log(response.data.user);
-      setData({ nama, email, phone, golongan });
-      setLoading(false);
-
-      const fullImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
-      setImageUrl(fullImageUrl);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  useEffect(() => {
-    axios
-      .get("/auth")
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
+  const queryClient= useQueryClient();
+  
+  // Menggunakan useUser untuk mendapatkan data pengguna
+  const { data: userData, isLoading } = useUser();
+  
   const handlePress = component => {
     setActiveComponent(component);
     Animated.timing(fadeAnim, {
@@ -96,7 +66,7 @@ export default function Profile({ navigation }) {
         type: "success",
         text1: "Logout Berhasil",
       });
-      QueryClient.invalidateQueries(["auth", "user"]);
+      queryClient.invalidateQueries(["auth", "user"]);
       navigation.navigate("Login");
     },
     onError: error => {
@@ -126,67 +96,46 @@ export default function Profile({ navigation }) {
         <View style={styles.cardContainer}>
           <View style={[styles.profileCard, styles.shadow]}>
             <View style={styles.photoProfileCard}>
-              {imageUrl ? (
+              {userData?.photo ? (
                 <FastImage
                   style={styles.image}
                   source={{
-                    uri: imageUrl,
+                    uri: `${process.env.APP_URL}${userData.photo}`,
                     priority: FastImage.priority.high,
                   }}
                   resizeMode={FastImage.resizeMode.cover}
-                  onError={() => {
-                    console.error("Error loading image:", imageUrl);
-                    setImageLoadError(true);
-                  }}
                 />
               ) : (
                 <View
-                  style={[
-                    styles.image,
-                    {
-                      backgroundColor: "#ddd",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    },
-                  ]}>
+                  style={[styles.image, { backgroundColor: "#ddd", justifyContent: "center", alignItems: "center" }]}>
                   <Text>No Image</Text>
                 </View>
               )}
             </View>
             <View style={styles.ProfileCardText}>
-              {userData ? (
+              {isLoading ? (
+                <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
+                  <ActivityIndicator size="large" color="#4299e1" />
+                </View>
+              ) : (
                 <>
                   <View style={styles.iconTextRow}>
-                    <MaterialIcons
-                      name="check-decagram"
-                      color="#64748b"
-                      size={13}
-                    />
-                    <Text style={styles.text}>{userData.user.nama}</Text>
+                    <MaterialIcons name="check-decagram" color="#64748b" size={13} />
+                    <Text style={styles.text}>{userData.nama}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
                     <Ionicons name="mail" color="#64748b" />
-                    <Text style={styles.text}>{userData.user.email}</Text>
+                    <Text style={styles.text}>{userData.email}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
                     <Fontawesome5 name="phone-alt" color="#64748b" size={11} />
-                    <Text style={styles.text}>{userData.user.phone}</Text>
+                    <Text style={styles.text}>{userData.phone}</Text>
                   </View>
                   <View style={styles.iconTextRow}>
-                    <Ionicons
-                      name="person-circle-outline"
-                      color="#64748b"
-                      size={14}
-                    />
-                    <Text style={styles.text}>
-                      {userData.user.golongan.nama}
-                    </Text>
+                    <Ionicons name="person-circle-outline" color="#64748b" size={14} />
+                    <Text style={styles.text}>{userData.golongan.nama}</Text>
                   </View>
                 </>
-              ) : (
-                <View className="flex-1 justify-center items-center">
-                  <ActivityIndicator size="large" color="#4299e1" />
-                </View>
               )}
             </View>
           </View>
@@ -196,65 +145,37 @@ export default function Profile({ navigation }) {
 
           <View style={styles.buttonContainer}>
             <TouchableOpacity
-              style={[
-                styles.buttonBox,
-                activeComponent === "Akun" && styles.activeButtonBox,
-              ]}
+              style={[styles.buttonBox, activeComponent === "Akun" && styles.activeButtonBox]}
               onPress={() => handlePress("Akun")}>
               <View
-                style={[
-                  styles.buttonLine,
-                  { backgroundColor: "#6b7fde" },
-                  activeComponent === "Akun"
-                    ? styles.activeButtonLine
-                    : styles.inactiveButtonLine,
-                ]}
+                style={[styles.buttonLine, { backgroundColor: "#6b7fde" }, activeComponent === "Akun" ? styles.activeButtonLine : styles.inactiveButtonLine]}
               />
               <Ionicons name="person" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Akun</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.buttonBox,
-                activeComponent === "Keamanan" && styles.activeButtonBox,
-              ]}
+              style={[styles.buttonBox, activeComponent === "Keamanan" && styles.activeButtonBox]}
               onPress={() => handlePress("Keamanan")}>
               <View
-                style={[
-                  styles.buttonLine,
-                  { backgroundColor: "#6b7fde" },
-                  activeComponent === "Keamanan"
-                    ? styles.activeButtonLine
-                    : styles.inactiveButtonLine,
-                ]}
+                style={[styles.buttonLine, { backgroundColor: "#6b7fde" }, activeComponent === "Keamanan" ? styles.activeButtonLine : styles.inactiveButtonLine]}
               />
               <Fontawesome5 name="lock" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Keamanan</Text>
             </TouchableOpacity>
 
             <TouchableOpacity
-              style={[
-                styles.buttonBox,
-                activeComponent === "Perusahaan" && styles.activeButtonBox,
-              ]}
+              style={[styles.buttonBox, activeComponent === "Perusahaan" && styles.activeButtonBox]}
               onPress={() => handlePress("Perusahaan")}>
               <View
-                style={[
-                  styles.buttonLine,
-                  { backgroundColor: "#6b7fde" },
-                  activeComponent === "Perusahaan"
-                    ? styles.activeButtonLine
-                    : styles.inactiveButtonLine,
-                ]}
+                style={[styles.buttonLine, { backgroundColor: "#6b7fde" }, activeComponent === "Perusahaan" ? styles.activeButtonLine : styles.inactiveButtonLine]}
               />
               <Fontawesome5 name="briefcase" color="#6b7fde" size={15} />
               <Text style={styles.buttonText}>Perusahaan</Text>
             </TouchableOpacity>
           </View>
 
-          <Animated.View
-            style={[styles.activeComponentContainer, { opacity: fadeAnim }]}>
+          <Animated.View style={[styles.activeComponentContainer, { opacity: fadeAnim }]}>
             {RenderedComponent}
           </Animated.View>
         </View>

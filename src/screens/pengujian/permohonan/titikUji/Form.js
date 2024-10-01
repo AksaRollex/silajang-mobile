@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import { memo, useEffect } from "react";
 import { useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const FormTitikUji = ({ route, navigation, props }) => {
   const [sampelData, setSampelData] = useState([]);
@@ -35,6 +36,11 @@ const FormTitikUji = ({ route, navigation, props }) => {
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
+  const [selectedCard, setSelectedCard] = useState(null);
+
+  const handleCardPress = card => {
+    setSelectedCard(card);
+  };
 
   const { uuid } = route.params || {};
   // const { permohonan } = props;
@@ -238,22 +244,42 @@ const FormTitikUji = ({ route, navigation, props }) => {
   return (
     <>
       <Header />
-
       <View className="bg-[#ececec] w-full h-full p-7">
-        <Back />
-
-        <ScrollView>
-          <Text className="text-lg font-bold my-4 text-black">
+        <View style={{ flexDirection: "row" }}>
+          <TouchableOpacity
+            style={{
+              backgroundColor: "#ef4444",
+              width: 55,
+              height: 45,
+              borderRadius: 15,
+              justifyContent: "center",
+              alignItems: "center",
+            }}
+            onPress={() => navigation.goBack()}>
+            <Icon name="arrow-left" size={20} color="white" />
+          </TouchableOpacity>
+          <Text className="text-lg font-bold my-2 align-items-center text-black">
             {data ? "Edit Titik Uji" : "Tambah Titik Pengujian"}
           </Text>
-
-          <View className="flex-1 flex-row justify-between ">
-            <View className="w-44 h-48 bg-gray-700 rounded-lg p-4 items-center">
+        </View>
+        <ScrollView>
+          <View className="flex-1 mt-3 flex-row justify-between">
+            <TouchableOpacity
+              style={{
+                width: 176, // Sesuaikan dengan w-44
+                height: 192, // Sesuaikan dengan h-48
+                borderRadius: 8, // Sesuaikan dengan rounded-lg
+                padding: 16, // Sesuaikan dengan p-4
+                alignItems: "center",
+                backgroundColor:
+                  selectedCard === "virtual" ? Colors.brand : "#4B5563", // #4B5563 adalah warna gray-700
+              }}
+              onPress={() => handleCardPress("virtual")}>
               <MaterialIcons
                 name="cellphone-text"
                 size={50}
                 color="black"
-                className="my-2"
+                style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
               <Text className="text-white font-bold text-lg text-center">
                 Virtual Account
@@ -261,13 +287,24 @@ const FormTitikUji = ({ route, navigation, props }) => {
               <Text className="text-white text-justify">
                 Transfer melalui Virtual Account Bank Jatim
               </Text>
-            </View>
-            <View className="w-44 h-48 bg-gray-700 rounded-lg p-4 items-center">
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={{
+                width: 176, // Sesuaikan dengan w-44
+                height: 192, // Sesuaikan dengan h-48
+                borderRadius: 8, // Sesuaikan dengan rounded-lg
+                padding: 16, // Sesuaikan dengan p-4
+                alignItems: "center",
+                backgroundColor:
+                  selectedCard === "qris" ? Colors.brand : "#4B5563", // #4B5563 adalah warna gray-700
+              }}
+              onPress={() => handleCardPress("qris")}>
               <MaterialIcons
                 name="barcode"
                 size={50}
                 color="black"
-                className="my-2"
+                style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
               <Text className="text-white font-bold text-lg text-center">
                 QRIS
@@ -275,7 +312,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
               <Text className="text-white text-justify">
                 Scan dan bayar melalui QRIS
               </Text>
-            </View>
+            </TouchableOpacity>
           </View>
 
           <Text className="text-black  mt-2">Nama Lokasi / Titik Uji</Text>
@@ -306,9 +343,13 @@ const FormTitikUji = ({ route, navigation, props }) => {
                 setValue={onChange}
                 setItems={setSampelData}
                 style={styles.dropdown}
+                zIndex={3000} // Tambahkan zIndex lebih tinggi
+                zIndexInverse={1000} // Tambahkan zIndexInverse lebih rendah
+                containerStyle={{ zIndex: 3000 }} // Menyesuaikan containerStyle
               />
             )}
           />
+
           <Text className="text-black mt-2">Jenis Wadah</Text>
           <Controller
             name="jenis_wadahs_id"
@@ -324,10 +365,14 @@ const FormTitikUji = ({ route, navigation, props }) => {
                 setValue={onChange}
                 setItems={setJenisWadah}
                 style={styles.dropdown}
+                zIndex={2000} // Z-index lebih rendah dari dropdown sebelumnya
+                zIndexInverse={1000}
+                containerStyle={{ zIndex: 2000 }}
               />
             )}
           />
 
+          <Text className="text-black mt-2">Keterangan</Text>
           <Controller
             name="keterangan"
             control={control}
@@ -335,7 +380,6 @@ const FormTitikUji = ({ route, navigation, props }) => {
               <TextField
                 className="p-3 mt-2 bg-[#bebcbc] rounded-md"
                 value={value}
-                label="Keterangan"
                 onChangeText={onChange}
                 error={errors.keterangan?.message}
               />
