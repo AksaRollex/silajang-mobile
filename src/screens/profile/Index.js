@@ -6,8 +6,8 @@ import Keamanan from "./tabs/Keamanan";
 import Perusahaan from "./tabs/Perusahaan";
 import Akun from "./tabs/Akun";
 import Index from "../auth/Index";
+import { ProfileProvider } from "./ProfileContext";
 const Stack = createNativeStackNavigator();
-
 
 export default function MainScreen() {
   return (

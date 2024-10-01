@@ -1,17 +1,19 @@
 import { View, Text, StyleSheet } from "react-native";
+import { Colors } from "react-native-ui-lib";
 import React, { useRef, useState, useCallback } from "react";
 import Header from "../../components/Header";
-import { Colors } from "react-native-ui-lib";
-import Paginate from "../../components/Paginate";
+import { rupiah } from "@/src/libs/utils";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
-import { rupiah } from "@/src/libs/utils";
+import Paginate from "../../components/Paginate";
+import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
+import { API_URL } from "@env";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
-const Multipayment = ({ navigation }) => {
-  const paginateRef = useRef(false);
+const Pengujian = ({ navigation }) => {
+  const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [refreshKey, setRefreshKey] = useState(0);
@@ -45,34 +47,74 @@ const Multipayment = ({ navigation }) => {
   }, []);
 
   const handleMonthChange = useCallback(itemValue => {
-    setBulan(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
+    setBulan(itemValue);
   }, []);
 
-  const dropdownOptions = [
-    {
-      id: "Edit",
-      title: "Edit",
-      action: item => console.log(item),
-      Icon: "edit",
-    },
-    {
-      id: "Delete",
-      title: "Delete",
-      action: item => console.log(item),
-      Icon: "trash",
-    },
-  ];
+  const { download, PDFConfirmationModal } = useDownloadPDF({
+    onSuccess: filePath => console.log("Download success:", filePath),
+    onError: error => console.error("Download error:", error),
+  });
 
-  const cardMultiPayment = ({ item }) => {
+  const CardPembayaran = ({ item }) => {
     const isExpired = item.payment?.is_expired;
-    const statusText = isExpired ? "Kedaluwarsa" : item.text_status_pembayaran;
+    const shouldShowTagihan =
+      !!item.payment?.id && item.payment?.status !== "success";
+
+    const dropdownOptions = [
+      {
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: item =>
+          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
+      },
+      shouldShowTagihan && {
+        id: "Tagihan",
+        title: "Tagihan",
+        action: () =>
+          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+      },
+    ].filter(Boolean);
+
+    const getStatusText = item => {
+      if (item.payment?.is_expired) {
+        return "Kedaluwarsa";
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return "Menunggu";
+        } else if (status === "success") {
+          return "Berhasil";
+        } else {
+          return "Gagal";
+        }
+      }
+    };
+
+    const getStatusStyle = item => {
+      if (item.payment?.is_expired) {
+        return " text-red-500"; // Light red background with dark red text for expired
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return " text-blue-400"; // Light blue background with dark blue text for pending
+        } else if (status === "success") {
+          return "text-green-500"; // Light green background with dark green text for success
+        } else {
+          return " text-red-500"; // Light gray background with dark gray text for other statuses
+        }
+      }
+    };
+
+    const statusText = getStatusText(item);
+    const statusStyle = getStatusStyle(item);
+
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
           <Text
-            style={[styles.badge]}
-            className=" text-indigo-600 bg-slate-200">
+            style={[styles.badge, styles[statusStyle]]}
+            className={` bg-slate-100 ${getStatusStyle(item)}`}>
             {statusText}
           </Text>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
@@ -109,10 +151,11 @@ const Multipayment = ({ navigation }) => {
       </View>
     );
   };
+
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
-      <View className="w-full h-full bg-[#ececec]">
+      <Header />
+      <View className=" w-full h-full bg-[#ececec] ">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
             <Picker
@@ -135,11 +178,13 @@ const Multipayment = ({ navigation }) => {
         </View>
         <Paginate
           key={refreshKey}
-          ref={paginateRef}
-          renderItem={cardMultiPayment}
+          className="mb-28"
           url="/pembayaran/multi-payment"
-          payload={{ tahun, bulan }}></Paginate>
+          payload={{ tahun, bulan }}
+          renderItem={CardPembayaran}
+          ref={PaginateRef}></Paginate>
       </View>
+      <PDFConfirmationModal />
     </>
   );
 };
@@ -154,13 +199,6 @@ const styles = StyleSheet.create({
     borderTopColor: Colors.brand,
     borderTopWidth: 7,
   },
-  badge: {
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
   cards: {
     borderRadius: 10,
     width: "70%",
@@ -174,24 +212,36 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
   },
+  badge: {
+    alignSelf: "flex-start",
+    paddingVertical: 4,
+    paddingHorizontal: 8,
+    borderRadius: 4,
+    marginBottom: 8,
+    fontWeight: "bold",
+  },
 
   cardTexts: {
     fontSize: rem(0.9),
     color: "black",
   },
-  plusIcon: {
-    position: "absolute",
-    bottom: 20,
-    right: 20,
-    backgroundColor: "#312e81",
-    padding: 10,
-    marginBottom: rem(4),
-    borderRadius: 50,
+  pending: {
+    color: "white",
+    backgroundColor: "green",
+    paddingVertical: 5,
+    borderRadius: 5,
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  pendingText: {
+    color: "white",
+    fontSize: 13,
+    fontWeight: "bold",
   },
   picker: {
     flex: 1,
     marginHorizontal: 4,
   },
 });
-
-export default Multipayment;
+export default Pengujian;

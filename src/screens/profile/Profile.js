@@ -215,7 +215,7 @@ export default function Profile({ navigation }) {
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-           }}
+          }}
         >
           <View className="flex-row items-center">
             <Icon name="log-out" size={24} color="red" />

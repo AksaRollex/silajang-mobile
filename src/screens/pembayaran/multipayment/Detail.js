@@ -15,7 +15,7 @@ import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
-const PaymentDetail = ({ route, navigation }) => {
+const MultipaymentDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("");
   const { uuid } = route.params;
@@ -29,10 +29,10 @@ const PaymentDetail = ({ route, navigation }) => {
 
   const fetchData = useCallback(() => {
     axios
-      .get(`/pembayaran/pengujian/${uuid}`)
+      .get(`/pembayaran/multi-payment/${uuid}`)
       .then(res => {
         setFormData(res.data.data);
-        // console.log(res.data.data);
+        console.log(res.data.data);
       })
       .catch(err => {
         Alert.alert(
@@ -89,10 +89,10 @@ const PaymentDetail = ({ route, navigation }) => {
   return (
     <ScrollView className="p-7 bg-[#ececec]">
       {!formData.payment ? (
-        <View className="p-3 rounded-lg mt-2 bg-[#fff] ">
+        <View className="p-5 rounded-lg mt-2 bg-[#fff] ">
           <Back size={24} action={() => navigation.goBack()} className="mr-2" />
 
-          <Text className="text-2xl font-bold text-black text-center rounded-md  border-b border-gray-300 my-2">
+          <Text className="text-2xl font-bold text-black text-center rounded-md  border-b border-gray-300 my-2 py-2">
             {formData.kode}
           </Text>
 
@@ -311,4 +311,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default PaymentDetail;
+export default MultipaymentDetail;

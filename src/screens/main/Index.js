@@ -10,6 +10,7 @@ import Index from "../pengujian/Index";
 import IndexPembayaran from "../pembayaran/Index";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
+
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 

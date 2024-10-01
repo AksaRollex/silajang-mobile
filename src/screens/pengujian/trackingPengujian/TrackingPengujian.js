@@ -52,7 +52,7 @@ const TrackingPengujian = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.cardContent}>
-        <Text style={[styles.badge]} className="text-indigo-600 bg-slate-200">
+        <Text style={[styles.badge]} className="text-indigo-600 bg-slate-100">
           {item.text_status}
         </Text>
         <Text style={styles.lokasi} className="text-black">
@@ -88,7 +88,7 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
+      <Header />
       <View className="w-full h-full bg-[#ececec]">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
@@ -114,7 +114,7 @@ const TrackingPengujian = ({ navigation }) => {
           key={refreshKey}
           ref={paginateRef}
           url="/tracking"
-          className="mb-20"
+          className="mb-28"
           payload={{ tahun, bulan }}
           renderItem={renderItem}
         />

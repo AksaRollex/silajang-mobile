@@ -18,8 +18,8 @@ import { TextField, Colors, Button } from "react-native-ui-lib";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
-import { API_URL } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { QueryClient } from "@tanstack/react-query";
+import { APP_URL } from "@env";
 import BackButton from "../../components/Back";
 import Ionicons from "react-native-vector-icons/Ionicons";
 
@@ -28,6 +28,7 @@ const Akun = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
+  const queryClient = useQueryClient();
 
   const {
     handleSubmit,
@@ -55,10 +56,9 @@ const Akun = () => {
       .get("/auth")
       .then(response => {
         setUserData(response.data);
-        if (response.data.user && response.data.user.photo) {
-          const photoUrl = `${API_URL}${response.data.user.photo}`;
+        if (response.data.user.photo) {
+          const photoUrl = `${APP_URL}${response.data.user.photo}`;
           setCurrentPhotoUrl(photoUrl);
-          console.log({API_URL})
         }
       })
       .catch(error => {
@@ -85,15 +85,31 @@ const Akun = () => {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      const { photo } = response.data.user;
-      const updatedImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
-      setImageUrl(updatedImageUrl);
-      setData(prevData => ({ ...prevData, nama: getValues("nama") }));
+    
+      // Set photo langsung dari file yang di-upload jika tidak ada di respons
+      const updatedImageUrl = file ? file.uri : `${APP_URL}${response.data.photo}`;
+      setCurrentPhotoUrl(updatedImageUrl);
+      setUserData(prevData => ({ ...prevData, nama: getValues("nama") }));
+    
+      console.log("Update successful:", response.data); // Log response
     } catch (error) {
       console.error("Update failed:", error.message);
-    }
+    }    
+  
   };
+
+const fetchUserData = async () => {
+    try {
+        const response = await axios.get("/auth");
+        setUserData(response.data);
+        if (response.data.user.photo) {
+            const photoUrl = `${APP_URL}${response.data.user.photo}`;
+            setCurrentPhotoUrl(photoUrl);
+        }
+    } catch (error) {
+        console.error("Error fetching data:", error);
+    }
+};
 
   const {
     mutate: update,
@@ -105,9 +121,11 @@ const Akun = () => {
         type: "success",
         text1: "Data Berhasil Di Kirim",
       });
+      queryClient.invalidateQueries("/auth")
       navigation.navigate("Profile");
       reset();
       setFile(null);
+      fetchUserData();
     },
     onError: error => {
       console.error(error.message);
@@ -120,9 +138,7 @@ const Akun = () => {
 
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.errorMessage) {
+      if (response.errorMessage) {
         console.log("ImagePicker Error: ", response.errorMessage);
       } else {
         console.log("Chosen file:", response.assets[0]);
@@ -254,6 +270,14 @@ const Akun = () => {
       </View>
       )}
 
+      <Button
+        label="Perbarui"
+        style={{ marginBottom: 60 }}
+        backgroundColor={Colors.brand}
+        borderRadius={5}
+        onPress={handleSubmit(update)}
+        disabled={isLoading}
+      />
     </View>
   );
 };

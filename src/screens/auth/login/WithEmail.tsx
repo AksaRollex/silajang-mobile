@@ -32,7 +32,7 @@ export default memo(function WithEmail() {
         });
       },
       onError: error => {
-        console.error(error.response.data);
+        // console.error(error.response.data);
         Toast.show({
           type: "error",
           text1: "Email atau password salah!",
