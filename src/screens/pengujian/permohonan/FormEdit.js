@@ -23,16 +23,18 @@ const EditPermohonan = ({ route, navigation }) => {
   // FETCH DATA
   const { data, isLoading: isLoadingData } = useQuery(
     ["permohonan", uuid],
-    () => axios.get(`/permohonan/${uuid}/edit`).then(res => res.data.data),
+    () =>
+      uuid
+        ? axios.get(`/permohonan/${uuid}/edit`).then(res => res.data.data)
+        : null,
     {
       enabled: !!uuid,
-      // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
           setValue("industri", data.industri);
           setValue("alamat", data.alamat);
           setValue("kegiatan", data.kegiatan);
-          setValue("keterangan", data.keterangan);
+          // setValue("keterangan", data.keterangan);
         }
       },
       onError: error => {
@@ -56,7 +58,7 @@ const EditPermohonan = ({ route, navigation }) => {
           text1: "Success",
           text2: "Data updated successfully",
         });
-        queryClient.invalidateQueries(["permohonan"]);
+        queryClient.invalidateQueries(["/permohonan"]);
         navigation.navigate("Permohonan");
       },
       onError: error => {
@@ -77,83 +79,105 @@ const EditPermohonan = ({ route, navigation }) => {
 
   return (
     <>
-      <Header />
-      <View className="bg-[#ececec] w-full h-full p-7 ">
-        <Back size={24} action={() => navigation.goBack()} className="mr-2" />
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">Edit Permohonan</Text>
+        </View>
+      </View>
+      <View className="bg-[#ececec] w-full h-full px-3 py-1">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md">
+          <Controller
+            name="industri"
+            control={control}
+            rules={{ required: "Industri is required" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black ">Nama industri</Text>
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  placeholder="PT, CV, DINAS, ETC ...X`"
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.industri?.message}
+                />
+              </View>
+            )}
+          />
 
-        <Controller
-          name="industri"
-          control={control}
-          rules={{ required: "Industri is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
-              placeholder="Industri"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              error={errors.industri?.message}
-            />
-          )}
-        />
+          <Controller
+            name="alamat"
+            control={control}
+            rules={{ required: "Alamat is required" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-sans font-bold my-2 text-black">
+                  Alamat industri
+                </Text>
 
-        <Controller
-          name="alamat"
-          control={control}
-          rules={{ required: "Alamat is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
-              placeholder="Alamat"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              error={errors.alamat?.message}
-            />
-          )}
-        />
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  placeholder="Alamat"
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.alamat?.message}
+                />
+              </View>
+            )}
+          />
 
-        <Controller
-          name="kegiatan"
-          control={control}
-          rules={{ required: "Kegiatan is required" }}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
-              placeholder="Kegiatan"
-              onChangeText={onChange}
-              onBlur={onBlur}
-              value={value}
-              error={errors.kegiatan?.message}
-            />
-          )}
-        />
+          <Controller
+            name="kegiatan"
+            control={control}
+            rules={{ required: "Kegiatan is required" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-sans font-bold my-2 text-black">
+                  Kegiatan Industri
+                </Text>
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  placeholder="Kegiatan"
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.kegiatan?.message}
+                />
+              </View>
+            )}
+          />
 
-        <Controller
+          <Button
+            onPress={handleSubmit(onSubmit)}
+            isLoading={isUpdating}
+            className="p-2 rounded-sm mt-4"
+            style={{ backgroundColor: Colors.brand }}>
+            <TouchableOpacity>
+              <Text className="text-white text-center text-base font-bold font-sans">
+                SIMPAN
+              </Text>
+            </TouchableOpacity>
+          </Button>
+        </View>
+
+        {/* <Controller
           name="keterangan"
           control={control}
           render={({ field: { onChange, onBlur, value } }) => (
             <TextField
-              className="p-3 mt-5 bg-[#bebcbc] rounded-md"
+              className="p-3 bg-[#fff] rounded-md"
               placeholder="Keterangan"
               onChangeText={onChange}
-              onBlur={onBlur}
               value={value}
             />
           )}
-        />
-
-        <Button
-          onPress={handleSubmit(onSubmit)}
-          isLoading={isUpdating}
-          className="p-3 rounded-lg my-4"
-          style={{ backgroundColor: Colors.brand }}>
-          <TouchableOpacity>
-            <Text className="text-white text-center text-lg font-bold font-sans">
-              Simpan Data
-            </Text>
-          </TouchableOpacity>
-        </Button>
+        /> */}
       </View>
     </>
   );

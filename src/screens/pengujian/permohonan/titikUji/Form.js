@@ -97,9 +97,17 @@ const FormTitikUji = ({ route, navigation, props }) => {
     },
   );
 
+  const [selectedPayment, setSelectedPayment] = useState(null);
+  const handleSelectedPayment = cara => {
+    setSelectedPayment(cara);
+  };
   const { mutate: createOrUpdate, isLoading } = useMutation(data => {
+    const requestData = {
+      payment_type: selectedPayment === "va" ? "va" : "QRIS",
+    };
     axios.post(
       uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titikuji/store",
+      requestData,
       data,
     ),
       {
@@ -165,18 +173,15 @@ const FormTitikUji = ({ route, navigation, props }) => {
           ]);
 
         const formattedSampelData = sampelResponse.data.data.map(item => ({
-          label: item.nama,
           value: item.id,
         }));
 
         const formattedJenisWadah = wadahResponse.data.data.map(item => ({
-          label: item.nama,
           value: item.id,
         }));
 
         const formattedAcuanMetode = acuanMetodeResponse.data.data.map(
           item => ({
-            label: item.nama,
             value: item.id,
           }),
         );
@@ -243,132 +248,124 @@ const FormTitikUji = ({ route, navigation, props }) => {
 
   return (
     <>
-      <Header />
-      <View className="bg-[#ececec] w-full h-full p-7">
-        <View style={{ flexDirection: "row" }}>
-          <TouchableOpacity
-            style={{
-              backgroundColor: "#ef4444",
-              width: 55,
-              height: 45,
-              borderRadius: 15,
-              justifyContent: "center",
-              alignItems: "center",
-            }}
-            onPress={() => navigation.goBack()}>
-            <Icon name="arrow-left" size={20} color="white" />
-          </TouchableOpacity>
-          <Text className="text-lg font-bold my-2 align-items-center text-black">
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
             {data ? "Edit Titik Uji" : "Tambah Titik Pengujian"}
           </Text>
         </View>
-        <ScrollView>
-          <View className="flex-1 mt-3 flex-row justify-between">
+      </View>
+
+      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
+          <Text className="text-base font-bold text-center  text-black">
+            Detail Pengiriman
+          </Text>
+          <View className="flex-1 flex-row justify-between my-2 ">
             <TouchableOpacity
-              style={{
-                width: 176, // Sesuaikan dengan w-44
-                height: 192, // Sesuaikan dengan h-48
-                borderRadius: 8, // Sesuaikan dengan rounded-lg
-                padding: 16, // Sesuaikan dengan p-4
-                alignItems: "center",
-                backgroundColor:
-                  selectedCard === "virtual" ? Colors.brand : "#4B5563", // #4B5563 adalah warna gray-700
-              }}
-              onPress={() => handleCardPress("virtual")}>
+              className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
+              style={[selectedPayment === "va" && styles.selectedCard]}
+              onPress={() => handleSelectedPayment("va")}>
               <MaterialIcons
                 name="cellphone-text"
                 size={50}
                 color="black"
                 style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
-              <Text className="text-white font-bold text-lg text-center">
+              <Text className="text-black font-bold text-lg text-center">
                 Virtual Account
               </Text>
-              <Text className="text-white text-justify">
+              <Text className="text-black text-justify">
                 Transfer melalui Virtual Account Bank Jatim
               </Text>
             </TouchableOpacity>
-
             <TouchableOpacity
-              style={{
-                width: 176, // Sesuaikan dengan w-44
-                height: 192, // Sesuaikan dengan h-48
-                borderRadius: 8, // Sesuaikan dengan rounded-lg
-                padding: 16, // Sesuaikan dengan p-4
-                alignItems: "center",
-                backgroundColor:
-                  selectedCard === "qris" ? Colors.brand : "#4B5563", // #4B5563 adalah warna gray-700
-              }}
-              onPress={() => handleCardPress("qris")}>
+              className="w-1/2 bg-[#fff] rounded-sm py-12 px-2   m-0.5 items-center"
+              style={[selectedPayment === "qris" && styles.selectedCard]}
+              onPress={() => handleSelectedPayment("qris")}>
               <MaterialIcons
                 name="barcode"
                 size={50}
                 color="black"
                 style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
               />
-              <Text className="text-white font-bold text-lg text-center">
+              <Text className="text-black font-bold text-lg text-center">
                 QRIS
               </Text>
-              <Text className="text-white text-justify">
+              <Text className="text-black text-justify">
                 Scan dan bayar melalui QRIS
               </Text>
             </TouchableOpacity>
           </View>
 
-          <Text className="text-black  mt-2">Nama Lokasi / Titik Uji</Text>
           <Controller
             name="lokasi"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                value={value}
-                onChangeText={onChange}
-                error={errors.lokasi?.message}
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Nama Lokasi / Titik Uji
+                </Text>
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.lokasi?.message}
+                />
+              </View>
             )}
           />
 
-          <Text className="text-black">Jenis Sampel</Text>
           <Controller
             name="jenis_sampel_id"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <DropDownPicker
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                open={openSampel}
-                value={value}
-                items={sampelData}
-                setOpen={setOpenSampel}
-                setValue={onChange}
-                setItems={setSampelData}
-                style={styles.dropdown}
-                zIndex={3000} // Tambahkan zIndex lebih tinggi
-                zIndexInverse={1000} // Tambahkan zIndexInverse lebih rendah
-                containerStyle={{ zIndex: 3000 }} // Menyesuaikan containerStyle
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Jenis Sampel
+                </Text>
+
+                <DropDownPicker
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 font-sans border-0"
+                  open={openSampel}
+                  value={value}
+                  items={sampelData}
+                  setOpen={setOpenSampel}
+                  setValue={onChange}
+                  nestedScrollEnabled={true}
+                  setItems={setSampelData}
+                />
+              </View>
             )}
           />
-
-          <Text className="text-black mt-2">Jenis Wadah</Text>
           <Controller
             name="jenis_wadahs_id"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <DropDownPicker
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                open={openJenisWadah}
-                value={value}
-                label="Jenis Wadah"
-                items={jenisWadah}
-                setOpen={setOpenJenisWadah}
-                setValue={onChange}
-                setItems={setJenisWadah}
-                style={styles.dropdown}
-                zIndex={2000} // Z-index lebih rendah dari dropdown sebelumnya
-                zIndexInverse={1000}
-                containerStyle={{ zIndex: 2000 }}
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Jenis Wadah
+                </Text>
+
+                <DropDownPicker
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
+                  nestedScrollEnabled={true}
+                  open={openJenisWadah}
+                  value={value}
+                  items={jenisWadah}
+                  setOpen={setOpenJenisWadah}
+                  setValue={onChange}
+                  setItems={setJenisWadah}
+                />
+              </View>
             )}
           />
 
@@ -377,16 +374,21 @@ const FormTitikUji = ({ route, navigation, props }) => {
             name="keterangan"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                value={value}
-                onChangeText={onChange}
-                error={errors.keterangan?.message}
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Keterangan
+                </Text>
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.keterangan?.message}
+                />
+              </View>
             )}
           />
 
-          <Text className="text-base font-bold text-center my-5">
+          <Text className="text-base font-bold text-center my-5 text-black">
             Detail Pengiriman
           </Text>
           {/* {permohonan && permohonan.is_mandiri && (
@@ -395,13 +397,18 @@ const FormTitikUji = ({ route, navigation, props }) => {
             name="nama_pengambil"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                value={value}
-                label="Nama Pengirim"
-                onChangeText={onChange}
-                error={errors.nama_pengambil?.message}
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Nama Pengirim
+                </Text>
+
+                <TextField
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                  value={value}
+                  onChangeText={onChange}
+                  error={errors.nama_pengambil?.message}
+                />
+              </View>
             )}
           />
 
@@ -410,254 +417,327 @@ const FormTitikUji = ({ route, navigation, props }) => {
               name="tanggal_pengambilan"
               control={control}
               render={({ field: { onChange, value } }) => (
-                <TextField
-                  className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                  label="Tanggal / Jam Pengirim"
-                  value={tanggalJam.toLocaleString()}
-                  editable={false}
-                  color="black"
-                  onChangeText={onChange}
-                />
+                <View>
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Tanggal Pengambilan
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={tanggalJam.toLocaleString()}
+                    editable={false}
+                    color="black"
+                    onChangeText={onChange}
+                  />
+                </View>
               )}
             />
           </TouchableOpacity>
 
-          <Text className="text-black"> Metode</Text>
           <Controller
             name="acuan_metode_id"
             control={control}
             render={({ field: { onChange, value } }) => (
-              <DropDownPicker
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                open={openMetode}
-                value={value}
-                items={metode}
-                label="Metode"
-                setOpen={setOpenMetode}
-                setValue={onChange}
-                setItems={setMetode}
-                style={styles.dropdown}
-              />
+              <View>
+                <Text className="font-sans font-bold mb-2 text-black">
+                  Metode
+                </Text>
+
+                <DropDownPicker
+                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans"
+                  open={openMetode}
+                  value={value}
+                  items={metode}
+                  setOpen={setOpenMetode}
+                  setValue={onChange}
+                  nestedScrollEnabled={true}
+                  setItems={setMetode}
+                  style={styles.dropdown}
+                />
+              </View>
             )}
           />
 
-          <Text className="text-base font-bold text-center my-5">
+          <Text className="text-base font-bold text-center my-5 text-black">
             Detail Lokasi
           </Text>
 
-          <Controller
-            name="south"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="South"
-                placeholder={value}
-                value={location.latitude}
-                onChangeText={onChange}
-              />
-            )}
-          />
+          <View className="flex-row justify-between">
+            <Controller
+              name="south"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black text-start">
+                    South
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    placeholder={value}
+                    value={location.latitude}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="east"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="East"
-                placeholder={value}
-                value={location.longitude}
-                onChangeText={onChange}
-              />
-            )}
-          />
-
+            <Controller
+              name="east"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black text-right">
+                    East
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    placeholder={value}
+                    value={location.longitude}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+          </View>
           <TouchableOpacity
             onPress={handleLocationPress}
-            className="w-full h-10 bg-slate-500 rounded-md flex-1"
+            className="w-full p-3 rounded-sm "
             style={{
-              justifyContent: "center",
-              alignItems: "center",
+              backgroundColor: Colors.brand,
             }}>
-            <Text className="text-white text-base font-bold">
+            <Text className="text-white text-base font-bold text-center">
               Gunakan Lokasi Saat Ini
             </Text>
           </TouchableOpacity>
 
-          <Text className="text-base font-bold text-center my-5">
+          <Text className="text-base font-bold text-center my-5 text-black">
             Hasil Pengukuran Lapangan
           </Text>
 
-          <Controller
-            name="suhu_air"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Suhu Air (t°C)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+          <View className="flex-row flex-wrap">
+            <Controller
+              name="suhu_air"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Suhu Air
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="ph"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="pH"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+            <Controller
+              name="ph"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    pH
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+            <Controller
+              name="dhl"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    DHL
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+            <Controller
+              name="salinitas"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Salinitas
+                  </Text>
 
-          <Controller
-            name="dhl"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="DHL (µS/cm)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+            <Controller
+              name="do"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    DO
+                  </Text>
 
-          <Controller
-            name="salinitas"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Salinitas (‰)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="do"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="DO (mg/L)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+            <Controller
+              name="kekeruhan"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Kekeruhan
+                  </Text>
 
-          <Controller
-            name="kekeruhan"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Kekeruhan"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="klorin_bebas"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Klorin Bebas"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+            <Controller
+              name="klorin_bebas"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Klorin Babas
+                  </Text>
 
-          <Controller
-            name="suhu_udara"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Suhu Udara (t°C)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="cuaca"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Cuaca"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+            <Controller
+              name="suhu_udara"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Suhu Udara
+                  </Text>
 
-          <Controller
-            name="arah_angin"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Arah Angin"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
 
-          <Controller
-            name="kelembapan"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Kelembapan (%RH)"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
+            <Controller
+              name="cuaca"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Cuaca
+                  </Text>
 
-          <Controller
-            name="kecepatan_angin"
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                className="p-3 mt-2 bg-[#bebcbc] rounded-md"
-                label="Kecepatan Angin"
-                value={value}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {/* </>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+
+            <Controller
+              name="arah_angin"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Arah Angin
+                  </Text>
+
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+
+            <Controller
+              name="kelembapan"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pr-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Kelembapan
+                  </Text>
+
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+
+            <Controller
+              name="kecepatan_angin"
+              control={control}
+              render={({ field: { onChange, value } }) => (
+                <View className="w-1/2 pl-2">
+                  <Text className="font-sans font-bold mb-2 text-black">
+                    Kecepatan Angin
+                  </Text>
+
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
+              )}
+            />
+            {/* </>
           )} */}
+          </View>
 
           <Button
             onPress={handleSubmit(onSubmit)}
             loading={isLoading}
-            className="p-3 rounded-lg my-4 mb-28"
+            className="p-2 rounded-sm mt-4"
             style={{ backgroundColor: Colors.brand }}>
-            <Text className="text-white text-center text-lg font-bold font-sans">
-              Simpan Data
+            <Text className="text-white text-center text-base font-bold font-sans">
+              SUBMIT
             </Text>
           </Button>
-        </ScrollView>
-      </View>
+        </View>
+      </ScrollView>
     </>
   );
 };
@@ -693,6 +773,12 @@ const styles = StyleSheet.create({
     color: "white",
     fontSize: 16,
     fontWeight: "bold",
+  },
+  selectedCard: {
+    backgroundColor: "#C5CAE9",
+    borderWidth: 1,
+    borderStyle: "dashed",
+    borderColor: "#5C6BC0",
   },
   submitButton: {
     paddingVertical: 15,
