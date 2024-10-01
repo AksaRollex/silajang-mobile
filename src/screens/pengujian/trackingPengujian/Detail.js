@@ -1,10 +1,11 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import moment from "moment";
 import { mapStatusPengujian } from "@/src/libs/utils";
 import Header from "../../components/Header";
-import Back from "../../components/Back";
+import BackButton from "../../components/Back";
 import { useNavigation } from "@react-navigation/native";
 
 const TrackingList = ({ route, onClose }) => {
@@ -25,13 +26,13 @@ const TrackingList = ({ route, onClose }) => {
       case 4:
         return "book";
       case 5:
-        return "pen-to-square";
+        return "file-text";
       case 6:
         return "clipboard";
       case 7:
-        return "font";
+        return "check-circle";
       case 8:
-        return "money-bills";
+        return "dollar";
       case 9:
         return "print";
       case 10:
@@ -49,10 +50,12 @@ const TrackingList = ({ route, onClose }) => {
       <View style={styles.card} className="mb-56">
         <View style={styles.cardHeader}>
           <View style={styles.headerContent}>
-            <Back/>  
-            <Text className="my-2 font-bold text-xl text-center text-black">
+            <View className="flex-row justify-between items-center px-2">
+            <BackButton action={() => navigation.goBack()} size={25}/>  
+            <Text className="my-2 font-bold text-xl text-center text-black ">
               ({selected?.kode}) {selected?.lokasi}
             </Text>
+            </View>
           </View>
         </View>
         <ScrollView style={styles.cardBody}>
