@@ -77,7 +77,7 @@ const EditPermohonan = ({ route, navigation }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="bg-[#ececec] w-full h-full p-7 ">
         <Back size={24} action={() => navigation.goBack()} className="mr-2" />
 

@@ -5,11 +5,13 @@ import { NavigationContainer } from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
 import Dashboard from "./Dashboard";
-import Profile from "../profile/Profile";
+import Profile from "../profile/Index";
 import Index from "../pengujian/Index";
 import IndexPembayaran from "../pembayaran/Index";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Tab = createBottomTabNavigator();
+const Stack = createNativeStackNavigator();
 
 const screenOptions = {
   tabBarShowLabel: false,
@@ -26,10 +28,9 @@ const screenOptions = {
   },
 };
 
-export default function MainScreen() {
+const TabNavigator = () => {
   return (
-    <NavigationContainer independent={true}>
-      <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator screenOptions={screenOptions}>
         <Tab.Screen
           name="Dashboard"
           component={Dashboard}
@@ -96,29 +97,18 @@ export default function MainScreen() {
             ),
           }}
         />
-        <Tab.Screen
-          name="Profile"
-          component={Profile}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/user.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
-
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Profil
-                </Text>
-              </View>
-            ),
-          }}
-        />
+     
       </Tab.Navigator>
+  )
+}
+
+export default function MainScreen() {
+  return (
+    <NavigationContainer independent={true}>
+      <Stack.Navigator screenOptions={screenOptions}>
+        <Stack.Screen name="TabNavigator" component={TabNavigator} />
+        <Stack.Screen name="Profile" component={Profile} />
+      </Stack.Navigator>
     </NavigationContainer>
   );
 }

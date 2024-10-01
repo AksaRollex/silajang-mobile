@@ -137,7 +137,7 @@ const Parameter = ({ navigation, route }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="p-7 bg-[#ececec]">
         <Back />
         {titik ? (

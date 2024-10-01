@@ -5,9 +5,11 @@ import moment from "moment";
 import { mapStatusPengujian } from "@/src/libs/utils";
 import Header from "../../components/Header";
 import Back from "../../components/Back";
+import { useNavigation } from "@react-navigation/native";
 
 const TrackingList = ({ route, onClose }) => {
   const {selected} = route.params
+  const navigation = useNavigation()
   const icon = status => {
     switch (status) {
       case -1:
@@ -43,7 +45,7 @@ const TrackingList = ({ route, onClose }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View style={styles.card} className="mb-56">
         <View style={styles.cardHeader}>
           <View style={styles.headerContent}>

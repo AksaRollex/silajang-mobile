@@ -141,7 +141,7 @@ const TambahPermohonan = () => {
 
   return (
     <>
-    <Header />
+    <Header navigate={() => {navigation.navigate("Profile")}} />
       <ScrollView className="bg-[#ececec] w-full h-full p-7 ">
         <Back />
         <Controller

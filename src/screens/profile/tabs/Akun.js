@@ -8,16 +8,20 @@ import {
   Image,
   ActivityIndicator,
   onChange,
+  Modal,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
 import Toast from "react-native-toast-message";
 import { useForm, Controller } from "react-hook-form";  
 import { TextField, Colors, Button } from "react-native-ui-lib";
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { API_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import BackButton from "../../components/Back";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Akun = () => {
   const [file, setFile] = React.useState(null);
@@ -131,11 +135,19 @@ const Akun = () => {
     setFile(null);
     setCurrentPhotoUrl(null);
   };
+  
 
   return (
     <View style={styles.container}>
       {userData ? (
-        <>
+        <View style={styles.card}>
+          <View className="flex-row justify-between mx-2 mb-4 ">
+            <BackButton action={() => navigation.goBack()} size={26} />
+              <View className="flex-row gap-2 items-center">
+                <Ionicons name="person" size={24} color="black"/>
+                <Text className="text-xl font-extrabold me-10">Akun</Text>
+              </View>
+          </View>
           <Text style={{ color: "black" }}>Nama</Text>
           <Controller
             control={control}
@@ -227,21 +239,21 @@ const Akun = () => {
               />
             )}
           />
-        </>
+          <Button
+        label="Perbarui"
+        style={{ marginBottom: 10 }}
+        backgroundColor={Colors.brand}
+        borderRadius={5}
+        onPress={handleSubmit(update)}
+        disabled={isLoading}
+      />
+        </View>
       ) : (
         <View className="h-full flex justify-center">
         <ActivityIndicator size={"large"} color={"#312e81"} />
       </View>
       )}
 
-      <Button
-        label="Perbarui"
-        style={{ marginBottom: 40 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(update)}
-        disabled={isLoading}
-      />
     </View>
   );
 };
@@ -249,8 +261,20 @@ const Akun = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 16,
+    padding: 20,
+    backgroundColor: "#ececec",
+  },
+  card: {
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    backgroundColor: "#fff",
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginBottom: 20,
+    marginTop: 20,
   },
   textInput: {
     marginBottom: 16,

@@ -14,6 +14,9 @@ import { useUser } from "@/src/services";
 import Header from "../components/Header";
 import FooterText from "../components/FooterText";
 import { Picker } from "@react-native-picker/picker";
+import Icon from "react-native-vector-icons/AntDesign";
+import Entypo from "react-native-vector-icons/Entypo";
+import { useNavigation } from "@react-navigation/native";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -24,6 +27,7 @@ const Dashboard = () => {
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
+  const navigation = useNavigation();
 
   const fetchUserData = useCallback(() => {
     setRefreshing(true);
@@ -63,7 +67,7 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <Header />
+      <Header navigate={() => {navigation.navigate("Profile")}} />
       <View className="p-4 flex items-end  ">
         <View className="flex ">
           <Picker
@@ -77,9 +81,6 @@ const Dashboard = () => {
         </View>
       </View>
       <ScrollView
-        refreshControl={
-          <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-        }
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
         <View style={styles.gridContainer}>
@@ -89,33 +90,38 @@ const Dashboard = () => {
                 style={styles.cardNew}
                 number={dashboard.permohonanBaru}
                 text="Permohonan Baru"
-                imageSource={require("@/assets/images/folder.png")}
                 numberStyle={styles.card1}
+                icon={'users'}
+                iconColor={"#FFA500"}
               />
               <DashboardCard
                 style={styles.cardProcess}
                 number={dashboard.permohonanDiproses}
                 text="Permohonan Proses"
-                imageSource={require("@/assets/images/process.png")}
                 numberStyle={styles.card2}
+                icon={'leaf'}
+                iconColor={"#6b7fde"}
               />
               <DashboardCard
                 style={styles.cardCompleted}
                 number={dashboard.permohonanSelesai}
                 text="Permohonan Selesai"
-                imageSource={require("@/assets/images/checked.png")}
                 numberStyle={styles.card3}
+                icon={'check'}
+                iconColor={"#008000"}
               />
               <DashboardCard
                 style={styles.cardTotal}
                 number={dashboard.permohonanTotal}
                 text="Total Permohonan"
-                imageSource={require("@/assets/images/select-all.png")}
                 numberStyle={styles.card4}
+                icon={'wallet'}
+                iconColor={"#321e81"}
+
               />
             </>
           ) : (
-            <View className="h-full flex justify-center">
+            <View className="flex-1 justify-center items-center">
               <ActivityIndicator size={"large"} color={"#312e81"} />
             </View>
           )}
@@ -126,10 +132,10 @@ const Dashboard = () => {
   );
 };
 
-const DashboardCard = ({ style, number, text, imageSource, numberStyle }) => (
+const DashboardCard = ({ style, number, text, imageSource, numberStyle, icon, iconColor }) => (
   <View style={[styles.cardContainer, style]}>
     <View style={styles.row}>
-      <Image source={imageSource} style={styles.logoFiles} />
+      <Entypo name={icon} size={30} color={iconColor} />
       <Text style={[styles.cardNumber, numberStyle]}>{number}</Text>
     </View>
     <Text style={[styles.cardInfoValue, styles.cardTextColor]}>{text}</Text>
@@ -272,7 +278,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 10,
     elevation: 10,
-    borderColor: "black",
+    borderColor: "#312e81",
     borderTopWidth: 6,
   },
   cardNumber: {
@@ -299,7 +305,7 @@ const styles = StyleSheet.create({
     color: "#008000",
   },
   card4: {
-    color: "black",
+    color: "#312e81",
   },
   chartContainer: {
     marginVertical: 20,

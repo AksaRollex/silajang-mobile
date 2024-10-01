@@ -8,6 +8,10 @@ import Toast from 'react-native-toast-message';
 import { useNavigation } from '@react-navigation/native';
 import axios from "@/src/libs/axios";
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons'; 
+import BackButton from "../../components/Back";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+
+
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Keamanan = () => {
@@ -52,6 +56,14 @@ const Keamanan = () => {
 
   return (
     <View style={styles.container}>
+      <View style={styles.card}>
+        <View className="flex-row justify-between mx-2 mb-4">
+          <BackButton action={() => navigation.goBack()} size={26}/>
+            <View className="flex-row gap-2 items-center">
+              <FontAwesome5Icon name="lock" size={24} color="black" />
+              <Text className="text-xl font-extrabold me-10">Keamanan</Text>
+            </View>
+        </View>
       <Text style={{ color: "black" }}>Password Lama</Text>
       <Controller
         control={control}
@@ -159,6 +171,7 @@ const Keamanan = () => {
         onPress={handleSubmit(onSubmit)}
         disabled={updateKeamanan.isLoading}
       />
+      </View>
     </View>
   );
 };
@@ -166,8 +179,20 @@ const Keamanan = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
-    padding: 16,
+    padding: 20,
+    backgroundColor: "#ececec",
+  },
+  card: {
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    backgroundColor: "#fff",
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginBottom: 20,
+    marginTop: 20,
   },
   textInput: {
     padding: 12,

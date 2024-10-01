@@ -219,7 +219,7 @@ const TitikUji = ({ navigation, route, status }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="bg-[#ececec] w-full h-full">
         {permohonan ? (
           <View

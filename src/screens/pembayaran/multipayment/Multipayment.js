@@ -111,7 +111,7 @@ const Multipayment = ({ navigation }) => {
   };
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="w-full h-full bg-[#ececec]">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">

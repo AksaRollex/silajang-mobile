@@ -123,7 +123,7 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="bg-[#ececec] w-full h-full">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">

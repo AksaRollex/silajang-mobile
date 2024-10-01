@@ -88,8 +88,8 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
-      <ScrollView className="w-full h-full bg-[#ececec]">
+      <Header navigate={() => navigation.navigate("Profile")} />
+      <View className="w-full h-full bg-[#ececec]">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
             <Picker
@@ -118,7 +118,7 @@ const TrackingPengujian = ({ navigation }) => {
           payload={{ tahun, bulan }}
           renderItem={renderItem}
         />
-      </ScrollView>
+      </View>
     </>
   );
 };

@@ -24,6 +24,10 @@ import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { API_URL } from "@env";
+import BackButton from "../../components/Back"; 
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+
+
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Perusahaan = () => {
@@ -326,9 +330,17 @@ const Perusahaan = () => {
     );
   };
   return (
+    <ScrollView>
     <View style={styles.container}>
       {userData ? (
-        <>
+        <View style={styles.card}>
+          <View className="flex-row justify-between mx-2 mb-4">
+            <BackButton action={() => navigation.goBack()} size={26}/>
+              <View className="flex-row gap-2 items-center">
+                <FontAwesome5Icon name="briefcase" size={24} color="black" />
+                <Text className="text-xl font-extrabold me-10">Perusahaan</Text>
+              </View>
+          </View>
           <Text style={{ color: "black" }}>Tanda Tangan</Text>
           <Controller
             control={control}
@@ -632,31 +644,41 @@ const Perusahaan = () => {
           {errors.kelurahans && (
             <Text style={{ color: "red" }}>{errors.kelurahans.message}</Text>
           )}
-        </>
-      ) : (
-        <View className="h-full flex justify-center">
-          <ActivityIndicator size={"large"} color={"#312e81"} />
-        </View>
-      )}
-
-      <Button
+           <Button
         label="Simpan"
         style={{ marginBottom: 60 }}
         backgroundColor={Colors.brand}
         borderRadius={5}
         onPress={handleSubmit(update)}
         disabled={isLoading}></Button>
+        </View>
+      ) : (
+        <View className="h-full flex justify-center">
+          <ActivityIndicator size={"large"} color={"#312e81"} />
+        </View>
+      )}
     </View>
+    </ScrollView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: "center",
     padding: 16,
+    backgroundColor: "#ececec",
   },
-
+  card: {
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    backgroundColor: "#fff",
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginTop: 20,
+  },
   text: {
     textAlign: "center",
     fontSize: 18,
@@ -671,7 +693,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#4682B4",
-    marginBottom: 50,
+    marginBottom: 20,
   },
 
   submitButtonText: {

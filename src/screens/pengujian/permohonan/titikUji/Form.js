@@ -237,7 +237,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
 
       <View className="bg-[#ececec] w-full h-full p-7">
         <Back />
