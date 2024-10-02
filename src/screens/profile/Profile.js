@@ -82,16 +82,12 @@ export default function Profile({ navigation }) {
       {userData ? (
         <View
           elevetion={5}
-          className="w-full py-5 bg-[#fff] flex-row 
+          className="w-full py-5 px-4 bg-[#fff] flex-row 
         "
           style={{
-            borderBottomWidth: 1,
+            borderBottomWidth: 0.5,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.2,
-            shadowRadius: 2,
+            elevation: 0.5, 
           }}>
           <View className="w-1/5 items-center justify-center ">
             {userData ? (
@@ -108,10 +104,10 @@ export default function Profile({ navigation }) {
             )}
           </View>
           <View className="flex-col align-center justify-center mx-2 -mt-2 ">
-            <Text className="text-base text-black font-bold my-1">
+            <Text className="text-base text-black font-bold font-sans my-1">
               {userData?.nama}
             </Text>
-            <Text className="text-sm font-bold text-black ">
+            <Text className="text-sm font-bold  mt-1">
               {userData?.email}
             </Text>
           </View>
@@ -126,18 +122,18 @@ export default function Profile({ navigation }) {
         {/* Informasi Personal */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Akun")}
-          className="bg-[#fff] w-full py-6 px-4 mt-5 flex-row justify-between items-center"
+          className="bg-[#fff] w-full py-6 px-6  flex-row justify-between items-center"
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
+            elevation: 5, 
+            shadowColor: "#000", 
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
           }}>
           <View className="flex-row items-center">
-            <Icon name="user" size={29} color="black" />
+            <Icon name="user" size={29} color="#312e81" />
             <Text className="text-black font-sans ml-3">
               Informasi Personal
             </Text>
@@ -148,18 +144,18 @@ export default function Profile({ navigation }) {
         {/* Informasi Perusahaan */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Perusahaan")}
-          className="bg-[#fff] w-full py-6 px-4 flex-row justify-between items-center"
+          className="bg-[#fff] w-full py-6 px-6 flex-row justify-between items-center"
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
-            shadowOffset: { width: 0, height: 2 },
+            elevation: 1, 
+            shadowColor: "#000", 
+            shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
           }}>
           <View className="flex-row items-center">
-            <Icon name="archive" size={29} color="black" />
+            <Icon name="archive" size={29} color="#312e81" />
             <Text className="text-black font-sans ml-3">
               Informasi Perusahaan
             </Text>
@@ -170,18 +166,19 @@ export default function Profile({ navigation }) {
         {/* Ganti Password */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Keamanan")}
-          className="bg-[#fff] w-full py-6 px-4 flex-row justify-between items-center"
+          className="bg-[#fff] w-full py-6 px-6 flex-row justify-between items-center"
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
-            shadowOffset: { width: 0, height: 2 },
+            elevation:1, 
+            shadowColor: "#000", 
+            shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-          }}>
+          }}
+          >
           <View className="flex-row items-center">
-            <Icon name="lock" size={29} color="black" />
+            <Icon name="lock" size={29} color="#312e81" />
             <Text className="text-black font-sans ml-3">Ganti Password</Text>
           </View>
           <Icon name="chevron-right" size={24} color="black" />
@@ -189,11 +186,11 @@ export default function Profile({ navigation }) {
 
         {/* Logout */}
         <TouchableOpacity
-          className="bg-red-100 w-full py-6 px-4 mt-3 flex-row justify-between items-center"
+          className="bg-red-100 w-full py-6 px-6  flex-row justify-between items-center"
           onPress={handleLogout}
           style={{
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
+            elevation: 2, 
+            shadowColor: "#000", 
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
