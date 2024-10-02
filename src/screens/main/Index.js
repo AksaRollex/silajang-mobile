@@ -59,14 +59,13 @@ const Header = () => {
   );
 };
 
-
 const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
-        options={{
+        options={{  
           tabBarIcon: ({ focused }) => (
             <View
               style={[
@@ -132,6 +131,7 @@ const TabNavigator = () => {
           ),
         }}
       />
+      
     </Tab.Navigator>
   );
 };

@@ -25,6 +25,7 @@ import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
+import { rupiah } from "@/src/libs/utils";
 
 export default function Detail({ route, navigation }) {
   const { uuid } = route.params;
@@ -49,10 +50,11 @@ export default function Detail({ route, navigation }) {
     selectedParameter: null,
   });
 
-  const handleParameter = parameter => {
+  const handleParameter = (parameter, uuid) => {
     setModalState({
       visible: true,
       selectedParameter: parameter,
+      uuid: uuid,
     });
   };
 
@@ -335,7 +337,7 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data?.kode || ''}</Text>
+                  <Text style={styles.kode}>{data?.kode || ""}</Text>
                 </View>
               </View>
             </View>
@@ -348,7 +350,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
-                  <Text style={styles.value}>{data?.permohonan?.user?.nama || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.permohonan?.user?.nama || ""}
+                  </Text>
                 </View>
               </View>
 
@@ -359,7 +363,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.instansi || ''}
+                    {data?.permohonan?.user?.detail?.instansi || ""}
                   </Text>
                 </View>
               </View>
@@ -375,7 +379,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.alamat || ''}
+                    {data?.permohonan?.user?.detail?.alamat || ""}
                   </Text>
                 </View>
               </View>
@@ -387,7 +391,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.telepon || ''}
+                    {data?.permohonan?.user?.detail?.telepon || ""}
                   </Text>
                 </View>
               </View>
@@ -406,7 +410,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Lokasi/Titik Uji</Text>
-                  <Text style={styles.value}>{data?.lokasi || ''}</Text>
+                  <Text style={styles.value}>{data?.lokasi || ""}</Text>
                 </View>
               </View>
 
@@ -416,7 +420,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
-                  <Text style={styles.value}>{data?.permohonan?.industri || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.permohonan?.industri || ""}
+                  </Text>
                 </View>
               </View>
 
@@ -426,7 +432,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
-                  <Text style={styles.value}>{data?.permohonan?.alamat || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.permohonan?.alamat || ""}
+                  </Text>
                 </View>
               </View>
 
@@ -437,7 +445,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.user?.detail?.jenis_kegiatan || ''}
+                    {data?.permohonan?.user?.detail?.jenis_kegiatan || ""}
                   </Text>
                 </View>
               </View>
@@ -447,7 +455,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
-                  <Text style={styles.value}>{data?.jenis_sampel?.nama || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.jenis_sampel?.nama || ""}
+                  </Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -630,7 +640,8 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
                   <Text style={styles.value}>
-                    {data?.peraturan?.nama || ''} - {data?.peraturan?.nomor || ''}
+                    {data?.peraturan?.nama || ""} -{" "}
+                    {data?.peraturan?.nomor || ""}
                   </Text>
                 </View>
               </View>
@@ -642,15 +653,34 @@ export default function Detail({ route, navigation }) {
                   <Text style={styles.label}>Parameter</Text>
                   <Text style={styles.value}>Nama</Text>
                 </View>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "bold",
+                      marginTop: 23,
+                      color: Colors.black,
+                    }}>
+                    Harga
+                  </Text>
+                </View>
               </View>
               <View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
                     <View key={index} style={styles.paramContainer}>
-                      <Text style={styles.param}>{item.nama}</Text>
-                      <TouchableOpacity onPress={() => handleParameter(item)}>
-                        <EvilIcons name="pencil" size={20} color="black" />
-                      </TouchableOpacity>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.param}>{item.nama}</Text>
+                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
+                          <EvilIcons
+                            style={{ marginLeft: 8, marginTop: 2 }}
+                            name="pencil"
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <Text style={styles.param}>{rupiah(item.harga)}</Text>
                     </View>
                   ))
                 ) : (
@@ -666,8 +696,9 @@ export default function Detail({ route, navigation }) {
                   <View style={styles.modalOverlay}>
                     <View style={styles.modalContainer}>
                       <Parameter
-                      data={data}
+                        data={data}
                         selectedParameter={modalState.selectedParameter}
+                        uuid={modalState.uuid}
                       />
                       <TouchableOpacity
                         onPress={handleCloseModal}
@@ -692,7 +723,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}  
+                    {data?.permohonan?.jasa_pengambilan?.wilayah || ""}
                   </Text>
                 </View>
               </View>
@@ -702,7 +733,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas Pengambil</Text>
-                  <Text style={styles.value}>{data?.pengambil?.nama || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.pengambil?.nama || ""}
+                  </Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -714,7 +747,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Tanggal/Jam</Text>
-                  <Text style={styles.value}>{data?.tanggal_pengambilan || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.tanggal_pengambilan || ""}
+                  </Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -723,7 +758,9 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
-                  <Text style={styles.value}>{data?.acuan_metode?.nama || ''}</Text>
+                  <Text style={styles.value}>
+                    {data?.acuan_metode?.nama || ""}
+                  </Text>
                 </View>
               </View>
             </View>
@@ -735,7 +772,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
-                  <Text style={styles.value}>{data?.south || ''}</Text>
+                  <Text style={styles.value}>{data?.south || ""}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -744,7 +781,7 @@ export default function Detail({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
-                  <Text style={styles.value}>{data?.east || ''}</Text>
+                  <Text style={styles.value}>{data?.east || ""}</Text>
                 </View>
               </View>
             </View>
@@ -785,11 +822,6 @@ const styles = StyleSheet.create({
     marginRight: 10,
     fontSize: 16,
   },
-  paramContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginVertical: 5,
-  },
   loadingContainer: {
     flex: 1,
     justifyContent: "center",
@@ -806,13 +838,14 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     marginTop: 30,
+    justifyContent: "space-between",
   },
   param: {
     fontSize: 16,
     fontWeight: "bold",
     color: Colors.black,
-    marginRight: 10,
-    marginLeft: 59,
+    // marginRight: 10,
+    // marginLeft: 59,
   },
   scrollViewContainer: {
     flexDirection: "row",
@@ -851,7 +884,7 @@ const styles = StyleSheet.create({
   infoItem: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 15,
+    marginBottom: 8,
   },
   iconContainer: {
     backgroundColor: "rgba(76, 175, 80, 0.1)", // Light green background
