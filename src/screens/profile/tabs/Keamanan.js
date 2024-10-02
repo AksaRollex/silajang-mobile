@@ -8,7 +8,10 @@ import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import Back from "../../components/Back";
+
+import { TouchableOpacity } from "react-native-ui-lib";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -22,9 +25,19 @@ const Keamanan = () => {
   } = useForm();
   const navigation = useNavigation();
 
-  const [showOldPassword, setShowOldPassword] = useState(false);
-  const [showNewPassword, setShowNewPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [isPasswordVisible, setPasswordVisible] = useState(false);
+  const [isPasswordVisible2, setPasswordVisible2] = useState(false);
+  const [isPasswordVisible3, setPasswordVisible3] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setPasswordVisible(!isPasswordVisible);
+  };
+  const togglePasswordVisibility2 = () => {
+    setPasswordVisible2(!isPasswordVisible2);
+  };
+  const togglePasswordVisibility3 = () => {
+    setPasswordVisible3(!isPasswordVisible3);
+  };
 
   const updateKeamanan = useMutation(
     data => axios.put("/user/updateKeamanan", data),
@@ -35,7 +48,7 @@ const Keamanan = () => {
           text1: "Password berhasil diperbarui",
         });
         reset();
-        navigation.navigate("Profile");
+        navigation.navigate("IndexProfile");
       },
       onError: error => {
         console.error(error.response.data);
@@ -85,30 +98,32 @@ const Keamanan = () => {
                   Password Lama
                 </Text>
                 <TextField
-                  // secureTextEntry={!showOldPassword}
+                  secureTextEntry={!isPasswordVisible}
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                   onChangeText={onChange}
                   value={value}
                   error={!!errors.old_password}
-                  right={
-                    <TextInput.Icon
-                      name={showOldPassword ? "eye-off" : "eye"}
-                      render={() => (
-                        <Icon
-                          name={showOldPassword ? "eye-off" : "eye"}
-                          size={24}
-                          color="black"
-                          onPress={() => setShowOldPassword(!showOldPassword)}
-                        />
-                      )}
-                    />
-                  }
                 />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: "53%",
+                  }}>
+                  <Ionicons
+                    name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
               </View>
             )}
           />
           {errors.old_password && (
-            <Text style={styles.errorText}>{errors.old_password.message}</Text>
+            <Text style={{ color: "red" }} className="mb-2 ">
+              {errors.old_password.message}
+            </Text>
           )}
 
           <Controller
@@ -126,29 +141,33 @@ const Keamanan = () => {
                 <TextField
                   mode="outlined"
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  // secureTextEntry={!showNewPassword}
+                  secureTextEntry={!isPasswordVisible2}
                   onChangeText={onChange}
                   value={value}
                   error={!!errors.password}
-                  right={
-                    <TextInput.Icon
-                      name={showNewPassword ? "eye-off" : "eye"}
-                      render={() => (
-                        <Icon
-                          name={showNewPassword ? "eye-off" : "eye"}
-                          size={24}
-                          color="black"
-                          onPress={() => setShowNewPassword(!showNewPassword)}
-                        />
-                      )}
-                    />
-                  }
                 />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility2}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: "57%",
+                  }}>
+                  <Ionicons
+                    name={
+                      isPasswordVisible2 ? "eye-outline" : "eye-off-outline"
+                    }
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
               </View>
             )}
           />
           {errors.password && (
-            <Text style={styles.errorText}>{errors.password.message}</Text>
+            <Text style={{ color: "red" }} className="mb-2">
+              {errors.password.message}
+            </Text>
           )}
 
           <Controller
@@ -162,32 +181,32 @@ const Keamanan = () => {
                 </Text>
                 <TextField
                   mode="outlined"
-                  // secureTextEntry={!showConfirmPassword}
+                  secureTextEntry={!isPasswordVisible3}
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                   onChangeText={onChange}
                   value={value}
                   error={!!errors.password_confirmation}
-                  right={
-                    <TextInput.Icon
-                      name={showConfirmPassword ? "eye-off" : "eye"}
-                      render={() => (
-                        <Icon
-                          name={showConfirmPassword ? "eye-off" : "eye"}
-                          size={24}
-                          color="black"
-                          onPress={() =>
-                            setShowConfirmPassword(!showConfirmPassword)
-                          }
-                        />
-                      )}
-                    />
-                  }
                 />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility3}
+                  style={{
+                    position: "absolute",
+                    top: "53%",
+                    right: 10,
+                  }}>
+                  <Ionicons
+                    name={
+                      isPasswordVisible3 ? "eye-outline" : "eye-off-outline"
+                    }
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
               </View>
             )}
           />
           {errors.password_confirmation && (
-            <Text style={styles.errorText}>
+            <Text style={{ color: "red" }} className="mb-2">
               {errors.password_confirmation.message}
             </Text>
           )}
@@ -208,8 +227,6 @@ const Keamanan = () => {
   );
 };
 
-const styles = StyleSheet.create({
- 
-});
+const styles = StyleSheet.create({});
 
 export default Keamanan;

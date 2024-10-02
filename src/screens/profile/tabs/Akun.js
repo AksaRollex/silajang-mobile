@@ -62,6 +62,9 @@ const Akun = () => {
       });
   }, []);
 
+  console.log(userData)
+
+
   // UPDATE DATA USER
   const updateUser = async () => {
     const formData = new FormData();
@@ -162,7 +165,7 @@ const Akun = () => {
             className="mr-2 "
           />
           <Text className="font-bold text-white text-lg ">
-            informasi Personal
+            Informasi Personal
           </Text>
         </View>
       </View>
