@@ -22,6 +22,7 @@ import Toast from "react-native-toast-message";
 import { memo, useEffect } from "react";
 import { useState } from "react";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const FormTitikUji = ({ route, navigation, props }) => {
@@ -291,8 +292,8 @@ const FormTitikUji = ({ route, navigation, props }) => {
               className="w-1/2 bg-[#fff] rounded-sm py-12 px-2   m-0.5 items-center"
               style={[selectedPayment === "qris" && styles.selectedCard]}
               onPress={() => handleSelectedPayment("qris")}>
-              <MaterialIcons
-                name="barcode"
+              <FontAwesome
+                name="qrcode"
                 size={50}
                 color="black"
                 style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
@@ -329,7 +330,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
             control={control}
             render={({ field: { onChange, value } }) => (
               <View>
-                <Text className="font-sans font-bold mb-2 text-black">
+                <Text className="font-sans font-bold mb-2 text-black mt-3">
                   Jenis Sampel
                 </Text>
 
@@ -351,7 +352,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
             control={control}
             render={({ field: { onChange, value } }) => (
               <View>
-                <Text className="font-sans font-bold mb-2 text-black">
+                <Text className="font-sans font-bold mb-2 text-black mt-3">
                   Jenis Wadah
                 </Text>
 
@@ -369,13 +370,12 @@ const FormTitikUji = ({ route, navigation, props }) => {
             )}
           />
 
-          <Text className="text-black mt-2">Keterangan</Text>
           <Controller
             name="keterangan"
             control={control}
             render={({ field: { onChange, value } }) => (
               <View>
-                <Text className="font-sans font-bold mb-2 text-black">
+                <Text className="font-sans font-bold mb-2 text-black mt-3">
                   Keterangan
                 </Text>
                 <TextField
@@ -500,11 +500,11 @@ const FormTitikUji = ({ route, navigation, props }) => {
           </View>
           <TouchableOpacity
             onPress={handleLocationPress}
-            className="w-full p-3 rounded-sm "
+            className="mt-5 w-full p-3 rounded-sm"
             style={{
               backgroundColor: Colors.brand,
             }}>
-            <Text className="text-white text-base font-bold text-center">
+            <Text className="text-white text-xs font-bold text-center">
               Gunakan Lokasi Saat Ini
             </Text>
           </TouchableOpacity>

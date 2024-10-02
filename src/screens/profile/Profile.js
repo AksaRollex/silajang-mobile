@@ -10,7 +10,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { useUser } from "@/src/services/userUser"; 
-import Akun from "./tabs/Akun";
+import Akun from "./tabs/Akun"; 
 import Perusahaan from "./tabs/Perusahaan";
 import Keamanan from "./tabs/Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
