@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
 import Header from "../components/Header";
 import { API_URL } from "@env";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -31,59 +32,14 @@ import Icon from "react-native-vector-icons/Feather";
 
 export default function Profile({ navigation }) {
   const [activeComponent, setActiveComponent] = useState("Akun");
-  const [userData, setUserData] = useState(null);
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false); // State untuk modal visibility
   const queryClient = useQueryClient();
   const [imageLoadError, setImageLoadError] = useState(false);
 
-  // Fetch user data
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("/auth");
-      const { nama, email, phone, golongan, photo } = response.data.user;
-      setData({ nama, email, phone, golongan });
-      setLoading(false);
-
-      const fullImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
-      setImageUrl(fullImageUrl);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Another fetch for user data
-  useEffect(() => {
-    axios
-      .get("/auth")
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  const handlePress = component => {
-    setActiveComponent(component);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleCancel = () => {
-    setActiveComponent(null);
-  };
+  // Menggunakan useUser untuk mendapatkan data pengguna
+  const { data: userData, isLoading } = useUser();
 
   const handleLogout = () => {
     setModalVisible(true); // Menampilkan modal saat tombol logout ditekan
@@ -137,18 +93,26 @@ export default function Profile({ navigation }) {
             shadowOpacity: 0.2,
             shadowRadius: 2,
           }}>
-          <View className="w-1/5 items-center justify-center">
-            <Image
-              source={require("@/assets/images/avatar.png")}
-              className="w-14 h-14 rounded-full"
-            />
+          <View className="w-1/5 items-center justify-center ">
+            {userData ? (
+              <FastImage
+              className="rounded-full w-16 h-16 "
+              source={{
+                  uri: `${process.env.APP_URL}${userData.photo}`,
+                  priority: FastImage.priority.high,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            ) : (
+              <View></View>
+            )}
           </View>
-          <View className="flex-col align-center justify-center ">
+          <View className="flex-col align-center justify-center mx-2 -mt-2 ">
             <Text className="text-base text-black font-bold my-1">
-              {userData?.user.nama}
+              {userData?.nama}
             </Text>
             <Text className="text-sm font-bold text-black ">
-              {userData?.user.email}
+              {userData?.email}
             </Text>
           </View>
         </View>
