@@ -389,36 +389,38 @@ const Perusahaan = () => {
                     </Text>
 
                     <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
-                      {file || currentPhotoUrl ? (
-                        <View style={styles.imageContainer}>
-                          <ImageComponent />
+                      <View className="bg-zinc-800 rounded-sm p-2">
+                        {file || currentPhotoUrl ? (
+                          <View style={styles.imageContainer}>
+                            <ImageComponent />
+                            {/* <TouchableOpacity
+                              style={{ backgroundColor: Colors.brand }}
+                              className="px-5 py-2 rounded-sm items-center justify-center"
+                              onPress={handleChoosePhoto}>
+                              <Text className="font-sans font-bold  text-white">
+                                Ubah Tanda tangan
+                              </Text>
+                            </TouchableOpacity> */}
+                            <TouchableOpacity
+                              style={styles.deleteButton}
+                              className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
+                              onPress={handleDeletePhoto}>
+                              <Icons
+                                name="close"
+                                size={18}
+                                color={"white"}></Icons>
+                            </TouchableOpacity>
+                          </View>
+                        ) : (
                           <TouchableOpacity
-                            style={{ backgroundColor: Colors.brand }}
-                            className="px-5 py-2 rounded-sm items-center justify-center"
+                            style={styles.addSignatureButton}
                             onPress={handleChoosePhoto}>
-                            <Text className="font-sans font-bold  text-white">
-                              Ubah Tanda tangan
+                            <Text style={styles.addSignatureText}>
+                              Tambah Tanda Tangan
                             </Text>
                           </TouchableOpacity>
-                          <TouchableOpacity
-                            style={styles.deleteButton}
-                            className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
-                            onPress={handleDeletePhoto}>
-                            <Icons
-                              name="close"
-                              size={18}
-                              color={"white"}></Icons>
-                          </TouchableOpacity>
-                        </View>
-                      ) : (
-                        <TouchableOpacity
-                          style={styles.addSignatureButton}
-                          onPress={handleChoosePhoto}>
-                          <Text style={styles.addSignatureText}>
-                            Tambah Tanda Tangan
-                          </Text>
-                        </TouchableOpacity>
-                      )}
+                        )}
+                      </View>
                     </View>
                   </View>
                 )}
@@ -1006,13 +1008,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     borderWidth: 2,
-    borderColor: "black",
+    borderColor: "#fff",
     borderStyle: "dashed",
     borderRadius: 8,
   },
   addSignatureText: {
     marginLeft: 10,
-    color: "black",
+    color: "#fff",
     fontSize: 16,
     fontWeight: "bold",
   },

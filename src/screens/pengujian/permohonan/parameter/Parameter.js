@@ -7,6 +7,7 @@ import Back from "@/src/screens/components/Back";
 import Paginate from "@/src/screens/components/Paginate";
 import { useTitikPermohonan } from "@/src/services/useTitikPermohonan";
 import { rupiah } from "@/src/libs/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
@@ -14,6 +15,7 @@ const Parameter = ({ route, navigation }) => {
   const [showPeraturan, setShowPeraturan] = useState(false);
   const [showPaket, setShowPaket] = useState(false);
 
+  const queryClient = useQueryClient();
   const { data: selectedParameter, refetch: refetchSelectedParameter } =
     useQuery({
       queryKey: ["selectedParameter", uuid],
@@ -36,6 +38,7 @@ const Parameter = ({ route, navigation }) => {
     {
       onSuccess: () => {
         refetch();
+        queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
         refetchSelectedParameter();
       },
     },
@@ -62,6 +65,7 @@ const Parameter = ({ route, navigation }) => {
     {
       onSuccess: () => {
         refetch();
+        queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
         refetchSelectedParameter();
       },
     },
@@ -75,6 +79,7 @@ const Parameter = ({ route, navigation }) => {
     {
       onSuccess: () => {
         refetch();
+        queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
         refetchSelectedParameter();
       },
     },
@@ -88,6 +93,7 @@ const Parameter = ({ route, navigation }) => {
     {
       onSuccess: () => {
         refetch();
+        queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
         refetchSelectedParameter();
       },
     },
@@ -119,7 +125,10 @@ const Parameter = ({ route, navigation }) => {
               : addPeraturan.mutate(item.uuid)
           }>
           <Text
-            style={{ color: item.selected ? "red" : "white", backgroundColor : Colors.brand }}
+            style={{
+              color: item.selected ? "red" : "white",
+              backgroundColor: Colors.brand,
+            }}
             className=" p-2 rounded-sm font-sans text-bold">
             {item.selected ? "-" : "+"}
           </Text>
@@ -141,7 +150,7 @@ const Parameter = ({ route, navigation }) => {
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity onPress={() => addParameter.mutate(item.uuid)}>
           <Text
-            style={{ backgroundColor : Colors.brand }}
+            style={{ backgroundColor: Colors.brand }}
             className=" font-bold text-white p-2 rounded-sm font-sans">
             +
           </Text>
@@ -165,7 +174,8 @@ const Parameter = ({ route, navigation }) => {
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity
           onPress={() => removeParameter.mutate(item.uuid)}
-          className=" text-white p-2 rounded-sm font-sans" style={{  backgroundColor : Colors.brand }}>
+          className=" text-white p-2 rounded-sm font-sans"
+          style={{ backgroundColor: Colors.brand }}>
           <Text style={{ color: "white" }}>-</Text>
         </TouchableOpacity>
       )}
@@ -189,7 +199,7 @@ const Parameter = ({ route, navigation }) => {
           <View className="bg-[#ececec]">
             <TouchableOpacity
               onPress={() => setShowPeraturan(!showPeraturan)}
-              style={{ padding: 10, backgroundColor : Colors.brand }}
+              style={{ padding: 10, backgroundColor: Colors.brand }}
               className="">
               <Text className="text-white text-center font-bold font-sans">
                 Pilih berdasarkan Peraturan :
@@ -258,7 +268,9 @@ const Parameter = ({ route, navigation }) => {
           </View>
 
           <View style={{ flex: 1 }} className="bg-[#ececec] ">
-            <View className="rounded-sm p-4" style = {{  backgroundColor : Colors.brand }}>
+            <View
+              className="rounded-sm p-4"
+              style={{ backgroundColor: Colors.brand }}>
               <Text className="text-white text-center font-bold font-sans">
                 Parameter yang Dipilih :
               </Text>

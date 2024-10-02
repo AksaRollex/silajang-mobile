@@ -179,7 +179,7 @@ const PengujianDetail = ({ route, navigation }) => {
             </View>
             {formData?.payment.status === "success" ? (
               <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-bold ">
-                Pembayaran berhasil dilakukan
+                Pembayaran berhasil dilakukan {formData?.payment?.tanggal_bayar}
               </Text>
             ) : formData?.payment?.is_expired === false ? (
               <Text style={styles.warningText}>
