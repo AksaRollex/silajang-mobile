@@ -25,6 +25,9 @@ import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { APP_URL } from "@env";
+import Back from "../../components/Back";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import Icons from "react-native-vector-icons/AntDesign";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -356,401 +359,466 @@ const Perusahaan = () => {
     );
   };
   return (
-    <View style={styles.container}>
-      {userData ? (
-        <>
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Tanda Tangan
-          </Text>
-          <Controller
-            control={control}
-            name="tanda_tangan"
-            render={({ field: { value } }) => (
-              <View style={styles.signatureContainer}>
-                <View style={styles.signatureField}>
-                  {file || currentPhotoUrl ? (
-                    <View style={styles.imageContainer}>
-                      <ImageComponent />
-                      <TouchableOpacity
-                        style={styles.changeButton}
-                        onPress={handleChoosePhoto}>
-                        <Text style={styles.buttonText}>Ubah Tanda tangan </Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        style={styles.deleteButton}
-                        onPress={handleDeletePhoto}>
-                        <Text style={styles.deleteButtonText}>X</Text>
-                      </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <TouchableOpacity
-                      style={styles.addSignatureButton}
-                      onPress={handleChoosePhoto}>
-                      <Text style={styles.addSignatureText}>
-                        Tambah Tanda Tangan
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
-            )}
+    <>
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
           />
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Instansi
+          <Text className="font-bold text-white text-lg ">
+            Informasi Perusahaan
           </Text>
-          <Controller
-            control={control}
-            name="instansi"
-            rules={{ required: "Instansi Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                placeholderTextColor="black"
-                placeholder={userData.instansi}
-                enableErrors
-                fieldStyle={styles.textField}
-                onChangeText={onChange}
-              />
-            )}
-          />
-          {errors.instansi && (
-            <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Alamat
-          </Text>
-          <Controller
-            control={control}
-            name="alamat"
-            rules={{ required: "Alamat Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="text-input"
-                placeholderTextColor="black"
-                placeholder={userData.alamat}
-                onChangeText={onChange}
-              />
-            )}></Controller>
-          {errors.alamat && (
-            <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Pimpinan
-          </Text>
-          <Controller
-            control={control}
-            name="pimpinan"
-            rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="text-input"
-                placeholderTextColor="black"
-                placeholder={userData.pimpinan}
-                onChangeText={onChange}
-              />
-            )}></Controller>
-          {errors.pimpinan && (
-            <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            PJ Mutu
-          </Text>
-          <Controller
-            control={control}
-            name="pj_mutu"
-            rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="text-input"
-                placeholderTextColor="black"
-                placeholder={userData.pj_mutu}
-                onChangeText={onChange}
-              />
-            )}></Controller>
-          {errors.pj_mutu && (
-            <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Nomor Telepon
-          </Text>
-          <Controller
-            control={control}
-            name="telepon"
-            rules={{ required: "Telepon Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                onChangeText={onChange}
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="phone-pad"
-                placeholderTextColor="black"
-                placeholder={userData.telepon}
-              />
-            )}></Controller>
-          {errors.telepon && (
-            <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Fax
-          </Text>
-          <Controller
-            control={control}
-            name="fax"
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                onChangeText={onChange}
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="phone-pad"
-                placeholderTextColor="black"
-                placeholder={userData.fax}
-              />
-            )}></Controller>
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            Email
-          </Text>
-          <Controller
-            control={control}
-            name="email"
-            rules={{ required: "Email Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="email-address"
-                onChangeText={onChange}
-                placeholderTextColor="black"
-                placeholder={userData.email}
-              />
-            )}></Controller>
-          {errors.email && (
-            <Text style={{ color: "red" }}>{errors.email.message}</Text>
-          )}
-          <Text style={{ color: "black", marginBottom: 5, fontWeight: "bold" }}>
-            {" "}
-            Jenis Kegiatan
-          </Text>
-          <Controller
-            control={control}
-            name="jenis_kegiatan"
-            rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                fieldStyle={styles.textField}
-                enableErrors
-                keyboardType="text-input"
-                onChangeText={onChange}
-                placeholderTextColor="black"
-                placeholder={userData.jenis_kegiatan}
-              />
-            )}></Controller>
-          {errors.jenis_kegiatan && (
-            <Text style={{ color: "red" }}>
-              {errors.jenis_kegiatan.message}
-            </Text>
-          )}
-          <View
-            style={{ justifyContent: "space-between", flexDirection: "row" }}>
-            <Text
-              style={{
-                marginBottom: 5,
-                color: "black",
-                marginLeft: 55,
-                fontWeight: "bold",
-              }}>
-              Lintang
-            </Text>
-            <Text
-              style={{ color: "black", marginRight: 65, fontWeight: "bold" }}>
-              Bujur
-            </Text>
-          </View>
-          <View
-            style={{
-              flexDirection: "row",
-              justifyContent: "space-between",
-            }}>
-            <View style={{ flex: 1, marginRight: 5 }}>
+        </View>
+      </View>
+      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-6">
+          {userData ? (
+            <View>
               <Controller
                 control={control}
-                name="lat"
-                rules={{ required: "Latitude Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <TextField
-                    fieldStyle={styles.textField}
-                    enableErrors
-                    keyboardType="numeric"
-                    onChangeText={onChange}
-                    value={value || location.lat}
-                    placeholderTextColor="gray"
-                    placeholder={userData.lat}
-                  />
-                )}
-              />
-            </View>
-            <View style={{ flex: 1, marginLeft: 5 }}>
-              <Controller
-                control={control}
-                name="long"
-                rules={{ required: "Longitude Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <TextField
-                    fieldStyle={styles.textField}
-                    keyboardType="numeric"
-                    onChangeText={onChange}
-                    enableErrors
-                    value={value || location.long}
-                    placeholderTextColor="gray"
-                    placeholder={userData.long}
-                  />
-                )}
-              />
-            </View>
-          </View>
+                name="tanda_tangan"
+                render={({ field: { value } }) => (
+                  <View className="mb-4">
+                    <Text className="font-sans font-bold mb-2 text-black ">
+                      Tanda Tangan
+                    </Text>
 
-          <TouchableOpacity
-            style={styles.buttonLokasi}
-            onPress={handleLocationPress}>
-            <Text style={styles.buttonLokasiText}>Gunakan Lokasi Saat Ini</Text>
-          </TouchableOpacity>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}>
-            <View style={styles.modalContainer}>
-              <View style={styles.modalContent}>
-                <Text style={styles.modalTitle}>Anda Berada Pada :</Text>
-                <Text style={styles.modalText}>Lintang: {location.lat}</Text>
-                <Text style={styles.modalText}>Bujur: {location.long}</Text>
-                {/* <TouchableOpacity
+                    <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
+                      {file || currentPhotoUrl ? (
+                        <View style={styles.imageContainer}>
+                          <ImageComponent />
+                          <TouchableOpacity
+                            style={{ backgroundColor: Colors.brand }}
+                            className="px-5 py-2 rounded-sm items-center justify-center"
+                            onPress={handleChoosePhoto}>
+                            <Text className="font-sans font-bold  text-white">
+                              Ubah Tanda tangan
+                            </Text>
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            style={styles.deleteButton}
+                            className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
+                            onPress={handleDeletePhoto}>
+                            <Icons
+                              name="close"
+                              size={18}
+                              color={"white"}></Icons>
+                          </TouchableOpacity>
+                        </View>
+                      ) : (
+                        <TouchableOpacity
+                          style={styles.addSignatureButton}
+                          onPress={handleChoosePhoto}>
+                          <Text style={styles.addSignatureText}>
+                            Tambah Tanda Tangan
+                          </Text>
+                        </TouchableOpacity>
+                      )}
+                    </View>
+                  </View>
+                )}
+              />
+
+              <Controller
+                control={control}
+                name="instansi"
+                rules={{ required: "Instansi Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Instansi
+                    </Text>
+
+                    <TextField
+                      placeholderTextColor="black"
+                      placeholder={userData.instansi}
+                      enableErrors
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      onChangeText={onChange}
+                    />
+                  </View>
+                )}
+              />
+              {errors.instansi && (
+                <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="alamat"
+                rules={{ required: "Alamat Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Alamat Industri
+                    </Text>
+                    <TextField
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="text-input"
+                      placeholderTextColor="black"
+                      placeholder={userData.alamat}
+                      onChangeText={onChange}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.alamat && (
+                <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="pimpinan"
+                rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Pimpinan
+                    </Text>
+                    <TextField
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="text-input"
+                      placeholderTextColor="black"
+                      placeholder={userData.pimpinan}
+                      onChangeText={onChange}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.pimpinan && (
+                <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="pj_mutu"
+                rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      PJ Mutu
+                    </Text>
+                    <TextField
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="text-input"
+                      placeholderTextColor="black"
+                      placeholder={userData.pj_mutu}
+                      onChangeText={onChange}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.pj_mutu && (
+                <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="telepon"
+                rules={{ required: "Telepon Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Nomor Telepon
+                    </Text>
+                    <TextField
+                      onChangeText={onChange}
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="phone-pad"
+                      placeholderTextColor="black"
+                      placeholder={userData.telepon}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.telepon && (
+                <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="fax"
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Fax
+                    </Text>
+                    <TextField
+                      onChangeText={onChange}
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="phone-pad"
+                      placeholderTextColor="black"
+                      placeholder={userData.fax}
+                    />
+                  </View>
+                )}></Controller>
+
+              <Controller
+                control={control}
+                name="email"
+                rules={{ required: "Email Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Email
+                    </Text>
+                    <TextField
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="email-address"
+                      onChangeText={onChange}
+                      placeholderTextColor="black"
+                      placeholder={userData.email}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.email && (
+                <Text style={{ color: "red" }}>{errors.email.message}</Text>
+              )}
+
+              <Controller
+                control={control}
+                name="jenis_kegiatan"
+                rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Jenis Kegiatan
+                    </Text>
+                    <TextField
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      enableErrors
+                      keyboardType="text-input"
+                      onChangeText={onChange}
+                      placeholderTextColor="black"
+                      placeholder={userData.jenis_kegiatan}
+                    />
+                  </View>
+                )}></Controller>
+              {errors.jenis_kegiatan && (
+                <Text style={{ color: "red" }}>
+                  {errors.jenis_kegiatan.message}
+                </Text>
+              )}
+
+              <View className="flex-row justify-between">
+                <Controller
+                  control={control}
+                  name="lat"
+                  rules={{ required: "Latitude Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="w-1/2 pr-2">
+                      <Text className="font-sans font-bold mb-2 text-black">
+                        South
+                      </Text>
+
+                      <TextField
+                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                        enableErrors
+                        keyboardType="numeric"
+                        onChangeText={onChange}
+                        value={value || location.lat}
+                        placeholderTextColor="gray"
+                        placeholder={userData.lat}
+                      />
+                    </View>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="long"
+                  rules={{ required: "Longitude Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="w-1/2 pl-2">
+                      <Text className="font-sans font-bold mb-2 text-black text-end">
+                        East
+                      </Text>
+
+                      <TextField
+                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                        keyboardType="numeric"
+                        onChangeText={onChange}
+                        enableErrors
+                        value={value || location.long}
+                        placeholderTextColor="gray"
+                        placeholder={userData.long}
+                      />
+                    </View>
+                  )}
+                />
+              </View>
+              <TouchableOpacity
+                onPress={handleLocationPress}
+                className="w-full p-3 rounded-sm mb-5 "
+                style={{
+                  backgroundColor: Colors.brand,
+                }}>
+                <Text className="text-white text-base font-bold text-center">
+                  Gunakan Lokasi Saat Ini
+                </Text>
+              </TouchableOpacity>
+              <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}>
+                <View style={styles.modalContainer}>
+                  <View style={styles.modalContent}>
+                    <Text style={styles.modalTitle}>Anda Berada Pada :</Text>
+                    <Text style={styles.modalText}>
+                      Lintang: {location.lat}
+                    </Text>
+                    <Text style={styles.modalText}>Bujur: {location.long}</Text>
+                    {/* <TouchableOpacity
                   style={styles.buttonModal}
                   onPress={() => setModalVisible(false)}>
                   <Text>Tutup</Text>
                 </TouchableOpacity> */}
-              </View>
+                  </View>
+                </View>
+              </Modal>
+
+              <Controller
+                name="kab_kota_id"
+                control={control}
+                rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Kabupaten / Kota
+                    </Text>
+                    <View style={{ borderColor: "black", borderWidth: 0.5 }}>
+                      <RNPickerSelect
+                        onValueChange={value => {
+                          onChange(value);
+                          setSelectedKotaKabupaten(value);
+                        }}
+                        value={value}
+                        items={kotaKabupaten.map(item => ({
+                          label: item.label,
+                          value: item.value,
+                          key: item.value, // Tambahkan key yang unik
+                        }))}
+                        className="bg-[#fff] rounded-sm border-stone-300  font-sans "
+                        // placeholder={{
+                        //   label: userData.kab_kota_id
+                        //     ? `Kab/Kota: ${userData.kab_kota_id}`
+                        //     : "Pilih Kabupaten/Kota",
+                        //   value: null, // Tambahkan nilai untuk placeholder
+                        // }}
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+              {errors.kab_kota_id && (
+                <Text style={{ color: "red" }}>
+                  {errors.kab_kota_id.message}
+                </Text>
+              )}
+              <Controller
+                name="kecamatan_id"
+                rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <View className="mt-4">
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Kecamatan
+                    </Text>
+                    <View style={{ borderColor: "black", borderWidth: 0.5 }}>
+                      <RNPickerSelect
+                        onValueChange={value => {
+                          onChange(value);
+                          setSelectedKecamatan(value); // Set Kecamatan
+                        }}
+                        value={value}
+                        items={kecamatan.map(item => ({
+                          label: item.label,
+                          value: item.value,
+                          key: item.value, // Tambahkan key yang unik
+                        }))}
+                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
+                        // placeholder={{
+                        //   label: userData.kecamatan_id
+                        //     ? `Kecamatan: ${userData.kecamatan_id}`
+                        //     : "Pilih Kecamatan",
+                        //   value: null, // Tambahkan nilai untuk placeholder
+                        // }}
+                        disabled={!selectedKotaKabupaten} // Disabled jika Kota/Kabupaten belum dipilih
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+              {errors.kecamatan_id && (
+                <Text style={{ color: "red" }}>
+                  {errors.kecamatan_id.message}
+                </Text>
+              )}
+
+              <Controller
+                name="kelurahan_id"
+                control={control}
+                rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View className="mt-4">
+                    <Text className="font-sans font-bold mb-2 text-black">
+                      Kelurahan
+                    </Text>
+                    <View style={{ borderWidth: 0.5, borderColor: "black" }}>
+                      <RNPickerSelect
+                        onValueChange={value => {
+                          onChange(value);
+                          setSelectedKelurahan(value); // Set Kelurahan
+                        }}
+                        value={value}
+                        items={kelurahan.map(item => ({
+                          label: item.label,
+                          value: item.value,
+                          key: item.value, // Tambahkan key yang unik
+                        }))}
+                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
+                        // placeholder={{
+                        //   label: userData.kelurahan_id
+                        //     ? `Kelurahan: ${userData.kelurahan_id}`
+                        //     : "Pilih Kelurahan",
+                        //   value: null, // Tambahkan nilai untuk placeholder
+                        // }}
+                        disabled={!selectedKecamatan} // Disabled jika Kecamatan belum dipilih
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+              {errors.kelurahan_id && (
+                <Text style={{ color: "red" }}>
+                  {errors.kelurahan_id.message}
+                </Text>
+              )}
+              <Button
+                onPress={handleSubmit(update)}
+                loading={isLoading}
+                className="p-2 rounded-sm mt-4"
+                style={{ backgroundColor: Colors.brand }}>
+                <Text className="text-white text-center text-base font-bold font-sans">
+                  SIMPAN
+                </Text>
+              </Button>
             </View>
-          </Modal>
-          <Text style={styles.label}>Kabupaten/Kota</Text>
-          <Controller
-            name="kab_kota_id"
-            control={control}
-            rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.inputContainer}>
-                <RNPickerSelect
-                  onValueChange={value => {
-                    onChange(value);
-                    setSelectedKotaKabupaten(value);
-                  }}
-                  value={value}
-                  items={kotaKabupaten.map(item => ({
-                    label: item.label,
-                    value: item.value,
-                    key: item.value, // Tambahkan key yang unik
-                  }))}
-                  style={pickerSelectStyles}
-                  // placeholder={{
-                  //   label: userData.kab_kota_id
-                  //     ? `Kab/Kota: ${userData.kab_kota_id}`
-                  //     : "Pilih Kabupaten/Kota",
-                  //   value: null, // Tambahkan nilai untuk placeholder
-                  // }}
-                />
-              </View>
-            )}
-          />
-          {errors.kab_kota_id && (
-            <Text style={{ color: "red" }}>{errors.kab_kota_id.message}</Text>
+          ) : (
+            <View className="h-full flex justify-center">
+              <ActivityIndicator size={"large"} color={"#312e81"} />
+            </View>
           )}
-
-          <Text style={styles.label}>Kecamatan</Text>
-          <Controller
-            name="kecamatan_id"
-            rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
-            control={control}
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.inputContainer}>
-                <RNPickerSelect
-                  onValueChange={value => {
-                    onChange(value);
-                    setSelectedKecamatan(value); // Set Kecamatan
-                  }}
-                  value={value}
-                  items={kecamatan.map(item => ({
-                    label: item.label,
-                    value: item.value,
-                    key: item.value, // Tambahkan key yang unik
-                  }))}
-                  style={pickerSelectStyles}
-                  // placeholder={{
-                  //   label: userData.kecamatan_id
-                  //     ? `Kecamatan: ${userData.kecamatan_id}`
-                  //     : "Pilih Kecamatan",
-                  //   value: null, // Tambahkan nilai untuk placeholder
-                  // }}
-                  disabled={!selectedKotaKabupaten} // Disabled jika Kota/Kabupaten belum dipilih
-                />
-              </View>
-            )}
-          />
-          {errors.kecamatan_id && (
-            <Text style={{ color: "red" }}>{errors.kecamatan_id.message}</Text>
-          )}
-
-          <Text style={styles.label}>Kelurahan</Text>
-          <Controller
-            name="kelurahan_id"
-            control={control}
-            rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View style={styles.inputContainer}>
-                <RNPickerSelect
-                  onValueChange={value => {
-                    onChange(value);
-                    setSelectedKelurahan(value); // Set Kelurahan
-                  }}
-                  value={value}
-                  items={kelurahan.map(item => ({
-                    label: item.label,
-                    value: item.value,
-                    key: item.value, // Tambahkan key yang unik
-                  }))}
-                  style={pickerSelectStyles}
-                  // placeholder={{
-                  //   label: userData.kelurahan_id
-                  //     ? `Kelurahan: ${userData.kelurahan_id}`
-                  //     : "Pilih Kelurahan",
-                  //   value: null, // Tambahkan nilai untuk placeholder
-                  // }}
-                  disabled={!selectedKecamatan} // Disabled jika Kecamatan belum dipilih
-                />
-              </View>
-            )}
-          />
-          {errors.kelurahan_id && (
-            <Text style={{ color: "red" }}>{errors.kelurahan_id.message}</Text>
-          )}
-        </>
-      ) : (
-        <View className="h-full flex justify-center">
-          <ActivityIndicator size={"large"} color={"#312e81"} />
         </View>
-      )}
-
-      <Button
-        label="Simpan"
-        style={{ marginBottom: 60 }}
-        backgroundColor={Colors.brand}
-        borderRadius={5}
-        onPress={handleSubmit(update)}
-        disabled={isLoading}></Button>
-    </View>
+      </ScrollView>
+    </>
   );
 };
 
@@ -782,10 +850,20 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    justifyContent: "center",
     padding: 16,
+    backgroundColor: "#ececec",
   },
-
+  card: {
+    padding: 20,
+    borderRadius: 20,
+    shadowColor: "#000",
+    backgroundColor: "#fff",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
+    marginTop: 20,
+  },
   text: {
     textAlign: "center",
     fontSize: 18,
@@ -800,7 +878,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     backgroundColor: "#4682B4",
-    marginBottom: 50,
+    marginBottom: 20,
   },
 
   submitButtonText: {
@@ -928,13 +1006,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 20,
     borderWidth: 2,
-    borderColor: "#4682B4",
+    borderColor: "black",
     borderStyle: "dashed",
     borderRadius: 8,
   },
   addSignatureText: {
     marginLeft: 10,
-    color: "#4682B4",
+    color: "black",
     fontSize: 16,
     fontWeight: "bold",
   },
