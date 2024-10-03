@@ -635,7 +635,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="vial" size={30} color="black" />
+                  <FontAwesome name="file-text-o" size={34} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
@@ -647,7 +647,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="file-text-o" size={34} color="black" />
+                  <FontAwesome6 name="vial"size={30} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Parameter</Text>

@@ -151,14 +151,13 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     padding: 16,
   },
-  inputContainer: {
-    flexDirection: "row",
-    alignItems: "center",
+  inputContainer:  {
+    padding: 12,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    color: "black",
+    borderColor: "#ccc",
     borderWidth: 1,
-    borderColor: Colors.grey40,
-    borderRadius: 5,
-    marginBottom: 16,
-    paddingHorizontal: 10,
   },
   input: {
     flex: 1,

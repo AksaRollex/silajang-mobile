@@ -267,15 +267,13 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
   textField: {
-    flexDirection: "row",
-    alignItems: "center",
+    padding: 12,
+    backgroundColor: "#f0f0f0",
+    borderRadius: 8,
+    color: "black",
+    borderColor: "#ccc",
     borderWidth: 1,
-    borderColor: Colors.grey40,
-    borderRadius: 5,
-    paddingHorizontal: 20,
-    height: 46, // Increase the height
-    paddingVertical: 5, // Add vertical padding for a bigger input area
-  },
+   },
   imagePreview: {
     width: 100,
     height: 100,
