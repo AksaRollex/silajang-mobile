@@ -613,6 +613,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                       <Parameter
                       data={data}
                         selectedParameter={modalState.selectedParameter}
+                        uuid={modalState.uuid}
                       />
                       <TouchableOpacity
                         onPress={handleCloseModal}
