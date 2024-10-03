@@ -19,6 +19,7 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import Octicons from "react-native-vector-icons/Octicons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RadioButton } from "react-native-paper";
@@ -39,10 +40,7 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checked, setChecked] = useState();
-  const [pengawetan, setPengawetan] = useState("");
   const [interpretasi, setInterpretasi] = useState();
-  const [baku, setBaku] = useState();
-  const [isAbnormal, setIsAbnormal] = useState(false);
   const [keterangan, setKeterangan] = useState("");
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -54,7 +52,7 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
   const [Metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
-  const [obyekPelayanan, setObyekPelayanan] = useState(''); 
+  const [obyekPelayanan, setObyekPelayanan] = useState('');
 
   const [modalVisible, setModalVisible] = useState({
     visible: false,
@@ -65,10 +63,11 @@ export default function DetailPersetujuan({ route, navigation }) {
     selectedParameter: null,
   });
 
-  const handleParameter = parameter => {
+  const handleParameter = (parameter, uuid) => {
     setModalState({
       visible: true,
       selectedParameter: parameter,
+      uuid: uuid,
     });
   };
 
@@ -85,7 +84,7 @@ export default function DetailPersetujuan({ route, navigation }) {
         console.error("Error fetching RadiusPengambilan data:", error);
       }
     };
-  
+
     fetchRadiusPengambilan();
   }, []);
 
@@ -95,7 +94,7 @@ export default function DetailPersetujuan({ route, navigation }) {
         const response = await axios.get("/administrasi/pengambil-sample/petugas");
         setPengambilSample(response.data.data);
       } catch (error) {
-        console.error("Error fetching Metode data:", error);
+        console.error("Error fetching pengambil data:", error);
       }
     };
   
@@ -115,6 +114,24 @@ export default function DetailPersetujuan({ route, navigation }) {
     fetchMetode();
   }, []);
 
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/administrasi/pengambil-sample/${uuid}`);
+        console.log("Response data:", response.data);
+        setData(response.data.data);
+        if (response.data.data) {
+          setObyekPelayanan(response.data.data.obyek_pelayanan || ''); // Atur state ke obyek_pelayanan
+        }
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [uuid]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -132,36 +149,15 @@ export default function DetailPersetujuan({ route, navigation }) {
         }
         if (
           response.data.data &&
-          response.data.data.obyek_pelayanan !== undefined
-        ) {
-          setObyekPelayanan(response.data.data.obyek_pelayanan);
-        }
-        if (
-          response.data.data &&
-          response.data.data.pengawetan_oleh !== undefined
-        ) {
-          setPengawetan(response.data.data.pengawetan_oleh);
-        }
-        if (
-          response.data.data &&
           response.data.data.hasil_pengujian !== undefined
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
-        }
-        if (response.data.data && response.data.data.baku_mutu !== undefined) {
-          setBaku(response.data.data.baku_mutu);
         }
         if (
           response.data.data &&
           response.data.data.tanggal_pengambilan !== undefined
         ) {
           setDate(new Date(response.data.data.tanggal_pengambilan));
-        }
-        if (
-          response.data.data &&
-          response.data.data.kondisi_sampel !== undefined
-        ) {
-          setIsAbnormal(response.data.data.kondisi_sampel === 1);
         }
         setLoading(false);
       } catch (error) {
@@ -223,6 +219,10 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
+  function rupiah(value) {
+    return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
   if (loading) {
     return (
       <View style={styles.loadingContainer}>
@@ -263,10 +263,6 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data berhasil disimpan:", response.data);
     
   };
-  const saving = value => {
-    setPengawetan(value);
-    savePengawetan(value);
-  };
 
   const saveInterpretasi = value => {
     setInterpretasi(value);
@@ -298,20 +294,7 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data berhasil disimpan:", response.data);
   };
 
-  const saveBaku = value => {
-    setBaku(value);
-    saveBak(value);
-  };
-
-  const saveBak = async status => {
-    const response = await axios.post(
-      `/administrasi/pengambil-sample/${uuid}/update`,
-      {
-        baku_mutu: status,
-      },
-    );
-  };
-  const tanggal = value => {
+  tanggal = value => {
     setDate(value);
     saveDateAndTime(value);
   };
@@ -325,11 +308,7 @@ export default function DetailPersetujuan({ route, navigation }) {
     );
   };
 
-  const handleSwitchChange = value => {
-    setIsAbnormal(value);
-    console.log(value);
-    updateKondisiSampel(value ? 1 : 0, value ? null : keterangan);
-  };
+ 
 
   const updateKondisiSampel = async (kondisiSampel, keterangan = "") => {
     try {
@@ -381,7 +360,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Fontisto name="user-secret" size={35} color="black" />
+                  <FontAwesome6 name="user-large" size={29} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
@@ -505,6 +484,20 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
               </View>
 
+              <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
+              <View style={styles.switchContainer}>
+                  <Text style={styles.optionText}>Tidak</Text>
+                  <Switch
+                    value={interpretasi === 1}
+                    onValueChange={(value) => saveInterpretasi(value ? 1 : 0)}
+                    trackColor={{ false: "#767577", true: "#312e81" }}
+                    thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
+                  />
+                  <Text style={styles.optionText}>Ada</Text>
+                </View>
+
+
+
               <Text style={styles.value}>Kesimpulan Permohonan</Text>
 
               <View style={styles.radioContainer}>
@@ -534,19 +527,6 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
-              <View style={styles.switchContainer}>
-                  <Text style={styles.optionText}>Tidak</Text>
-                  <Switch
-                    value={interpretasi === 1}
-                    onValueChange={(value) => saveInterpretasi(value ? 1 : 0)}
-                    trackColor={{ false: "#767577", true: "#312e81" }}
-                    thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
-                  />
-                  <Text style={styles.optionText}>Ada</Text>
-                </View>
-
-
                 {showDatePicker && (
                   <DateTimePicker
                     value={date || new Date()}
@@ -571,7 +551,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="vial" size={30} color="black" />
+                  <FontAwesome name="file-text-o" size={34} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
@@ -582,21 +562,40 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="file-text-o" size={34} color="black" />
+                  <FontAwesome6 name="vial" size={30} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Parameter</Text>
                   <Text style={styles.value}>Nama</Text>
+                </View>
+                <View>
+                  <Text
+                    style={{
+                      fontSize: 16,
+                      fontWeight: "bold",
+                      marginTop: 23,
+                      color: Colors.black,
+                    }}>
+                    Harga
+                  </Text>
                 </View>
               </View>
               <View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
                     <View key={index} style={styles.paramContainer}>
-                      <Text style={styles.param}>{item.nama}</Text>
-                      <TouchableOpacity onPress={() => handleParameter(item)}>
-                        <EvilIcons name="pencil" size={20} color="black" />
-                      </TouchableOpacity>
+                      <View style={{ flexDirection: "row" }}>
+                        <Text style={styles.param}>{item.nama}</Text>
+                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
+                          <EvilIcons
+                            style={{ marginLeft: 8, marginTop: 2 }}
+                            name="pencil"
+                            size={20}
+                            color="black"
+                          />
+                        </TouchableOpacity>
+                      </View>
+                      <Text style={styles.param}>{rupiah(item.harga)}</Text>
                     </View>
                   ))
                 ) : (
@@ -714,31 +713,31 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
               </View>
 
-              <View style={styles.infoItem}>
-                <View style={styles.iconContainer}>
-                  <MaterialIcons
-                    name="date-range"
-                    size={34}
-                    color="black"></MaterialIcons>
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.value}>Tanggal Diterima</Text>
-              <View>
-                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                  <View style={styles.dateTimeButton}>
-                    <Text style={styles.dateTimeText}>
-                      {date
-                        ? `Tanggal/Waktu: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
-                        : "Pilih Tanggal dan Waktu"}
-                    </Text>
-                    <FontAwesome
-                      name="calendar"
-                      size={30}
-                      color="#000"
-                      style={styles.dateTimeIcon}
-                    />
+                <View style={styles.infoItem}>
+                  <View style={styles.iconContainer}>
+                    <MaterialIcons
+                      name="date-range"
+                      size={34}
+                      color="black"></MaterialIcons>
                   </View>
-                </TouchableOpacity>
+                  <View style={styles.textContainer}>
+                    <Text style={styles.label}>Tanggal/Jam</Text>
+                <View>
+                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                    <View style={styles.dateTimeButton}>
+                      <Text style={styles.dateTimeText}>
+                        {date
+                          ? `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`
+                          : "Pilih Tanggal dan Waktu"}
+                      </Text>
+                      <FontAwesome
+                        name="calendar"
+                        size={13}
+                        color="#000"
+                        style={styles.dateTimeIcon}
+                      />
+                    </View>
+                  </TouchableOpacity>
 
                 {showDatePicker && (
                   <DateTimePicker
@@ -802,7 +801,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                 <Text style={styles.label}>Obyek Pelayanan</Text>
                 <TextInput 
                   style={styles.inputStyle} 
-                  value={data.obyek_pelayanan} 
+                  value={obyekPelayanan} 
                   keyboardType="default"
                   onChangeText={saveObyekPelayanan}
                 />
@@ -945,6 +944,7 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: Colors.black,
   },
+
   radioContainer: {
     flexDirection: "row",
     justifyContent: "space-between",
@@ -983,15 +983,18 @@ const styles = StyleSheet.create({
   dateTimeButton: {
     flexDirection: "row",
     alignItems: "center",
-    marginTop: 16,
-    padding: 12,
-    backgroundColor: "#f0f0f0",
+    marginTop: 3 ,
+    padding: 10,
+    backgroundColor: "#f8fafc",
     borderRadius: 8,
+    borderColor: '#cccccc',
+    borderWidth: 1,
   },
   dateTimeText: {
-    fontSize: 16,
+    fontSize: 15,
     flex: 1,
     color: "black",
+    fontWeight: "bold",
   },
   dateTimeIcon: {
     marginLeft: 8,
@@ -1027,16 +1030,6 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
   },
-  abnormalContainer: {
-    padding: 10,
-    backgroundColor: "#f8d7da", // warna background merah terang
-    borderRadius: 5,
-    marginTop: 10,
-  },
-  abnormalText: {
-    color: "#721c24", // warna teks merah gelap
-    fontSize: 16,
-  },
   input: {
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
@@ -1048,7 +1041,7 @@ const styles = StyleSheet.create({
     borderColor: '#cccccc',
     borderRadius: 8,
     backgroundColor: '#f8fafc',
-    width: 200,  // Memperluas lebar picker
+    width: 290,  // Memperluas lebar picker
     overflow: 'hidden',
     // shadowOpacity: 0.1,
     // shadowRadius: 3,
@@ -1064,12 +1057,12 @@ const styles = StyleSheet.create({
   },
 
   inputStyle: {
-    fontSize: 13,
+    fontSize: 13.5,
     fontWeight: "bold",
     paddingVertical: 8,
     paddingHorizontal: 15, 
     color: '#333333',
-    width: '72.5%',
+    width: '100%',
     height: 40,  // Sama dengan tinggi picker
     borderWidth: 1,
     borderColor: '#cccccc',
