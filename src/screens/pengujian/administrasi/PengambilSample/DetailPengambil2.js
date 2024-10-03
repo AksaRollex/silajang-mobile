@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator  } from "react-native";
-import { Button, Colors, TextField } from "react-native-ui-lib";
+import { Button, Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -16,198 +16,133 @@ import { launchImageLibrary } from "react-native-image-picker";
 import { useForm, Controller } from "react-hook-form";
 import { rupiah } from "@/src/libs/utils";
 import Geolocation from 'react-native-geolocation-service';
-import {  request, PERMISSIONS, RESULTS } from 'react-native-permissions';
-import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import Toast from 'react-native-toast-message';
-
+import { check, request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 
 
 export default function Detail({ route, navigation }) {
-  const { uuid, status } = route.params;
+  const { uuid } = route.params;
+  const [data, setData] = useState(null);
+  const [loading, setLoading] = useState(true);
   const [file, setFile] = React.useState(null);
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const { control, handleSubmit } = useForm();
   const [locationData, setLocationData] = useState({
     south: '',
     east: '',
   });
 
-  const { data, isLoading: isLoadingData } = useQuery(["/administrasi/pengambil-sample", uuid], () =>
-    uuid ? axios.get(`/administrasi/pengambil-sample/${uuid}`).then(res => res.data.data) : null,
-    {
-      enabled: !!uuid,
-      onSuccess: (data) => {
+  useEffect(() => {
+    requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+          : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+      const result = await request(permission);
+      if (result === RESULTS.GRANTED) {
+        console.log('Location permission granted.');
+      } else {
+        console.log('Location permission denied.');
+        Alert.alert('Permission Denied', 'Location permission is required to access your location.');
       }
+    } catch (error) {
+      console.log('Error requesting location permission:', error);
     }
-  )
-  const { handleSubmit, control, setValue, watch } = useForm({
-    values: {...data}
-  });
+  };
 
-  const queryClient = useQueryClient();
-  const { mutate: createOrUpdate, isLoading } = useMutation(
-    (data) => {
-      console.log(data)
-      return axios.post(`/administrasi/pengambil-sample/${uuid}/update`, data)
-    },
-    {
-      onSuccess: () => {
-          console.log("berhasil")
-          Toast.show({
-              type: "success",
-              text1: "Success",
-              text2: uuid ? "Success update data" : "Success create data",
-          });
-          queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries(["/administrasi/pengambil-sample"]);
+  const handleCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationData({
+          south: latitude.toString(),
+          east: longitude.toString(),
+        });
       },
-      
-      onError: (error) => {
-          Toast.show({ 
-              type: "error",
-              text1: "Error",
-              text2: "Failed to update data",
-          });
-          console.error(error);
+      (error) => {
+        console.error('Error getting location:', error);
+        Alert.alert('Error', 'Unable to retrieve your location.');
       },
-  },
-  )
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
 
-  const handleBatalkanKonfirmasi = () => {
-    axios.post(`/administrasi/pengambil-sample/${uuid}/update-status`, { status: 0 })
-      .then(() => {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Status cancelled (status = 0)",
-        });
-      })
-      .catch((error) => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Failed to cancel status",
-        });
-      });
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(
+          `/administrasi/pengambil-sample/${uuid}`,
+        );
+        setData(response.data.data);
+        
+        setLoading(false);
+      } catch (error) {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, [uuid]);
+
+  function rupiah(value) {
+    return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+
+  const handleChoosePhoto = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const source = { uri: response.assets[0].uri };
+        setCurrentPhotoUrl(source.uri);
+        setFile(source);
+      }
+    });
+  };
+
+  const handleDeletePhoto = () => {
+    setCurrentPhotoUrl(null);
+    setFile(null);
   };
 
   const onSubmit = (data) => {
-    createOrUpdate(data);
-  }
-  if (isLoadingData && uuid) {
-    return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
- }
+    console.log(data);
+  };
 
- useEffect(() => {
-  requestLocationPermission();
-}, []);
+  const handleSubmitData = async () => {
+    const formData = new FormData();
+    formData.append('status', data.status);
 
-const requestLocationPermission = async () => {
-  try {
-    const permission =
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
-        : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
-
-    const result = await request(permission);
-    if (result === RESULTS.GRANTED) {
-      console.log('Location permission granted.');
-    } else {
-      console.log('Location permission denied.');
-      Alert.alert('Permission Denied', 'Location permission is required to access your location.');
-    }
-  } catch (error) {
-    console.log('Error requesting location permission:', error);
-  }
-};
-
-const handleCurrentLocation = () => {
-  Geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      setLocationData({
-        south: latitude.toString(),
-        east: longitude.toString(),
+    if (file) {
+      formData.append('photos[]', {
+        uri: file.uri,
+        type: 'image/jpeg',
+        name: 'photo.jpg',
       });
-    },
-    (error) => {
-      console.error('Error getting location:', error);
-      Alert.alert('Error', 'Unable to retrieve your location.');
-    },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-  );
-};
-
-const handleConfirm = () => {
-  setIsConfirmed(true);
-};
-
-function rupiah(value) {
-  return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-const jenisWadahValues = data?.jenis_wadahs
-? data?.jenis_wadahs
-    .map(item => `${item.nama} (${item.keterangan})`)
-    .join(", ")
-: "Tidak ada data";
-
-const handleChoosePhoto = () => {
-  const options = {
-    mediaType: 'photo',
-    quality: 1,
-  };
-
-  launchImageLibrary(options, (response) => {
-    if (response.didCancel) {
-      console.log('User cancelled image picker');
-    } else if (response.error) {
-      console.log('ImagePicker Error: ', response.error);
-    } else {
-      const source = { uri: response.assets[0].uri };
-      setCurrentPhotoUrl(source.uri);
-      setFile(source);
     }
-  });
-};
 
-const handleDeletePhoto = () => {
-  setCurrentPhotoUrl(null);
-  setFile(null);
-};
-
-const handleSubmitData = async () => {
-  const formData = new FormData();
-  formData.append('status', data.status);
-  if (file) {
-    formData.append('photos[]', {
-      uri: file.uri,
-      type: 'image/jpeg',
-      name: 'photo.jpg',
-    });
-  }
-  try {
-    await axios.post(`/administrasi/pengambil-sample/${uuid}/upload-photos`, formData);
-    Alert.alert('Success', 'Data berhasil disimpan.');
-  } catch (error) {
-    Alert.alert('Error', error.response.data.message);
-  }
-};
-function debounce(func, delay) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
+    try {
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/update-status`, formData);
+      Alert.alert('Success', 'Data berhasil disimpan.');
+    } catch (error) {
+      Alert.alert('Error', error.response.data.message);
+    }
   };
-}
 
-const autosave = debounce((data) => {
-  createOrUpdate(watch());
-}, 2000); 
-
-
+  
   
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer} showVerticalScrollIndicator={false}>
@@ -337,10 +272,7 @@ const autosave = debounce((data) => {
                     color="black"
                   />
                 </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Wadah</Text>
-                  <Text style={styles.value}>{jenisWadahValues}</Text>
-                </View>
+                
               </View>
             </View>
 
@@ -443,7 +375,7 @@ const autosave = debounce((data) => {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
                   {data.east ? (
-                  <TextInput
+                  <TextInput 
                   value={data.east}
                   editable={true}
                   className="h-10 bg-slate-50 "></TextInput>
@@ -453,10 +385,10 @@ const autosave = debounce((data) => {
                   onChangeText={(value) => setLocationData({ ...locationData, east: value })}
                   editable={true}
                   className="h-10 bg-slate-50 ">
-
+                  
                   </TextInput>
-                )}  
-                </View>
+                )}
+                  </View>
               </View>
 
               <TouchableOpacity>
@@ -475,151 +407,61 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Air (t°C)</Text>
-                  <Controller control={control} name="lapangan.suhu_air" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.suhu_air}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>pH</Text>
-                  <Controller control={control} name="lapangan.ph" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.ph}</TextInput>
                 </View>
               </View>
-              
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DHL (µS/cm)</Text>
-                  <Controller control={control} name="lapangan.dhl" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.dhl}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Salinitas (‰)</Text>
-                  <Controller control={control} name="lapangan.salitinitas" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.salitinitas}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DO (mg/L)</Text>
-                  <Controller control={control} name="lapangan.do" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.do}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kekeruhan</Text>
-                  <Controller control={control} name="lapangan.kekeruhan" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.kekeruhan}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Klorin Bebas</Text>
-                  <Controller control={control} name="lapangan.klorin_bebas" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.klorin_bebas}</TextInput>
                 </View>
               </View>
             </View>
@@ -632,112 +474,46 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Udara (t°C)</Text>
-                  <Controller control={control} name="lapangan.suhu_udara" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50  ">{data.lapangan?.suhu_udara}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Cuaca</Text>
-                  <Controller control={control} name="lapangan.cuaca" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.cuaca}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Arah Angin</Text>
-                  <Controller control={control} name="lapangan.arah_angin" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.arah_angin}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kelembapan (%RH)</Text>
-                  <Controller control={control} name="lapangan.kelembapan" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.kelembapan}</TextInput>
                 </View>
               </View>
-
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kecepatan Angin</Text>
-                  <Controller control={control} name="lapangan.kecepatan_angin" 
-                    render={({ field: { onChange, value } }) => (
-                      <TextInput
-                        value={value}
-                        onChangeText={(text) => {
-                          onChange(text);
-                          autosave(data);
-                        }}
-                        className="h-10 bg-slate-50"
-                        enableErrors
-                      />
-                      )}
-                    />
+                  <TextInput className="h-10 bg-slate-50 ">{data.lapangan?.kecepatan_angin}</TextInput>
                 </View>
               </View>
             </View>
-
-
             <View style={styles.lokasiContainer}>
               <Text style={styles.title}>Foto Lapangan/Lokasi</Text>
               <View style={styles.infoItem}>
@@ -746,7 +522,7 @@ const autosave = debounce((data) => {
                   name="photo"
                   render={({ field: { onChange } }) => (
                     <View className="w-full">
-                      { currentPhotoUrl || file ? (
+                      {currentPhotoUrl || file ? (
                         <View style={styles.imageContainer}>
                           <Image
                             source={{ uri: file ? file.uri : currentPhotoUrl }}
@@ -770,34 +546,24 @@ const autosave = debounce((data) => {
               </View>
 
               <View className="w-full mt-5" style={styles.infoItem}>
-              <TouchableOpacity onPress={handleSubmitData}>
-                <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8 }}>Simpan & Upload</Text>
-              </TouchableOpacity>
-                  {!isConfirmed && (
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                      <Text className="bg-blue-500 text-center text-white text-base font-bold py-3 ml-2" style={{ width: 170, borderRadius: 8 }}>
-                        Konfirmasi{" "}
-                        <FontAwesome6 name="check" size={23} />
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+              <TouchableOpacity>
+                        <Text
+                        className="flex bg-blue-500 text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8, textAlign: 'center'}}>Simpan & Upload</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity>
+                        <Text className="bg-blue-500 ml-3 text-center  text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8,}}>Konfirmasi {""}
+                          <FontAwesome6 name="check" className="" size={23}></FontAwesome6>
+                        </Text>
+                      </TouchableOpacity>
+                      </View>
 
-                  {isConfirmed && (
-                    <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                      <Text className="bg-blue-500 ml-3 text-center text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8 }}>
-                        Batalkan Konfirmasi
-                      </Text>
-                    </TouchableOpacity>
-                  )}
-                </View>
-              </View>
+            </View>
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>
         )}
       </View>
     </ScrollView>
- 
   );
 }
 

@@ -92,7 +92,7 @@ const PengambilSampel = ({ navigation }) => {
   const renderItem = ({ item }) => {
     const isDiterima = item.kesimpulan_permohonan;
     const dropdownOptionsForItem = isDiterima ? dropdownOptions : dropdownOptions1;
-
+    
   
     return (
       <View
@@ -104,7 +104,10 @@ const PengambilSampel = ({ navigation }) => {
           <View className="flex-shrink mr-20">
 
             {isDiterima ? (
-              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.user.nama}</Text>   
+              <>
+              <Text className="text-[18px] font-extrabold mb-3">{item.kode}</Text>   
+              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.user.nama}</Text>  
+              </> 
             ) 
               :
             (
