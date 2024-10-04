@@ -25,8 +25,7 @@ import Toast from 'react-native-toast-message';
 export default function Detail({ route, navigation }) {
   const { uuid, status } = route.params;
   const [file, setFile] = React.useState(null);
-  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
-  const [isConfirmed, setIsConfirmed] = useState(false);
+  const [photos, setPhotos] = useState([]);
   const [locationData, setLocationData] = useState({
     south: '',
     east: '',
@@ -37,6 +36,9 @@ export default function Detail({ route, navigation }) {
     {
       enabled: !!uuid,
       onSuccess: (data) => {
+        if (data.photos) {
+          setPhotos(data.photos);
+        }
       }
     }
   )
@@ -79,7 +81,22 @@ export default function Detail({ route, navigation }) {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: "Status cancelled (status = 0)",
+        });
+      })
+      .catch((error) => {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to cancel status",
+        });
+      });
+  };
+  const handleKonfirmasi = () => {
+    axios.post(`/administrasi/pengambil-sample/${uuid}/update-status`, { status: 1 })
+      .then(() => {
+        Toast.show({
+          type: "success",
+          text1: "Success",
         });
       })
       .catch((error) => {
@@ -129,6 +146,9 @@ const handleCurrentLocation = () => {
         south: latitude.toString(),
         east: longitude.toString(),
       });
+      setValue('south', latitude.toString());
+      setValue('east', longitude.toString());
+      autosave({ south: latitude.toString(), east: longitude.toString() });
     },
     (error) => {
       console.error('Error getting location:', error);
@@ -138,9 +158,6 @@ const handleCurrentLocation = () => {
   );
 };
 
-const handleConfirm = () => {
-  setIsConfirmed(true);
-};
 
 function rupiah(value) {
   return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
@@ -164,21 +181,27 @@ const handleChoosePhoto = () => {
     } else if (response.error) {
       console.log('ImagePicker Error: ', response.error);
     } else {
-      const source = { uri: response.assets[0].uri };
-      setCurrentPhotoUrl(source.uri);
-      setFile(source);
+      const newPhoto = { uri: response.assets[0].uri };
+      setPhotos((prevPhotos) => [...prevPhotos, newPhoto]); // Tambahkan foto baru ke array
     }
   });
 };
 
-const handleDeletePhoto = () => {
-  setCurrentPhotoUrl(null);
-  setFile(null);
+const handleDeletePhoto = (index) => {
+  setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index)); // Hapus foto berdasarkan index
 };
 
 const handleSubmitData = async () => {
   const formData = new FormData();
-  formData.append('status', data.status);
+  console.log(photos);
+  photos.forEach((photo, index) => {
+    formData.append(`photos[]`, {
+      uri: photo.uri,       
+      type: 'image/jpeg',   // Kamu bisa mengganti tipe sesuai file
+      name: `photo_${index}.jpg`,  // Penamaan bisa disesuaikan
+    });
+  });
+
   if (file) {
     formData.append('photos[]', {
       uri: file.uri,
@@ -186,13 +209,20 @@ const handleSubmitData = async () => {
       name: 'photo.jpg',
     });
   }
+
   try {
-    await axios.post(`/administrasi/pengambil-sample/${uuid}/upload-photos`, formData);
+    await axios.post(`/administrasi/pengambil-sample/${uuid}/upload-photo`, formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
     Alert.alert('Success', 'Data berhasil disimpan.');
   } catch (error) {
-    Alert.alert('Error', error.response.data.message);
+    const message = error.response ? error.response.data.message : 'Something went wrong';
+    Alert.alert('Error', message);
   }
 };
+
 function debounce(func, delay) {
   let timeout;
   return function (...args) {
@@ -417,22 +447,24 @@ const autosave = debounce((data) => {
                 <View style={styles.iconContainer}>
                   <Ionicons name="compass-outline" size={30} color="black" />
                 </View>
+                
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
-                  {data.south ? (
-                  <TextInput
-                  value={data.south}
-                  editable={true}
-                  className="h-10 bg-slate-50 "></TextInput>
-                ) : (
-                  <TextInput
-                  value={locationData.south}
-                  onChangeText={(value) => setLocationData({ ...locationData, south: value })}
-                  editable={true}
-                  className="h-10 bg-slate-50 ">
-
-                  </TextInput>
-                )}  
+                  <Controller
+                    control={control}
+                    name="south" 
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        value={value}
+                        onChangeText={(text) => {
+                          onChange(text);
+                          autosave(data);
+                        }}
+                        editable={true}
+                        className="h-10 bg-slate-50"
+                      />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -442,20 +474,21 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
-                  {data.east ? (
-                  <TextInput
-                  value={data.east}
-                  editable={true}
-                  className="h-10 bg-slate-50 "></TextInput>
-                ) : (
-                  <TextInput
-                  value={locationData.east}
-                  onChangeText={(value) => setLocationData({ ...locationData, east: value })}
-                  editable={true}
-                  className="h-10 bg-slate-50 ">
-
-                  </TextInput>
-                )}  
+                  <Controller
+                    control={control}
+                    name="east"
+                    render={({ field: { onChange, value } }) => (
+                      <TextInput
+                        value={value}
+                        onChangeText={(text) => {
+                          onChange(text);
+                          autosave(data);
+                        }}
+                        editable={true}
+                        className="h-10 bg-slate-50"
+                      />
+                    )}
+                  /> 
                 </View>
               </View>
 
@@ -541,7 +574,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Salinitas (‰)</Text>
-                  <Controller control={control} name="lapangan.salitinitas" 
+                  <Controller control={control} name="lapangan.salinitas" 
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -737,26 +770,32 @@ const autosave = debounce((data) => {
               </View>
             </View>
 
-
             <View style={styles.lokasiContainer}>
               <Text style={styles.title}>Foto Lapangan/Lokasi</Text>
               <View style={styles.infoItem}>
-                <Controller
+              <Controller
                   control={control}
-                  name="photo"
+                  name="photos"
                   render={({ field: { onChange } }) => (
                     <View className="w-full">
-                      { currentPhotoUrl || file ? (
+                      {photos.length > 0 ? (
                         <View style={styles.imageContainer}>
-                          <Image
-                            source={{ uri: file ? file.uri : currentPhotoUrl }}
-                            style={styles.signaturePreview}
-                          />
-                          <TouchableOpacity style={styles.changeButton} onPress={handleChoosePhoto}>
-                            <Text style={styles.buttonText}>Ubah</Text>
-                          </TouchableOpacity>
-                          <TouchableOpacity style={styles.deleteButton} onPress={handleDeletePhoto}>
-                            <Text style={styles.deleteButtonText}>X</Text>
+                          {photos.map((photo, index) => (
+                            <View key={index} style={styles.photoWrapper}>
+                              <Image
+                                source={{ uri: photo.uri }}  // Jika `photo` berisi URL, pastikan `photo.uri` sesuai
+                                style={styles.signaturePreview}
+                              />
+                              <TouchableOpacity
+                                style={styles.deleteButton}
+                                onPress={() => handleDeletePhoto(index)}
+                              >
+                                <Text style={styles.deleteButtonText}>X</Text>
+                              </TouchableOpacity>
+                            </View>
+                          ))}
+                          <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4" onPress={handleChoosePhoto} style={{backgroundColor: "#4682B4", borderRadius: 4, marginStart: "38.7%"}}>
+                            <Text className="text-white text-sm font-semibold text-center">Tambah</Text>
                           </TouchableOpacity>
                         </View>
                       ) : (
@@ -769,26 +808,29 @@ const autosave = debounce((data) => {
                 />
               </View>
 
-              <View className="w-full mt-5" style={styles.infoItem}>
+              <View className="w-full mt-5" >
               <TouchableOpacity onPress={handleSubmitData}>
-                <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8 }}>Simpan & Upload</Text>
+                <Text className="bg-blue-600 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
               </TouchableOpacity>
-                  {!isConfirmed && (
-                    <TouchableOpacity onPress={handleSubmit(onSubmit)}>
-                      <Text className="bg-blue-500 text-center text-white text-base font-bold py-3 ml-2" style={{ width: 170, borderRadius: 8 }}>
-                        Konfirmasi{" "}
-                        <FontAwesome6 name="check" size={23} />
-                      </Text>
-                    </TouchableOpacity>
-                  )}
 
-                  {isConfirmed && (
-                    <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                      <Text className="bg-blue-500 ml-3 text-center text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8 }}>
-                        Batalkan Konfirmasi
-                      </Text>
-                    </TouchableOpacity>
-                  )}
+              {status === 0 && (
+                <TouchableOpacity onPress={handleKonfirmasi}>
+                  <Text className="bg-blue-700 text-center text-white text-base font-bold py-3 mt-3" style={{ borderRadius: 8 }}>
+                    Konfirmasi{" "}
+                    <FontAwesome6 name="check" size={25} />
+                  </Text>
+                </TouchableOpacity>
+              )}
+
+              {status === 1 && (
+                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
+                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
+                    Batalkan Konfirmasi{" "}
+                    <FontAwesome6 name="xmark" size={25} />
+                  </Text>
+                </TouchableOpacity>
+              )}
+                  
                 </View>
               </View>
           </>
@@ -808,10 +850,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 16,
     backgroundColor: "#f9f9f9",
-  },
-  imageContainer: {
-    alignItems: "center",
-    position: "relative",
   },
   signaturePreview: {
     height: 100,
