@@ -576,33 +576,46 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
               </View>
               <View className="mt-4">
-                  <View className="flex-row items-center mb-2">
+                  <View className="flex-row items-center">
                     <View className="bg-[#4caf501a] p-2 rounded-lg mr-2">
                       <FontAwesome6 name="vial" size={30} color="black" />
                     </View>
-                    <Text style={styles.label}>Parameter</Text>
+                    <Text style={styles.label} className="mb-2">Parameter</Text>
                   </View>
-                  <View className="flex-row justify-between mb-2">
-                    <Text className="text-base font-bold text-black">Nama</Text>
+                  <View className="flex-row justify-between mb-1">
+                    <Text className="text-base ml-14 font-bold text-black">Nama</Text>
                     <Text className="text-base font-bold text-black">Harga</Text>
                   </View>
                   {parameters.length > 0 ? (
                     parameters.map((item, index) => (
-                      <View key={index} className="flex-row justify-between items-center py-2 border-b border-gray-200 border-dashed">
+                      <View key={index} className="flex-row justify-between items-center py-2">
                         <View className="flex-row items-center">
-                          <Text className="text-base text-black mr-2 font-bold">{item.nama}</Text>
+                          <Text className="text-sm text-black ml-14 font-bold">{item.nama}</Text>
                           <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
                             <EvilIcons name="pencil" size={20} color="black" style={{ marginLeft: 10 }} />
                           </TouchableOpacity>
                         </View>
-                        <Text className="text-base text-black font-bold">{rupiah(item.harga)}</Text>
+                        <Text className="text-sm text-black font-bold">{rupiah(item.harga)}</Text>
+                        <View
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 55,
+                            right: 0,
+                            height: 1,
+                            backgroundColor: 'transparent',
+                            borderBottomWidth: 1,
+                            borderColor: '#e5e7eb',
+                            borderStyle: 'dashed',
+                          }}
+                        />
                       </View>
                     ))
                   ) : (
                     <Text className="text-base text-gray-500 italic">No parameters available</Text>
                   )}
                 <Modal
-                  animationType="slide"
+                  animationType="fade"
                   transparent={true}
                   visible={modalState.visible}
                   onRequestClose={() =>
