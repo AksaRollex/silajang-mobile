@@ -10,7 +10,6 @@ import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useQueryClient } from '@tanstack/react-query';
 
-
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
   let years = [];
@@ -22,7 +21,7 @@ const generateYears = () => {
 
 const pengambilOptions = [
   { id: 0, name: "Menunggu Konfirmasi" },
-  { id: 1, name: "Telah Konfirmasi" },
+  { id: 1, name: "Telah Diambil" },
 ];
 
 const Persetujuan = ({ navigation }) => {
@@ -43,7 +42,7 @@ const Persetujuan = ({ navigation }) => {
   });
 
   const renderItem = ({ item }) => {
-    const isConfirmed = selectedPengambil === 1; // Telah Konfirmasi
+    const isConfirmed = selectedPengambil === 1; // Telah Diambil
     
     const dropdownOptions = isConfirmed
       ? [
@@ -70,17 +69,30 @@ const Persetujuan = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between items-center p-4 relative">
           <View className="flex-shrink mr-20">
-            <Text className="text-[18px] font-extrabold mb-3">
-              {isConfirmed ? item.permohonan.user.nama : item.permohonan.industri}
-            </Text>
+            {isConfirmed ? (
+              <>
+                <Text className="text-[18px] font-extrabold mb-1">
+                  {item.kode}
+                </Text>
+                <Text className="text-[15px] font-bold mb-2">
+                  {item.permohonan.user.nama}
+                </Text>
+              </>
+            ) : (
+              <Text className="text-[18px] font-extrabold mb-3">
+                {item.permohonan.industri}
+              </Text>
+            )}
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
             <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
             <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
-            <Text className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${item.kesimpulan_permohonan == 1 ? 'bg-green-400' : item.kesimpulan_permohonan == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
-              {item.kesimpulan_permohonan == 1 ? 'Diterima' : item.kesimpulan_permohonan == 2 ? 'Ditolak' : 'Menunggu'}
-            </Text>
+            {!isConfirmed && (
+              <Text className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${item.kesimpulan_permohonan == 1 ? 'bg-green-400' : item.kesimpulan_permohonan == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
+                {item.kesimpulan_permohonan == 1 ? 'Diterima' : item.kesimpulan_permohonan == 2 ? 'Ditolak' : 'Menunggu'}
+              </Text>
+            )}
             <View className="my-2 ml-10">
               <MenuView
                 title="dropdownOptions"
@@ -176,16 +188,16 @@ const Persetujuan = ({ navigation }) => {
         className="mb-14"
       />
 
-      <AntDesign
+      {/* <AntDesign
         name="plus"
         size={28}
         color="white"
         style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
         onPress={() => navigation.navigate("FormMetode")}
-      />  
+      />   */}
       <DeleteConfirmationModal />
     </View>
   );
 };
 
-export default Persetujuan; 
+export default Persetujuan;

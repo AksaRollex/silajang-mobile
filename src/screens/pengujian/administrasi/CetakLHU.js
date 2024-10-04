@@ -78,44 +78,30 @@ const CetakLHU = ({ navigation }) => {
   const renderItem = ({ item }) => {
 
     return (
-      <View
-        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
-        style={{
-          elevation: 4,
-        }}>
-        <View className="flex-row justify-between items-center p-4 relative">
-          <View className="flex-shrink mr-20">
+      <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
+        <View className="flex-row justify-between">
+          <View className="flex-1 pr-4">
             <Text className="text-[18px] font-extrabold mb-2">{item.permohonan.user.nama}</Text>
             <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] mb-2">Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text></Text>
-            <Text className="text-[15px] mb-2">Tanggal Diterima: <Text className="font-bold ">{item.tanggal_diterima}</Text></Text>
-          </View>
-          <View className="absolute right-1 flex-col items-center">
-            <Text className={`text-[12px] text-indigo-600 font-bold px-2 py-1 rounded-sm mb-3 bg-slate-100`}>
-              { item.text_status }
+            <Text className="text-[15px] mb-2">
+              Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text>
             </Text>
-            <View className="my-2 ml-10">
-              <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptions.map(option => ({
-                  ...option,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  if (selectedOption) {
-                    selectedOption.action(item);
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-              >
-                <View>
-                  <TouchableOpacity onPress={() => handlePreviewLHU(item)}>
-                    <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
-                  </TouchableOpacity>                
-                </View>
-              </MenuView>
+            <Text className="text-[15px] mb-2">
+              Tanggal Diterima: <Text className="font-bold">{item.tanggal_diterima}</Text>
+            </Text>
+          </View>
+          <View className="flex-shrink-0 items-end">
+            <View className="bg-slate-100 rounded-md p-2 max-w-[120px]">
+              <Text className="text-[12px] text-indigo-600 font-bold text-right">
+                {item.text_status}
+              </Text>
+            </View>
+            <View className="my-2 ">
+              <View>
+                <TouchableOpacity onPress={() => handlePreviewLHU(item)}>
+                  <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
+                </TouchableOpacity>  
+              </View>
             </View>
           </View>
         </View>
