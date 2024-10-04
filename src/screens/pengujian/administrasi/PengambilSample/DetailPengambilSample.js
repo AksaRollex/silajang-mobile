@@ -61,7 +61,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample");
+          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
       },
       
       onError: (error) => {
