@@ -13,6 +13,8 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
+import DocumentPicker from 'react-native-document-picker';
+import RNFS from 'react-native-fs';  
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -53,6 +55,7 @@ const CetakLHU = ({ navigation }) => {
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
+  const [selectedFile, setSelectedFile] = useState(null);
 
   const dropdownOptions = [
   ];
@@ -61,6 +64,60 @@ const CetakLHU = ({ navigation }) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
     setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/preview-lhu?token=${authToken}`);
     setModalVisible(true);
+  };
+
+  const handleFilePicker = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+      });
+      setSelectedFile(res[0]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker
+      } else {
+        console.error('Error picking document:', err);
+        Alert.alert('Error', 'Failed to pick document');
+      }
+    }
+  };
+
+  const handleUploadPDF = async (item) => {
+    if (!selectedFile) {
+      Alert.alert('Error', 'Please select a PDF file first');
+      return;
+    }
+
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileContent = await RNFS.readFile(selectedFile.uri, 'base64');
+
+      const formData = new FormData();
+      formData.append('file', {
+        uri: selectedFile.uri,
+        type: selectedFile.type,
+        name: selectedFile.name,
+      });
+      formData.append('uuid', item.uuid);
+
+      const response = await axios.post('/api/v1/upload-lhu', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': `Bearer ${authToken}`,
+        },
+      });
+
+      if (response.data.success) {
+        Alert.alert('Success', 'PDF uploaded successfully');
+        setSelectedFile(null);
+        // You might want to refresh the list or update the item status here
+      } else {
+        Alert.alert('Error', 'Failed to upload PDF');
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      Alert.alert('Error', 'Failed to upload PDF');
+    }
   };
 
   const fetchCetak = async ({ queryKey }) => {
@@ -76,7 +133,6 @@ const CetakLHU = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => {
-
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
@@ -91,20 +147,29 @@ const CetakLHU = ({ navigation }) => {
             </Text>
           </View>
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[120px]">
+            <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
               <Text className="text-[12px] text-indigo-600 font-bold text-right">
                 {item.text_status}
               </Text>
             </View>
-            <View className="my-2 ">
-              <View>
-                <TouchableOpacity onPress={() => handlePreviewLHU(item)}>
-                  <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
-                </TouchableOpacity>  
-              </View>
+            <View className="my-2">
+              <TouchableOpacity onPress={() => handlePreviewLHU(item)} className="mb-2">
+                <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => handleFilePicker()} className="mb-2">
+                <FontIcon name="file-upload" size={18} color="white" style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} />
+              </TouchableOpacity>
+              {selectedFile && (
+                <TouchableOpacity onPress={() => handleUploadPDF(item)}>
+                  <FontIcon name="upload" size={18} color="white" style={{ backgroundColor: "green", padding: 12, borderRadius: 8 }} />
+                </TouchableOpacity>
+              )}
             </View>
           </View>
         </View>
+        {selectedFile && (
+          <Text className="text-[12px] mt-2">Selected: {selectedFile.name}</Text>
+        )}
       </View>
     );
   };
