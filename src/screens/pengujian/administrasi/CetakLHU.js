@@ -1,6 +1,6 @@
 import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontIcon from "react-native-vector-icons/FontAwesome5";
@@ -14,7 +14,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import DocumentPicker from 'react-native-document-picker';
-import RNFS from 'react-native-fs';  
+import RNFS, { downloadFile } from 'react-native-fs';  
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -100,7 +100,7 @@ const CetakLHU = ({ navigation }) => {
       });
       formData.append('uuid', item.uuid);
 
-      const response = await axios.post('/api/v1/upload-lhu', formData, {
+      const response = await axios.post('/api/v1/upload', formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
           'Authorization': `Bearer ${authToken}`,
@@ -120,6 +120,42 @@ const CetakLHU = ({ navigation }) => {
     }
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileName = `LHU_${Date.now()}.pdf`;
+      
+      // Tentukan direktori unduhan berdasarkan platform
+      const downloadPath = Platform.OS === 'ios' 
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: reportUrl,
+        toFile: downloadPath,
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === 'android') {
+          // Untuk Android, kita perlu memberi tahu sistem bahwa file baru telah ditambahkan
+          await RNFS.scanFile(downloadPath);
+        }
+        Alert.alert('Success', `PDF downloaded successfully. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`);
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Error', `Failed to download PDF: ${error.message}`);
+    }
+  };
+
+    
   const fetchCetak = async ({ queryKey }) => {
     const [_, search, year] = queryKey;
     const response = await axios.post('/administrasi/cetak-lhu', {
@@ -254,9 +290,14 @@ const CetakLHU = ({ navigation }) => {
               style={{ flex: 1 }}
               trustAllCerts={false}
             />
-            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 m-4 rounded">
-              <Text className="text-white text-center">Close</Text>
-            </TouchableOpacity>
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity onPress={handleDownloadPDF} className="bg-green-500 p-2 rounded flex-1 mr-2">
+                <Text className="text-white text-center">Download PDF</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 rounded flex-1 ml-2">
+                <Text className="text-white text-center">Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal> 
