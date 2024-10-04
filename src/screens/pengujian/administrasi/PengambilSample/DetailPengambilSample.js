@@ -235,7 +235,7 @@ function debounce(func, delay) {
 
 const autosave = debounce((data) => {
   createOrUpdate(watch());
-}, 2000); 
+}, 1300); 
 
 
   
