@@ -263,6 +263,7 @@ export default function Detail({ route, navigation }) {
       },
     );
   };
+  
   const tanggal = value => {
     setDate(value);
     saveDateAndTime(value);

@@ -4,11 +4,14 @@ import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
-import { Text, View } from "react-native";
+import { Text, View, Modal, TouchableOpacity } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useQueryClient } from '@tanstack/react-query';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { APP_URL } from "@env";
+import Pdf from 'react-native-pdf';
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -30,6 +33,10 @@ const Persetujuan = ({ navigation }) => {
   const [selectedPengambil, setSelectedPengambil] = useState(0);
   const paginateRef = useRef();
   const queryClient = useQueryClient();
+  const [selectedCetak, setSelectedCetak] = useState(1);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reportUrl, setReportUrl] = useState('');
+
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -41,13 +48,19 @@ const Persetujuan = ({ navigation }) => {
     }
   });
 
+  const CetakSampling = async (item) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/sampling?token=${authToken}`);
+    setModalVisible(true);
+  };
+
   const renderItem = ({ item }) => {
     const isConfirmed = selectedPengambil === 1; // Telah Diambil
     
     const dropdownOptions = isConfirmed
       ? [
           { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
-          { id: "Cetak Sampling", title: "Cetak Sampling", action: item => navigation.navigate("Cetak Sampling", { uuid: item.uuid }) },
+          { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling  ({ uuid: item.uuid }) },
           {
             id: "Berita Acara",
             title: "Berita Acara",
@@ -187,6 +200,27 @@ const Persetujuan = ({ navigation }) => {
         renderItem={renderItem}
         className="mb-14"
       />
+
+    <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5">
+            <Text className="text-lg font-bold m-4">Cetak Sampling</Text>
+            <Pdf
+              source={{ uri: reportUrl, cache: true }}
+              style={{ flex: 1 }}
+              trustAllCerts={false}
+            />
+            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 m-4 rounded">
+              <Text className="text-white text-center">Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal> 
 
       {/* <AntDesign
         name="plus"
