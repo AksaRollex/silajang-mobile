@@ -37,7 +37,6 @@ const Persetujuan = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
 
-
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(['pengambil-sample']);
@@ -54,19 +53,31 @@ const Persetujuan = ({ navigation }) => {
     setModalVisible(true);
   };
 
+  const BeritaAcara = async (item) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/berita-acara?token=${authToken}`);
+    setModalVisible(true);
+  };
+
+  const DataPengambilan = async (item) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`);
+    setModalVisible(true);
+  };
+
   const renderItem = ({ item }) => {
     const isConfirmed = selectedPengambil === 1; // Telah Diambil
     
     const dropdownOptions = isConfirmed
       ? [
           { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
-          { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling  ({ uuid: item.uuid }) },
+          { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling({ uuid: item.uuid }) },
           {
             id: "Berita Acara",
             title: "Berita Acara",
             subactions: [
-              { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan" },
-              { id: "Data Pengambilan", title: "Data Pengambilan" },
+              { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan", action: item => BeritaAcara({ uuid: item.uuid }) },
+              { id: "Data Pengambilan", title: "Data Pengambilan", action: item => DataPengambilan ({ uuid: item.uuid }) },
             ]
           }
         ]
@@ -116,8 +127,19 @@ const Persetujuan = ({ navigation }) => {
                   const selectedOption = dropdownOptions.find(
                     option => option.title === nativeEvent.event,
                   );
+                  const sub = dropdownOptions.find(
+                    option => option.subactions && option.subactions.some(
+                      suboption => suboption.title === nativeEvent.event
+                    )
+                  );
                   if (selectedOption) {
                     selectedOption.action(item);
+                  }
+                  if(sub){
+                    const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
+                    if(selectedSub){
+                      selectedSub.action(item);
+                    }
                   }
                 }}
                 shouldOpenOnLongPress={false}
@@ -209,7 +231,7 @@ const Persetujuan = ({ navigation }) => {
       >
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5">
-            <Text className="text-lg font-bold m-4">Cetak Sampling</Text>
+            <Text className="text-lg font-bold m-4">Preview Pdf</Text>
             <Pdf
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
@@ -222,13 +244,6 @@ const Persetujuan = ({ navigation }) => {
         </View>
       </Modal> 
 
-      {/* <AntDesign
-        name="plus"
-        size={28}
-        color="white"
-        style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-        onPress={() => navigation.navigate("FormMetode")}
-      />   */}
       <DeleteConfirmationModal />
     </View>
   );
