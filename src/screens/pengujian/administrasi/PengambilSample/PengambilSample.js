@@ -123,9 +123,14 @@ const PengambilSampel = ({ navigation }) => {
 
           </View>
           <View className="absolute right-1 flex-col items-center">
-            <Text className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${isDiterima == 1 ? 'bg-green-400' : isDiterima == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
-              {isDiterima == 1 ? 'Diterima' : isDiterima == 2 ? 'Ditolak' : 'Menunggu'}
-            </Text>
+          <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
+              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500' 
+                : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500' 
+                : 'bg-indigo-100 text-indigo-500'}`}>
+              {item.kesimpulan_permohonan == 1 ? 'Diterima' 
+                : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
+                : 'Menunggu'}
+            </Text>           
             <View className="my-2 ml-10">
             <MenuView
               title="dropdownOptions"

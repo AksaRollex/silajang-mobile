@@ -138,6 +138,7 @@ export default function Detail({ route, navigation }) {
       setDate(currentTime);
       setShowTimePicker(false);
       handleWaktu(currentTime); // Simpan setelah memilih waktu
+
     } else {
       setShowTimePicker(false);
     }
@@ -156,10 +157,10 @@ export default function Detail({ route, navigation }) {
 
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+      // console.error(
+      //   "Gagal menyimpan data:",
+      //   error.response ? error.response.data : error.message,
+      // );
     }
   };
 
@@ -263,6 +264,7 @@ export default function Detail({ route, navigation }) {
       },
     );
   };
+  
   const tanggal = value => {
     setDate(value);
     saveDateAndTime(value);
@@ -578,7 +580,7 @@ export default function Detail({ route, navigation }) {
                   <View style={styles.dateTimeButton}>
                     <Text style={styles.dateTimeText}>
                       {date
-                        ? `Tanggal/Waktu: ${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
+                        ? `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
                         : "Pilih Tanggal dan Waktu"}
                     </Text>
                     <FontAwesome

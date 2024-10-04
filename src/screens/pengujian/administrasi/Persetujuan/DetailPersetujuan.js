@@ -42,10 +42,12 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [checked, setChecked] = useState();
   const [interpretasi, setInterpretasi] = useState();
   const [keterangan, setKeterangan] = useState("");
+
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isDateSelected, setIsDateSelected] = useState(false);
+  
   const [radiusPengambilan, setRadiusPengambilan] = useState([]);
   const [selectedRadius, setSelectedRadius] = useState(null);
   const [pengambilSample, setPengambilSample] = useState([]);
@@ -133,6 +135,22 @@ export default function DetailPersetujuan({ route, navigation }) {
     fetchData();
   }, [uuid]);
 
+   useEffect(() => {
+
+    const fetchData = async () => {
+      try {
+        const response = await axios.get(`/administrasi/pengambil-sample/${uuid}`);
+        if (response.data.data && response.data.data.tanggal_pengambilan) {
+          setDate(new Date(response.data.data.tanggal_pengambilan));
+        }
+      } catch (error) {
+        console.error("Error fetching data:", error);
+      }
+    };
+
+    fetchData();
+  }, [uuid]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -153,12 +171,7 @@ export default function DetailPersetujuan({ route, navigation }) {
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
         }
-        if (
-          response.data.data &&
-          response.data.data.tanggal_pengambilan !== undefined
-        ) {
-          setDate(new Date(response.data.data.tanggal_pengambilan));
-        }
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -199,23 +212,26 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
-  const handleWaktu = async selectedDateTime => {
-    try {
-      setByTimezone(selectedDateTime);
-      // Lakukan request POST ke endpoint yang sesuai
-      const response = await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          tanggal_diterima: selectedDateTime, // Kirimkan data tanggal dan waktu yang dipilih
-        },
-      );
+  const formatDateTime = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
+  const handleWaktu = async (selectedDateTime) => {
+    const formattedDateTime = formatDateTime(selectedDateTime);
+    try {
+      const response = await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
+        tanggal_pengambilan: formattedDateTime,
+      });
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+      // console.error("Gagal menyimpan data:", error.response ? error.response.data : error.message);
     }
   };
 
@@ -294,7 +310,7 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data berhasil disimpan:", response.data);
   };
 
-  tanggal = value => {
+  const tanggal = value => {
     setDate(value);
     saveDateAndTime(value);
   };
@@ -307,7 +323,6 @@ export default function DetailPersetujuan({ route, navigation }) {
       },
     );
   };
-
  
 
   const updateKondisiSampel = async (kondisiSampel, keterangan = "") => {
@@ -560,49 +575,47 @@ export default function DetailPersetujuan({ route, navigation }) {
                   </Text>
                 </View>
               </View>
-              <View style={styles.infoItem}>
-                <View style={styles.iconContainer}>
-                  <FontAwesome6 name="vial" size={30} color="black" />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Parameter</Text>
-                  <Text style={styles.value}>Nama</Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      fontWeight: "bold",
-                      marginTop: 23,
-                      color: Colors.black,
-                    }}>
-                    Harga
-                  </Text>
-                </View>
-              </View>
-              <View>
-                {parameters.length > 0 ? (
-                  parameters.map((item, index) => (
-                    <View key={index} style={styles.paramContainer}>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.param}>{item.nama}</Text>
-                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
-                          <EvilIcons
-                            style={{ marginLeft: 8, marginTop: 2 }}
-                            name="pencil"
-                            size={20}
-                            color="black"
-                          />
-                        </TouchableOpacity>
-                      </View>
-                      <Text style={styles.param}>{rupiah(item.harga)}</Text>
+              <View className="mt-4">
+                  <View className="flex-row items-center">
+                    <View className="bg-[#4caf501a] p-2 rounded-lg mr-2">
+                      <FontAwesome6 name="vial" size={30} color="black" />
                     </View>
-                  ))
-                ) : (
-                  <Text>No parameters available</Text>
-                )}
+                    <Text style={styles.label} className="mb-2">Parameter</Text>
+                  </View>
+                  <View className="flex-row justify-between mb-1">
+                    <Text className="text-base ml-14 font-bold text-black">Nama</Text>
+                    <Text className="text-base font-bold text-black">Harga</Text>
+                  </View>
+                  {parameters.length > 0 ? (
+                    parameters.map((item, index) => (
+                      <View key={index} className="flex-row justify-between items-center py-2">
+                        <View className="flex-row items-center">
+                          <Text className="text-sm text-black ml-14 font-bold">{item.nama}</Text>
+                          <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
+                            <EvilIcons name="pencil" size={20} color="black" style={{ marginLeft: 10 }} />
+                          </TouchableOpacity>
+                        </View>
+                        <Text className="text-sm text-black font-bold">{rupiah(item.harga)}</Text>
+                        <View
+                          style={{
+                            position: 'absolute',
+                            bottom: 0,
+                            left: 55,
+                            right: 0,
+                            height: 1,
+                            backgroundColor: 'transparent',
+                            borderBottomWidth: 1,
+                            borderColor: '#e5e7eb',
+                            borderStyle: 'dashed',
+                          }}
+                        />
+                      </View>
+                    ))
+                  ) : (
+                    <Text className="text-base text-gray-500 italic">No parameters available</Text>
+                  )}
                 <Modal
-                  animationType="slide"
+                  animationType="fade"
                   transparent={true}
                   visible={modalState.visible}
                   onRequestClose={() =>
