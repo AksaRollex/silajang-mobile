@@ -61,7 +61,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample");
       },
       
       onError: (error) => {
@@ -235,7 +235,7 @@ function debounce(func, delay) {
 
 const autosave = debounce((data) => {
   createOrUpdate(watch());
-}, 1300); 
+}, 1500); 
 
 
   
@@ -813,31 +813,15 @@ const autosave = debounce((data) => {
                 <Text className="bg-blue-600 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
               </TouchableOpacity>
 
-              {status == 0 && (
-                <TouchableOpacity onPress={handleKonfirmasi}>
-                  <Text className="bg-blue-700 text-center text-white text-base font-bold py-3 mt-3" style={{ borderRadius: 8 }}>
-                    Konfirmasi{" "}
-                    <FontAwesome6 name="check" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
-
-              {status == 1 && (
-                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
-                    Batalkan Konfirmasi{" "}
-                    <FontAwesome6 name="xmark" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {status == 2 && (
-                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
-                    Batalkan Konfirmasi{" "}
-                    <FontAwesome6 name="xmark" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
+                <Text
+                  className={`text-center text-white text-base font-bold py-3 mt-3 ${status === 0 ? 'bg-blue-700' : 'bg-red-600'}`}
+                  style={{ borderRadius: 8 }}
+                >
+                  {status == 0 ? 'Konfirmasi' : 'Batalkan Konfirmasi'} {""}
+                  <FontAwesome6 name={status == 0 ? 'check' : 'xmark'} size={25} />
+                </Text>
+              </TouchableOpacity>
                   
                 </View>
               </View>
