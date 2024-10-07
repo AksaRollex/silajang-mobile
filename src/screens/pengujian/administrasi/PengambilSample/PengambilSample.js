@@ -48,7 +48,7 @@ const PengambilSampel = ({ navigation }) => {
   });
 
   const dropdownOptions1 = [
-    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
+    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status })}
   ]
 
   const dropdownOptions = [
