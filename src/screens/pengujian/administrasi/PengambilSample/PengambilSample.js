@@ -4,13 +4,14 @@ import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View , Modal, TouchableOpacity } from "react-native";
+import { Text, View , Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
+import RNFS, { downloadFile } from 'react-native-fs';  
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -20,7 +21,6 @@ const generateYears = () => {
   }
   return years
 }
-
 const pengambilOptions = [
   { id: 0, name: "Menunggu Konfirmasi" },
   { id: 1, name: "Telah Konfirmasi" },
@@ -93,6 +93,41 @@ const PengambilSampel = ({ navigation }) => {
     setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`);
     setModalVisible(true);
   }
+
+  const handleDownloadPDF = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileName = `Pengambil Sample_${Date.now()}.pdf`;
+      
+      // Tentukan direktori unduhan berdasarkan platform
+      const downloadPath = Platform.OS === 'ios' 
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: reportUrl,
+        toFile: downloadPath,
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === 'android') {
+          // Untuk Android, kita perlu memberi tahu sistem bahwa file baru telah ditambahkan
+          await RNFS.scanFile(downloadPath);
+        }
+        Alert.alert('Success', `PDF downloaded successfully. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`);
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+      Alert.alert('Error', `Failed to download PDF: ${error.message}`);
+    }
+  };
 
 
   const renderItem = ({ item }) => {
@@ -263,9 +298,14 @@ const PengambilSampel = ({ navigation }) => {
               style={{ flex: 1 }}
               trustAllCerts={false}
             />
-            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 m-4 rounded">
-              <Text className="text-white text-center">Close</Text>
-            </TouchableOpacity>
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity onPress={handleDownloadPDF} className="bg-green-500 p-2 rounded flex-1 mr-2">
+                <Text className="text-white text-center">Download PDF</Text>
+              </TouchableOpacity>
+              <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 rounded flex-1 ml-2">
+                <Text className="text-white text-center">Close</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal> 

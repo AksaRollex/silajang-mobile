@@ -61,7 +61,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample");
       },
       
       onError: (error) => {
@@ -117,7 +117,6 @@ export default function Detail({ route, navigation }) {
 
  useEffect(() => {
   requestLocationPermission();
-  console.log(status)
 }, []);
 
 const requestLocationPermission = async () => {
@@ -236,7 +235,7 @@ function debounce(func, delay) {
 
 const autosave = debounce((data) => {
   createOrUpdate(watch());
-}, 1300); 
+}, 1500); 
 
 
   
