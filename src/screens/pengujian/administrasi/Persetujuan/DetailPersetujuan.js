@@ -27,6 +27,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import RNPickerSelect from "react-native-picker-select";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
+import { formatDate } from "@/src/libs/utils";
 
 const currency = (number) => {
   return number.toLocaleString("id-ID", {
@@ -174,6 +175,12 @@ export default function DetailPersetujuan({ route, navigation }) {
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
         }
+        if (
+          response.data.data &&
+          response.data.data.radius_pengambilan_id !== undefined
+        ) {
+          setInterpretasi(response.data.data.hasil_pengujian);
+        }
 
         setLoading(false);
       } catch (error) {
@@ -215,23 +222,26 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
-  const handleWaktu = async selectedDateTime => {
-    try {
-      setByTimezone(selectedDateTime);
-      // Lakukan request POST ke endpoint yang sesuai
-      const response = await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          tanggal_pengambilan: selectedDateTime,
-        },
-      );
+  const formatDateTime = (date) => {
+    const year = date.getFullYear();
+    const month = String(date.getMonth() + 1).padStart(2, '0');
+    const day = String(date.getDate()).padStart(2, '0');
+    const hours = String(date.getHours()).padStart(2, '0');
+    const minutes = String(date.getMinutes()).padStart(2, '0');
+    const seconds = String(date.getSeconds()).padStart(2, '0');
+    
+    return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
+  };
 
+  const handleWaktu = async (selectedDateTime) => {
+    const formattedDateTime = formatDateTime(selectedDateTime);
+    try {
+      const response = await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
+        tanggal_pengambilan: formattedDateTime,
+      });
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+      // console.error("Gagal menyimpan data:", error.response ? error.response.data : error.message);
     }
   };
 
