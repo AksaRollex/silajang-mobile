@@ -23,7 +23,7 @@ import Toast from 'react-native-toast-message';
 
 
 export default function Detail({ route, navigation }) {
-  const { uuid, status } = route.params;
+  const { uuid, status, pengambilOptions } = route.params;
   const [file, setFile] = React.useState(null);
   const [photos, setPhotos] = useState([]);
   const [locationData, setLocationData] = useState({
@@ -61,7 +61,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries(["/administrasi/pengambil-sample"]);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
       },
       
       onError: (error) => {
@@ -235,7 +235,7 @@ function debounce(func, delay) {
 
 const autosave = debounce((data) => {
   createOrUpdate(watch());
-}, 2000); 
+}, 1300); 
 
 
   
@@ -813,7 +813,7 @@ const autosave = debounce((data) => {
                 <Text className="bg-blue-600 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
               </TouchableOpacity>
 
-              {status === 0 && (
+              {status == 0 && (
                 <TouchableOpacity onPress={handleKonfirmasi}>
                   <Text className="bg-blue-700 text-center text-white text-base font-bold py-3 mt-3" style={{ borderRadius: 8 }}>
                     Konfirmasi{" "}
@@ -822,7 +822,15 @@ const autosave = debounce((data) => {
                 </TouchableOpacity>
               )}
 
-              {status === 1 && (
+              {status == 1 && (
+                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
+                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
+                    Batalkan Konfirmasi{" "}
+                    <FontAwesome6 name="xmark" size={25} />
+                  </Text>
+                </TouchableOpacity>
+              )}
+              {status == 2 && (
                 <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
                   <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
                     Batalkan Konfirmasi{" "}
