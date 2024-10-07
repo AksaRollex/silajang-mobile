@@ -292,7 +292,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
               style={[selectedPayment === "qris" && styles.selectedCard]}
               onPress={() => handleSelectedPayment("qris")}>
               <MaterialIcons
-                name="barcode"
+                name="qrcode"
                 size={50}
                 color="black"
                 style={{ marginVertical: 8 }} // Sesuaikan dengan my-2

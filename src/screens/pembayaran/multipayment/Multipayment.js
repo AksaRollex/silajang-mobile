@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "react-native-ui-lib";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import Header from "../../components/Header";
 import { rupiah } from "@/src/libs/utils";
 import { MenuView } from "@react-native-menu/menu";
@@ -8,7 +8,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
-import { API_URL } from "@env";
+import BackButton from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -26,6 +26,7 @@ const Pengujian = ({ navigation }) => {
     }),
   );
 
+  const type = "va";
   const bulans = [
     { id: 1, text: "Januari" },
     { id: 2, text: "Februari" },
@@ -57,30 +58,29 @@ const Pengujian = ({ navigation }) => {
   });
 
   const CardPembayaran = ({ item }) => {
-    const isExpired = item.payment?.is_expired;
-    const shouldShowTagihan =
-      !!item.payment?.id && item.payment?.status !== "success";
+    console.log(item);
+      !!item.multi_payment?.id && item.multi_payment?.status !== "success";
 
     const dropdownOptions = [
       {
         id: "Pembayaran",
-        title: "Pembayaran",
-        action: item =>
+        title: item.status === "success" ? "Detail" : "Pembayaran",
+        action: () =>
           navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
       },
-      shouldShowTagihan && {
+      {
         id: "Tagihan",
-        title: "Tagihan",
+        title: item.status === "success" ? "Cetak" : "Tagihan",
         action: () =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
       },
     ].filter(Boolean);
 
-    const getStatusText = item => {
-      if (item.payment?.is_expired) {
+    const getStatusText = () => {
+      if (item?.is_expired) {
         return "Kedaluwarsa";
       } else {
-        const status = item.payment?.status;
+        const status = item?.status;
         if (status === "pending") {
           return "Menunggu";
         } else if (status === "success") {
@@ -91,17 +91,17 @@ const Pengujian = ({ navigation }) => {
       }
     };
 
-    const getStatusStyle = item => {
-      if (item.payment?.is_expired) {
-        return " text-red-500"; // Light red background with dark red text for expired
+    const getStatusStyle = () => {
+      if (item?.is_expired) {
+        return className="bg-slate-100 text-red-500";
       } else {
-        const status = item.payment?.status;
+        const status = item?.status;
         if (status === "pending") {
-          return " text-blue-400"; // Light blue background with dark blue text for pending
+          return className="bg-slate-100 text-indigo-600";
         } else if (status === "success") {
-          return "text-green-500"; // Light green background with dark green text for success
+          return className="bg-slate-100 text-green-500";
         } else {
-          return " text-red-500"; // Light gray background with dark gray text for other statuses
+          return className="bg-slate-100 text-red-500";
         }
       }
     };
@@ -112,19 +112,31 @@ const Pengujian = ({ navigation }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text
-            style={[styles.badge, styles[statusStyle]]}
-            className={` bg-slate-100 ${getStatusStyle(item)}`}>
-            {statusText}
-          </Text>
+          <View className="flex-row gap-1">
+            <Text
+              style={[styles.badge, styles[statusStyle]]}
+              className={` bg-slate-100 ${getStatusStyle(item)}`}>
+              {statusText}
+            </Text>
+            <Text
+              className="bg-slate-100 text-indigo-600"
+              style={[styles.badge, { textTransform: "uppercase" }]}>
+              {item.type}
+            </Text>
+          </View>
+
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-            {item.lokasi}
+            {item.multi_payments
+              ?.map(payment => payment.titik_permohonan.lokasi)
+              .join(", ") || "Lokasi Kosong"}
           </Text>
           <Text
-            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
-            {item.kode}
+            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 19 }]}>
+            {item.multi_payments
+              ?.map(payment => payment.titik_permohonan.kode)
+              .join(", ")}
           </Text>
-          <Text style={[styles.cardTexts]}>{rupiah(item.harga)}</Text>
+          <Text style={[styles.cardTexts]}>{rupiah(item.jumlah)}</Text>
         </View>
         <View style={styles.cards2}>
           <View>
@@ -154,7 +166,18 @@ const Pengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-4 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color="white"
+            action={() => navigation.goBack()}
+          />
+          <Text className="font-bold text-white text-lg">Multipayment</Text>
+        </View>
+      </View>
       <View className=" w-full h-full bg-[#ececec] ">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
@@ -180,7 +203,7 @@ const Pengujian = ({ navigation }) => {
           key={refreshKey}
           className="mb-28"
           url="/pembayaran/multi-payment"
-          payload={{ tahun, bulan }}
+          payload={{ tahun, bulan, type }}
           renderItem={CardPembayaran}
           ref={PaginateRef}></Paginate>
       </View>
@@ -241,6 +264,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     flex: 1,
+    color: "black",
     marginHorizontal: 4,
   },
 });

@@ -87,13 +87,13 @@ export default function Profile({ navigation }) {
           style={{
             borderBottomWidth: 0.5,
             borderBottomColor: "#dedede",
-            elevation: 0.5, 
+            elevation: 0.5,
           }}>
           <View className="w-1/5 items-center justify-center ">
             {userData ? (
               <FastImage
-              className="rounded-full w-16 h-16 "
-              source={{
+                className="rounded-full w-16 h-16 "
+                source={{
                   uri: `${process.env.APP_URL}${userData.photo}`,
                   priority: FastImage.priority.high,
                 }}
@@ -107,7 +107,7 @@ export default function Profile({ navigation }) {
             <Text className="text-base text-black font-bold font-sans my-1">
               {userData?.nama}
             </Text>
-            <Text className="text-sm font-bold  mt-1">
+            <Text className="text-sm font-bold  text-indigo-400 mt-1">
               {userData?.email}
             </Text>
           </View>
@@ -126,8 +126,8 @@ export default function Profile({ navigation }) {
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, 
-            shadowColor: "#000", 
+            elevation: 5,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
@@ -148,8 +148,8 @@ export default function Profile({ navigation }) {
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 1, 
-            shadowColor: "#000", 
+            elevation: 1,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
@@ -170,13 +170,12 @@ export default function Profile({ navigation }) {
           style={{
             borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation:1, 
-            shadowColor: "#000", 
+            elevation: 1,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-          }}
-          >
+          }}>
           <View className="flex-row items-center">
             <Icon name="lock" size={29} color="#312e81" />
             <Text className="text-black font-sans ml-3">Ganti Password</Text>
@@ -189,8 +188,8 @@ export default function Profile({ navigation }) {
           className="bg-red-100 w-full py-6 px-6  flex-row justify-between items-center"
           onPress={handleLogout}
           style={{
-            elevation: 2, 
-            shadowColor: "#000", 
+            elevation: 2,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
