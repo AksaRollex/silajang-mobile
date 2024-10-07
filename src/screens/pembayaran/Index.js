@@ -11,7 +11,6 @@ const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
   return (
-    <NavigationContainer independent={true}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Pembayaran" component={Pembayaran} />
         <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
@@ -19,6 +18,5 @@ export default function MainScreen() {
         <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail} />
         <Stack.Screen name="Multipayment" component={Multipayment} />
       </Stack.Navigator>
-    </NavigationContainer>
   );
 }

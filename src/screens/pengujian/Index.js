@@ -17,7 +17,6 @@ const Stack = createNativeStackNavigator();
 export default function MainScreen() {
   const navigation = useNavigation();
   return (
-    <NavigationContainer independent={true}>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         <Stack.Screen name="Pengujian" component={Pengujian} />
 
@@ -32,6 +31,5 @@ export default function MainScreen() {
         <Stack.Screen name="Parameter" component={Parameter} />
 
       </Stack.Navigator>
-    </NavigationContainer>
   );
 }

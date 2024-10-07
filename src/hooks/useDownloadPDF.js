@@ -4,50 +4,34 @@ import {
   Text,
   Modal,
   TouchableOpacity,
-  StyleSheet,
+  ActivityIndicator,
   Platform,
+  StyleSheet
 } from "react-native";
 import RNFS from "react-native-fs";
 import Share from "react-native-share";
-import FileViewer from "react-native-file-viewer";
+import Pdf from "react-native-pdf";
 
-const DownloadPDFModal = ({ visible, onConfirm, onCancel, title, message }) => (
-  <Modal
-    animationType="slide"
-    transparent={true}
-    visible={visible}
-    onRequestClose={onCancel}>
-    <View style={styles.centeredView}>
-      <View style={styles.modalView}>
-        <Text style={styles.modalTitle}>{title}</Text>
-        <Text style={styles.modalText}>{message}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.textStyle}>Batalkan</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-            <Text style={styles.textStyle}>Ya, Download</Text>
-          </TouchableOpacity>
-        </View>
-      </View>
-    </View>
-  </Modal>
-);
-
-export const useDownloadPDF = callback => {
+export const useDownloadPDF = (callback) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [downloadComplete, setDownloadComplete] = useState(false);
+  const [reportUrl, setreportUrl] = useState("");
   const { onSuccess, onError, onSettled } = callback || {};
 
-  const showConfirmationModal = url => {
-    setCurrentUrl(url);
+  // Function to show modal for previewing PDF
+  const showConfirmationModal = (url) => {
+    setreportUrl(url);
     setModalVisible(true);
   };
 
+  // Function to hide modal
   const hideConfirmationModal = () => {
     setModalVisible(false);
+    setDownloadComplete(false);
   };
 
+  // Function to download the PDF
   const handleConfirm = async () => {
     const fileName = "pembayaran.pdf";
     const fileDir = Platform.select({
@@ -55,45 +39,21 @@ export const useDownloadPDF = callback => {
       android: RNFS.DownloadDirectoryPath,
     });
     const filePath = `${fileDir}/${fileName}`;
+    
+    setIsLoading(true); // Start loading when download begins
 
     try {
       const options = {
-        fromUrl: currentUrl,
+        fromUrl: reportUrl,
         toFile: filePath,
         background: true,
-        begin: res => {
-          console.log("Download has begun");
-        },
-        progress: res => {
-          const progress = (res.bytesWritten / res.contentLength) * 100;
-          console.log(`Download progress: ${progress.toFixed(2)}%`);
-          // You can update UI here to show download progress
-        },
       };
 
       const response = await RNFS.downloadFile(options).promise;
 
       if (response.statusCode === 200) {
-        hideConfirmationModal();
-
-        // Try to share the file
-        try {
-          await Share.open({
-            url: Platform.OS === "android" ? `file://${filePath}` : filePath,
-            type: "application/pdf",
-          });
-          onSuccess && onSuccess(filePath);
-        } catch (shareError) {
-          console.log("User cancelled sharing", shareError);
-          // If sharing fails or is cancelled, try to open the file directly
-          try {
-            await FileViewer.open(filePath, { showOpenWithDialog: true });
-            onSuccess && onSuccess(filePath);
-          } catch (viewerError) {
-            console.error("Error opening file:", viewerError);
-            onError && onError(viewerError);
-          }
-        }
+        setDownloadComplete(true); // Set download complete flag to true
+        onSuccess && onSuccess(filePath);
       } else {
         throw new Error("Failed to download file");
       }
@@ -101,25 +61,84 @@ export const useDownloadPDF = callback => {
       console.error("Download error:", error);
       onError && onError(error);
     } finally {
+      setIsLoading(false); // Stop loading after download is complete
       onSettled && onSettled();
     }
   };
 
+  // Function to handle share
+  const handleShare = async () => {
+      const fileName = "pembayaran.pdf";
+      const fileDir = Platform.select({
+        ios: RNFS.DocumentDirectoryPath,
+        android: RNFS.DownloadDirectoryPath,
+      });
+      const filePath = `${fileDir}/${fileName}`;
+      
+      await Share.open({
+        url: Platform.OS === "android" ? `file://${filePath}` : filePath,
+        type: "application/pdf",
+      });
+  };
+
+  // Modal to show PDF preview and download option
   const PDFConfirmationModal = () => (
-    <DownloadPDFModal
+    <Modal
+      transparent={true}
+      animationType="fade"
       visible={modalVisible}
-      onConfirm={handleConfirm}
-      onCancel={hideConfirmationModal}
-      title={
-        <Text style={{ color: "black"}}>Apakah anda yakin?</Text>
-      }
-      message={
-        <Text style={{ color: "#6B7280"}}>
-          Anda akan mendownload file berformat PDF, Mungkin akan membutuhkan
-          waktu beberapa detik
-        </Text>
-      }
-    />
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <View className="flex-1 justify-center items-center bg-black bg-black/50">
+        <View className="bg-white rounded-lg w-full h-full m-5">
+          <Text className="text-lg font-bold m-4">Preview LHU</Text>
+          <Pdf
+            source={{ uri: reportUrl, cache: true }}
+            style={{ flex: 1 }}
+            trustAllCerts={false}
+          />
+
+          {/* Show loading indicator when downloading */}
+          {isLoading ? (
+            <ActivityIndicator size="large" color="#0000ff" />
+          ) : (
+            <>
+              {!downloadComplete ? (
+                <>
+                <TouchableOpacity
+                  onPress={handleConfirm}
+                  className="bg-blue-500 w-full my-48 p-2 m-1 rounded"
+                >
+                  <Text className="text-white text-center">Download</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    className="bg-red-500 w-full my-48 p-2 m-1 rounded"
+                  >
+                    <Text className="text-white text-center">Close</Text>
+                  </TouchableOpacity>
+                </>
+              ) : (
+                <>
+                  <TouchableOpacity
+                    onPress={handleShare}
+                    className="bg-green-500 w-full my-48 p-2 m-1 rounded"
+                  >
+                    <Text className="text-white text-center">Share</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    className="bg-red-500 w-full my-48 p-2 m-1 rounded"
+                  >
+                    <Text className="text-white text-center">Close</Text>
+                  </TouchableOpacity>
+                </>
+              )}
+            </>
+          )}
+        </View>
+      </View>
+    </Modal>
   );
 
   return {

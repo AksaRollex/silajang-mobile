@@ -1,10 +1,12 @@
 import React, { useState, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { Colors } from "react-native-ui-lib";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import Header from "../../components/Header";
+import Back from "../../components/Back";
 
 const TrackingPengujian = ({ navigation }) => {
   const paginateRef = useRef();
@@ -88,7 +90,21 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+       <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Tracking Pengujian
+          </Text>
+        </View>
+      </View>
       <View className="w-full h-full bg-[#ececec]">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">

@@ -64,22 +64,21 @@ const TitikUji = ({ navigation, route, status }) => {
             {item.kode}
           </Text>
           <View className="py-1">
-
-          <Text className=" text-sm text-black ">
-            Diambil :  {item.tanggal_pengambilan || "-"}
-          </Text>
-          <Text className=" text-sm text-black ">
-            Diterima : {item.tanggal_diterima || "-"}
-          </Text>
-          <Text className=" text-sm text-black ">
-            Selesai : {item.tanggal_selesai_uji || "-"}
-          </Text>
+            <Text className=" text-sm text-black ">
+              Diambil : {item.tanggal_pengambilan || "-"}
+            </Text>
+            <Text className=" text-sm text-black ">
+              Diterima : {item.tanggal_diterima || "-"}
+            </Text>
+            <Text className=" text-sm text-black ">
+              Selesai : {item.tanggal_selesai_uji || "-"}
+            </Text>
           </View>
-     
+
           <View>
             <Text
               style={styles.badge}
-              className={`text-[12px] text-indigo-600  mt-2
+              className={`text-xs text-indigo-600  mt-2
             ${
               status == 0
                 ? "bg-green-400"
@@ -107,7 +106,6 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "bg-slate-100"
                 : "bg-slate-100"
             }`}>
-              {" "}
               Pengambilan :
               {status == 0
                 ? "Mengakan Permohonan"
@@ -137,7 +135,7 @@ const TitikUji = ({ navigation, route, status }) => {
             </Text>
             <Text
               style={styles.badge}
-              className={`text-[12px] text-indigo-600
+              className={`text-xs text-indigo-600
             ${
               status == 0
                 ? "bg-green-400"
@@ -195,8 +193,8 @@ const TitikUji = ({ navigation, route, status }) => {
             </Text>
             <Text
               style={styles.badge}
-              className="text-[12px] text-indigo-600  bg-slate-100 ">
-              Pengujian :{item.text_status || "-"}
+              className="text-xs text-indigo-600  bg-slate-100 ">
+              Pengujian : {item.text_status || "-"}
             </Text>
           </View>
         </View>
@@ -226,7 +224,7 @@ const TitikUji = ({ navigation, route, status }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="bg-[#ececec] w-full h-full">
         {permohonan ? (
           <View
@@ -290,7 +288,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
-    marginBottom: 8,
+    marginBottom: 4,
     fontWeight: "bold",
   },
   row: {

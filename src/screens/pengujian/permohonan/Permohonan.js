@@ -78,11 +78,10 @@ const Permohonan = ({ navigation }) => {
             {item.industri}
           </Text>
 
-          <Text style={[styles.badge]} className="bg-indigo-400 text-white">
-            Cara Pengambilan :{" "}
-            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+          <Text style={[styles.badge]} className="bg-indigo-400 text-white text-xs">
+            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
           </Text>
-          <Text style={[styles.badge]} className="bg-emerald-400 text-white">
+          <Text style={[styles.badge]}  className="bg-emerald-400 text-white text-xs">
             Pembayaran : {item.pembayaran}
           </Text>
 
@@ -114,7 +113,7 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+      <Header navigate={() => navigation.navigate("Profile")} />
       <View className="bg-[#ececec] w-full h-full">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">

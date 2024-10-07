@@ -19,15 +19,15 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(true);
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const [dateExp, setDateExp] = useState("06:60:60:60");
   const { uuid } = route.params;
   const { data: setting } = useSetting();
-  console.log(setting);
+  console.log("setting: ", setting);
 
   const copyToClipboard = text => {
     Clipboard.setString(text);
-    Alert.alert("Copied", "Text copied to clipboard");
   };
 
   const fetchData = useCallback(() => {
@@ -36,12 +36,11 @@ const PengujianDetail = ({ route, navigation }) => {
       .then(res => {
         setFormData(res.data.data);
         console.log("text", res.data.data);
+        setLoading(false);
       })
       .catch(err => {
-        Alert.alert(
-          "Error",
-          err.response?.data?.message || "An error occurred",
-        );
+        Alert.alert("Error", err.response?.data?.message || "Gagal Memuat");
+        setLoading(false);
       });
   }, [uuid]);
 
@@ -50,22 +49,23 @@ const PengujianDetail = ({ route, navigation }) => {
   }, [fetchData]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = moment();
-      const exp = moment(dateExp);
-      const diff = exp.diff(now);
+    if (formData?.payment?.tanggal_exp) {
+      const interval = setInterval(() => {
+        const now = moment();
+        const exp = moment(formData.payment.tanggal_exp); // Ambil tanggal_exp dari formData
+        const diff = exp.diff(now);
 
-      if (diff <= 0) {
-        clearInterval(interval);
-        setCountdownExp("00:00:00:00");
-        fetchData(); // Refresh data when expired
-      } else {
-        setCountdownExp(calculateCountdown(exp, now));
-      }
-    }, 1000);
+        if (diff <= 0) {
+          clearInterval(interval);
+          setCountdownExp("00:00:00:00");
+        } else {
+          setCountdownExp(calculateCountdown(exp, now));
+        }
+      }, 1000);
 
-    return () => clearInterval(interval);
-  }, [dateExp]);
+      return () => clearInterval(interval);
+    }
+  }, [formData]);
 
   const calculateCountdown = (exp, now) => {
     let days = exp.diff(now, "days");
@@ -84,6 +84,7 @@ const PengujianDetail = ({ route, navigation }) => {
   };
 
   const handleGenerateVA = () => {
+    setLoading(true);
     axios
       .post(`/pembayaran/pengujian/${uuid}`)
       .then(() => {
@@ -91,12 +92,21 @@ const PengujianDetail = ({ route, navigation }) => {
         fetchData();
       })
       .catch(err => {
-        Alert.alert(
-          "Error",
-          err.response?.data?.message || "An error occurred",
-        );
+      setLoading(false)
+        Alert.alert("ERROR", err.response?.data?.message || "Gagal Memuat");
       });
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.brand} />
+      </View>
+    );
+  }
+
+  const isExpired = formData?.payment?.is_expired;
+  const paymentStatus = formData?.status_pembayaran;
 
   return (
     <>
@@ -165,11 +175,11 @@ const PengujianDetail = ({ route, navigation }) => {
               </Text>
             </View>
             <View className="flex items-end my-2">
-              <TouchableOpacity
-                className="bg-indigo-600 p-3 rounded-lg"
-                onPress={handleGenerateVA}>
-                <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-              </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-indigo-600 p-3 rounded-lg"
+                  onPress={handleGenerateVA}>
+                  <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
+                </TouchableOpacity>
             </View>
           </View>
         ) : (
@@ -178,9 +188,14 @@ const PengujianDetail = ({ route, navigation }) => {
               <View className="w-1/6 flex-shrink-0" />
             </View>
             {formData?.payment.status === "success" ? (
-              <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-bold ">
-                Pembayaran berhasil dilakukan
-              </Text>
+              <>
+                <View className="bg-green-500 rounded-lg mb-4 font-bold shadow-lg p-3">
+                  <Text className="text-white text-center text-sm font-semibold">
+                    Pembayaran Berhasil Dilakukan :{" "}
+                    {formData?.payment.tanggal_bayar || 'Belum bayar'}
+                  </Text>
+                </View>
+              </>
             ) : formData?.payment?.is_expired === false ? (
               <Text style={styles.warningText}>
                 Lakukan pembayaran sebelum: {countdownExp}
@@ -203,13 +218,14 @@ const PengujianDetail = ({ route, navigation }) => {
                           {setting?.email || "-"}
                         </Text>
                       </View>
-                      <View className="flex flex-row items-center justify-center mb-3">
+                      <View className="flex flex-row items-center justify-center mb-3 ">
                         <MaterialIcons
                           name="local-phone"
-                          size={24}
+                          size={19}
                           color="#000"
+                          style={{}}
                         />
-                        <Text className="mx-2 text-black font-bold">
+                        <Text className="mx-1 text-black font-bold ">
                           {setting?.telepon || "-"}
                         </Text>
                       </View>
@@ -223,38 +239,44 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
             )}
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Virtual Account</Text>
-              <View style={styles.cardContent}>
-                <Image
-                  source={require("@/assets/images/bank-jatim.png")}
-                  style={{
-                    width: 100,
-                    marginLeft : rem(0.8),
-                    height: 30,
-                    resizeMode: "contain",
-                  }}></Image>
-                <Text style={styles.vaNumber} className="text-indigo-600">
-                  {formData?.payment?.va_number}
-                </Text>
+            <View style={[styles.card, isExpired && styles.disabledCard]}>
+              <View className="flex-row justify-between">
+                <Text style={styles.cardTitle}>Virtual Account</Text>
                 <TouchableOpacity
-                  onPress={() => copyToClipboard(formData?.payment?.va_number)}>
-                  <Text style={styles.copyButton}>Salin</Text>
+                  onPress={() =>
+                    !isExpired && copyToClipboard(formData?.payment?.va_number)
+                  }>
+                  <Text
+                    style={[
+                      styles.copyButton,
+                      isExpired && styles.disabledText,
+                    ]}>
+                    Salin
+                  </Text>
                 </TouchableOpacity>
               </View>
+              <Text style={styles.cardValue}>
+                {formData?.payment?.va_number}
+              </Text>
             </View>
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
-              <View style={styles.cardContent}>
-                <Text style={styles.amount} className="text-indigo-600">
-                  {rupiah(formData?.harga)}
-                </Text>
+            <View style={[styles.card, isExpired && styles.disabledCard]}>
+              <View className="flex-row justify-between">
+                <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
                 <TouchableOpacity
-                  onPress={() => copyToClipboard(formData?.harga.toString())}>
-                  <Text style={styles.copyButton}>Salin</Text>
+                  onPress={() =>
+                    !isExpired && copyToClipboard(formData?.payment?.nominal)
+                  }>
+                  <Text
+                    style={[
+                      styles.copyButton,
+                      isExpired && styles.disabledText,
+                    ]}>
+                    Salin
+                  </Text>
                 </TouchableOpacity>
               </View>
+              <Text style={styles.cardValue}>{rupiah(formData?.harga)}</Text>
             </View>
 
             {formData?.payment?.status !== "success" &&
@@ -276,6 +298,18 @@ const PengujianDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  disabledCard: {
+    backgroundColor: "#e0e0e0", // Warna lebih gelap untuk card yang dinonaktifkan
+  },
+  disabledText: {
+    color: "#a0a0a0", // Warna teks lebih gelap untuk tampilan yang dinonaktifkan
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff", // Warna latar belakang saat loading
+  },
   infoText: {
     fontSize: 16,
     marginBottom: 10,
@@ -338,6 +372,7 @@ const styles = StyleSheet.create({
   copyButton: {
     color: "#4caf50",
     fontWeight: "bold",
+    marginTop: 4,
   },
   button: {
     backgroundColor: "#1976d2",

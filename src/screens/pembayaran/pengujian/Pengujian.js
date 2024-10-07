@@ -9,6 +9,7 @@ import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -57,11 +58,15 @@ const Pengujian = ({ navigation }) => {
   });
 
   const CardPembayaran = ({ item }) => {
-    console.log(item);
+    console.log("item:", item);
     const isExpired = item.payment?.is_expired;
     const status = item.payment?.status;
 
     const dropdownOptions = [
+      //  Jika expired, pending, atau gagal: Tampilkan "Pembayaran"
+      //  Jika berhasil: Tampilkan "Detail" dan "Cetak"
+      //  Jika pending atau gagal: Tampilkan "Tagihan" (selain "Pembayaran")
+
       // Opsi Pembayaran
       (isExpired || status === "pending" || status === "failed") && {
         id: "Pembayaran",
@@ -69,15 +74,26 @@ const Pengujian = ({ navigation }) => {
         action: () =>
           navigation.navigate("PengujianDetail", { uuid: item.uuid }),
       },
-      
+
       // Opsi Tagihan
       (status === "pending" || status === "failed") && {
         id: "Tagihan",
         title: "Tagihan",
-        action: () =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/tagihan-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+            }
+          } catch (error) {
+            console.error("Error fetching token:", error);
+          }
+        },
       },
-      
+
       // Opsi Detail
       status === "success" && {
         id: "Detail",
@@ -90,10 +106,30 @@ const Pengujian = ({ navigation }) => {
       status === "success" && {
         id: "Cetak",
         title: "Cetak",
-        action: () =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/bukti-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+            }
+          } catch (error) {
+            console.error("Error fetching token:", error);
+          }
+        },
       },
     ].filter(Boolean);
+
+    if (dropdownOptions.length === 0) {
+      dropdownOptions.push({
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: () =>
+          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+      });
+    }
 
     const getStatusText = item => {
       if (item.payment?.is_expired) {
@@ -128,14 +164,25 @@ const Pengujian = ({ navigation }) => {
     const statusText = getStatusText(item);
     const statusStyle = getStatusStyle(item);
 
+    console.log("item: ", item);
+
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
+        <View style={{flexDirection: "row"}}>
           <Text
             style={[styles.badge, styles[statusStyle]]}
-            className={` bg-slate-100 ${getStatusStyle(item)}`}>
+            className={` bg-slate-100 ${getStatusStyle(item)}`}
+            >
             {statusText}
           </Text>
+          <Text
+          style={[styles.badge, styles[statusStyle]]}
+          className={` bg-slate-100 text-black mx-2`}
+          >
+            {item.payment_type}
+          </Text>
+          </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
           </Text>

@@ -1,20 +1,25 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Colors } from "react-native-ui-lib";
-import { useNavigation } from "@react-navigation/native";
+import Icons from "react-native-vector-icons/Feather";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
-export default function Header() {
+export default function Header({ navigate }) {
   return (
     <View style={styles.container}>
-      <View style={styles.headerContainer}>
-        <Text style={styles.headerText}>SI-LAJANG</Text>
-        <Image
-          source={require("@/assets/images/logo.png")}
-          style={styles.logo}
-        />
+      <View className=" p-3 flex-row justify-between items-center" style={{ backgroundColor : Colors.brand }}>
+        <View className="flex-row items-center gap-2">
+          <Image
+            source={require("@/assets/images/logo.png")}
+            style={styles.logo}
+            />
+          <Text style={styles.headerText}>SI-LAJANG</Text>
+          </View>
+          <View>
+            <Icons name="user" size={28} color={"#fff"} onPress={navigate}/>
+          </View>
       </View>
     </View>
   );
