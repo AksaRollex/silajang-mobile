@@ -10,6 +10,7 @@ import { useDelete } from "@/src/hooks/useDelete";
 import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
 import { usePermohonan } from "@/src/services/usePermohonan";
+import BackButton from "@/src/screens/components/Back";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
@@ -64,13 +65,13 @@ const TitikUji = ({ navigation, route, status }) => {
             {item.kode}
           </Text>
           <View className="py-1">
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Diambil : {item.tanggal_pengambilan || "-"}
             </Text>
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Diterima : {item.tanggal_diterima || "-"}
             </Text>
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Selesai : {item.tanggal_selesai_uji || "-"}
             </Text>
           </View>
@@ -163,7 +164,6 @@ const TitikUji = ({ navigation, route, status }) => {
                 ? "bg-slate-100"
                 : "bg-slate-100 && text-red-500"
             }`}>
-              {" "}
               Penerimaan :
               {status == 0
                 ? "Mengakan Permohonan"
@@ -224,28 +224,26 @@ const TitikUji = ({ navigation, route, status }) => {
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          {permohonan ? (
+            <Text className="font-bold text-white text-lg ">
+              {permohonan?.industri} : Titik Pengujian
+            </Text>
+          ) : (
+            <Text></Text>
+          )}
+        </View>
+      </View>
       <View className="bg-[#ececec] w-full h-full">
-        {permohonan ? (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginHorizontal: rem(1),
-              marginTop: rem(0.5),
-            }}>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.topText} className="mt-4 mx-1">
-                {permohonan?.industri} : Titik Pengujian
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <View className="h-full flex justify-center">
-            <ActivityIndicator size={"large"} color={"#312e81"} />
-          </View>
-        )}
         <Paginate
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}

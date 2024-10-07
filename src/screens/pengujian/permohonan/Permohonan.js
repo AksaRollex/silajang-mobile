@@ -15,6 +15,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
 import { Colors } from "react-native-ui-lib";
+import Back from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -85,7 +86,7 @@ const Permohonan = ({ navigation }) => {
             Pembayaran : {item.pembayaran}
           </Text>
 
-          <Text style={[styles.cardTexts]}>{item.alamat}</Text>
+          <Text className="text-black text-xs font-bold">{item.alamat}</Text>
         </View>
         <View style={styles.cards2}>
           <MenuView
@@ -113,7 +114,21 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
+     <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Permohonan
+          </Text>
+        </View>
+      </View>
       <View className="bg-[#ececec] w-full h-full">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">

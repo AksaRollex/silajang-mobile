@@ -7,12 +7,18 @@ import Back from "@/src/screens/components/Back";
 import Paginate from "@/src/screens/components/Paginate";
 import { useTitikPermohonan } from "@/src/services/useTitikPermohonan";
 import { rupiah } from "@/src/libs/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
-  const { data: titik, refetch } = useTitikPermohonan(uuid);
+  const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
   const [showPeraturan, setShowPeraturan] = useState(false);
   const [showPaket, setShowPaket] = useState(false);
+
+  const queryClient = useQueryClient();
+  const invalidateQueries = () => {
+    queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
+  };
 
   const { data: selectedParameter, refetch: refetchSelectedParameter } =
     useQuery({
@@ -23,10 +29,23 @@ const Parameter = ({ route, navigation }) => {
           .then(res => res.data.data),
     });
 
+  // GET PAKET
   const { data: pakets = [] } = useQuery({
     queryKey: ["pakets"],
     queryFn: () => axios.get("/master/paket").then(res => res.data.data),
   });
+
+  const send = useMutation(
+    () =>
+      axios.post(`/permohonan/titik/${uuid}/parameter/send`, {
+        uuid: selectedParameter?.uuid,
+      }),
+    {
+      onSuccess: () => {
+        invalidateQueries();
+      },
+    },
+  );
 
   const addPeraturan = useMutation(
     peraturanUuid =>
@@ -35,8 +54,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries();
       },
     },
   );
@@ -48,8 +66,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries;
       },
     },
   );
@@ -61,8 +78,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries();
       },
     },
   );
@@ -74,8 +90,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries();
       },
     },
   );
@@ -87,8 +102,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries();
       },
     },
   );
@@ -100,8 +114,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        refetch();
-        refetchSelectedParameter();
+        invalidateQueries();
       },
     },
   );
@@ -119,7 +132,10 @@ const Parameter = ({ route, navigation }) => {
               : addPeraturan.mutate(item.uuid)
           }>
           <Text
-            style={{ color: item.selected ? "red" : "white", backgroundColor : Colors.brand }}
+            style={{
+              color: item.selected ? "red" : "white",
+              backgroundColor: Colors.brand,
+            }}
             className=" p-2 rounded-sm font-sans text-bold">
             {item.selected ? "-" : "+"}
           </Text>
@@ -136,12 +152,12 @@ const Parameter = ({ route, navigation }) => {
         borderWidth: 0.5,
       }}
       className="bg-[#ececec] p-3 rounded-sm mt-1 items-center">
-      <Text className="text-black text-left">{rupiah(item.harga)}</Text>
       <Text className="text-black text-center">{item.nama}</Text>
+      <Text className="text-black text-left">{rupiah(item.harga)}</Text>
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity onPress={() => addParameter.mutate(item.uuid)}>
           <Text
-            style={{ backgroundColor : Colors.brand }}
+            style={{ backgroundColor: Colors.brand }}
             className=" font-bold text-white p-2 rounded-sm font-sans">
             +
           </Text>
@@ -165,7 +181,8 @@ const Parameter = ({ route, navigation }) => {
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity
           onPress={() => removeParameter.mutate(item.uuid)}
-          className=" text-white p-2 rounded-sm font-sans" style={{  backgroundColor : Colors.brand }}>
+          className=" text-white p-2 rounded-sm font-sans"
+          style={{ backgroundColor: Colors.brand }}>
           <Text style={{ color: "white" }}>-</Text>
         </TouchableOpacity>
       )}
@@ -176,20 +193,22 @@ const Parameter = ({ route, navigation }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row mb-4 p-4 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back size={24} color="white" action={() => navigation.goBack()} />
-          <Text className="font-bold text-white text-xs">
-            {titik?.lokasi} {titik?.kode} Pilih Peraturan/Parameter
+          <Text className="font-bold text-white text-xs mt-1">
+            {titik?.lokasi} {titik?.kode} Pilih Peraturan / Parameter
           </Text>
         </View>
       </View>
-      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
+      <ScrollView
+        className="bg-[#ececec] w-full h-full px-3 py-1 "
+        removeClippedSubviews={true}>
+        <View className="bg-[#f8f8f8] py-2 px-3 rounded-md mb-20">
           <View className="bg-[#ececec]">
             <TouchableOpacity
               onPress={() => setShowPeraturan(!showPeraturan)}
-              style={{ padding: 10, backgroundColor : Colors.brand }}
+              style={{ padding: 8, backgroundColor: Colors.brand }}
               className="">
               <Text className="text-white text-center font-bold font-sans">
                 Pilih berdasarkan Peraturan :
@@ -199,13 +218,14 @@ const Parameter = ({ route, navigation }) => {
               <Paginate
                 url={`/permohonan/titik/${uuid}/peraturan`}
                 renderItem={renderPeraturan}
+                nestedScrollEnabled={true}
               />
             )}
           </View>
 
           <TouchableOpacity
             onPress={() => setShowPaket(!showPaket)}
-            style={{ padding: 10, backgroundColor: Colors.brand }}
+            style={{ padding: 8, backgroundColor: Colors.brand }}
             className=" mt-2">
             <Text className="text-white text-center font-bold font-sans">
               Pilih berdasarkan Paket :
@@ -214,7 +234,7 @@ const Parameter = ({ route, navigation }) => {
           {showPaket && (
             <View
               style={{ flexDirection: "row", flexWrap: "wrap" }}
-              className="  drop-shadow-md p-4 bg-[#ececec]">
+              className="  drop-shadow-md p-2 bg-[#ececec]">
               {pakets.map(paket => (
                 <TouchableOpacity
                   key={paket.id}
@@ -244,7 +264,7 @@ const Parameter = ({ route, navigation }) => {
 
           <View style={{ flex: 1 }} className="bg-[#ececec] my-2">
             <View
-              className=" rounded-sm p-4 flex-1"
+              className=" rounded-sm  flex-1 p-2"
               style={{ backgroundColor: Colors.brand }}>
               <Text className="text-white text-center font-bold font-sans">
                 Parameter Tersedia :
@@ -254,11 +274,14 @@ const Parameter = ({ route, navigation }) => {
               url="/master/parameter"
               renderItem={renderParameter}
               payload={{ except: selectedParameter }}
+              nestedScrollEnabled={true}
             />
           </View>
 
           <View style={{ flex: 1 }} className="bg-[#ececec] ">
-            <View className="rounded-sm p-4" style = {{  backgroundColor : Colors.brand }}>
+            <View
+              className="rounded-sm p-2"
+              style={{ backgroundColor: Colors.brand }}>
               <Text className="text-white text-center font-bold font-sans">
                 Parameter yang Dipilih :
               </Text>
@@ -266,6 +289,7 @@ const Parameter = ({ route, navigation }) => {
             <Paginate
               url={`/permohonan/titik/${uuid}/parameter`}
               renderItem={renderSelectedParameter}
+              nestedScrollEnabled={true}
             />
           </View>
 
@@ -280,9 +304,7 @@ const Parameter = ({ route, navigation }) => {
                 padding: 10,
                 alignItems: "center",
               }}
-              onPress={() => {
-                // Implementasikan logika penyimpanan di sini
-              }}>
+              onPress={() => send.mutate()}>
               <Text className="font-bold font-sans text-base text-white">
                 Simpan & Kirim
               </Text>

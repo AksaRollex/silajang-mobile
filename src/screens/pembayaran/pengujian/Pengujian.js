@@ -63,10 +63,6 @@ const Pengujian = ({ navigation }) => {
     const status = item.payment?.status;
 
     const dropdownOptions = [
-      //  Jika expired, pending, atau gagal: Tampilkan "Pembayaran"
-      //  Jika berhasil: Tampilkan "Detail" dan "Cetak"
-      //  Jika pending atau gagal: Tampilkan "Tagihan" (selain "Pembayaran")
-
       // Opsi Pembayaran
       (isExpired || status === "pending" || status === "failed") && {
         id: "Pembayaran",
@@ -148,15 +144,15 @@ const Pengujian = ({ navigation }) => {
 
     const getStatusStyle = item => {
       if (item.payment?.is_expired) {
-        return " text-red-500"; // Light red background with dark red text for expired
+        return " text-red-500";
       } else {
         const status = item.payment?.status;
         if (status === "pending") {
-          return " text-blue-400"; // Light blue background with dark blue text for pending
+          return " text-blue-400";
         } else if (status === "success") {
-          return "text-green-500"; // Light green background with dark green text for success
+          return "text-green-500";
         } else {
-          return " text-red-500"; // Light gray background with dark gray text for other statuses
+          return " text-red-500";
         }
       }
     };

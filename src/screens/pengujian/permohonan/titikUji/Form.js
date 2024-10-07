@@ -292,7 +292,7 @@ const FormTitikUji = ({ route, navigation, props }) => {
               className="w-1/2 bg-[#fff] rounded-sm py-12 px-2   m-0.5 items-center"
               style={[selectedPayment === "qris" && styles.selectedCard]}
               onPress={() => handleSelectedPayment("qris")}>
-              <FontAwesome
+              <MaterialIcons
                 name="qrcode"
                 size={50}
                 color="black"
