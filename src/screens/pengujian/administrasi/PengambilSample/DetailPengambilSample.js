@@ -19,9 +19,6 @@ import Geolocation from 'react-native-geolocation-service';
 import {  request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import Toast from 'react-native-toast-message';
-import { useAnimatedGestureHandler } from "react-native-reanimated";
-
-
 
 export default function Detail({ route, navigation }) {
   const { uuid, status, pengambilOptions } = route.params;
@@ -62,7 +59,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample", useAnimatedGestureHandler);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample");
       },
       
       onError: (error) => {
