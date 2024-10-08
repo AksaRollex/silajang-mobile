@@ -241,6 +241,17 @@ const Perusahaan = () => {
     formData.append("kelurahan_id", getValues("kelurahan_id"));
 
     if (file) {
+      const fileSizeInKB = file.fileSize / 1024;
+      if (fileSizeInKB > 2048) {
+        Toast.show({
+          type: "error",
+          text1: "File terlalu besar",
+          text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+        });
+        return; // Exit the function early if the file is too large
+      }
+    }
+    if (file) {
       formData.append("tanda_tangan", {
         uri: file.uri,
         type: file.type || "image/jpeg",
@@ -297,7 +308,7 @@ const Perusahaan = () => {
         text1: "Data Berhasil Di Kirim",
       });
       QueryClient.invalidateQueries("/auth");
-      navigation.navigate("Profile");
+      navigation.navigate("IndexProfile");
       setFile(null);
       fetchUserData();
     },
@@ -314,13 +325,23 @@ const Perusahaan = () => {
   const [file, setFile] = React.useState(null);
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
+      const file = response.assets[0];
+      const fileSizeInBytes = file.fileSize;
+      const fileSizeInKB = fileSizeInBytes / 1024;
       if (response.didCancel) {
         console.log("User cancelled image picker");
       } else if (response.errorMessage) {
         console.log("ImagePicker Error: ", response.errorMessage);
+      }
+      if (fileSizeInKB > 2048) {
+        Toast.show({
+          type: "error",
+          text1: "Ukuran file terlalu besar",
+          text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+        });
       } else {
-        console.log("Chosen file:", response.assets[0]);
-        setFile(response.assets[0]);
+        console.log("Chosen file:", file);
+        setFile(file);
       }
     });
   };
@@ -707,7 +728,8 @@ const Perusahaan = () => {
                           value: item.value,
                           key: item.value, // Tambahkan key yang unik
                         }))}
-                        className="bg-[#fff] rounded-sm border-stone-300  font-sans "
+                        style={pickerSelectStyles}
+                        useNativeAndroidPickerStyle={false}
                         // placeholder={{
                         //   label: userData.kab_kota_id
                         //     ? `Kab/Kota: ${userData.kab_kota_id}`
@@ -745,7 +767,8 @@ const Perusahaan = () => {
                           value: item.value,
                           key: item.value, // Tambahkan key yang unik
                         }))}
-                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
+                        style={pickerSelectStyles}
+                        useNativeAndroidPickerStyle={false}
                         // placeholder={{
                         //   label: userData.kecamatan_id
                         //     ? `Kecamatan: ${userData.kecamatan_id}`
@@ -785,7 +808,8 @@ const Perusahaan = () => {
                           value: item.value,
                           key: item.value, // Tambahkan key yang unik
                         }))}
-                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
+                        style={pickerSelectStyles}
+                        useNativeAndroidPickerStyle={false}
                         // placeholder={{
                         //   label: userData.kelurahan_id
                         //     ? `Kelurahan: ${userData.kelurahan_id}`
@@ -1034,20 +1058,20 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: "#ccc",
-    borderRadius: 8,
-    color: "black",
+    borderColor: 'gray',
+    borderRadius: 4,
+    color: 'black',
+    paddingRight: 30, // untuk memastikan teks tidak tumpang tindih dengan ikon
   },
   inputAndroid: {
     fontSize: 16,
+    paddingHorizontal: 10,
+    paddingVertical: 8,
+    borderColor: 'gray',
     borderRadius: 8,
-    color: "black",
-    backgroundColor: "#f0f0f0",
+    color: 'black',
   },
-  iconContainer: {
-    top: 12,
-    right: 10,
-  },
+ 
 });
 
 export default Perusahaan;

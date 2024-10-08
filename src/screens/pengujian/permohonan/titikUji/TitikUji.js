@@ -26,7 +26,7 @@ const TitikUji = ({ navigation, route, status }) => {
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["TitikUji"]);
+      queryClient.invalidateQueries(["/permohonan/titik"]);
       navigation.navigate("TitikUji");
     },
     onError: error => {
@@ -56,6 +56,59 @@ const TitikUji = ({ navigation, route, status }) => {
     },
   ];
 
+  const statusList = [
+    "Mengajukan Permohonan", // 0
+    "Menyerahkan Sampel", // 1
+    "Menyerahkan Surat Perintah Pengujian", // 2
+    "Menyerahkan sampel untuk Proses Pengujian", // 3
+    "Menyerahkan RDPS", // 4
+    "Menyerahkan RDPS untuk Pengetikan LHU", // 5
+    "Menyerahkan LHU untuk Diverifikasi", // 6
+    "Mengesahkan LHU", // 7
+    "Pembayaran", // 8
+    "Penyerahan LHU", // 9
+    "Penyerahan LHU Amandemen (Jika ada)", // 10
+    "Selesai", // 11
+    "Menunggu", // default
+  ];
+
+  const statusBackgroundColors = [
+    "bg-green-400", // 0
+    "bg-slate-100", // 1
+    "bg-slate-100", // 2
+    "bg-slate-100", // 3
+    "bg-slate-100", // 4
+    "bg-slate-100", // 5
+    "bg-slate-100", // 6
+    "bg-slate-100", // 7
+    "bg-slate-100", // 8
+    "bg-slate-100", // 9
+    "bg-slate-100", // 10
+    "bg-slate-100", // 11
+    "bg-slate-100", // default
+  ];
+
+  const statusTextColors = [
+    "text-black", // 0
+    "text-black", // 1
+    "text-black", // 2
+    "text-black", // 3
+    "text-black", // 4
+    "text-black", // 5
+    "text-black", // 6
+    "text-black", // 7
+    "text-black", // 8
+    "text-black", // 9
+    "text-black", // 10
+    "text-black", // 11
+    "text-black", // default
+  ];
+
+  const currentStatusText = statusList[status] || statusList[12]; // Default "Menunggu"
+  const currentStatusBackground =
+    statusBackgroundColors[status] || statusBackgroundColors[12]; // Default "bg-slate-100"
+  const currentStatusTextColor =
+    statusTextColors[status] || statusTextColors[12]; // Default "text-black"
   const CardTitikUji = ({ item }) => (
     <View style={styles.row}>
       <View style={styles.card}>
@@ -79,121 +132,18 @@ const TitikUji = ({ navigation, route, status }) => {
           <View>
             <Text
               style={styles.badge}
-              className={`text-xs text-indigo-600  mt-2
-            ${
-              status == 0
-                ? "bg-green-400"
-                : status == 1
-                ? "bg-slate-100"
-                : status == 2
-                ? "bg-slate-100"
-                : status == 3
-                ? "bg-slate-100"
-                : status == 4
-                ? "bg-slate-100"
-                : status == 5
-                ? "bg-slate-100"
-                : status == 6
-                ? "bg-slate-100"
-                : status == 7
-                ? "bg-slate-100"
-                : status == 8
-                ? "bg-slate-100"
-                : status == 9
-                ? "bg-slate-100"
-                : status == 10
-                ? "bg-slate-100"
-                : status == 11
-                ? "bg-slate-100"
-                : "bg-slate-100"
-            }`}>
-              Pengambilan :
-              {status == 0
-                ? "Mengakan Permohonan"
-                : status == 1
-                ? "Menyerahkan Sampel"
-                : status == 2
-                ? "Menyerahkan Surat Perintah Pengujian"
-                : status == 3
-                ? "Menyerahkan sampel untuk Proses Pengujian"
-                : status == 4
-                ? "Menyerahkan RDPS"
-                : status == 5
-                ? "Menyerahkan RDPS untuk Pengetikan LHU"
-                : status == 6
-                ? "Menyerahkan LHU untuk Diverifikasi"
-                : status == 7
-                ? "Mengesahkan LHU"
-                : status == 8
-                ? "Pembayaran"
-                : status == 9
-                ? "Penyerahan LHU"
-                : status == 10
-                ? "Penyerahan LHU Amandemen (Jika ada)"
-                : status == 11
-                ? "Selesai"
-                : "Menunggu"}
+              className={`text-xs mt-2 ${currentStatusBackground} ${currentStatusTextColor}`}>
+              Pengambilan : {currentStatusText}
+            </Text>
+
+            <Text
+              style={styles.badge}
+              className={`text-xs text-black ${currentStatusBackground}`}>
+              Penerimaan : {currentStatusText}
             </Text>
             <Text
               style={styles.badge}
-              className={`text-xs text-indigo-600
-            ${
-              status == 0
-                ? "bg-green-400"
-                : status == 1
-                ? "bg-slate-100"
-                : status == 2
-                ? "bg-slate-100"
-                : status == 3
-                ? "bg-slate-100"
-                : status == 4
-                ? "bg-slate-100"
-                : status == 5
-                ? "bg-slate-100"
-                : status == 6
-                ? "bg-slate-100"
-                : status == 7
-                ? "bg-slate-100"
-                : status == 8
-                ? "bg-slate-100"
-                : status == 9
-                ? "bg-slate-100"
-                : status == 10
-                ? "bg-slate-100"
-                : status == 11
-                ? "bg-slate-100"
-                : "bg-slate-100 && text-red-500"
-            }`}>
-              Penerimaan :
-              {status == 0
-                ? "Mengakan Permohonan"
-                : status == 1
-                ? "Menyerahkan Sampel"
-                : status == 2
-                ? "Menyerahkan Surat Perintah Pengujian"
-                : status == 3
-                ? "Menyerahkan sampel untuk Proses Pengujian"
-                : status == 4
-                ? "Menyerahkan RDPS"
-                : status == 5
-                ? "Menyerahkan RDPS untuk Pengetikan LHU"
-                : status == 6
-                ? "Menyerahkan LHU untuk Diverifikasi"
-                : status == 7
-                ? "Mengesahkan LHU"
-                : status == 8
-                ? "Pembayaran"
-                : status == 9
-                ? "Penyerahan LHU"
-                : status == 10
-                ? "Penyerahan LHU Amandemen (Jika ada)"
-                : status == 11
-                ? "Selesai"
-                : "Menunggu"}
-            </Text>
-            <Text
-              style={styles.badge}
-              className="text-xs text-indigo-600  bg-slate-100 ">
+              className="text-xs text-black  bg-slate-100 ">
               Pengujian : {item.text_status || "-"}
             </Text>
           </View>

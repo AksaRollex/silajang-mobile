@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  ScrollView
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import FooterText from "../components/FooterText";
 export default function Pengujian() {
   const [refreshing, setRefreshing] = useState(false);
   const [accordionExpanded, setAccordionExpanded] = useState(false);
@@ -37,11 +39,17 @@ export default function Pengujian() {
 
   return (
     <>
-      <Header navigate={() => {navigation.navigate("Profile")}} />
+      <Header
+        navigate={() => {
+          navigation.navigate("Profile");
+        }}
+      />
       <View style={styles.container}>
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 
         {/* Accordion for Pengujian */}
+        <ScrollView>
+
         <TouchableOpacity
           style={styles.accordionItem}
           onPress={toggleAccordion}>
@@ -55,7 +63,7 @@ export default function Pengujian() {
             }
             size={20}
             color="#808080"
-          />
+            />
         </TouchableOpacity>
 
         {accordionExpanded && (
@@ -73,8 +81,9 @@ export default function Pengujian() {
             </TouchableOpacity>
           </View>
         )}
+        <FooterText />
+        </ScrollView>
       </View>
-
     </>
   );
 }

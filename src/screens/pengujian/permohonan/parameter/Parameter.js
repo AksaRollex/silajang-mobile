@@ -8,6 +8,8 @@ import Paginate from "@/src/screens/components/Paginate";
 import { useTitikPermohonan } from "@/src/services/useTitikPermohonan";
 import { rupiah } from "@/src/libs/utils";
 import { useQueryClient } from "@tanstack/react-query";
+import { useSendParameter } from "@/src/hooks/useSendParameter";
+import Icon from "react-native-vector-icons/AntDesign";
 
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
@@ -20,7 +22,20 @@ const Parameter = ({ route, navigation }) => {
     queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
   };
 
-  const { data: selectedParameter, refetch: refetchSelectedParameter } =
+  const { Save: SaveParameter, SaveConfirmationModal } = useSendParameter({
+    onSuccess: () => {
+      queryClient.invalidateQueries([`/permohonan/titik/${uuid}/parameter`, { uuid : uuid }]);
+    },
+    onError: error => {
+      console.log("Save error : ", error);
+    },
+  });
+
+  const handleSave = () => {
+    SaveParameter(`/permohonan/titik/${uuid}/save-parameter`); 
+  };
+
+  const { data: selectedParameter } =
     useQuery({
       queryKey: ["selectedParameter", uuid],
       queryFn: () =>
@@ -34,18 +49,6 @@ const Parameter = ({ route, navigation }) => {
     queryKey: ["pakets"],
     queryFn: () => axios.get("/master/paket").then(res => res.data.data),
   });
-
-  const send = useMutation(
-    () =>
-      axios.post(`/permohonan/titik/${uuid}/parameter/send`, {
-        uuid: selectedParameter?.uuid,
-      }),
-    {
-      onSuccess: () => {
-        invalidateQueries();
-      },
-    },
-  );
 
   const addPeraturan = useMutation(
     peraturanUuid =>
@@ -66,7 +69,7 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onSuccess: () => {
-        invalidateQueries;
+        invalidateQueries();
       },
     },
   );
@@ -119,6 +122,7 @@ const Parameter = ({ route, navigation }) => {
     },
   );
 
+  
   const renderPeraturan = ({ item }) => (
     <View
       className=" rounded-sm flex-row justify-between p-3 bg-[#ececec] drop-shadow-md mt-1"
@@ -208,11 +212,18 @@ const Parameter = ({ route, navigation }) => {
           <View className="bg-[#ececec]">
             <TouchableOpacity
               onPress={() => setShowPeraturan(!showPeraturan)}
-              style={{ padding: 8, backgroundColor: Colors.brand }}
-              className="">
-              <Text className="text-white text-center font-bold font-sans">
-                Pilih berdasarkan Peraturan :
-              </Text>
+              style={{ padding: 8, backgroundColor: Colors.brand }}>
+              <View className="flex-row justify-between">
+                <Text className="text-white text-center font-bold font-sans">
+                  Pilih berdasarkan Peraturan
+                </Text>
+                <Icon
+                  name={showPeraturan ? "up" : "down"}
+                  size={18}
+                  color={"white"}
+                  className=""
+                />
+              </View>
             </TouchableOpacity>
             {showPeraturan && (
               <Paginate
@@ -227,9 +238,17 @@ const Parameter = ({ route, navigation }) => {
             onPress={() => setShowPaket(!showPaket)}
             style={{ padding: 8, backgroundColor: Colors.brand }}
             className=" mt-2">
-            <Text className="text-white text-center font-bold font-sans">
-              Pilih berdasarkan Paket :
-            </Text>
+            <View className="flex-row justify-between">
+              <Text className="text-white text-center font-bold font-sans">
+                Pilih berdasarkan Paket
+              </Text>
+              <Icon
+                name={showPaket ? "up" : "down"}
+                size={18}
+                color={"white"}
+                className=""
+              />
+            </View>
           </TouchableOpacity>
           {showPaket && (
             <View
@@ -266,9 +285,17 @@ const Parameter = ({ route, navigation }) => {
             <View
               className=" rounded-sm  flex-1 p-2"
               style={{ backgroundColor: Colors.brand }}>
-              <Text className="text-white text-center font-bold font-sans">
-                Parameter Tersedia :
-              </Text>
+              <View className="flex-row justify-between">
+                <Text className="text-white text-center font-bold font-sans">
+                  Parameter Tersedia
+                </Text>
+                {/* <Icon
+                  name={renderParameter ? "up" : "down"}
+                  size={18}
+                  color={"white"}
+                  className=""
+                /> */}
+              </View>
             </View>
             <Paginate
               url="/master/parameter"
@@ -282,9 +309,17 @@ const Parameter = ({ route, navigation }) => {
             <View
               className="rounded-sm p-2"
               style={{ backgroundColor: Colors.brand }}>
-              <Text className="text-white text-center font-bold font-sans">
-                Parameter yang Dipilih :
-              </Text>
+              <View className="flex-row justify-between">
+                <Text className="text-white text-center font-bold font-sans">
+                  Parameter yang Dipilih
+                </Text>
+                {/* <Icon
+                  name={renderSelectedParameter ? "up" : "down"}
+                  size={18}
+                  color={"white"}
+                  className=""
+                /> */}
+              </View>
             </View>
             <Paginate
               url={`/permohonan/titik/${uuid}/parameter`}
@@ -304,7 +339,7 @@ const Parameter = ({ route, navigation }) => {
                 padding: 10,
                 alignItems: "center",
               }}
-              onPress={() => send.mutate()}>
+              onPress={handleSave}>
               <Text className="font-bold font-sans text-base text-white">
                 Simpan & Kirim
               </Text>
@@ -312,6 +347,7 @@ const Parameter = ({ route, navigation }) => {
           )}
         </View>
       </ScrollView>
+      <SaveConfirmationModal />
     </>
   );
 };

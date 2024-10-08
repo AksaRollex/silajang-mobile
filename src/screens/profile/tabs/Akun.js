@@ -70,6 +70,17 @@ const Akun = () => {
     formData.append("nama", getValues("nama"));
 
     if (file) {
+      const fileSizeInKB = file.fileSize / 1024;
+      if (fileSizeInKB > 2048) {
+        Toast.show({
+          type: "error",
+          text1: "File terlalu besar",
+          text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+        });
+        return; // Exit the function early if the file is too large
+      }
+    }
+    if (file) {
       formData.append("photo", {
         uri: file.uri,
         type: file.type || "image/jpeg",
@@ -138,10 +149,22 @@ const Akun = () => {
   const handleChoosePhoto = () => {
     launchImageLibrary({ mediaType: "photo" }, response => {
       if (response.errorMessage) {
-        console.log("ImagePicker Error: ", response.errorMessage);
-      } else {
-        console.log("Chosen file:", response.assets[0]);
-        setFile(response.assets[0]);
+        console.log("Image Error : ", response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const file = response.assets[0];
+        const fileSizeInBytes = file.fileSize;
+        const fileSizeInKB = fileSizeInBytes / 1024;
+
+        if (fileSizeInKB > 2048) {
+          Toast.show({
+            type: "error",
+            text1: "Ukuran file terlalu besar",
+            text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+          });
+        } else {
+          console.log("Chosen file:", file);
+          setFile(file);
+        }
       }
     });
   };

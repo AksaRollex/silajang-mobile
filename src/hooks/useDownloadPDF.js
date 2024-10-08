@@ -13,7 +13,7 @@ import FileViewer from "react-native-file-viewer";
 
 const DownloadPDFModal = ({ visible, onConfirm, onCancel, title, message }) => (
   <Modal
-    animationType="slide"
+    animationType="fade"
     transparent={true}
     visible={visible}
     onRequestClose={onCancel}>
