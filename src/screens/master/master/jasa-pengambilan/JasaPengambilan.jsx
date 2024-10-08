@@ -43,7 +43,7 @@ const JasaPengambilan = ({ navigation }) => {
         <View className="flex-row justify-between items-center">
           <View className="flex-col space-y-3">
             <Text className="text-base font-poppins-semibold">{item.wilayah}</Text>
-            <Text className="text-base font-poppins-semibold">{rupiah(item.harga)}</Text>
+            <Text className="text-base font-poppins-semibold">{item.harga === 0 ? `Rp. ${rupiah(item.harga)}` :  rupiah(item.harga)}</Text>
           </View>
           <MenuView
           title="Menu Title"
