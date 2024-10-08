@@ -109,9 +109,8 @@ const CetakLHU = ({ navigation }) => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
       const fileName = `LHU_${Date.now()}.pdf`;
-      
-      // Tentukan direktori unduhan berdasarkan platform
-      const downloadPath = Platform.OS === 'ios' 
+
+      const downloadPath = Platform.OS === 'ios'
         ? `${RNFS.DocumentDirectoryPath}/${fileName}`
         : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
@@ -127,16 +126,28 @@ const CetakLHU = ({ navigation }) => {
 
       if (result.statusCode === 200) {
         if (Platform.OS === 'android') {
-          // Untuk Android, kita perlu memberi tahu sistem bahwa file baru telah ditambahkan
           await RNFS.scanFile(downloadPath);
         }
-        Alert.alert('Success', `PDF downloaded successfully. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`);
+
+        // Show toast message for success
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`,
+        });
+
       } else {
         throw new Error('Download failed');
       }
     } catch (error) {
       console.error('Download error:', error);
-      Alert.alert('Error', `Failed to download PDF: ${error.message}`);
+
+      // Show toast message for error
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
     }
   };
 
