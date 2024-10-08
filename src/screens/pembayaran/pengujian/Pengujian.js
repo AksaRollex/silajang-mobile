@@ -85,7 +85,7 @@ const Pengujian = ({ navigation }) => {
               console.error("Token not found");
             }
           } catch (error) {
-            console.error("Error fetching token:", error);
+            console.error("Error mendapatkan token:", error);
           }
         },
       },

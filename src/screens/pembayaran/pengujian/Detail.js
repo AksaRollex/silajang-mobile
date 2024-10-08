@@ -17,6 +17,7 @@ import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
+import { API_URL } from "@env";
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
@@ -24,8 +25,6 @@ const PengujianDetail = ({ route, navigation }) => {
   const [dateExp, setDateExp] = useState("06:60:60:60");
   const { uuid } = route.params;
   const { data: setting } = useSetting();
-  console.log("setting: ", setting);
-
   const copyToClipboard = text => {
     Clipboard.setString(text);
   };
@@ -86,14 +85,14 @@ const PengujianDetail = ({ route, navigation }) => {
   const handleGenerateVA = () => {
     setLoading(true);
     axios
-      .post(`/pembayaran/pengujian/${uuid}`)
+      .post(`${API_URL}/pembayaran/pengujian/${uuid}`)
       .then(() => {
-        Alert.alert("Success", "VA Payment created successfully");
+        Alert.alert("Success", "kode pembayaran berhasil dibuat");
         fetchData();
       })
       .catch(err => {
-      setLoading(false)
-        Alert.alert("ERROR", err.response?.data?.message || "Gagal Memuat");
+        setLoading(false);
+        Alert.alert("ERROR", "Kode Pembayaran gagal dibuat" || "Gagal Memuat");
       });
   };
 
@@ -165,22 +164,45 @@ const PengujianDetail = ({ route, navigation }) => {
                 {rupiah(formData?.harga)}
               </Text>
             </View>
+            {formData?.payment_type === "va" && (
+              <>
+                <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+                  <Text className="font-bold text-black text-lg text-center  ">
+                    VA Pembayaran Belum Dibuat
+                  </Text>
+                  <Text className=" text-sm text-[#333179] text-justify">
+                    Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran
+                  </Text>
+                </View>
+                <View className="flex items-end my-2">
+                  <TouchableOpacity
+                    className="bg-indigo-600 p-3 rounded-lg"
+                    onPress={handleGenerateVA}>
+                    <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
 
-            <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
-              <Text className="font-bold text-black text-lg text-center  ">
-                VA Pembayaran Belum Dibuat
-              </Text>
-              <Text className=" text-sm text-[#333179] text-justify">
-                Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran
-              </Text>
-            </View>
-            <View className="flex items-end my-2">
-                <TouchableOpacity
-                  className="bg-indigo-600 p-3 rounded-lg"
-                  onPress={handleGenerateVA}>
-                  <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-                </TouchableOpacity>
-            </View>
+            {formData?.payment_type === "qris" && (
+              <>
+                <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+                  <Text className="font-bold text-black text-lg text-center  ">
+                    QRIS Pembayaran Belum Dibuat
+                  </Text>
+                  <Text className=" text-sm text-[#333179] text-justify">
+                    Silahkan klik Tombol Di Bawah untuk Membuat QRIS Pembayaran
+                  </Text>
+                </View>
+                <View className="flex items-end my-2">
+                  <TouchableOpacity
+                    className="bg-indigo-600 p-3 rounded-lg"
+                    onPress={handleGenerateVA}>
+                    <Text style={styles.buttonText}>Buat QRIS Pembayaran</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
         ) : (
           <View className="py-4 px-3 rounded-lg  bg-[#f8f8f8] ">
@@ -192,7 +214,7 @@ const PengujianDetail = ({ route, navigation }) => {
                 <View className="bg-green-500 rounded-lg mb-4 font-bold shadow-lg p-3">
                   <Text className="text-white text-center text-sm font-semibold">
                     Pembayaran Berhasil Dilakukan :{" "}
-                    {formData?.payment.tanggal_bayar || 'Belum bayar'}
+                    {formData?.payment.tanggal_bayar || "Belum bayar"}
                   </Text>
                 </View>
               </>
@@ -203,13 +225,28 @@ const PengujianDetail = ({ route, navigation }) => {
             ) : (
               <View className="">
                 <View className="bg-[#fff] rounded-lg mb-3">
-                  <Text style={styles.errorText} className="p-3 m-2">
-                    VA Pembayaran telah kedaluwarsa
-                  </Text>
-                  <Text className=" p-2 my-2 text-base font-bold text-center text-black">
-                    Silakan Hubungi Admin Kami untuk Melakukan Permintaan
-                    Pembuatan VA Pembayaran
-                  </Text>
+                  {formData?.payment_type === "va" && (
+                    <>
+                      <Text style={styles.errorText} className="p-3 m-2">
+                        VA Pembayaran telah kedaluwarsa
+                      </Text>
+                      <Text className=" p-2 my-2 text-base font-bold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan VA Pembayaran
+                      </Text>
+                    </>
+                  )}
+                  {formData?.payment_type === "qris" && (
+                    <>
+                      <Text style={styles.errorText} className="p-3 m-2">
+                        QRIS Pembayaran telah kedaluwarsa
+                      </Text>
+                      <Text className=" p-2 my-2 text-base font-bold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan QRIS Pembayaran
+                      </Text>
+                    </>
+                  )}
                   {setting ? (
                     <View>
                       <View className="flex flex-row items-center justify-center my-3">
@@ -239,56 +276,99 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
             )}
 
-            <View style={[styles.card, isExpired && styles.disabledCard]}>
-              <View className="flex-row justify-between">
-                <Text style={styles.cardTitle}>Virtual Account</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    !isExpired && copyToClipboard(formData?.payment?.va_number)
-                  }>
-                  <Text
-                    style={[
-                      styles.copyButton,
-                      isExpired && styles.disabledText,
-                    ]}>
-                    Salin
-                  </Text>
-                </TouchableOpacity>
+            {formData.payment_type === "va" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                <View className="flex-row justify-between">
+                  <Text style={styles.cardTitle}>Virtual Account</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      !isExpired &&
+                      copyToClipboard(formData?.payment?.va_number)
+                    }>
+                    <Text
+                      style={[
+                        styles.copyButton,
+                        isExpired && styles.disabledText,
+                      ]}>
+                      Salin
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.cardValue}>
+                  {formData?.payment?.va_number}
+                </Text>
               </View>
-              <Text style={styles.cardValue}>
-                {formData?.payment?.va_number}
-              </Text>
-            </View>
+            )}
 
-            <View style={[styles.card, isExpired && styles.disabledCard]}>
-              <View className="flex-row justify-between">
-                <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
-                <TouchableOpacity
-                  onPress={() =>
-                    !isExpired && copyToClipboard(formData?.payment?.nominal)
-                  }>
+            {formData.payment_type === "qris" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                {/* <Text style={styles.warningText}>
+                Lakukan pembayaran sebelum: {countdownExp}
+              </Text> */}
+                <View style={styles.cardqr}>
+                  <Image
+                    source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
+                    style={styles.qrisImage}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}>
                   <Text
-                    style={[
-                      styles.copyButton,
-                      isExpired && styles.disabledText,
-                    ]}>
-                    Salin
+                    style={{
+                      fontWeight: "bold",
+                      color: "black",
+                      fontSize: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                    {rupiah(formData?.harga)}
                   </Text>
-                </TouchableOpacity>
+                </View>
               </View>
-              <Text style={styles.cardValue}>{rupiah(formData?.harga)}</Text>
-            </View>
+            )}
 
             {formData?.payment?.status !== "success" &&
               formData?.payment?.is_expired &&
               !formData?.user_has_va && (
-                <View className="flex items-end my-2">
-                  <TouchableOpacity
-                    className="bg-indigo-600 p-3 rounded-lg"
-                    onPress={handleGenerateVA}>
-                    <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-                  </TouchableOpacity>
-                </View>
+                <>
+                  {formData?.payment_type === "va" && (
+                    <View className="flex items-end my-2">
+                      <View style={{ marginBottom: 70 }}>
+                        <TouchableOpacity
+                          className="bg-indigo-600 p-3 rounded-lg"
+                          onPress={handleGenerateVA}>
+                          <Text style={styles.buttonText}>
+                            Buat VA Pembayaran
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </>
+              )}
+            {formData?.payment?.status !== "success" &&
+              formData?.payment?.is_expired &&
+              !formData?.user_has_va && (
+                <>
+                  {formData?.payment_type === "qris" && (
+                    <View className="flex items-end my-2">
+                      <View style={{  }}>
+                        <TouchableOpacity
+                          className="bg-indigo-600 p-3 rounded-lg"
+                          onPress={handleGenerateVA}>
+                          <Text style={styles.buttonText}>
+                            Buat QRIS Pembayaran
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </>
               )}
           </View>
         )}
@@ -298,6 +378,15 @@ const PengujianDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  cardqr: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  qrisImage: {
+    width: 250, // Sesuaikan ukuran gambar sesuai kebutuhan
+    height: 250, // Sesuaikan ukuran gambar sesuai kebutuhan
+    backgroundColor: "#e0e0e0",
+  },
   disabledCard: {
     backgroundColor: "#e0e0e0", // Warna lebih gelap untuk card yang dinonaktifkan
   },
