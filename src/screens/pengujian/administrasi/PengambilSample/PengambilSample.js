@@ -97,10 +97,9 @@ const PengambilSampel = ({ navigation }) => {
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
-      const fileName = `Pengambil Sample_${Date.now()}.pdf`;
-      
-      // Tentukan direktori unduhan berdasarkan platform
-      const downloadPath = Platform.OS === 'ios' 
+      const fileName = `LHU_${Date.now()}.pdf`;
+
+      const downloadPath = Platform.OS === 'ios'
         ? `${RNFS.DocumentDirectoryPath}/${fileName}`
         : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
@@ -116,16 +115,28 @@ const PengambilSampel = ({ navigation }) => {
 
       if (result.statusCode === 200) {
         if (Platform.OS === 'android') {
-          // Untuk Android, kita perlu memberi tahu sistem bahwa file baru telah ditambahkan
           await RNFS.scanFile(downloadPath);
         }
-        Alert.alert('Success', `PDF downloaded successfully. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`);
+
+        // Show toast message for success
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`,
+        });
+
       } else {
         throw new Error('Download failed');
       }
     } catch (error) {
       console.error('Download error:', error);
-      Alert.alert('Error', `Failed to download PDF: ${error.message}`);
+
+      // Show toast message for error
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
     }
   };
 
@@ -291,24 +302,29 @@ const PengambilSampel = ({ navigation }) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
-          <View className="bg-white rounded-lg w-full h-full m-5">
-            <Text className="text-lg font-bold m-4">Preview Pengambil Sample</Text>
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <TouchableOpacity onPress={() => {
+                handleDownloadPDF();
+                setModalVisible(false);
+              }} className=" p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
             <Pdf
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
             />
             <View className="flex-row justify-between m-4">
-              <TouchableOpacity onPress={handleDownloadPDF} className="bg-green-500 p-2 rounded flex-1 mr-2">
-                <Text className="text-white text-center">Download PDF</Text>
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 rounded flex-1 ml-2">
-                <Text className="text-white text-center">Close</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-bold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
-      </Modal> 
+      </Modal>
     </View>
   );
 };
