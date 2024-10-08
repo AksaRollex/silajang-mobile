@@ -27,6 +27,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import RNPickerSelect from "react-native-picker-select";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
+import { formatDate } from "@/src/libs/utils";
 
 const currency = (number) => {
   return number.toLocaleString("id-ID", {
@@ -50,10 +51,13 @@ export default function DetailPersetujuan({ route, navigation }) {
   
   const [radiusPengambilan, setRadiusPengambilan] = useState([]);
   const [selectedRadius, setSelectedRadius] = useState(null);
+
   const [pengambilSample, setPengambilSample] = useState([]);
   const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
+
   const [Metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
+  
   const [obyekPelayanan, setObyekPelayanan] = useState('');
 
   const [modalVisible, setModalVisible] = useState({
@@ -168,6 +172,12 @@ export default function DetailPersetujuan({ route, navigation }) {
         if (
           response.data.data &&
           response.data.data.hasil_pengujian !== undefined
+        ) {
+          setInterpretasi(response.data.data.hasil_pengujian);
+        }
+        if (
+          response.data.data &&
+          response.data.data.radius_pengambilan_id !== undefined
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
         }

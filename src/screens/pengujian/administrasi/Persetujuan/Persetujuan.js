@@ -4,14 +4,17 @@ import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
-import { Text, View, Modal, TouchableOpacity } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
+import RNFS, { downloadFile } from 'react-native-fs';
+import Toast from 'react-native-toast-message';
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -65,25 +68,72 @@ const Persetujuan = ({ navigation }) => {
     setModalVisible(true);
   };
 
+  const handleDownloadPDF = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileName = `LHU_${Date.now()}.pdf`;
+
+      const downloadPath = Platform.OS === 'ios'
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: reportUrl,
+        toFile: downloadPath,
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === 'android') {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        // Show toast message for success
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`,
+        });
+
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+
+      // Show toast message for error
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
+
   const renderItem = ({ item }) => {
     const isConfirmed = selectedPengambil === 1; // Telah Diambil
-    
+
     const dropdownOptions = isConfirmed
       ? [
-          { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
-          { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling({ uuid: item.uuid }) },
-          {
-            id: "Berita Acara",
-            title: "Berita Acara",
-            subactions: [
-              { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan", action: item => BeritaAcara({ uuid: item.uuid }) },
-              { id: "Data Pengambilan", title: "Data Pengambilan", action: item => DataPengambilan ({ uuid: item.uuid }) },
-            ]
-          }
-        ]
+        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
+        { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling({ uuid: item.uuid }) },
+        {
+          id: "Berita Acara",
+          title: "Berita Acara",
+          subactions: [
+            { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan", action: item => BeritaAcara({ uuid: item.uuid }) },
+            { id: "Data Pengambilan", title: "Data Pengambilan", action: item => DataPengambilan({ uuid: item.uuid }) },
+          ]
+        }
+      ]
       : [
-          { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) }
-        ];
+        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) }
+      ];
 
     return (
       <View
@@ -113,14 +163,14 @@ const Persetujuan = ({ navigation }) => {
           </View>
           <View className="absolute right-1 flex-col items-center">
             {!isConfirmed && (
-            <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
-              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500' 
-                : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500' 
-                : 'bg-indigo-100 text-indigo-500'}`}>
-              {item.kesimpulan_permohonan == 1 ? 'Diterima' 
-                : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
-                : 'Menunggu'}
-            </Text>            
+              <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
+              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
+                  : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500'
+                    : 'bg-indigo-100 text-indigo-500'}`}>
+                {item.kesimpulan_permohonan == 1 ? 'Diterima'
+                  : item.kesimpulan_permohonan == 2 ? 'Ditolak'
+                    : 'Menunggu'}
+              </Text>
             )}
             <View className="my-2 ml-10">
               <MenuView
@@ -140,9 +190,9 @@ const Persetujuan = ({ navigation }) => {
                   if (selectedOption) {
                     selectedOption.action(item);
                   }
-                  if(sub){
+                  if (sub) {
                     const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                    if(selectedSub){
+                    if (selectedSub) {
                       selectedSub.action(item);
                     }
                   }
@@ -202,11 +252,11 @@ const Persetujuan = ({ navigation }) => {
                 shouldOpenOnLongPress={false}
               >
                 <View style={{ marginEnd: 50 }}>
-                  <MaterialCommunityIcons 
-                    name="filter-menu-outline" 
-                    size={24} 
-                    color="white" 
-                    style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} 
+                  <MaterialCommunityIcons
+                    name="filter-menu-outline"
+                    size={24}
+                    color="white"
+                    style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
                   />
                 </View>
               </MenuView>
@@ -228,26 +278,36 @@ const Persetujuan = ({ navigation }) => {
         className="mb-14"
       />
 
-    <Modal
+      <Modal
         transparent={true}
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
-          <View className="bg-white rounded-lg w-full h-full m-5">
-            <Text className="text-lg font-bold m-4">Preview Pdf</Text>
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <TouchableOpacity onPress={() => {
+                handleDownloadPDF();
+                setModalVisible(false);
+              }} className=" p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
             <Pdf
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
             />
-            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-red-500 p-2 m-4 rounded">
-              <Text className="text-white text-center">Close</Text>
-            </TouchableOpacity>
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-bold text-center">Tutup</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </Modal> 
+      </Modal>
 
       <DeleteConfirmationModal />
     </View>

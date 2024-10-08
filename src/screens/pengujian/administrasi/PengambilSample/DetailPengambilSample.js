@@ -19,6 +19,7 @@ import Geolocation from 'react-native-geolocation-service';
 import {  request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import Toast from 'react-native-toast-message';
+import { useAnimatedGestureHandler } from "react-native-reanimated";
 
 
 
@@ -61,7 +62,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample", useAnimatedGestureHandler);
       },
       
       onError: (error) => {
@@ -235,7 +236,7 @@ function debounce(func, delay) {
 
 const autosave = debounce((data) => {
   createOrUpdate(watch());
-}, 1300); 
+}, 1500); 
 
 
   
@@ -794,7 +795,7 @@ const autosave = debounce((data) => {
                               </TouchableOpacity>
                             </View>
                           ))}
-                          <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4" onPress={handleChoosePhoto} style={{backgroundColor: "#4682B4", borderRadius: 4, marginStart: "38.7%"}}>
+                          <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4 bg-blue-500" onPress={handleChoosePhoto} style={{ borderRadius: 4, marginStart: "38.7%"}}>
                             <Text className="text-white text-sm font-semibold text-center">Tambah</Text>
                           </TouchableOpacity>
                         </View>
@@ -810,34 +811,18 @@ const autosave = debounce((data) => {
 
               <View className="w-full mt-5" >
               <TouchableOpacity onPress={handleSubmitData}>
-                <Text className="bg-blue-600 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
+                <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
               </TouchableOpacity>
 
-              {status == 0 && (
-                <TouchableOpacity onPress={handleKonfirmasi}>
-                  <Text className="bg-blue-700 text-center text-white text-base font-bold py-3 mt-3" style={{ borderRadius: 8 }}>
-                    Konfirmasi{" "}
-                    <FontAwesome6 name="check" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
-
-              {status == 1 && (
-                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
-                    Batalkan Konfirmasi{" "}
-                    <FontAwesome6 name="xmark" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
-              {status == 2 && (
-                <TouchableOpacity onPress={handleBatalkanKonfirmasi}>
-                  <Text className="bg-red-600 mt-3 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>
-                    Batalkan Konfirmasi{" "}
-                    <FontAwesome6 name="xmark" size={25} />
-                  </Text>
-                </TouchableOpacity>
-              )}
+              <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
+                <Text
+                  className={`text-center text-white text-base font-bold py-3 mt-1 ${status === 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
+                  style={{ borderRadius: 8 }}
+                >
+                  {status == 0 ? 'Konfirmasi' : 'Batalkan Konfirmasi'} {""}
+                  
+                </Text>
+              </TouchableOpacity>
                   
                 </View>
               </View>
