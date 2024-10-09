@@ -1,9 +1,21 @@
 <resources>
-
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.DayNight.NoActionBar">
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
+        
+        <!-- Tambahkan style kustom untuk DatePicker dan TimePicker -->
+        <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
+        <item name="android:timePickerStyle">@style/CustomTimePickerStyle</item>
     </style>
 
+    <!-- Tambahkan style kustom untuk DatePicker -->
+    <style name="CustomDatePickerStyle" parent="android:Widget.Material.DatePicker">
+        <item name="android:headerBackground">#645ef2</item>
+    </style>
+
+    <!-- Tambahkan style kustom untuk TimePicker -->
+    <style name="CustomTimePickerStyle" parent="android:Widget.Material.TimePicker">
+        <item name="android:headerBackground">#645ef2</item>
+    </style>
 </resources>
