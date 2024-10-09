@@ -140,7 +140,7 @@ export default memo(function Form({ route, navigation }) {
           <View className="flex-row justify-between mx-3 mt-4">
             <BackButton action={() => navigation.goBack()} size={26} />
             <Text className="text-xl font-bold">
-              {data ? "Edit Peraturan" : "Tambah Peraturan"}
+              {data ? "Edit Parameter" : "Tambah Parameter"}
             </Text>
           </View>
           <View className="p-5 flex-col space-y-2">
@@ -328,10 +328,10 @@ export default memo(function Form({ route, navigation }) {
             </View>
             <Button
               label="Simpan"
-              loading={isUpdating}
+              loading={isLoading}
               onPress={handleSubmit(onSubmit)}
               className="rounded-md bg-indigo-800"
-              disabled={isCreating || isUpdating}
+              disabled={isLoading}
             />
           </View>
         </View>

@@ -154,42 +154,23 @@ const PenerimaSampel = ({ navigation }) => {
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
-        <View className="flex-row justify-between items-center p-4 relative">
-          <View className="flex-shrink mr-20">
-            {isDiterima ? (
-              <Text className="text-[18px] font-extrabold mb-3">
-                {item.permohonan.user.nama}
-              </Text>
-            ) : (
-              <Text className="text-[18px] font-extrabold mb-3">
-                {item.permohonan.industri}
-              </Text>
-            )}
-
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">
-              Diterima pada:{" "}
-              <Text className="font-bold ">{item.tanggal_pengambilan}</Text>
+        <View className="flex-row justify-between">
+        <View className="flex-1 pr-4">
+            <Text className="text-[18px] font-extrabold mb-2">{item.permohonan.user.nama}</Text>
+            <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
+            <Text className="text-[15px] mb-2">
+              Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text>
             </Text>
-            <Text className="text-[14px] mb-2">
-              Status: <Text className="font-bold">{item.text_status}</Text>
+            <Text className="text-[15px] mb-2">
+              Diterima pada: <Text className="font-bold">{item.tanggal_diterima}</Text>
             </Text>
           </View>
-          <View className="absolute right-1 flex-col items-center">
-            <Text
-              className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${
-                isDiterima == 1
-                  ? "bg-green-400"
-                  : isDiterima == 2
-                  ? "bg-red-500"
-                  : "bg-purple-600"
-              }`}>
-              {isDiterima == 1
-                ? "Diterima"
-                : isDiterima == 2
-                ? "Ditolak"
-                : "Menunggu"}
-            </Text>
+          <View className="flex-shrink-0 items-end">
+            <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
+              <Text className="text-[12px] text-indigo-600 font-bold text-right">
+                {item.text_status}
+              </Text>
+            </View>
             <View className="my-2 ml-10">
             <MenuView
                 title="dropdownOptions"
