@@ -218,7 +218,7 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Persetujuan</Text>
+                <Text className="text-[20px] font-bold ">Persetujuan</Text>
               </View>
             </View>
 

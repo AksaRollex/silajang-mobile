@@ -55,7 +55,7 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [pengambilSample, setPengambilSample] = useState([]);
   const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
 
-  const [Metode, setMetode] = useState([]);
+  const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
   
   const [obyekPelayanan, setObyekPelayanan] = useState('');
@@ -95,19 +95,6 @@ export default function DetailPersetujuan({ route, navigation }) {
   }, []);
 
   useEffect(() => {
-    const fetchPengambilSample = async () => {
-      try {
-        const response = await axios.get("/administrasi/pengambil-sample/petugas");
-        setPengambilSample(response.data.data);
-      } catch (error) {
-        console.error("Error fetching pengambil data:", error);
-      }
-    };
-  
-    fetchPengambilSample();
-  }, []);
-
-  useEffect(() => {
     const fetchMetode = async () => {
       try {
         const response = await axios.get("/master/acuan-metode");
@@ -120,12 +107,35 @@ export default function DetailPersetujuan({ route, navigation }) {
     fetchMetode();
   }, []);
 
+
+  useEffect(() => {
+    const fetchPengambilSample = async () => {
+      try {
+        const response = await axios.get("/administrasi/pengambil-sample/petugas");
+        setPengambilSample(response.data.data);
+      } catch (error) {
+        console.error("Error fetching pengambil data:", error);
+      }
+    };
+  
+    fetchPengambilSample();
+  }, []);
+
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         const response = await axios.get(`/administrasi/pengambil-sample/${uuid}`);
         console.log("Response data:", response.data);
         setData(response.data.data);
+
+        if(response.data.data.permohonan.radius_pengambilan){
+          setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id)
+        }
+        if(response.data.data.acuan_metode){
+          setSelectedMetode(response.data.data.acuan_metode.id)
+        }
+
         if (response.data.data) {
           setObyekPelayanan(response.data.data.obyek_pelayanan || ''); // Atur state ke obyek_pelayanan
         }
@@ -175,12 +185,7 @@ export default function DetailPersetujuan({ route, navigation }) {
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
         }
-        if (
-          response.data.data &&
-          response.data.data.radius_pengambilan_id !== undefined
-        ) {
-          setInterpretasi(response.data.data.hasil_pengujian);
-        }
+       
 
         setLoading(false);
       } catch (error) {
@@ -242,6 +247,22 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
       // console.error("Gagal menyimpan data:", error.response ? error.response.data : error.message);
+    }
+  };
+
+  const updateRadius = async (value) => {
+    try {
+      const payload = {
+        permohonan: {
+          radius_pengambilan_id: value
+        }
+      };    
+       console.log('Payload yang dikirim:', payload.permohonan.radius_pengambilan_id);
+
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, payload);
+      fetchPermohonan();
+    } catch (error) {
+      console.error('Error updating radius pengambilan:', error.response);
     }
   };
 
@@ -319,7 +340,34 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
       console.log("Data berhasil disimpan:", response.data);
   };
+  const saveAcuanMetode = value => {
+    setMetode(value);
+    saveMetode(value);
+  };
 
+  const saveMetode = async status => {
+    try {
+      // Log data yang akan dikirim
+      console.log("Data yang akan dikirim:", {
+        acuan_metode_id: status,
+      });
+  
+      // Melakukan permintaan POST
+      const response = await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          acuan_metode_id: status, // Data yang dikirim
+        }
+      );
+  
+      // Log data yang diterima setelah berhasil disimpan
+      console.log("Data berhasil disimpan:", response.data);
+    } catch (error) {
+      // Log jika ada error
+      console.error("Error saat menyimpan data:", error);
+    }
+  };
+  
   const tanggal = value => {
     setDate(value);
     saveDateAndTime(value);
@@ -395,7 +443,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="bank" size={30} color="black" />
+                  <FontAwesome name="building" size={33} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -423,7 +471,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <SimpleLineIcons name="phone" size={28} color="black" />
+                  <FontAwesome6 name="phone" size={28} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
@@ -439,7 +487,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons
+                  <Feather
                     name="target"
                     size={30}
                     color="black"
@@ -473,7 +521,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="newspaper-o" size={27} color="black" />
+                  <FontAwesome6 name="scroll" size={27} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
@@ -484,7 +532,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Octicons name="beaker" size={33} color="black" />
+                  <MaterialCommunityIcons name="filter" size={33} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
@@ -681,14 +729,23 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <View style={styles.pickerContainer}>
                   <RNPickerSelect
                       placeholder={{ label: 'Pilih Radius', value: null }}
-                      onValueChange={(value) => setSelectedRadius(value)}
+                      onValueChange={value => {
+                        setSelectedRadius(value);
+                        updateRadius(value)
+                      }}
                       items={radiusPengambilan.map(item => ({
                         label: `${item.nama} (${item.radius}m) - ${currency(item.harga)}`,
                         value: item.id
                       }))}
                       style={{
-                        inputIOS: styles.pickerStyle,
-                        inputAndroid: styles.pickerStyle,
+                        inputIOS: {
+                          ...styles.pickerStyle,
+                          fontWeight: 'bold', 
+                        },
+                        inputAndroid: {
+                          ...styles.pickerStyle,
+                          fontWeight: 'bold', 
+                        },
                         iconContainer: {
                           top: 10,
                           right: 12,
@@ -795,14 +852,23 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <View style={styles.pickerContainer}>
                   <RNPickerSelect
                       placeholder={{ label: 'Pilih Metode', value: null }}
-                      onValueChange={(value) => setSelectedMetode(value)}
-                      items={Metode.map(item => ({
+                      onValueChange={value => {
+                        setSelectedMetode(value)
+                        saveMetode(value)
+                      }}
+                      items={metode.map(item => ({
                         label: `${item.nama}`,
                         value: item.id
-                      }))}
+                      }))} 
                       style={{
-                        inputIOS: styles.pickerStyle,
-                        inputAndroid: styles.pickerStyle,
+                        inputIOS: {
+                          ...styles.pickerStyle,
+                          fontWeight: 'bold', 
+                        },
+                        inputAndroid: {
+                          ...styles.pickerStyle,
+                          fontWeight: 'bold', 
+                        },
                         iconContainer: {
                           top: 10,
                           right: 12,
@@ -811,7 +877,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                       value={selectedMetode}
                       useNativeAndroidPickerStyle={false}
                       Icon={() => {
-                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }}  />;
+                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }} />;
                       }}
                     />
                   </View>
