@@ -59,7 +59,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample");
+          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
       },
       
       onError: (error) => {
@@ -816,7 +816,7 @@ const autosave = debounce((data) => {
                   className={`text-center text-white text-base font-bold py-3 mt-1 ${status === 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
                   style={{ borderRadius: 8 }}
                 >
-                  {status == 0 ? 'Konfirmasi' : 'Batalkan Konfirmasi'} {""}
+                  {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}
                   
                 </Text>
               </TouchableOpacity>

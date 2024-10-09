@@ -8,10 +8,12 @@ import { Text, View , Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
-import RNFS, { downloadFile } from 'react-native-fs';  
+import RNFS, { downloadFile } from 'react-native-fs';
+import Toast from 'react-native-toast-message';
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -33,6 +35,7 @@ const PengambilSampel = ({ navigation }) => {
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
+  const isConfirmed = selectedPengambil === 1; // Telah Diambil
 
 
 
@@ -155,12 +158,19 @@ const PengambilSampel = ({ navigation }) => {
         <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
 
-            {isDiterima ? (
-              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.user.nama}</Text>   
-            ) 
-              :
-            (
-              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.industri}</Text>
+          {isConfirmed ? (
+              <>
+                <Text className="text-[18px] font-extrabold mb-1">
+                  {item.kode}
+                </Text>
+                <Text className="text-[18px] font-extrabold mb-2">
+                  {item.permohonan.user.nama}
+                </Text>
+              </>
+            ) : (
+              <Text className="text-[18px] font-extrabold mb-3">
+                {item.permohonan.industri}
+              </Text>
             )}
 
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
@@ -284,7 +294,7 @@ const PengambilSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        className="mb-14"
+        className="mb-16"
       />
 
       {/* <AntDesign
