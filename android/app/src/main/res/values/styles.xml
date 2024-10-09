@@ -4,10 +4,6 @@
         <!-- Customize your theme here. -->
         <item name="android:editTextBackground">@drawable/rn_edit_text_material</item>
         
-        <!-- Tambahkan warna ungu sebagai warna aksen -->
-        <item name="colorAccent">#645ef2</item>
-        <item name="colorControlActivated">#645ef2</item>
-        
         <!-- Tambahkan style kustom untuk DatePicker dan TimePicker -->
         <item name="android:datePickerStyle">@style/CustomDatePickerStyle</item>
         <item name="android:timePickerStyle">@style/CustomTimePickerStyle</item>

@@ -16,10 +16,12 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Octicons from "react-native-vector-icons/Octicons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";   
+import Foundation from "react-native-vector-icons/Foundation";   
+import Feather from "react-native-vector-icons/Feather";  
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { RadioButton } from "react-native-paper";
@@ -28,6 +30,7 @@ import RNPickerSelect from "react-native-picker-select";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
 import { formatDate } from "@/src/libs/utils";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
 const currency = (number) => {
   return number.toLocaleString("id-ID", {
@@ -433,7 +436,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="user-large" size={29} color="black" />
+                    <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
@@ -443,7 +446,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building" size={33} color="black" />
+                <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -455,11 +458,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6
-                    name="map-location-dot"
-                    size={26}
-                    color="black"
-                  />
+                <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
@@ -471,7 +470,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="phone" size={28} color="black" />
+                  <Feather name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
@@ -490,7 +489,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Feather
                     name="target"
                     size={30}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -501,7 +500,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="warehouse" size={24} color="black" />
+                  <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96"/>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -511,7 +510,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building" size={35} color="black" />
+                  <FontAwesome name="building-o" size={31} color="#50cc96" style={{ marginHorizontal: 3 }} />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
@@ -521,7 +520,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="scroll" size={27} color="black" />
+                     <Foundation name="clipboard-pencil" size={32} color="#50cc96" style={{marginLeft: 5}}/>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
@@ -532,7 +531,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="filter" size={33} color="black" />
+                  <AntDesign name="filter" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
@@ -542,9 +541,9 @@ export default function DetailPersetujuan({ route, navigation }) {
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
-                    name="beaker"
-                    size={30}
-                    color="black"
+                    name="beaker-outline"
+                    size={33}
+                    color="#50cc96"
                   />
                 </View>
                 {/* <View style={styles.textContainer}>
@@ -624,7 +623,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="file-text-o" size={34} color="black" />
+                     <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
@@ -635,8 +634,8 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View className="mt-4">
                   <View className="flex-row items-center">
-                    <View className="bg-[#4caf501a] p-2 rounded-lg mr-2">
-                      <FontAwesome6 name="vial" size={30} color="black" />
+                    <View className="bg-[#e8fff3] p-2 rounded-lg mr-2">
+                      <FontAwesome6 name="vial" size={32} color="#50cc96" />
                     </View>
                     <Text style={styles.label} className="mb-2">Parameter</Text>
                   </View>
@@ -700,10 +699,10 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons
-                    name="car-pickup"
-                    size={33}
-                    color="black"
+                  <FontAwesome5Icon
+                    name="dolly"
+                    size={27}
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -718,10 +717,10 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6
-                    name="id-card-clip"
+                  <MaterialCommunityIcons
+                    name="smart-card-outline"
                     size={30}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -730,6 +729,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <RNPickerSelect
                       placeholder={{ label: 'Pilih Radius', value: null }}
                       onValueChange={value => {
+                        console.log('Selected radius value:', value);
                         setSelectedRadius(value);
                         updateRadius(value)
                       }}
@@ -740,11 +740,13 @@ export default function DetailPersetujuan({ route, navigation }) {
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
+                          fontSize: 13.5,
                           fontWeight: 'bold', 
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
                           fontWeight: 'bold', 
+                          fontSize: 13.5,
                         },
                         iconContainer: {
                           top: 10,
@@ -764,7 +766,11 @@ export default function DetailPersetujuan({ route, navigation }) {
                 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="id-card-clip" size={30} color="black" />
+                <MaterialCommunityIcons
+                    name="smart-card-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas</Text>
@@ -796,10 +802,10 @@ export default function DetailPersetujuan({ route, navigation }) {
 
                 <View style={styles.infoItem}>
                   <View style={styles.iconContainer}>
-                    <MaterialIcons
-                      name="date-range"
-                      size={34}
-                      color="black"></MaterialIcons>
+                    <AntDesign
+                      name="calendar"
+                      size={30}
+                      color="#50cc96"></AntDesign>
                   </View>
                   <View style={styles.textContainer}>
                     <Text style={styles.label}>Tanggal/Jam</Text>
@@ -845,7 +851,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags" size={33} color="black" />
+                  <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer} >
                   <Text style={styles.label}>Metode</Text>
@@ -864,10 +870,13 @@ export default function DetailPersetujuan({ route, navigation }) {
                         inputIOS: {
                           ...styles.pickerStyle,
                           fontWeight: 'bold', 
+                          fontSize: 13.5,
+
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
                           fontWeight: 'bold', 
+                          fontSize: 13.5,
                         },
                         iconContainer: {
                           top: 10,
@@ -885,7 +894,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="landmark-dome" size={33} color="black" />
+                  <FontAwesome6 name="archway" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                 <Text style={styles.label}>Obyek Pelayanan</Text>
@@ -1013,7 +1022,7 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   iconContainer: {
-    backgroundColor: "rgba(76, 175, 80, 0.1)", // Light green background
+    backgroundColor: "#e8fff3", // Light green background
     padding: 10,
     borderRadius: 10,
     marginRight: 10,
@@ -1081,7 +1090,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
   },
   dateTimeText: {
-    fontSize: 15,
+    fontSize: 13.5,
     flex: 1,
     color: "black",
     fontWeight: "bold",
