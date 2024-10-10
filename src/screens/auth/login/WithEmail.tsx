@@ -8,7 +8,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { TouchableOpacity } from "react-native-ui-lib";
-
+import { API_URL } from "@env";
 
 export default memo(function WithEmail() {
   const {
@@ -36,7 +36,7 @@ export default memo(function WithEmail() {
         remember_me: 1,
       }),
     {
-      onSuccess: async (res) => {
+      onSuccess: async res => {
         await AsyncStorage.setItem("@auth-token", res.data.token);
         queryClient.invalidateQueries({
           queryKey: ["auth", "user"],
@@ -55,7 +55,7 @@ export default memo(function WithEmail() {
   return (
     <View width={"100%"} paddingV-20 paddingH-10>
       <View marginB-20>
-        <Text marginB-5>Email</Text>
+        <Text marginB-5>Email </Text>
         <Controller
           control={control}
           name="identifier"
@@ -84,7 +84,6 @@ export default memo(function WithEmail() {
             {errors.identifier.message}
           </Text>
         )}
-        
       </View>
       <View marginB-20>
         <Text marginB-5>Password</Text>
@@ -118,8 +117,7 @@ export default memo(function WithEmail() {
                   position: "absolute",
                   right: 10,
                   top: 12,
-                }}
-              >
+                }}>
                 <Ionicons
                   name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
                   size={20}

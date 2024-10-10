@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather'
 import Back from "./Back";
 import { useNavigation } from "@react-navigation/native";
 
-const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, ref) => {
+const Paginate = forwardRef(({ url, queryKey, payload, renderItem, showLoading = true, ...props }, ref) => {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -98,7 +98,7 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
     </View>
   );
 
-  if (isFetching) {
+  if (isFetching && showLoading) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#312e81" />

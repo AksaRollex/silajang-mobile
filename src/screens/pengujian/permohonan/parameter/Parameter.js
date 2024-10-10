@@ -1,5 +1,5 @@
-import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ScrollView } from "react-native";
+import React, { useState, useEffect, useRef, useCallback } from "react";
+import { View, Text, TouchableOpacity, FlatList } from "react-native";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -10,6 +10,20 @@ import { rupiah } from "@/src/libs/utils";
 import { useQueryClient } from "@tanstack/react-query";
 import { useSendParameter } from "@/src/hooks/useSendParameter";
 import Icon from "react-native-vector-icons/AntDesign";
+
+// Fungsi throttle untuk membatasi frekuensi pemanggilan fungsi
+const throttle = (func, limit) => {
+  let inThrottle;
+  return function () {
+    const args = arguments;
+    const context = this;
+    if (!inThrottle) {
+      func.apply(context, args);
+      inThrottle = true;
+      setTimeout(() => (inThrottle = false), limit);
+    }
+  };
+};
 
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
@@ -24,7 +38,10 @@ const Parameter = ({ route, navigation }) => {
 
   const { Save: SaveParameter, SaveConfirmationModal } = useSendParameter({
     onSuccess: () => {
-      queryClient.invalidateQueries([`/permohonan/titik/${uuid}/parameter`, { uuid : uuid }]);
+      queryClient.invalidateQueries([
+        `/permohonan/titik/${uuid}/parameter`,
+        { uuid: uuid },
+      ]);
     },
     onError: error => {
       console.log("Save error : ", error);
@@ -32,17 +49,16 @@ const Parameter = ({ route, navigation }) => {
   });
 
   const handleSave = () => {
-    SaveParameter(`/permohonan/titik/${uuid}/save-parameter`); 
+    SaveParameter(`/permohonan/titik/${uuid}/save-parameter`);
   };
 
-  const { data: selectedParameter } =
-    useQuery({
-      queryKey: ["selectedParameter", uuid],
-      queryFn: () =>
-        axios
-          .get(`/permohonan/titik/${uuid}/parameter`)
-          .then(res => res.data.data),
-    });
+  const { data: selectedParameter } = useQuery({
+    queryKey: ["selectedParameter", uuid],
+    queryFn: () =>
+      axios
+        .get(`/permohonan/titik/${uuid}/parameter`)
+        .then(res => res.data.data),
+  });
 
   // GET PAKET
   const { data: pakets = [] } = useQuery({
@@ -122,25 +138,55 @@ const Parameter = ({ route, navigation }) => {
     },
   );
 
-  
+  // Menggunakan useCallback dan throttle untuk membatasi frekuensi pemanggilan
+  const throttledAddPeraturan = useCallback(
+    throttle(uuid => addPeraturan.mutate(uuid), 1000),
+    [addPeraturan],
+  );
+
+  const throttledRemovePeraturan = useCallback(
+    throttle(uuid => removePeraturan.mutate(uuid), 1000),
+    [removePeraturan],
+  );
+
+  const throttledAddParameter = useCallback(
+    throttle(uuid => addParameter.mutate(uuid), 1000),
+    [addParameter],
+  );
+
+  const throttledRemoveParameter = useCallback(
+    throttle(uuid => removeParameter.mutate(uuid), 1000),
+    [removeParameter],
+  );
+
+  const throttledStoreFromPaket = useCallback(
+    throttle(id => storeFromPaket.mutate(id), 1000),
+    [storeFromPaket],
+  );
+
+  const throttledRemoveFromPaket = useCallback(
+    throttle(id => removeFromPaket.mutate(id), 1000),
+    [removeFromPaket],
+  );
+
   const renderPeraturan = ({ item }) => (
     <View
-      className=" rounded-sm flex-row justify-between p-3 bg-[#ececec] drop-shadow-md mt-1"
+      className="rounded-sm flex-row justify-between p-4 bg-[#ececec] drop-shadow-md mt-1"
       style={{ borderWidth: 0.5 }}>
       <Text className="text-black">{item.nama}</Text>
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity
           onPress={() =>
             item.selected
-              ? removePeraturan.mutate(item.uuid)
-              : addPeraturan.mutate(item.uuid)
+              ? throttledRemovePeraturan(item.uuid)
+              : throttledAddPeraturan(item.uuid)
           }>
           <Text
             style={{
               color: item.selected ? "red" : "white",
               backgroundColor: Colors.brand,
             }}
-            className=" p-2 rounded-sm font-sans text-bold">
+            className="p-2 rounded-sm font-sans text-bold">
             {item.selected ? "-" : "+"}
           </Text>
         </TouchableOpacity>
@@ -159,10 +205,10 @@ const Parameter = ({ route, navigation }) => {
       <Text className="text-black text-center">{item.nama}</Text>
       <Text className="text-black text-left">{rupiah(item.harga)}</Text>
       {(!titik?.save_parameter || titik.status <= 1) && (
-        <TouchableOpacity onPress={() => addParameter.mutate(item.uuid)}>
+        <TouchableOpacity onPress={() => throttledAddParameter(item.uuid)}>
           <Text
             style={{ backgroundColor: Colors.brand }}
-            className=" font-bold text-white p-2 rounded-sm font-sans">
+            className="font-bold text-white p-2 rounded-sm font-sans">
             +
           </Text>
         </TouchableOpacity>
@@ -184,17 +230,16 @@ const Parameter = ({ route, navigation }) => {
       </Text>
       {(!titik?.save_parameter || titik.status <= 1) && (
         <TouchableOpacity
-          onPress={() => removeParameter.mutate(item.uuid)}
-          className=" text-white p-2 rounded-sm font-sans"
+          onPress={() => throttledRemoveParameter(item.uuid)}
+          className="text-white p-2 rounded-sm font-sans"
           style={{ backgroundColor: Colors.brand }}>
           <Text style={{ color: "white" }}>-</Text>
         </TouchableOpacity>
       )}
     </View>
   );
-
   return (
-    <>
+    <View style={{ flex: 1 }}>
       <View className="w-full">
         <View
           className="flex-row mb-4 p-4 justify-between"
@@ -205,150 +250,140 @@ const Parameter = ({ route, navigation }) => {
           </Text>
         </View>
       </View>
-      <ScrollView
-        className="bg-[#ececec] w-full h-full px-3 py-1 "
-        removeClippedSubviews={true}>
-        <View className="bg-[#f8f8f8] py-2 px-3 rounded-md mb-20">
-          <View className="bg-[#ececec]">
+      <FlatList
+        data={[1]}
+        renderItem={() => (
+          <View className="bg-[#f8f8f8] py-2 px-3 rounded-md mb-20">
+            <View className="bg-[#ececec]">
+              <TouchableOpacity
+                onPress={() => setShowPeraturan(!showPeraturan)}
+                style={{ padding: 8, backgroundColor: Colors.brand }}>
+                <View className="flex-row justify-between">
+                  <Text className="text-white text-center font-bold font-sans">
+                    Pilih berdasarkan Peraturan
+                  </Text>
+                  <Icon
+                    name={showPeraturan ? "up" : "down"}
+                    size={18}
+                    color={"white"}
+                    className=""
+                  />
+                </View>
+              </TouchableOpacity>
+              {showPeraturan && (
+                <Paginate
+                  url={`/permohonan/titik/${uuid}/peraturan`}
+                  renderItem={renderPeraturan}
+                  showLoading={false}
+                />
+              )}
+            </View>
+
             <TouchableOpacity
-              onPress={() => setShowPeraturan(!showPeraturan)}
-              style={{ padding: 8, backgroundColor: Colors.brand }}>
+              onPress={() => setShowPaket(!showPaket)}
+              style={{ padding: 8, backgroundColor: Colors.brand }}
+              className="mt-2">
               <View className="flex-row justify-between">
                 <Text className="text-white text-center font-bold font-sans">
-                  Pilih berdasarkan Peraturan
+                  Pilih berdasarkan Paket
                 </Text>
                 <Icon
-                  name={showPeraturan ? "up" : "down"}
+                  name={showPaket ? "up" : "down"}
                   size={18}
                   color={"white"}
                   className=""
                 />
               </View>
             </TouchableOpacity>
-            {showPeraturan && (
+            {showPaket && (
+              <View
+                style={{ flexDirection: "row", flexWrap: "wrap" }}
+                className="drop-shadow-md p-2 bg-[#ececec]">
+                {pakets.map(paket => (
+                  <TouchableOpacity
+                    key={paket.id}
+                    style={{
+                      width: "100%",
+                      padding: 10,
+                      borderWidth: 1,
+                      borderColor: titik?.pakets?.find(p => p.id == paket.id)
+                        ? "blue"
+                        : "gray",
+                    }}
+                    className="bg-[#ececec]"
+                    onPress={() =>
+                      titik?.pakets?.find(p => p.id == paket.id)
+                        ? throttledStoreFromPaket.mutate(paket.id)
+                        : throttledRemoveFromPaket.mutate(paket.id)
+                    }>
+                    <Text className="text-black">{paket.nama}</Text>
+                    <Text className="text-black">{rupiah(paket.harga)}</Text>
+                    <Text className="text-black">
+                      {paket.parameters.map(param => param.nama).join(", ")}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            )}
+
+            <View style={{ flex: 1 }} className="bg-[#ececec] my-2">
+              <View
+                className="rounded-sm flex-1 p-2"
+                style={{ backgroundColor: Colors.brand }}>
+                <View className="flex-row justify-between">
+                  <Text className="text-white text-center font-bold font-sans">
+                    Parameter Tersedia
+                  </Text>
+                </View>
+              </View>
               <Paginate
-                url={`/permohonan/titik/${uuid}/peraturan`}
-                renderItem={renderPeraturan}
-                nestedScrollEnabled={true}
+                url="/master/parameter"
+                renderItem={renderParameter}
+                payload={{ except: selectedParameter }}
+                showLoading={false}
               />
+            </View>
+
+            <View style={{ flex: 1 }} className="bg-[#ececec]">
+              <View
+                className="rounded-sm p-2"
+                style={{ backgroundColor: Colors.brand }}>
+                <View className="flex-row justify-between">
+                  <Text className="text-white text-center font-bold font-sans">
+                    Parameter yang Dipilih
+                  </Text>
+                </View>
+              </View>
+              <Paginate
+                url={`/permohonan/titik/${uuid}/parameter`}
+                renderItem={renderSelectedParameter}
+              />
+            </View>
+
+            <Text className="font-sans text-black font-bold my-3 text-center">
+              Total Harga: {rupiah(titik?.harga)}
+            </Text>
+
+            {(!titik?.save_parameter || titik.status <= 1) && (
+              <TouchableOpacity
+                style={{
+                  backgroundColor: Colors.brand,
+                  padding: 10,
+                  alignItems: "center",
+                }}
+                onPress={handleSave}>
+                <Text className="font-bold font-sans text-base text-white">
+                  Simpan & Kirim
+                </Text>
+              </TouchableOpacity>
             )}
           </View>
-
-          <TouchableOpacity
-            onPress={() => setShowPaket(!showPaket)}
-            style={{ padding: 8, backgroundColor: Colors.brand }}
-            className=" mt-2">
-            <View className="flex-row justify-between">
-              <Text className="text-white text-center font-bold font-sans">
-                Pilih berdasarkan Paket
-              </Text>
-              <Icon
-                name={showPaket ? "up" : "down"}
-                size={18}
-                color={"white"}
-                className=""
-              />
-            </View>
-          </TouchableOpacity>
-          {showPaket && (
-            <View
-              style={{ flexDirection: "row", flexWrap: "wrap" }}
-              className="  drop-shadow-md p-2 bg-[#ececec]">
-              {pakets.map(paket => (
-                <TouchableOpacity
-                  key={paket.id}
-                  style={{
-                    width: "100%",
-                    padding: 10,
-                    borderWidth: 1,
-                    borderColor: titik?.pakets?.find(p => p.id == paket.id)
-                      ? "blue"
-                      : "gray",
-                  }}
-                  className="bg-[#ececec] "
-                  onPress={() =>
-                    titik?.pakets?.find(p => p.id == paket.id)
-                      ? removeFromPaket.mutate(paket.id)
-                      : storeFromPaket.mutate(paket.id)
-                  }>
-                  <Text className="text-black">{paket.nama}</Text>
-                  <Text className="text-black">{rupiah(paket.harga)}</Text>
-                  <Text className="text-black">
-                    {paket.parameters.map(param => param.nama).join(", ")}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          )}
-
-          <View style={{ flex: 1 }} className="bg-[#ececec] my-2">
-            <View
-              className=" rounded-sm  flex-1 p-2"
-              style={{ backgroundColor: Colors.brand }}>
-              <View className="flex-row justify-between">
-                <Text className="text-white text-center font-bold font-sans">
-                  Parameter Tersedia
-                </Text>
-                {/* <Icon
-                  name={renderParameter ? "up" : "down"}
-                  size={18}
-                  color={"white"}
-                  className=""
-                /> */}
-              </View>
-            </View>
-            <Paginate
-              url="/master/parameter"
-              renderItem={renderParameter}
-              payload={{ except: selectedParameter }}
-              nestedScrollEnabled={true}
-            />
-          </View>
-
-          <View style={{ flex: 1 }} className="bg-[#ececec] ">
-            <View
-              className="rounded-sm p-2"
-              style={{ backgroundColor: Colors.brand }}>
-              <View className="flex-row justify-between">
-                <Text className="text-white text-center font-bold font-sans">
-                  Parameter yang Dipilih
-                </Text>
-                {/* <Icon
-                  name={renderSelectedParameter ? "up" : "down"}
-                  size={18}
-                  color={"white"}
-                  className=""
-                /> */}
-              </View>
-            </View>
-            <Paginate
-              url={`/permohonan/titik/${uuid}/parameter`}
-              renderItem={renderSelectedParameter}
-              nestedScrollEnabled={true}
-            />
-          </View>
-
-          <Text className="font-sans text-black font-bold my-3 text-center">
-            Total Harga: {rupiah(titik?.harga)}
-          </Text>
-
-          {(!titik?.save_parameter || titik.status <= 1) && (
-            <TouchableOpacity
-              style={{
-                backgroundColor: Colors.brand,
-                padding: 10,
-                alignItems: "center",
-              }}
-              onPress={handleSave}>
-              <Text className="font-bold font-sans text-base text-white">
-                Simpan & Kirim
-              </Text>
-            </TouchableOpacity>
-          )}
-        </View>
-      </ScrollView>
+        )}
+        keyExtractor={() => "main"}
+        contentContainerStyle={{ flexGrow: 1 }}
+      />
       <SaveConfirmationModal />
-    </>
+    </View>
   );
 };
 

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "react-native-ui-lib";
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useCallback } from "react";
 import Header from "../../components/Header";
 import { rupiah } from "@/src/libs/utils";
 import { MenuView } from "@react-native-menu/menu";
@@ -8,6 +8,8 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
+import { API_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
@@ -16,6 +18,7 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
+  const [type, setType] = useState("qris");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -26,7 +29,6 @@ const Pengujian = ({ navigation }) => {
     }),
   );
 
-  const type = "va";
   const bulans = [
     { id: 1, text: "Januari" },
     { id: 2, text: "Februari" },
@@ -42,6 +44,11 @@ const Pengujian = ({ navigation }) => {
     { id: 12, text: "Desember" },
   ];
 
+
+  const types = [
+    { id: "va", text: "VA" },
+    { id: "qris", text: "QRIS" },
+  ]
   const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
@@ -51,6 +58,10 @@ const Pengujian = ({ navigation }) => {
     setRefreshKey(prevKey => prevKey + 1);
     setBulan(itemValue);
   }, []);
+  const handleTypeChange = useCallback(itemValue => {
+    setRefreshKey(prevKey => prevKey + 1);
+    setType(itemValue);
+  }, []);
 
   const { download, PDFConfirmationModal } = useDownloadPDF({
     onSuccess: filePath => console.log("Download success:", filePath),
@@ -58,31 +69,86 @@ const Pengujian = ({ navigation }) => {
   });
 
   const CardPembayaran = ({ item }) => {
-    console.log(item);
-      !!item.multi_payment?.id && item.multi_payment?.status !== "success";
+    console.log("item:", item);
+    const isExpired = item?.is_expired;
+    const status = item?.status;
 
     const dropdownOptions = [
-      {
+      // Opsi Pembayaran
+      (isExpired || status === "pending" || status === "failed") && {
         id: "Pembayaran",
-        title: item.status === "success" ? "Detail" : "Pembayaran",
+        title: "Pembayaran",
         action: () =>
           navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
       },
-      {
+
+      // Opsi Tagihan
+      (status === "pending" || status === "failed") && {
         id: "Tagihan",
-        title: item.status === "success" ? "Cetak" : "Tagihan",
+        title: "Tagihan",
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/tagihan-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+              const reportUrl = `/report/${item.uuid}/tagihan-pembayaran`;
+              download(reportUrl);
+            }
+          } catch (error) {
+            console.error("Error mendapatkan token:", error);
+          }
+        },
+      },
+
+      // Opsi Detail
+      status === "success" && {
+        id: "Detail",
+        title: "Detail",
         action: () =>
           navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
+      },
+
+      // Opsi Cetak
+      status === "success" && {
+        id: "Cetak",
+        title: "Cetak",
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/bukti-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+              const reportUrl = `/report/${item.uuid}/bukti-pembayaran`;
+              download(reportUrl);
+            }
+          } catch (error) {
+            console.error("Error fetching token:", error);
+          }
+        },
       },
     ].filter(Boolean);
 
-    const getStatusText = () => {
+    if (dropdownOptions.length === 0) {
+      dropdownOptions.push({
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: () =>
+          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
+      });
+    }
+
+    const getStatusText = item => {
       if (item?.is_expired) {
         return "Kedaluwarsa";
       } else {
         const status = item?.status;
         if (status === "pending") {
-          return "Menunggu";
+          return "Belum Dibayar";
         } else if (status === "success") {
           return "Berhasil";
         } else {
@@ -91,17 +157,17 @@ const Pengujian = ({ navigation }) => {
       }
     };
 
-    const getStatusStyle = () => {
+    const getStatusStyle = item => {
       if (item?.is_expired) {
-        return className="bg-slate-100 text-red-500";
+        return " text-red-500";
       } else {
         const status = item?.status;
         if (status === "pending") {
-          return className="bg-slate-100 text-indigo-600";
+          return " text-blue-400";
         } else if (status === "success") {
-          return className="bg-slate-100 text-green-500";
+          return "text-green-500";
         } else {
-          return className="bg-slate-100 text-red-500";
+          return " text-red-500";
         }
       }
     };
@@ -112,29 +178,28 @@ const Pengujian = ({ navigation }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <View className="flex-row gap-1">
+          <View style={{ flexDirection: "row" }}>
             <Text
               style={[styles.badge, styles[statusStyle]]}
               className={` bg-slate-100 ${getStatusStyle(item)}`}>
               {statusText}
             </Text>
             <Text
-              className="bg-slate-100 text-indigo-600"
-              style={[styles.badge, { textTransform: "uppercase" }]}>
+              style={[styles.badge, styles[statusStyle]]}
+              className={` bg-slate-100 text-black mx-2`}>
               {item.type}
             </Text>
           </View>
-
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.multi_payments
               ?.map(payment => payment.titik_permohonan.lokasi)
               .join(", ") || "Lokasi Kosong"}
           </Text>
           <Text
-            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 19 }]}>
+            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
             {item.multi_payments
               ?.map(payment => payment.titik_permohonan.kode)
-              .join(", ")}
+              .join(", ") || "Lokasi Kosong"}
           </Text>
           <Text style={[styles.cardTexts]}>{rupiah(item.jumlah)}</Text>
         </View>
@@ -172,10 +237,13 @@ const Pengujian = ({ navigation }) => {
           style={{ backgroundColor: Colors.brand }}>
           <BackButton
             size={24}
-            color="white"
+            color={"white"}
             action={() => navigation.goBack()}
+            className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg">Multipayment</Text>
+          <Text className="font-bold text-white text-lg ">
+            Multipayment
+          </Text>
         </View>
       </View>
       <View className=" w-full h-full bg-[#ececec] ">
@@ -194,6 +262,14 @@ const Pengujian = ({ navigation }) => {
               style={styles.picker}
               onValueChange={handleMonthChange}>
               {bulans.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={type}
+              style={styles.picker}
+              onValueChange={handleTypeChange}>
+              {types.map(item => (
                 <Picker.Item key={item.id} label={item.text} value={item.id} />
               ))}
             </Picker>

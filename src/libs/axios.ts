@@ -1,11 +1,12 @@
 import Axios from "axios";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { API_URL } from "@env";
+// const API_URL = "http://192.168.61.174:8000/api/v1";
 
-console.log({API_URL})
+console.log({ API_URL });
 const axios = Axios.create({
   baseURL: API_URL,
-  mode: 'no-cors',
+  mode: "no-cors",
   headers: {
     "Content-Type": "application/json",
     // "Content-Type": "multipart/form-data",

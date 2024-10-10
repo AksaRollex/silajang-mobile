@@ -9,6 +9,8 @@ import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -16,6 +18,7 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
+  const [type, setTypes ] = useState('va');
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -41,6 +44,11 @@ const Pengujian = ({ navigation }) => {
     { id: 12, text: "Desember" },
   ];
 
+  const types = [
+    { id : 'va', text: 'VA'},
+    { id : 'qris', text: 'QRIS'},
+  ]
+
   const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
@@ -51,13 +59,17 @@ const Pengujian = ({ navigation }) => {
     setBulan(itemValue);
   }, []);
 
+  const handleTypeChange = useCallback ( itemValue => {
+    setRefreshKey(prevKey => prevKey + 1);
+    StateTypes(itemValue)
+  })
   const { download, PDFConfirmationModal } = useDownloadPDF({
     onSuccess: filePath => console.log("Download success:", filePath),
     onError: error => console.error("Download error:", error),
   });
 
   const CardPembayaran = ({ item }) => {
-    console.log(item);
+    console.log("item:", item);
     const isExpired = item.payment?.is_expired;
     const status = item.payment?.status;
 
@@ -74,8 +86,19 @@ const Pengujian = ({ navigation }) => {
       (status === "pending" || status === "failed") && {
         id: "Tagihan",
         title: "Tagihan",
-        action: () =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/tagihan-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+            }
+          } catch (error) {
+            console.error("Error mendapatkan token:", error);
+          }
+        },
       },
 
       // Opsi Detail
@@ -90,10 +113,30 @@ const Pengujian = ({ navigation }) => {
       status === "success" && {
         id: "Cetak",
         title: "Cetak",
-        action: () =>
-          download(`${API_URL}/report/pembayaran/pengujian?tahun=${tahun}`),
+        action: async () => {
+          try {
+            const token = await AsyncStorage.getItem("@auth-token");
+            if (token) {
+              const reportUrl = `${API_URL}/report/${item.uuid}/bukti-pembayaran?token=${token}`;
+              download(reportUrl); // Menampilkan modal preview
+            } else {
+              console.error("Token not found");
+            }
+          } catch (error) {
+            console.error("Error fetching token:", error);
+          }
+        },
       },
     ].filter(Boolean);
+
+    if (dropdownOptions.length === 0) {
+      dropdownOptions.push({
+        id: "Pembayaran",
+        title: "Pembayaran",
+        action: () =>
+          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+      });
+    }
 
     const getStatusText = item => {
       if (item.payment?.is_expired) {
@@ -128,14 +171,25 @@ const Pengujian = ({ navigation }) => {
     const statusText = getStatusText(item);
     const statusStyle = getStatusStyle(item);
 
+    console.log("item: ", item);
+
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
+        <View style={{flexDirection: "row"}}>
           <Text
             style={[styles.badge, styles[statusStyle]]}
-            className={` bg-slate-100 ${getStatusStyle(item)}`}>
+            className={` bg-slate-100 ${getStatusStyle(item)}`}
+            >
             {statusText}
           </Text>
+          <Text
+          style={[styles.badge, styles[statusStyle]]}
+          className={` bg-slate-100 text-black mx-2`}
+          >
+            {item.payment_type}
+          </Text>
+          </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
           </Text>
@@ -173,7 +227,21 @@ const Pengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+     <View className="w-full">
+        <View
+          className="flex-row mb-4 p-4 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Pengujian Pembayaran
+          </Text>
+        </View>
+      </View>
       <View className=" w-full h-full bg-[#ececec] ">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
@@ -190,6 +258,14 @@ const Pengujian = ({ navigation }) => {
               style={styles.picker}
               onValueChange={handleMonthChange}>
               {bulans.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={type}
+              style={styles.picker}
+              onValueChange={handleTypeChange}>
+              {types.map(item => (
                 <Picker.Item key={item.id} label={item.text} value={item.id} />
               ))}
             </Picker>

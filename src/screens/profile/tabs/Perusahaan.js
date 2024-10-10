@@ -259,7 +259,7 @@ const Perusahaan = () => {
       });
     }
     try {
-      const response = await axios.post("/user/company", formData, {
+      const response = await axios.post("/user/companySecure", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -414,14 +414,6 @@ const Perusahaan = () => {
                         {file || currentPhotoUrl ? (
                           <View style={styles.imageContainer}>
                             <ImageComponent />
-                            {/* <TouchableOpacity
-                              style={{ backgroundColor: Colors.brand }}
-                              className="px-5 py-2 rounded-sm items-center justify-center"
-                              onPress={handleChoosePhoto}>
-                              <Text className="font-sans font-bold  text-white">
-                                Ubah Tanda tangan
-                              </Text>
-                            </TouchableOpacity> */}
                             <TouchableOpacity
                               style={styles.deleteButton}
                               className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
@@ -451,6 +443,7 @@ const Perusahaan = () => {
                 control={control}
                 name="instansi"
                 rules={{ required: "Instansi Tidak Boleh Kosong" }}
+                defaultValue={userData.instansi}
                 render={({ field: { onChange, value } }) => (
                   <View>
                     <Text className="font-sans font-bold mb-2 text-black">
@@ -458,8 +451,7 @@ const Perusahaan = () => {
                     </Text>
 
                     <TextField
-                      placeholderTextColor="black"
-                      placeholder={userData.instansi}
+                      value={value}
                       enableErrors
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       onChangeText={onChange}
@@ -474,6 +466,7 @@ const Perusahaan = () => {
               <Controller
                 control={control}
                 name="alamat"
+                defaultValue={userData.alamat}
                 rules={{ required: "Alamat Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View>
@@ -484,8 +477,7 @@ const Perusahaan = () => {
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       keyboardType="text-input"
-                      placeholderTextColor="black"
-                      placeholder={userData.alamat}
+                      value={value}
                       onChangeText={onChange}
                     />
                   </View>
@@ -507,8 +499,7 @@ const Perusahaan = () => {
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       keyboardType="text-input"
-                      placeholderTextColor="black"
-                      placeholder={userData.pimpinan}
+                      value={value}
                       onChangeText={onChange}
                     />
                   </View>
@@ -530,8 +521,7 @@ const Perusahaan = () => {
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       keyboardType="text-input"
-                      placeholderTextColor="black"
-                      placeholder={userData.pj_mutu}
+                      value={value}
                       onChangeText={onChange}
                     />
                   </View>
@@ -554,8 +544,7 @@ const Perusahaan = () => {
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       keyboardType="phone-pad"
-                      placeholderTextColor="black"
-                      placeholder={userData.telepon}
+                      value={value}
                     />
                   </View>
                 )}></Controller>
@@ -576,8 +565,7 @@ const Perusahaan = () => {
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       keyboardType="phone-pad"
-                      placeholderTextColor="black"
-                      placeholder={userData.fax}
+                      value={value}
                     />
                   </View>
                 )}></Controller>
@@ -596,8 +584,7 @@ const Perusahaan = () => {
                       enableErrors
                       keyboardType="email-address"
                       onChangeText={onChange}
-                      placeholderTextColor="black"
-                      placeholder={userData.email}
+                      value={value}
                     />
                   </View>
                 )}></Controller>
@@ -619,8 +606,7 @@ const Perusahaan = () => {
                       enableErrors
                       keyboardType="text-input"
                       onChangeText={onChange}
-                      placeholderTextColor="black"
-                      placeholder={userData.jenis_kegiatan}
+                      value={value}
                     />
                   </View>
                 )}></Controller>
@@ -631,7 +617,7 @@ const Perusahaan = () => {
               )}
 
               <View className="flex-row justify-between">
-                <Controller
+              <Controller
                   control={control}
                   name="lat"
                   rules={{ required: "Latitude Tidak Boleh Kosong" }}
@@ -730,8 +716,7 @@ const Perusahaan = () => {
                         }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
-                        // placeholder={{
-                        //   label: userData.kab_kota_id
+                        // value={value}: userData.kab_kota_id
                         //     ? `Kab/Kota: ${userData.kab_kota_id}`
                         //     : "Pilih Kabupaten/Kota",
                         //   value: null, // Tambahkan nilai untuk placeholder
@@ -769,8 +754,7 @@ const Perusahaan = () => {
                         }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
-                        // placeholder={{
-                        //   label: userData.kecamatan_id
+                        // value={value}: userData.kecamatan_id
                         //     ? `Kecamatan: ${userData.kecamatan_id}`
                         //     : "Pilih Kecamatan",
                         //   value: null, // Tambahkan nilai untuk placeholder
@@ -810,8 +794,7 @@ const Perusahaan = () => {
                         }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
-                        // placeholder={{
-                        //   label: userData.kelurahan_id
+                        // value={value}: userData.kelurahan_id
                         //     ? `Kelurahan: ${userData.kelurahan_id}`
                         //     : "Pilih Kelurahan",
                         //   value: null, // Tambahkan nilai untuk placeholder
@@ -1058,20 +1041,19 @@ const pickerSelectStyles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 10,
     borderWidth: 1,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 4,
-    color: 'black',
-    paddingRight: 30, // untuk memastikan teks tidak tumpang tindih dengan ikon
+    color: "black",
+    paddingRight: 30,
   },
   inputAndroid: {
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
-    borderColor: 'gray',
+    borderColor: "gray",
     borderRadius: 8,
-    color: 'black',
+    color: "black",
   },
- 
 });
 
 export default Perusahaan;

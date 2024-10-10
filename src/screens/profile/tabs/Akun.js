@@ -89,7 +89,7 @@ const Akun = () => {
     }
 
     try {
-      const response = await axios.post("/user/account", formData, {
+      const response = await axios.post("/user/accountSecure", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -133,7 +133,6 @@ const Akun = () => {
       });
       queryClient.invalidateQueries("/auth");
       navigation.navigate("IndexProfile");
-      reset();
       setFile(null);
       fetchUserData();
     },
@@ -198,6 +197,7 @@ const Akun = () => {
               <Controller
                 control={control}
                 name="nama"
+                defaultValue={userData.user.nama}
                 rules={{ required: "Nama Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View className="">
@@ -206,12 +206,11 @@ const Akun = () => {
                     </Text>
 
                     <TextField
-                      placeholder={userData.user.nama}
+                      value={value}
                       placeholderTextColor="black"
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                       enableErrors
                       onChangeText={onChange}
-                      value={value}
                     />
                   </View>
                 )}

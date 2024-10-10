@@ -17,17 +17,16 @@ import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
+import { API_URL } from "@env";
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
+  const [loading, setLoading] = useState(true);
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const [dateExp, setDateExp] = useState("06:60:60:60");
   const { uuid } = route.params;
   const { data: setting } = useSetting();
-  console.log(setting);
-
   const copyToClipboard = text => {
     Clipboard.setString(text);
-    Alert.alert("Copied", "Text copied to clipboard");
   };
 
   const fetchData = useCallback(() => {
@@ -36,12 +35,11 @@ const PengujianDetail = ({ route, navigation }) => {
       .then(res => {
         setFormData(res.data.data);
         console.log("text", res.data.data);
+        setLoading(false);
       })
       .catch(err => {
-        Alert.alert(
-          "Error",
-          err.response?.data?.message || "An error occurred",
-        );
+        Alert.alert("Error", err.response?.data?.message || "Gagal Memuat");
+        setLoading(false);
       });
   }, [uuid]);
 
@@ -50,22 +48,23 @@ const PengujianDetail = ({ route, navigation }) => {
   }, [fetchData]);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      const now = moment();
-      const exp = moment(dateExp);
-      const diff = exp.diff(now);
+    if (formData?.payment?.tanggal_exp) {
+      const interval = setInterval(() => {
+        const now = moment();
+        const exp = moment(formData.payment.tanggal_exp); // Ambil tanggal_exp dari formData
+        const diff = exp.diff(now);
 
-      if (diff <= 0) {
-        clearInterval(interval);
-        setCountdownExp("00:00:00:00");
-        fetchData(); // Refresh data when expired
-      } else {
-        setCountdownExp(calculateCountdown(exp, now));
-      }
-    }, 1000);
+        if (diff <= 0) {
+          clearInterval(interval);
+          setCountdownExp("00:00:00:00");
+        } else {
+          setCountdownExp(calculateCountdown(exp, now));
+        }
+      }, 1000);
 
-    return () => clearInterval(interval);
-  }, [dateExp]);
+      return () => clearInterval(interval);
+    }
+  }, [formData]);
 
   const calculateCountdown = (exp, now) => {
     let days = exp.diff(now, "days");
@@ -84,19 +83,29 @@ const PengujianDetail = ({ route, navigation }) => {
   };
 
   const handleGenerateVA = () => {
+    setLoading(true);
     axios
-      .post(`/pembayaran/pengujian/${uuid}`)
+      .post(`${API_URL}/pembayaran/pengujian/${uuid}`)
       .then(() => {
-        Alert.alert("Success", "VA Payment created successfully");
+        Alert.alert("Success", "kode pembayaran berhasil dibuat");
         fetchData();
       })
       .catch(err => {
-        Alert.alert(
-          "Error",
-          err.response?.data?.message || "An error occurred",
-        );
+        setLoading(false);
+        Alert.alert("ERROR", "Kode Pembayaran gagal dibuat" || "Gagal Memuat");
       });
   };
+
+  if (loading) {
+    return (
+      <View style={styles.loadingContainer}>
+        <ActivityIndicator size="large" color={Colors.brand} />
+      </View>
+    );
+  }
+
+  const isExpired = formData?.payment?.is_expired;
+  const paymentStatus = formData?.status_pembayaran;
 
   return (
     <>
@@ -155,22 +164,45 @@ const PengujianDetail = ({ route, navigation }) => {
                 {rupiah(formData?.harga)}
               </Text>
             </View>
+            {formData?.payment_type === "va" && (
+              <>
+                <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+                  <Text className="font-bold text-black text-lg text-center  ">
+                    VA Pembayaran Belum Dibuat
+                  </Text>
+                  <Text className=" text-sm text-[#333179] text-justify">
+                    Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran
+                  </Text>
+                </View>
+                <View className="flex items-end my-2">
+                  <TouchableOpacity
+                    className="bg-indigo-600 p-3 rounded-lg"
+                    onPress={handleGenerateVA}>
+                    <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
 
-            <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
-              <Text className="font-bold text-black text-lg text-center  ">
-                VA Pembayaran Belum Dibuat
-              </Text>
-              <Text className=" text-sm text-[#333179] text-justify">
-                Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran
-              </Text>
-            </View>
-            <View className="flex items-end my-2">
-              <TouchableOpacity
-                className="bg-indigo-600 p-3 rounded-lg"
-                onPress={handleGenerateVA}>
-                <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-              </TouchableOpacity>
-            </View>
+            {formData?.payment_type === "qris" && (
+              <>
+                <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+                  <Text className="font-bold text-black text-lg text-center  ">
+                    QRIS Pembayaran Belum Dibuat
+                  </Text>
+                  <Text className=" text-sm text-[#333179] text-justify">
+                    Silahkan klik Tombol Di Bawah untuk Membuat QRIS Pembayaran
+                  </Text>
+                </View>
+                <View className="flex items-end my-2">
+                  <TouchableOpacity
+                    className="bg-indigo-600 p-3 rounded-lg"
+                    onPress={handleGenerateVA}>
+                    <Text style={styles.buttonText}>Buat QRIS Pembayaran</Text>
+                  </TouchableOpacity>
+                </View>
+              </>
+            )}
           </View>
         ) : (
           <View className="py-4 px-3 rounded-lg  bg-[#f8f8f8] ">
@@ -178,9 +210,14 @@ const PengujianDetail = ({ route, navigation }) => {
               <View className="w-1/6 flex-shrink-0" />
             </View>
             {formData?.payment.status === "success" ? (
-              <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-bold ">
-                Pembayaran berhasil dilakukan {formData?.payment?.tanggal_bayar}
-              </Text>
+              <>
+                <View className="bg-green-500 rounded-lg mb-4 font-bold shadow-lg p-3">
+                  <Text className="text-white text-center text-sm font-semibold">
+                    Pembayaran Berhasil Dilakukan :{" "}
+                    {formData?.payment.tanggal_bayar || "Belum bayar"}
+                  </Text>
+                </View>
+              </>
             ) : formData?.payment?.is_expired === false ? (
               <Text style={styles.warningText}>
                 Lakukan pembayaran sebelum: {countdownExp}
@@ -188,13 +225,28 @@ const PengujianDetail = ({ route, navigation }) => {
             ) : (
               <View className="">
                 <View className="bg-[#fff] rounded-lg mb-3">
-                  <Text style={styles.errorText} className="p-3 m-2">
-                    VA Pembayaran telah kedaluwarsa
-                  </Text>
-                  <Text className=" p-2 my-2 text-base font-bold text-center text-black">
-                    Silakan Hubungi Admin Kami untuk Melakukan Permintaan
-                    Pembuatan VA Pembayaran
-                  </Text>
+                  {formData?.payment_type === "va" && (
+                    <>
+                      <Text style={styles.errorText} className="p-3 m-2">
+                        VA Pembayaran telah kedaluwarsa
+                      </Text>
+                      <Text className=" p-2 my-2 text-base font-bold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan VA Pembayaran
+                      </Text>
+                    </>
+                  )}
+                  {formData?.payment_type === "qris" && (
+                    <>
+                      <Text style={styles.errorText} className="p-3 m-2">
+                        QRIS Pembayaran telah kedaluwarsa
+                      </Text>
+                      <Text className=" p-2 my-2 text-base font-bold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan QRIS Pembayaran
+                      </Text>
+                    </>
+                  )}
                   {setting ? (
                     <View>
                       <View className="flex flex-row items-center justify-center my-3">
@@ -203,13 +255,14 @@ const PengujianDetail = ({ route, navigation }) => {
                           {setting?.email || "-"}
                         </Text>
                       </View>
-                      <View className="flex flex-row items-center justify-center mb-3">
+                      <View className="flex flex-row items-center justify-center mb-3 ">
                         <MaterialIcons
                           name="local-phone"
-                          size={24}
+                          size={19}
                           color="#000"
+                          style={{}}
                         />
-                        <Text className="mx-2 text-black font-bold">
+                        <Text className="mx-1 text-black font-bold ">
                           {setting?.telepon || "-"}
                         </Text>
                       </View>
@@ -223,50 +276,120 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
             )}
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Virtual Account</Text>
-              <View style={styles.cardContent}>
-                <Image
-                  source={require("@/assets/images/bank-jatim.png")}
-                  style={{
-                    width: 100,
-                    marginLeft : rem(0.8),
-                    height: 30,
-                    resizeMode: "contain",
-                  }}></Image>
-                <Text style={styles.vaNumber} className="text-indigo-600">
+            {formData.payment_type === "va" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                <View className="flex-row justify-between">
+                  <Text style={styles.cardTitle}>Virtual Account</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      !isExpired &&
+                      copyToClipboard(formData?.payment?.va_number)
+                    }>
+                    <Text
+                      style={[
+                        styles.copyButton,
+                        isExpired && styles.disabledText,
+                      ]}>
+                      Salin
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.cardValue}>
                   {formData?.payment?.va_number}
                 </Text>
-                <TouchableOpacity
-                  onPress={() => copyToClipboard(formData?.payment?.va_number)}>
-                  <Text style={styles.copyButton}>Salin</Text>
-                </TouchableOpacity>
               </View>
-            </View>
+            )}
 
-            <View style={styles.card}>
-              <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
-              <View style={styles.cardContent}>
-                <Text style={styles.amount} className="text-indigo-600">
-                  {rupiah(formData?.harga)}
-                </Text>
-                <TouchableOpacity
-                  onPress={() => copyToClipboard(formData?.harga.toString())}>
-                  <Text style={styles.copyButton}>Salin</Text>
-                </TouchableOpacity>
+            {formData.payment_type === "va" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                <View className="flex-row justify-between">
+                  <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      !isExpired && copyToClipboard(formData?.payment?.nominal)
+                    }>
+                    <Text
+                      style={[
+                        styles.copyButton,
+                        isExpired && styles.disabledText,
+                      ]}>
+                      Salin
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.cardValue}>{rupiah(formData?.harga)}</Text>
               </View>
-            </View>
+            )}
+            
+            {formData.payment_type === "qris" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                {/* <Text style={styles.warningText}>
+                Lakukan pembayaran sebelum: {countdownExp}
+              </Text> */}
+                <View style={styles.cardqr}>
+                  <Image
+                    source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
+                    style={styles.qrisImage}
+                    resizeMode="contain"
+                  />
+                </View>
+                <View
+                  style={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    marginTop: 10,
+                  }}>
+                  <Text
+                    style={{
+                      fontWeight: "bold",
+                      color: "black",
+                      fontSize: 20,
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}>
+                    {rupiah(formData?.harga)}
+                  </Text>
+                </View>
+              </View>
+            )}
 
             {formData?.payment?.status !== "success" &&
               formData?.payment?.is_expired &&
               !formData?.user_has_va && (
-                <View className="flex items-end my-2">
-                  <TouchableOpacity
-                    className="bg-indigo-600 p-3 rounded-lg"
-                    onPress={handleGenerateVA}>
-                    <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
-                  </TouchableOpacity>
-                </View>
+                <>
+                  {formData?.payment_type === "va" && (
+                    <View className="flex items-end my-2">
+                      <View style={{ marginBottom: 70 }}>
+                        <TouchableOpacity
+                          className="bg-indigo-600 p-3 rounded-lg"
+                          onPress={handleGenerateVA}>
+                          <Text style={styles.buttonText}>
+                            Buat VA Pembayaran
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </>
+              )}
+            {formData?.payment?.status !== "success" &&
+              formData?.payment?.is_expired &&
+              !formData?.user_has_va && (
+                <>
+                  {formData?.payment_type === "qris" && (
+                    <View className="flex items-end my-2">
+                      <View style={{}}>
+                        <TouchableOpacity
+                          className="bg-indigo-600 p-3 rounded-lg"
+                          onPress={handleGenerateVA}>
+                          <Text style={styles.buttonText}>
+                            Buat QRIS Pembayaran
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
+                  )}
+                </>
               )}
           </View>
         )}
@@ -276,6 +399,27 @@ const PengujianDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  cardqr: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  qrisImage: {
+    width: 250, // Sesuaikan ukuran gambar sesuai kebutuhan
+    height: 250, // Sesuaikan ukuran gambar sesuai kebutuhan
+    backgroundColor: "#e0e0e0",
+  },
+  disabledCard: {
+    backgroundColor: "#e0e0e0", // Warna lebih gelap untuk card yang dinonaktifkan
+  },
+  disabledText: {
+    color: "#a0a0a0", // Warna teks lebih gelap untuk tampilan yang dinonaktifkan
+  },
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "#fff", // Warna latar belakang saat loading
+  },
   infoText: {
     fontSize: 16,
     marginBottom: 10,
@@ -338,6 +482,7 @@ const styles = StyleSheet.create({
   copyButton: {
     color: "#4caf50",
     fontWeight: "bold",
+    marginTop: 4,
   },
   button: {
     backgroundColor: "#1976d2",
