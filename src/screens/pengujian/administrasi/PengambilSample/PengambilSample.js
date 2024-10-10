@@ -8,6 +8,7 @@ import { Text, View , Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';

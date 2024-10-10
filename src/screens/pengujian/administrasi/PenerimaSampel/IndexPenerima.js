@@ -13,12 +13,19 @@ import {
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MouseButton, TextInput } from "react-native-gesture-handler";
+import { APP_URL } from "@env";
+import Pdf from 'react-native-pdf';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import RNFS, { downloadFile } from 'react-native-fs';  
+import Toast from 'react-native-toast-message';
+
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -57,11 +64,12 @@ const PenerimaSampel = ({ navigation }) => {
   const filterOptions = generateYears();
   const [selectedPengambil, setSelectedPengambil] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
   const [deskripsi, setDeskripsi] = useState("");
   const paginateRef = useRef();
   const [previewReport, setPreviewReport] = useState(false);
-  const [reportUrl, setReportUrl] = useState(false);
+  const [reportUrl, setReportUrl] = useState('');
 
   const kembali = () => {
     simpanRevisi();
@@ -79,52 +87,106 @@ const PenerimaSampel = ({ navigation }) => {
     }
   };
 
-  const dropdownOptions = (item) => {
-    const options = [
-      {
-        id: "Detail",
-        title: "Detail",
-        action: () => navigation.navigate("DetailPenerima", { uuid: item.uuid }),
-      },
-      {
-        id: "Revisi",
-        title: "Revisi",
-        action: () => {
-          setSelectedItem(item);
-          setModalVisible(true);
-        },
-      },
-    ];
-
-    // Menambahkan opsi "Permohonan Pengujian" dan "Pengamanan Sampel" jika status bukan 1
-    if (item.status !== 1) {
-      options.push(
-        {
-          id: "Permohonan Pengujian",
-          title: "Permohonan Pengujian",
-          action: () => handleAction(item.uuid),
-        },
-        {
-          id: "Pengamanan Sampel",
-          title: "Pengamanan Sampel",
-          action: () => handleAction(item.uuid),
-        }
-      );
-    }
-    return options; // Return the options to use in rendering
-  };
-
-  const handleAction = (uuid) => {
-      if (previewReport) {
-        const url = `/api/v1/report/${uuid}/tanda-terima?token=${localStorage.getItem('auth_token')}`;
-        setReportUrl(url);
+  const dropdownOptions = (item) => [
+    {
+      id: "Detail",
+      title: "Detail",
+      action: () => navigation.navigate("DetailPenerima", { uuid: item.uuid }),
+    },
+    {
+      id: "Revisi",
+      title: "Revisi",
+      action: () => {
+        setSelectedItem(item);
         setModalVisible(true);
-      } else {
-        const downloadUrl = `/report/${uuid}/tanda-terima`;
-        console.log('Downloading report from: ', downloadUrl);
-      }
+      },
+    },
+    {
+      id: "Permohonan Pengujian",
+      title: "Permohonan Pengujian",
+      action: () => handleShowPdf(item, 'tanda-terima'),
+    },
+    {
+      id: "Pengamanan Sampel",
+      title: "Pengamanan Sampel",
+      action: () => handleShowPdf(item, 'pengamanan-sampel'),
+    },
+  ];
+
+  // const handleAction = (uuid) => {
+  //     if (previewReport) {
+  //       const url = `/api/v1/report/${uuid}/tanda-terima?token=${localStorage.getItem('auth_token')}`;
+  //       setReportUrl(url);
+  //       setModalVisible(true);
+  //     } else {
+  //       const downloadUrl = `/report/${uuid}/tanda-terima`;
+  //       console.log('Downloading report from: ', downloadUrl);
+  //     }
     
+  // };
+
+  const handleShowPdf = async (item, reportType) => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      if (!authToken) {
+        throw new Error('Authentication token not found');
+      }
+
+      const url = `${APP_URL}/api/v1/report/${item.uuid}/${reportType}?token=${authToken}`;
+      setReportUrl(url);
+      setOpenModal(true);
+    } catch (error) {
+      console.error('Error handling PDF display:', error);
+      Alert.alert('Error', 'Terjadi kesalahan saat membuka PDF.');
+    }
   };
+  
+  const handleDownloadPDF = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileName = `LHU_${Date.now()}.pdf`;
+
+      const downloadPath = Platform.OS === 'ios'
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: reportUrl,
+        toFile: downloadPath,
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === 'android') {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        // Show toast message for success
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'You can find it in the Files app.' : `Saved as ${fileName} in your Downloads folder.`}`,
+        });
+
+      } else {
+        throw new Error('Download failed');
+      }
+    } catch (error) {
+      console.error('Download error:', error);
+
+      // Show toast message for error
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
 
   const fetchPenerimaSample = async ({ queryKey }) => {
     const [_, search, year] = queryKey;
@@ -311,24 +373,55 @@ const PenerimaSampel = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Modal
-      animationType="slide"
-      transparent={true}
-      visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}>
-      <View style={styles.modalOverlay}>
-        <View style={styles.modalContainer}>
-          <Text style={styles.modalTitle}>Tanda Terima Report</Text>
-          <Text style={styles.modalText}>Report URL: {reportUrl}</Text> {/* Menampilkan URL report */}
+        <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContainer}>
+            <Text style={styles.modalTitle}>Tanda Terima Report</Text>
+            <Text style={styles.modalText}>Report URL: {reportUrl}</Text> {/* Menampilkan URL report */}
 
-          <TouchableOpacity
-            style={styles.buttonClose}
-            onPress={() => setModalVisible(false)}>
-            <Text style={styles.buttonText}>Close Modal</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.buttonClose}
+              onPress={() => setModalVisible(false)}>
+              <Text style={styles.buttonText}>Close Modal</Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={openModal}
+        onRequestClose={() => setOpenModal(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-bold text-black">Preview PDF</Text>
+              <TouchableOpacity onPress={() => {
+                handleDownloadPDF();
+                setModalVisible(false);
+              }} className=" p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Pdf
+              source={{ uri: reportUrl, cache: true }}
+              style={{ flex: 1 }}
+              trustAllCerts={false}
+            />
+              <View className="flex-row justify-between m-4">
+              <TouchableOpacity onPress={() => setOpenModal(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-bold text-center">Tutup</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };

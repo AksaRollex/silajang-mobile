@@ -16,6 +16,8 @@ import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import Octicons from "react-native-vector-icons/Octicons";
 import EvilIcons from "react-native-vector-icons/EvilIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -348,7 +350,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Fontisto name="user-secret" size={35} color="black" />
+                  <AntDesign name="user" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
@@ -360,7 +362,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="bank" size={30} color="black" />
+                  <FontAwesome name="building-o" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -372,10 +374,10 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6
-                    name="map-location-dot"
+                  <MaterialCommunityIcons
+                    name="map-search-outline"
                     size={26}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -388,7 +390,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <SimpleLineIcons name="phone" size={28} color="black" />
+                  <SimpleLineIcons name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
@@ -404,10 +406,10 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons
+                  <Feather
                     name="target"
                     size={30}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -418,7 +420,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="warehouse" size={24} color="black" />
+                  <MaterialCommunityIcons name="warehouse" size={24} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -430,7 +432,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building" size={35} color="black" />
+                  <FontAwesome name="building-o" size={35} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
@@ -442,7 +444,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="newspaper-o" size={27} color="black" />
+                  <FontAwesome name="newspaper-o" size={27} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
@@ -453,7 +455,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Octicons name="beaker" size={33} color="black" />
+                  <Octicons name="beaker" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
@@ -465,9 +467,9 @@ export default function Detail({ route, navigation }) {
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
-                    name="beaker"
+                    name="beaker-outline"
                     size={30}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 {/* <View style={styles.textContainer}>
@@ -637,7 +639,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="file-text-o" size={34} color="black" />
+                  <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
@@ -649,7 +651,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="vial"size={30} color="black" />
+                  <FontAwesome6 name="vial"size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Parameter</Text>
@@ -678,7 +680,7 @@ export default function Detail({ route, navigation }) {
                             style={{ marginLeft: 8, marginTop: 2 }}
                             name="pencil"
                             size={20}
-                            color="black"
+                            color="#50cc96"
                           />
                         </TouchableOpacity>
                       </View>
@@ -717,9 +719,9 @@ export default function Detail({ route, navigation }) {
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
-                    name="car-pickup"
+                    name="truck-fast-outline"
                     size={33}
-                    color="black"
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -731,7 +733,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="id-card-clip" size={30} color="black" />
+                  <MaterialCommunityIcons name="smart-card-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas Pengambil</Text>
@@ -745,7 +747,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialIcons
                     name="date-range"
                     size={34}
-                    color="black"></MaterialIcons>
+                    color="#50cc96"></MaterialIcons>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Tanggal/Jam</Text>
@@ -756,7 +758,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags" size={33} color="black" />
+                  <Ionicons name="pricetags-outline" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
@@ -770,7 +772,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Detail Lokasi</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
+                  <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
@@ -779,7 +781,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
+                  <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
@@ -832,7 +834,7 @@ const styles = StyleSheet.create({
   kode: {
     fontWeight: "bold",
     fontSize: 23,
-    color: "black",
+    color: "balck",
     marginLeft: 20,
     marginTop: 5,
   },
@@ -889,7 +891,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   iconContainer: {
-    backgroundColor: "rgba(76, 175, 80, 0.1)", // Light green background
+    backgroundColor: '#e8fff3',
     padding: 10,
     borderRadius: 10,
     marginRight: 10,
