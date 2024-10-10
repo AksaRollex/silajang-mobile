@@ -17,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useNavigation } from "@react-navigation/native";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -91,7 +92,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanBaru}
                 text="Permohonan Baru"
                 numberStyle={styles.card1}
-                icon={'users'}
+                icon={'user-group'}
                 iconColor={"#FFA500"}
               />
               <DashboardCard
@@ -107,7 +108,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanSelesai}
                 text="Permohonan Selesai"
                 numberStyle={styles.card3}
-                icon={'check'}
+                icon={'circle-check'}
                 iconColor={"#008000"}
               />
               <DashboardCard
@@ -135,7 +136,7 @@ const Dashboard = () => {
 const DashboardCard = ({ style, number, text, imageSource, numberStyle, icon, iconColor }) => (
   <View style={[styles.cardContainer, style]}>
     <View style={styles.row}>
-      <Entypo name={icon} size={30} color={iconColor} />
+      <FontAwesome6Icon name={icon} size={32} color={iconColor} />
       <Text style={[styles.cardNumber, numberStyle]}>{number}</Text>
     </View>
     <Text style={[styles.cardInfoValue, styles.cardTextColor]}>{text}</Text>

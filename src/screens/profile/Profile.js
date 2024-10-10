@@ -94,6 +94,8 @@ export default function Profile({ navigation }) {
     logout();
   };
 
+  const [isPressed, setIsPressed] = useState(false);
+
   const { mutate: logout } = useMutation(() => axios.post("/auth/logout"), {
     onSuccess: async () => {
       await AsyncStorage.removeItem("@auth-token");
@@ -207,8 +209,12 @@ export default function Profile({ navigation }) {
 
         {/* Logout */}
         <TouchableOpacity
-          className="bg-[#fff] w-full py-6 px-4 mt-3 flex-row justify-between items-center"
+          className={`w-full py-6 px-4 mt-3 flex-row justify-between items-center ${
+            isPressed ? 'bg-red-700' : 'bg-[#fff]'
+          }`}
           onPress={handleLogout}
+          onPressIn={() => setIsPressed(true)}
+          onPressOut={() => setIsPressed(false)}
           style={{ 
             elevation: 5, // Android shadow
             shadowColor: "#000", // iOS shadow
@@ -219,9 +225,10 @@ export default function Profile({ navigation }) {
         >
           <View className="flex-row items-center">
             <Icon name="log-out" size={24} color="red" />
-            <Text className="text-red-500 font-sans ml-3">Logout</Text>
+            <Text className={`font-sans ml-3 ${isPressed ? 'text-white' : 'text-red-700'}`}>
+            Logout</Text>
           </View>
-          <Icon name="chevron-right" size={24} color="black" />
+          <Icon name="chevron-right" size={24} color={isPressed ? 'white' : 'red'} />
         </TouchableOpacity>
       </View>
 

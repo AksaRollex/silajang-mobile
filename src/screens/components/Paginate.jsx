@@ -18,7 +18,7 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
   const { data, isFetching, refetch } = useQuery({
     queryKey: queryKey ? queryKey :  [url],
     queryFn: () => axios.post(url, { ...payload, page, search}).then(res => {
-      // console.log(res.data)
+      // console.log(res.data.data)
       return res.data
     }),
     placeholderData: {data: []},
@@ -34,7 +34,6 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
   // }, [url])
 
   useEffect(() => {
-    console.log({search, page, payload})
     refetch();
   }, [search, page, payload]);
 

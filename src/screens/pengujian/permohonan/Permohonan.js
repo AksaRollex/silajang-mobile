@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MenuView } from "@react-native-menu/menu";
 import Paginate from "../../components/Paginate";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -15,6 +15,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
 import { Colors } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -22,6 +23,7 @@ const baseRem = 16;
 const Permohonan = ({ navigation }) => {
   const [tahun, setTahun] = useState(2024);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { data: user } = useUser()
 
   const tahuns = Array.from(
     { length: new Date().getFullYear() - 2021 },
@@ -128,6 +130,22 @@ const Permohonan = ({ navigation }) => {
             </Picker>
           </View>
         </View>
+        { user.has_tagihan ? (
+          <View className="flex items-center mt-5">
+          <Text className="text-gray-500 mb-0">Tidak dapat membuat Permohonan Baru</Text>
+          <Text className="text-gray-500 text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+        </View>
+      ) : (
+        <>
+          <Icons
+            name="plus"
+            size={28}
+            color="#fff"
+            style={styles.plusIcon}
+            onPress={() => navigation.navigate("TambahPermohonan")}
+          />
+        </>
+      )}
         <Paginate
           className="mb-28"
           ref={paginateRef}
@@ -136,13 +154,6 @@ const Permohonan = ({ navigation }) => {
           payload={{ tahun: tahun }}
           renderItem={CardPermohonan}></Paginate>
       </View>
-      <Icons
-        name="plus"
-        size={28}
-        color="#fff"
-        style={styles.plusIcon}
-        onPress={() => navigation.navigate("TambahPermohonan")}
-      />
       <DeleteConfirmationModal />
     </>
   );
@@ -182,7 +193,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 20,
+    bottom: 65,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,
