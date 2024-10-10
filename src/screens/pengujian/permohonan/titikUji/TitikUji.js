@@ -1,5 +1,13 @@
 import React, { useCallback, useRef, useState } from "react";
-import { View, Text, StyleSheet, ActivityIndicator } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  ActivityIndicator,
+  Modal,
+  Button,
+  TouchableOpacity,
+} from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -11,18 +19,29 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
 import { usePermohonan } from "@/src/services/usePermohonan";
 import BackButton from "@/src/screens/components/Back";
+import { API_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import Pdf from "react-native-pdf";
+import RNFS from "react-native-fs";
+import Share from "react-native-share";
+import { FA5Style } from "react-native-vector-icons/FontAwesome5";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
-const TitikUji = ({ navigation, route, status }) => {
+const TitikUji = ({ navigation, route, status, callback }) => {
   const { uuid } = route.params || {};
   const { data: permohonan } = usePermohonan(uuid);
-  // console.log("data permohonan", permohonan);
+  const data = permohonan || {};
+  console.log("data: ", data);
+  const { onSuccess, onError, onSettled } = callback || {};
 
   const queryClient = useQueryClient();
-
   const paginateRef = useRef();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [downloadComplete, setDownloadComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -38,6 +57,52 @@ const TitikUji = ({ navigation, route, status }) => {
     {
       id: "Report",
       title: "Report",
+      subactions: [
+        {
+          id: "Permohonan Pengujian",
+          title: "Permohonan Pengujian",
+          action: async item => {
+            if (item.status >= 2) {
+              // Kondisi untuk status >= 2
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
+              }
+            }
+          },
+        },
+        {
+          id: "Berita Acara Pengambilan",
+          title: "Berita Acara Pengambilan",
+          action: async item => {
+            if (data.is_mandiri === 1) {
+              // Kondisi untuk is_mandiri === 1
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
+              }
+            }
+          },
+        },
+      ],
     },
     {
       id: "Parameter",
@@ -56,59 +121,60 @@ const TitikUji = ({ navigation, route, status }) => {
     },
   ];
 
-  const statusList = [
-    "Mengajukan Permohonan", // 0
-    "Menyerahkan Sampel", // 1
-    "Menyerahkan Surat Perintah Pengujian", // 2
-    "Menyerahkan sampel untuk Proses Pengujian", // 3
-    "Menyerahkan RDPS", // 4
-    "Menyerahkan RDPS untuk Pengetikan LHU", // 5
-    "Menyerahkan LHU untuk Diverifikasi", // 6
-    "Mengesahkan LHU", // 7
-    "Pembayaran", // 8
-    "Penyerahan LHU", // 9
-    "Penyerahan LHU Amandemen (Jika ada)", // 10
-    "Selesai", // 11
-    "Menunggu", // default
-  ];
+  // Function to download the PDF
+  const handleConfirm = async () => {
+    const fileName = "pembayaran.pdf";
+    const fileDir = Platform.select({
+      ios: RNFS.DocumentDirectoryPath,
+      android: RNFS.DownloadDirectoryPath,
+    });
+    const filePath = `${fileDir}/${fileName}`;
 
-  const statusBackgroundColors = [
-    "bg-green-400", // 0
-    "bg-slate-100", // 1
-    "bg-slate-100", // 2
-    "bg-slate-100", // 3
-    "bg-slate-100", // 4
-    "bg-slate-100", // 5
-    "bg-slate-100", // 6
-    "bg-slate-100", // 7
-    "bg-slate-100", // 8
-    "bg-slate-100", // 9
-    "bg-slate-100", // 10
-    "bg-slate-100", // 11
-    "bg-slate-100", // default
-  ];
+    setIsLoading(true); // Start loading when download begins
 
-  const statusTextColors = [
-    "text-black", // 0
-    "text-black", // 1
-    "text-black", // 2
-    "text-black", // 3
-    "text-black", // 4
-    "text-black", // 5
-    "text-black", // 6
-    "text-black", // 7
-    "text-black", // 8
-    "text-black", // 9
-    "text-black", // 10
-    "text-black", // 11
-    "text-black", // default
-  ];
+    try {
+      const options = {
+        fromUrl: previewUrl,
+        toFile: filePath,
+        background: true,
+      };
 
-  const currentStatusText = statusList[status] || statusList[12]; // Default "Menunggu"
-  const currentStatusBackground =
-    statusBackgroundColors[status] || statusBackgroundColors[12]; // Default "bg-slate-100"
-  const currentStatusTextColor =
-    statusTextColors[status] || statusTextColors[12]; // Default "text-black"
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        setDownloadComplete(true); // Set download complete flag to true
+        onSuccess && onSuccess(filePath);
+      } else {
+        throw new Error("Failed to download file");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      onError && onError(error);
+    } finally {
+      setIsLoading(false); // Stop loading after download is complete
+      onSettled && onSettled();
+    }
+  };
+
+  const showConfirmationModal = url => {
+    setreportUrl(url);
+    setModalVisible(true);
+  };
+  // Function to handle share
+  const handleShare = async () => {
+    const fileName = "pembayaran.pdf";
+    const fileDir = Platform.select({
+      ios: RNFS.DocumentDirectoryPath,
+      android: RNFS.DownloadDirectoryPath,
+    });
+    const filePath = `${fileDir}/${fileName}`;
+
+    await Share.open({
+      url: Platform.OS === "android" ? `file://${filePath}` : filePath,
+      type: "application/pdf",
+    });
+  };
+
   const CardTitikUji = ({ item }) => (
     <View style={styles.row}>
       <View style={styles.card}>
@@ -153,13 +219,39 @@ const TitikUji = ({ navigation, route, status }) => {
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
               ...option,
+              subactions: option.subactions
+                ? option.subactions.filter(subaction => {
+                    // Filter subactions berdasarkan kondisi
+                    if (subaction.id === "Permohonan Pengujian") {
+                      return item.status >= 2; // Tampilkan jika status >= 2
+                    } else if (subaction.id === "Berita Acara Pengambilan") {
+                      return data.is_mandiri === 1; // Tampilkan jika is_mandiri === 1
+                    }
+                    return true;
+                  })
+                : null,
             }))}
             onPressAction={({ nativeEvent }) => {
               const selectedOption = dropdownOptions.find(
                 option => option.title === nativeEvent.event,
               );
+              const sub = dropdownOptions.find(
+                option =>
+                  option.subactions &&
+                  option.subactions.some(
+                    suboption => suboption.title === nativeEvent.event,
+                  ),
+              );
               if (selectedOption) {
                 selectedOption.action(item);
+              }
+              if (sub) {
+                const selectedSub = sub.subactions.find(
+                  sub => sub.title === nativeEvent.event,
+                );
+                if (selectedSub) {
+                  selectedSub.action(item);
+                }
               }
             }}
             shouldOpenOnLongPress={false}>
@@ -168,6 +260,58 @@ const TitikUji = ({ navigation, route, status }) => {
             </View>
           </MenuView>
         </View>
+
+        {/* Modal untuk Preview */}
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black bg-black/50">
+            <View className="bg-white rounded-lg w-full h-full m-5">
+              <Text className="text-lg font-bold m-4">Preview LHU</Text>
+              <Pdf
+                source={{ uri: previewUrl, cache: true }}
+                style={{ flex: 1 }}
+                trustAllCerts={false}
+              />
+              {/* Show loading indicator when downloading */}
+              {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                <>
+                  {!downloadComplete ? (
+                    <>
+                      <TouchableOpacity
+                        onPress={handleConfirm}
+                        className="bg-blue-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Download</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Close</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity
+                        onPress={handleShare}
+                        className="bg-green-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Share</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Close</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
