@@ -32,7 +32,8 @@ const rem = multiplier => baseRem * multiplier;
 const TitikUji = ({ navigation, route, status, callback }) => {
   const { uuid } = route.params || {};
   const { data: permohonan } = usePermohonan(uuid);
-  // console.log("data permohonan", permohonan);
+  const data = permohonan || {};
+  console.log("data: ", data);
   const { onSuccess, onError, onSettled } = callback || {};
 
   const queryClient = useQueryClient();
@@ -61,37 +62,43 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           id: "Permohonan Pengujian",
           title: "Permohonan Pengujian",
           action: async item => {
-            try {
-              const token = await AsyncStorage.getItem("@auth-token");
-              if (token) {
-                const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
-                setPreviewUrl(reportUrl); // Set URL untuk preview
-                setModalVisible(true);
-                setDownloadComplete(false)
-              } else {
-                console.error("Token not found");
+            if (item.status >= 2) {
+              // Kondisi untuk status >= 2
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
               }
-            } catch (error) {
-              console.error("Error mendapatkan token:", error);
             }
           },
         },
         {
-          id: "Berita Acara Pengembalian",
-          title: "Berita Acara Pengembalian",
+          id: "Berita Acara Pengambilan",
+          title: "Berita Acara Pengambilan",
           action: async item => {
-            try {
-              const token = await AsyncStorage.getItem("@auth-token");
-              if (token) {
-                const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
-                setPreviewUrl(reportUrl); // Set URL untuk preview
-                setModalVisible(true);
-                setDownloadComplete(false)
-              } else {
-                console.error("Token not found");
+            if (data.is_mandiri === 1) {
+              // Kondisi untuk is_mandiri === 1
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
               }
-            } catch (error) {
-              console.error("Error mendapatkan token:", error);
             }
           },
         },
@@ -315,6 +322,17 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
               ...option,
+              subactions: option.subactions
+                ? option.subactions.filter(subaction => {
+                    // Filter subactions berdasarkan kondisi
+                    if (subaction.id === "Permohonan Pengujian") {
+                      return item.status >= 2; // Tampilkan jika status >= 2
+                    } else if (subaction.id === "Berita Acara Pengambilan") {
+                      return data.is_mandiri === 1; // Tampilkan jika is_mandiri === 1
+                    }
+                    return true;
+                  })
+                : null,
             }))}
             onPressAction={({ nativeEvent }) => {
               const selectedOption = dropdownOptions.find(
