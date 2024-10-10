@@ -105,7 +105,7 @@ const Persetujuan = ({ navigation }) => {
     } catch (error) {
       console.error('Download error:', error);
 
-      // Show toast message for error
+      // Show toast message for erropr
       Toast.show({
         type: 'error',
         text1: 'Error',

@@ -5,6 +5,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
@@ -15,6 +16,8 @@ import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import DocumentPicker from 'react-native-document-picker';
 import RNFS, { downloadFile } from 'react-native-fs';  
+import Toast from 'react-native-toast-message';
+
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -164,7 +167,10 @@ const CetakLHU = ({ navigation }) => {
     return response.data.data;
   };
 
-  const renderItem = ({ item }) => {
+ const renderItem = ({ item }) => {
+    const canUpload = selectedCetak === 0 && item.can_upload === 1;
+    const showPreview = selectedCetak !== 0 || item.status === 5;
+
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
@@ -185,21 +191,25 @@ const CetakLHU = ({ navigation }) => {
               </Text>
             </View>
             <View className="my-2">
-              <TouchableOpacity onPress={() => handlePreviewLHU(item)} className="mb-2">
-                <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
-              </TouchableOpacity>
-              <TouchableOpacity onPress={() => handleFilePicker()} className="mb-2">
-                <FontIcon name="file-upload" size={18} color="white" style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} />
-              </TouchableOpacity>
-              {selectedFile && (
-                <TouchableOpacity onPress={() => handleUploadPDF(item)}>
+              {canUpload && (
+                <TouchableOpacity onPress={() =>  FilePicker()} className="mb-2">
+                  <FontIcon name="file-upload" size={18} color="white" style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} />
+                </TouchableOpacity>
+              )}
+              {canUpload && selectedFile && (
+                <TouchableOpacity onPress={() => handleUploadPDF(item)} className="mb-2">
                   <FontIcon name="upload" size={18} color="white" style={{ backgroundColor: "green", padding: 12, borderRadius: 8 }} />
+                </TouchableOpacity>
+              )}
+              {showPreview && (
+                <TouchableOpacity onPress={() => handlePreviewLHU(item)} className="mb-2">
+                  <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
                 </TouchableOpacity>
               )}
             </View>
           </View>
         </View>
-        {selectedFile && (
+        {selectedFile && canUpload && (
           <Text className="text-[12px] mt-2">Selected: {selectedFile.name}</Text>
         )}
       </View>
