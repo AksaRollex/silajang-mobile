@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
 import Header from "../components/Header";
 import { API_URL } from "@env";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -31,59 +32,14 @@ import Icon from "react-native-vector-icons/Feather";
 
 export default function Profile({ navigation }) {
   const [activeComponent, setActiveComponent] = useState("Akun");
-  const [userData, setUserData] = useState(null);
-  const [fadeAnim] = useState(new Animated.Value(0));
-  const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [imageUrl, setImageUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false); // State untuk modal visibility
   const queryClient = useQueryClient();
   const [imageLoadError, setImageLoadError] = useState(false);
 
-  // Fetch user data
-  const fetchData = async () => {
-    try {
-      const response = await axios.get("/auth");
-      const { nama, email, phone, golongan, photo } = response.data.user;
-      setData({ nama, email, phone, golongan });
-      setLoading(false);
-
-      const fullImageUrl = `${API_URL}${photo}?t=${new Date().getTime()}`;
-      setImageUrl(fullImageUrl);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Another fetch for user data
-  useEffect(() => {
-    axios
-      .get("/auth")
-      .then(response => {
-        setUserData(response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  const handlePress = component => {
-    setActiveComponent(component);
-    Animated.timing(fadeAnim, {
-      toValue: 1,
-      duration: 500,
-      useNativeDriver: true,
-    }).start();
-  };
-
-  const handleCancel = () => {
-    setActiveComponent(null);
-  };
+  // Menggunakan useUser untuk mendapatkan data pengguna
+  const { data: userData, isLoading } = useUser();
 
   const handleLogout = () => {
     setModalVisible(true); // Menampilkan modal saat tombol logout ditekan
@@ -115,24 +71,46 @@ export default function Profile({ navigation }) {
 
   return (
     <>
-      <View className="w-full bg-[#321e81] py-4 px-3">
-        <BackButton action={() => navigation.goBack()} size={25} color="white" />
+      <View
+        className="w-full py-4 px-3"
+        style={{ backgroundColor: Colors.brand }}>
+        <BackButton
+          action={() => navigation.goBack()}
+          size={25}
+          color="white"
+        />
       </View>
 
       {userData ? (
-        <View elevetion={5} className="w-full py-5 bg-[#fff] flex-row ">
-          <View className="w-1/5 items-center justify-center">
-            <Image
-              source={require("@/assets/images/avatar.png")}
-              className="w-14 h-14 rounded-full"
-            />
+        <View
+          elevetion={5}
+          className="w-full py-5 px-4 bg-[#fff] flex-row 
+        "
+          style={{
+            borderBottomWidth: 0.5,
+            borderBottomColor: "#dedede",
+            elevation: 0.5,
+          }}>
+          <View className="w-1/5 items-center justify-center ">
+            {userData ? (
+              <FastImage
+                className="rounded-full w-16 h-16 "
+                source={{
+                  uri: `${process.env.APP_URL}${userData.photo}`,
+                  priority: FastImage.priority.high,
+                }}
+                resizeMode={FastImage.resizeMode.cover}
+              />
+            ) : (
+              <View></View>
+            )}
           </View>
-          <View className="flex-col align-center justify-center ">
-            <Text className="text-base text-black font-bold my-1">
-              {userData?.user.nama}
+          <View className="flex-col align-center justify-center mx-2 -mt-2 ">
+            <Text className="text-base text-black font-bold font-sans my-1">
+              {userData?.nama}
             </Text>
-            <Text className="text-sm font-bold text-black ">
-              {userData?.user.email}
+            <Text className="text-sm font-bold  text-indigo-400 mt-1">
+              {userData?.email}
             </Text>
           </View>
         </View>
@@ -146,20 +124,21 @@ export default function Profile({ navigation }) {
         {/* Informasi Personal */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Akun")}
-          className="bg-[#fff] w-full py-6 px-4 mt-5 flex-row justify-between items-center"
-          style={{ 
-            borderBottomWidth: 1, 
+          className="bg-[#fff] w-full py-6 px-6  flex-row justify-between items-center"
+          style={{
+            borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
+            elevation: 5,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
-            shadowRadius: 2,    
-          }}
-        >
+            shadowRadius: 2,
+          }}>
           <View className="flex-row items-center">
-            <Icon name="user" size={29} color="black" />
-            <Text className="text-black font-sans ml-3">Informasi Personal</Text>
+            <Icon name="user" size={29} color="#312e81" />
+            <Text className="text-black font-sans ml-3">
+              Informasi Personal
+            </Text>
           </View>
           <Icon name="chevron-right" size={24} color="black" />
         </TouchableOpacity>
@@ -167,21 +146,21 @@ export default function Profile({ navigation }) {
         {/* Informasi Perusahaan */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Perusahaan")}
-          className="bg-[#fff] w-full py-6 px-4 flex-row justify-between items-center"
-          style={{ 
-            borderBottomWidth: 1, 
+          className="bg-[#fff] w-full py-6 px-6 flex-row justify-between items-center"
+          style={{
+            borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
-            shadowOffset: { width: 0, height: 2 },
+            elevation: 1,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-            
-          }}
-        >
+          }}>
           <View className="flex-row items-center">
-            <Icon name="archive" size={29} color="black" />
-            <Text className="text-black font-sans ml-3">Informasi Perusahaan</Text>
+            <Icon name="archive" size={29} color="#312e81" />
+            <Text className="text-black font-sans ml-3">
+              Informasi Perusahaan
+            </Text>
           </View>
           <Icon name="chevron-right" size={24} color="black" />
         </TouchableOpacity>
@@ -189,19 +168,18 @@ export default function Profile({ navigation }) {
         {/* Ganti Password */}
         <TouchableOpacity
           onPress={() => navigation.navigate("Keamanan")}
-          className="bg-[#fff] w-full py-6 px-4 flex-row justify-between items-center"
-          style={{ 
-            borderBottomWidth: 1, 
+          className="bg-[#fff] w-full py-6 px-6 flex-row justify-between items-center"
+          style={{
+            borderBottomWidth: 1,
             borderBottomColor: "#dedede",
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
-            shadowOffset: { width: 0, height: 2 },
+            elevation: 1,
+            shadowColor: "#000",
+            shadowOffset: { width: 0, height: 1 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-            }}
-        >
+          }}>
           <View className="flex-row items-center">
-            <Icon name="lock" size={29} color="black" />
+            <Icon name="lock" size={29} color="#312e81" />
             <Text className="text-black font-sans ml-3">Ganti Password</Text>
           </View>
           <Icon name="chevron-right" size={24} color="black" />
@@ -209,26 +187,20 @@ export default function Profile({ navigation }) {
 
         {/* Logout */}
         <TouchableOpacity
-          className={`w-full py-6 px-4 mt-3 flex-row justify-between items-center ${
-            isPressed ? 'bg-red-700' : 'bg-[#fff]'
-          }`}
+          className="bg-red-100 w-full py-6 px-6  flex-row justify-between items-center"
           onPress={handleLogout}
-          onPressIn={() => setIsPressed(true)}
-          onPressOut={() => setIsPressed(false)}
-          style={{ 
-            elevation: 5, // Android shadow
-            shadowColor: "#000", // iOS shadow
+          style={{
+            elevation: 2,
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.2,
             shadowRadius: 2,
-          }}
-        >
+          }}>
           <View className="flex-row items-center">
-            <Icon name="log-out" size={24} color="red" />
-            <Text className={`font-sans ml-3 ${isPressed ? 'text-white' : 'text-red-700'}`}>
-            Logout</Text>
+            <Icon name="log-out" size={29} color="red" />
+            <Text className="text-red-500 font-sans ml-3">Logout</Text>
           </View>
-          <Icon name="chevron-right" size={24} color={isPressed ? 'white' : 'red'} />
+          <Icon name="chevron-right" size={24} color="red" />
         </TouchableOpacity>
       </View>
 
@@ -237,16 +209,14 @@ export default function Profile({ navigation }) {
         transparent={true}
         visible={modalVisible}
         animationType="fade"
-        onRequestClose={() => setModalVisible(false)}
-      >
+        onRequestClose={() => setModalVisible(false)}>
         <View
           style={{
             flex: 1,
             justifyContent: "center",
             alignItems: "center",
             backgroundColor: "rgba(0, 0, 0, 0.5)",
-          }}
-        >
+          }}>
           <View
             style={{
               width: 300,
@@ -254,9 +224,9 @@ export default function Profile({ navigation }) {
               backgroundColor: "white",
               borderRadius: 10,
               alignItems: "center",
-            }}
-          >
-            <Text style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15 }}>
+            }}>
+            <Text
+              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15 }}>
               Konfirmasi Logout
             </Text>
 
@@ -281,8 +251,7 @@ export default function Profile({ navigation }) {
                   backgroundColor: "#dedede",
                   borderRadius: 5,
                   marginRight: 10,
-                }}
-              >
+                }}>
                 <Text style={{ color: "black" }}>Batal</Text>
               </TouchableOpacity>
               <TouchableOpacity
@@ -292,8 +261,7 @@ export default function Profile({ navigation }) {
                   paddingHorizontal: 20,
                   backgroundColor: "#f2416e",
                   borderRadius: 5,
-                }}
-              >
+                }}>
                 <Text style={{ color: "white" }}>Ya, Logout</Text>
               </TouchableOpacity>
             </View>
@@ -303,7 +271,6 @@ export default function Profile({ navigation }) {
     </>
   );
 }
-
 
 const styles = StyleSheet.create({
   container: {

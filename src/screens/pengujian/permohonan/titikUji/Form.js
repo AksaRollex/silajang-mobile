@@ -50,6 +50,11 @@ const FormTitikUji = ({
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
   const [isDateSelected, setIsDateSelected] = useState(false);
+  const [location, setLocation] = useState({
+    latitude: "",
+    longitude: "",
+  });
+
 
   const [tanggalJam, setTanggalJam] = useState();
   useEffect(() => {
@@ -119,9 +124,11 @@ const FormTitikUji = ({
       enabled: !!uuid,
       // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
-        setDate(new Date(data.tanggal_pengambilan))
-
+        
         if (data) {
+          setDate(new Date(data.tanggal_pengambilan))
+          location.latitude = data.south,
+          location.longitude = data.east
           reset({
             lokasi: data.lokasi,
             jenis_sampel_id: data.jenis_sampel_id,
@@ -129,7 +136,6 @@ const FormTitikUji = ({
             keterangan: data.keterangan,
             nama_pengambil: data.nama_pengambil,
             acuan_metode_id: data.acuan_metode_id,
-            south: data.south,
             east: data.east,
             suhu_air: data.suhu_air,
             ph: data.ph,
@@ -243,12 +249,6 @@ const FormTitikUji = ({
     setShowDatePicker(false);
     setTanggalJam(currentDate);
   };
-
-  // LOCATION STATE
-  const [location, setLocation] = useState({
-    latitude: "",
-    longitude: "",
-  });
 
   useEffect(() => {
     const fetchData = async () => {

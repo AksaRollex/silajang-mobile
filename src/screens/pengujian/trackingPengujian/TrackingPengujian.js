@@ -1,15 +1,16 @@
 import React, { useState, useCallback, useRef } from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { Colors } from "react-native-ui-lib";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import Header from "../../components/Header";
+import Back from "../../components/Back";
 
 const TrackingPengujian = ({ navigation }) => {
   const paginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [bulan, setBulan] = useState(new Date().getMonth() + 1);
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -20,28 +21,8 @@ const TrackingPengujian = ({ navigation }) => {
     }),
   );
 
-  const bulans = [
-    { id: 1, text: "Januari" },
-    { id: 2, text: "Februari" },
-    { id: 3, text: "Maret" },
-    { id: 4, text: "April" },
-    { id: 5, text: "Mei" },
-    { id: 6, text: "Juni" },
-    { id: 7, text: "Juli" },
-    { id: 8, text: "Agustus" },
-    { id: 9, text: "September" },
-    { id: 10, text: "Oktober" },
-    { id: 11, text: "November" },
-    { id: 12, text: "Desember" },
-  ];
-
   const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
-    setRefreshKey(prevKey => prevKey + 1);
-  }, []);
-
-  const handleMonthChange = useCallback(itemValue => {
-    setBulan(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
   }, []);
 
@@ -88,23 +69,29 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Tracking Pengujian
+          </Text>
+        </View>
+      </View>
       <View className="w-full h-full bg-[#ececec]">
         <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff]">
+          <View className="flex flex-row justify-between bg-[#fff] ">
             <Picker
               selectedValue={tahun}
               style={styles.picker}
               onValueChange={handleYearChange}>
               {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-            <Picker
-              selectedValue={bulan}
-              style={styles.picker}
-              onValueChange={handleMonthChange}>
-              {bulans.map(item => (
                 <Picker.Item key={item.id} label={item.text} value={item.id} />
               ))}
             </Picker>
@@ -114,8 +101,8 @@ const TrackingPengujian = ({ navigation }) => {
           key={refreshKey}
           ref={paginateRef}
           url="/tracking"
-          className="mb-28"
-          payload={{ tahun, bulan }}
+          className="mb-32"
+          payload={{ tahun }}
           renderItem={renderItem}
         />
       </View>
@@ -140,6 +127,7 @@ const styles = StyleSheet.create({
   picker: {
     flex: 1,
     marginHorizontal: 4,
+    color: "black",
   },
   card: {
     flexDirection: "row",

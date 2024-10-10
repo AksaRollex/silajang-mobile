@@ -16,6 +16,7 @@ import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
+import Back from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -80,15 +81,14 @@ const Permohonan = ({ navigation }) => {
             {item.industri}
           </Text>
 
-          <Text style={[styles.badge]} className="bg-indigo-400 text-white">
-            Cara Pengambilan :{" "}
-            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+          <Text style={[styles.badge]} className="bg-indigo-400 text-white text-xs">
+            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
           </Text>
-          <Text style={[styles.badge]} className="bg-emerald-400 text-white">
+          <Text style={[styles.badge]}  className="bg-emerald-400 text-white text-xs">
             Pembayaran : {item.pembayaran}
           </Text>
 
-          <Text style={[styles.cardTexts]}>{item.alamat}</Text>
+          <Text className="text-black text-xs font-bold">{item.alamat}</Text>
         </View>
         <View style={styles.cards2}>
           <MenuView
@@ -116,7 +116,21 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
+     <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <Back
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Permohonan
+          </Text>
+        </View>
+      </View>
       <View className="bg-[#ececec] w-full h-full">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
@@ -131,10 +145,12 @@ const Permohonan = ({ navigation }) => {
           </View>
         </View>
         { user.has_tagihan ? (
-          <View className="flex items-center mt-5">
-          <Text className="text-gray-500 mb-0">Tidak dapat membuat Permohonan Baru</Text>
-          <Text className="text-gray-500 text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+          <View className="p-2">
+          <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+          <Text className="text-black mb-0 text-sm">Tidak dapat membuat Permohonan Baru</Text>
+          <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
         </View>
+          </View>
       ) : (
         <>
           <Icons

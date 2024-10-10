@@ -1,8 +1,7 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
 import { Colors } from "react-native-ui-lib";
-import { useNavigation } from "@react-navigation/native";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import Icons from "react-native-vector-icons/Feather";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
@@ -10,16 +9,16 @@ const rem = multiplier => baseRem * multiplier;
 export default function Header({ navigate }) {
   return (
     <View style={styles.container}>
-      <View className="bg-indigo-900 p-3 flex-row justify-between items-center">
+      <View className=" p-3 flex-row justify-between items-center" style={{ backgroundColor : Colors.brand }}>
         <View className="flex-row items-center gap-2">
-          <Text style={styles.headerText}>SI-LAJANG</Text>
           <Image
             source={require("@/assets/images/logo.png")}
             style={styles.logo}
             />
+          <Text style={styles.headerText}>SI-LAJANG</Text>
           </View>
           <View>
-            <FontAwesome5Icon name="user-circle" size={28} color={"#fff"} onPress={navigate}/>
+            <Icons name="user" size={28} color={"#fff"} onPress={navigate}/>
           </View>
       </View>
     </View>

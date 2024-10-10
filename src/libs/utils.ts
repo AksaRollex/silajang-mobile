@@ -53,19 +53,6 @@ export function formatIndoDate(date: any, time = false): string {
     "Desember",
   ];
 
- 
-  //     return statusPengujian[status] || "Sedang Diproses";
-  // }
-
-  // export function mapStatusPembayaran(status) {
-  //   const statusPembayaran = {
-  //       0: "Belum Dibayar",
-  //       1: "Berhasil",
-  //       2: "Gagal",
-  //   };
-
-  //   return statusPembayaran[status] || "Belum Dibayar";
-  // }
   var d = date.split(" ");
   var date = d[0].split("-");
   var day = date[2];
@@ -103,3 +90,4 @@ export function mapStatusPengujian(status: number): string {
 
   return statusPengujian[status] || "Sedang Diproses";
 }
+

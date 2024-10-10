@@ -5,6 +5,7 @@ import {
   StyleSheet,
   ActivityIndicator,
   Modal,
+  Button,
   TouchableOpacity,
 } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -28,11 +29,16 @@ import {
 } from "react-native-popup-menu";
 import Icon from "react-native-vector-icons/FontAwesome";
 import { useUser } from "@/src/services";
+import BackButton from "@/src/screens/components/Back";
+import { API_URL } from "@env";
+import RNFS from "react-native-fs";
+import Share from "react-native-share";
+import { FA5Style } from "react-native-vector-icons/FontAwesome5";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
-const TitikUji = ({ navigation, route, status }) => {
+const TitikUji = ({ navigation, route, status, callback }) => {
   const { uuid } = route.params || {};
   const { data: permohonan } = usePermohonan(uuid);
   const [isModalVisible, setIsModalVisible] = useState(false);
@@ -41,6 +47,8 @@ const TitikUji = ({ navigation, route, status }) => {
   const openModal = () => {
     setIsModalVisible(true);
   };
+  // console.log("data permohonan", permohonan);
+  const { onSuccess, onError, onSettled } = callback || {};
 
   useEffect(() => {
     console.log("DATA ANJAY", uuid);
@@ -50,24 +58,17 @@ const TitikUji = ({ navigation, route, status }) => {
     setIsModalVisible(false);
   };
   const queryClient = useQueryClient();
-  const titikPermohonans = queryClient.getQueryData(["permohonan", uuid, "titik"])
-  // const { permohonans, isLoading: isLoadingData } = useQuery(
-  //   ["permohonan", uuid],
-  //   () =>
-  //     axios
-  //       .post(`/permohonan/titik`, { permohonan_uuid: uuid })
-  //       .then(res => res.data),
-  //   {
-  //     onSuccess: data => {
-  //       console.log("data huh", data);
-  //     },
-  //     onError: error => {
-  //       console.error(error.response.data);
-  //     },
-  //   },
-  // );
+  const titikPermohonans = queryClient.getQueryData([
+    "permohonan",
+    uuid,
+    "titik",
+  ]);
 
   const paginateRef = useRef();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [previewUrl, setPreviewUrl] = useState("");
+  const [downloadComplete, setDownloadComplete] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -80,6 +81,50 @@ const TitikUji = ({ navigation, route, status }) => {
   });
 
   const dropdownOptions = [
+    {
+      id: "Report",
+      title: "Report",
+      subactions: [
+        {
+          id: "Permohonan Pengujian",
+          title: "Permohonan Pengujian",
+          action: async item => {
+            try {
+              const token = await AsyncStorage.getItem("@auth-token");
+              if (token) {
+                const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
+                setPreviewUrl(reportUrl); // Set URL untuk preview
+                setModalVisible(true);
+                setDownloadComplete(false);
+              } else {
+                console.error("Token not found");
+              }
+            } catch (error) {
+              console.error("Error mendapatkan token:", error);
+            }
+          },
+        },
+        {
+          id: "Berita Acara Pengembalian",
+          title: "Berita Acara Pengembalian",
+          action: async item => {
+            try {
+              const token = await AsyncStorage.getItem("@auth-token");
+              if (token) {
+                const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
+                setPreviewUrl(reportUrl); // Set URL untuk preview
+                setModalVisible(true);
+                setDownloadComplete(false);
+              } else {
+                console.error("Token not found");
+              }
+            } catch (error) {
+              console.error("Error mendapatkan token:", error);
+            }
+          },
+        },
+      ],
+    },
     {
       id: "Parameter",
       title: "Parameter",
@@ -101,99 +146,59 @@ const TitikUji = ({ navigation, route, status }) => {
     },
   ];
 
-  //   const ActionColumn = ({ item }) => {
-  //     const showCertificateButton =
-  //       item.status_tte === 1 &&
-  //       (item.status_pembayaran === 1 ||
-  //         item.permohonan?.user?.golongan_id === 2);
+  // Function to download the PDF
+  const handleConfirm = async () => {
+    const fileName = "pembayaran.pdf";
+    const fileDir = Platform.select({
+      ios: RNFS.DocumentDirectoryPath,
+      android: RNFS.DownloadDirectoryPath,
+    });
+    const filePath = `${fileDir}/${fileName}`;
 
-  //     const handleCertificatePress = () => {
-  //       if (previewReport) {
-  //         setReportUrl(
-  //           `/api/v1/report/${
-  //             item.uuid
-  //           }/lhu/tte/download?token=${AsyncStorage.getItem("auth_token")}`,
-  //         );
-  //         showReportModal();
-  //       } else {
-  //         downloadReport(`/report/${item.uuid}/lhu/tte/download`);
-  //       }
-  //     };
+    setIsLoading(true); // Start loading when download begins
 
-  //     const handleReportOptionPress = () => {
-  //       if (previewReport) {
-  //         setReportUrl(
-  //           `/api/v1/report/${
-  //             item.uuid
-  //           }/${reportType}?token=${AsyncStorage.getItem("auth_token")}`,
-  //         );
-  //         showReportModal();
-  //       } else {
-  //         downloadReport(`/report/${item.uuid}/${reportType}`);
-  //       }
-  //     };
+    try {
+      const options = {
+        fromUrl: previewUrl,
+        toFile: filePath,
+        background: true,
+      };
 
-  //     return (
-  //       <>
-  //       <View style={{ flexDirection: "row", flexWrap: "wrap", gap: 8 }}>
-  //         {showCertificateButton && (
-  //           <TouchableOpacity
-  //           style={{
-  //             backgroundColor: "#28a745",
-  //             padding: 8,
-  //             borderRadius: 4,
-  //             flexDirection: "row",
-  //             alignItems: "center",
-  //           }}
-  //           onPress={handleCertificatePress}>
-  //             <Icon name="file-pdf-o" size={20} color="white" />
-  //             <Text style={{ color: "white", marginLeft: 4 }}>
-  //               Sertifikat LHU
-  //             </Text>
-  //           </TouchableOpacity>
-  //         )}
+      const response = await RNFS.downloadFile(options).promise;
 
-  //         <Menu>
-  //           <MenuTrigger>
-  //             <View
-  //               style={{
-  //                 backgroundColor: "#dc3545",
-  //                 padding: 8,
-  //                 borderRadius: 4,
-  //                 flexDirection: "row",
-  //                 alignItems: "center",
-  //               }}>
-  //               <Icon name="file-pdf-o" size={20} color="white" />
-  //               <Text style={{ color: "white", marginLeft: 4 }}>Report</Text>
-  //             </View>
-  //           </MenuTrigger>
-  //           <MenuOptions>
-  //             {item.status >= 2 && (
-  //               <MenuOption
-  //               onSelect={() => handleReportOptionPress("tanda-terima")}>
-  //                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-  //                   <Icon name="file-pdf-o" size={20} />
-  //                   <Text style={{ marginLeft: 8 }}>Permohonan Pengujian</Text>
-  //                 </View>
-  //               </MenuOption>
-  //             )}
-  //             {!item.permohonan.is_mandiri && (
-  //               <MenuOption
-  //               onSelect={() => handleReportOptionPress("berita-acara")}>
-  //                 <View style={{ flexDirection: "row", alignItems: "center" }}>
-  //                   <Icon name="file-pdf-o" size={20} />
-  //                   <Text style={{ marginLeft: 8 }}>
-  //                     Berita Acara Pengambilan
-  //                   </Text>
-  //                 </View>
-  //               </MenuOption>
-  //             )}
-  //           </MenuOptions>
-  //         </Menu>
-  //       </View>
-  // </>
-  //     );
-  //   };
+      if (response.statusCode === 200) {
+        setDownloadComplete(true); // Set download complete flag to true
+        onSuccess && onSuccess(filePath);
+      } else {
+        throw new Error("Failed to download file");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      onError && onError(error);
+    } finally {
+      setIsLoading(false); // Stop loading after download is complete
+      onSettled && onSettled();
+    }
+  };
+
+  const showConfirmationModal = url => {
+    setreportUrl(url);
+    setModalVisible(true);
+  };
+  // Function to handle share
+  const handleShare = async () => {
+    const fileName = "pembayaran.pdf";
+    const fileDir = Platform.select({
+      ios: RNFS.DocumentDirectoryPath,
+      android: RNFS.DownloadDirectoryPath,
+    });
+    const filePath = `${fileDir}/${fileName}`;
+
+    await Share.open({
+      url: Platform.OS === "android" ? `file://${filePath}` : filePath,
+      type: "application/pdf",
+    });
+  };
 
   const CardTitikUji = ({ item }) => (
     <View style={styles.row}>
@@ -204,13 +209,13 @@ const TitikUji = ({ navigation, route, status }) => {
             {item.kode}
           </Text>
           <View className="py-1">
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Diambil : {item.tanggal_pengambilan || "-"}
             </Text>
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Diterima : {item.tanggal_diterima || "-"}
             </Text>
-            <Text className=" text-sm text-black ">
+            <Text className=" text-xs pt-1 text-black ">
               Selesai : {item.tanggal_selesai_uji || "-"}
             </Text>
           </View>
@@ -218,35 +223,34 @@ const TitikUji = ({ navigation, route, status }) => {
           <View>
             <Text
               style={styles.badge}
-              className={`text-[12px] text-indigo-600  mt-2
-              ${
-                status == 0
-                  ? "bg-green-400"
-                  : status == 1
-                  ? "bg-slate-100"
-                  : status == 2
-                  ? "bg-slate-100"
-                  : status == 3
-                  ? "bg-slate-100"
-                  : status == 4
-                  ? "bg-slate-100"
-                  : status == 5
-                  ? "bg-slate-100"
-                  : status == 6
-                  ? "bg-slate-100"
-                  : status == 7
-                  ? "bg-slate-100"
-                  : status == 8
-                  ? "bg-slate-100"
-                  : status == 9
-                  ? "bg-slate-100"
-                  : status == 10
-                  ? "bg-slate-100"
-                  : status == 11
-                  ? "bg-slate-100"
-                  : "bg-slate-100"
-              }`}>
-              {" "}
+              className={`text-xs text-indigo-600  mt-2
+            ${
+              status == 0
+                ? "bg-green-400"
+                : status == 1
+                ? "bg-slate-100"
+                : status == 2
+                ? "bg-slate-100"
+                : status == 3
+                ? "bg-slate-100"
+                : status == 4
+                ? "bg-slate-100"
+                : status == 5
+                ? "bg-slate-100"
+                : status == 6
+                ? "bg-slate-100"
+                : status == 7
+                ? "bg-slate-100"
+                : status == 8
+                ? "bg-slate-100"
+                : status == 9
+                ? "bg-slate-100"
+                : status == 10
+                ? "bg-slate-100"
+                : status == 11
+                ? "bg-slate-100"
+                : "bg-slate-100"
+            }`}>
               Pengambilan :
               {status == 0
                 ? "Mengakan Permohonan"
@@ -276,35 +280,34 @@ const TitikUji = ({ navigation, route, status }) => {
             </Text>
             <Text
               style={styles.badge}
-              className={`text-[12px] text-indigo-600
-              ${
-                status == 0
-                  ? "bg-green-400"
-                  : status == 1
-                  ? "bg-slate-100"
-                  : status == 2
-                  ? "bg-slate-100"
-                  : status == 3
-                  ? "bg-slate-100"
-                  : status == 4
-                  ? "bg-slate-100"
-                  : status == 5
-                  ? "bg-slate-100"
-                  : status == 6
-                  ? "bg-slate-100"
-                  : status == 7
-                  ? "bg-slate-100"
-                  : status == 8
-                  ? "bg-slate-100"
-                  : status == 9
-                  ? "bg-slate-100"
-                  : status == 10
-                  ? "bg-slate-100"
-                  : status == 11
-                  ? "bg-slate-100"
-                  : "bg-slate-100 && text-red-500"
-              }`}>
-              {" "}
+              className={`text-xs text-indigo-600
+            ${
+              status == 0
+                ? "bg-green-400"
+                : status == 1
+                ? "bg-slate-100"
+                : status == 2
+                ? "bg-slate-100"
+                : status == 3
+                ? "bg-slate-100"
+                : status == 4
+                ? "bg-slate-100"
+                : status == 5
+                ? "bg-slate-100"
+                : status == 6
+                ? "bg-slate-100"
+                : status == 7
+                ? "bg-slate-100"
+                : status == 8
+                ? "bg-slate-100"
+                : status == 9
+                ? "bg-slate-100"
+                : status == 10
+                ? "bg-slate-100"
+                : status == 11
+                ? "bg-slate-100"
+                : "bg-slate-100 && text-red-500"
+            }`}>
               Penerimaan :
               {status == 0
                 ? "Mengakan Permohonan"
@@ -334,8 +337,8 @@ const TitikUji = ({ navigation, route, status }) => {
             </Text>
             <Text
               style={styles.badge}
-              className="text-[12px] text-indigo-600  bg-slate-100 ">
-              Pengujian :{item.text_status || "-"}
+              className="text-xs text-indigo-600  bg-slate-100 ">
+              Pengujian : {item.text_status || "-"}
             </Text>
           </View>
         </View>
@@ -349,8 +352,23 @@ const TitikUji = ({ navigation, route, status }) => {
               const selectedOption = dropdownOptions.find(
                 option => option.title === nativeEvent.event,
               );
+              const sub = dropdownOptions.find(
+                option =>
+                  option.subactions &&
+                  option.subactions.some(
+                    suboption => suboption.title === nativeEvent.event,
+                  ),
+              );
               if (selectedOption) {
                 selectedOption.action(item);
+              }
+              if (sub) {
+                const selectedSub = sub.subactions.find(
+                  sub => sub.title === nativeEvent.event,
+                );
+                if (selectedSub) {
+                  selectedSub.action(item);
+                }
               }
             }}
             shouldOpenOnLongPress={false}>
@@ -389,34 +407,85 @@ const TitikUji = ({ navigation, route, status }) => {
           </MenuView>
           {/* <ActionColumn item={item} /> */}
         </View>
+
+        {/* Modal untuk Preview */}
+        <Modal
+          transparent={true}
+          animationType="fade"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black bg-black/50">
+            <View className="bg-white rounded-lg w-full h-full m-5">
+              <Text className="text-lg font-bold m-4">Preview LHU</Text>
+              <Pdf
+                source={{ uri: previewUrl, cache: true }}
+                style={{ flex: 1 }}
+                trustAllCerts={false}
+              />
+              {/* Show loading indicator when downloading */}
+              {isLoading ? (
+                <ActivityIndicator size="large" color="#0000ff" />
+              ) : (
+                <>
+                  {!downloadComplete ? (
+                    <>
+                      <TouchableOpacity
+                        onPress={handleConfirm}
+                        className="bg-blue-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Download</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Close</Text>
+                      </TouchableOpacity>
+                    </>
+                  ) : (
+                    <>
+                      <TouchableOpacity
+                        onPress={handleShare}
+                        className="bg-green-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Share</Text>
+                      </TouchableOpacity>
+                      <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
+                        <Text className="text-white text-center">Close</Text>
+                      </TouchableOpacity>
+                    </>
+                  )}
+                </>
+              )}
+            </View>
+          </View>
+        </Modal>
       </View>
     </View>
   );
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-3 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          {permohonan ? (
+            <Text className="font-bold text-white text-lg ">
+              {permohonan?.industri} : Titik Pengujian
+            </Text>
+          ) : (
+            <Text></Text>
+          )}
+        </View>
+      </View>
       <View className="bg-[#ececec] w-full h-full">
-        {permohonan ? (
-          <View
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              justifyContent: "space-between",
-              marginHorizontal: rem(1),
-              marginTop: rem(0.5),
-            }}>
-            <View style={{ flexDirection: "row" }}>
-              <Text style={styles.topText} className="mt-4 mx-1">
-                {permohonan?.industri} : Titik Pengujian
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <View className="h-full flex justify-center">
-            <ActivityIndicator size={"large"} color={"#312e81"} />
-          </View>
-        )}
+       
         {/* {user && user?.has_tagihan ? (
           <View>
             <Text>anjay</Text>
@@ -428,11 +497,35 @@ const TitikUji = ({ navigation, route, status }) => {
           {titikPermohonans?.data?.length}
         </Text> */}
         {!titikPermohonans?.data?.length && (
-          <View className="flex items-center mt-5">
-            <Text className="text-gray-500 mb-0">Silahkan Tambah Titik Lokasi Sampel Pengujian</Text>
-            <Text className="text-gray-500 text-xs">Anda belum memiliki Titik Lokasi Sampel satu pun.</Text>
+          <View className="p-5">
+            <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
+              <Text className="text-black mb-0">
+                Silahkan Tambah Titik Lokasi Sampel Pengujian
+              </Text>
+              <Text className="text-black text-xs">
+                Anda belum memiliki Titik Lokasi Sampel satu pun.
+              </Text>
+            </View>
           </View>
         )}
+        { user.has_tagihan ? (
+          <View className="p-2">
+          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
+            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+          </View>
+          </View>
+        ) : (
+        <>
+        <Icons
+          name="plus"
+          size={28}
+          color="#fff"
+          style={styles.plusIcon}
+          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+          />
+        </>
+      )}
         <Paginate
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}
@@ -442,13 +535,6 @@ const TitikUji = ({ navigation, route, status }) => {
           renderItem={CardTitikUji}></Paginate>
       </View>
 
-      <Icons
-        name="plus"
-        size={28}
-        color="#fff"
-        style={styles.plusIcon}
-        onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
-      />
       <DeleteConfirmationModal />
     </>
   );
@@ -476,7 +562,7 @@ const styles = StyleSheet.create({
     paddingVertical: 4,
     paddingHorizontal: 8,
     borderRadius: 4,
-    marginBottom: 8,
+    marginBottom: 4,
     fontWeight: "bold",
   },
   row: {
@@ -517,7 +603,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 20,
+    bottom: 65,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,

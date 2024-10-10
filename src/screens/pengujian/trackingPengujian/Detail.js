@@ -1,16 +1,15 @@
 import React from "react";
 import { View, Text, StyleSheet, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/FontAwesome";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import moment from "moment";
 import { mapStatusPengujian } from "@/src/libs/utils";
-import Header from "../../components/Header";
 import BackButton from "../../components/Back";
+import { Colors } from "react-native-ui-lib";
 import { useNavigation } from "@react-navigation/native";
 
 const TrackingList = ({ route, onClose }) => {
-  const {selected} = route.params
-  const navigation = useNavigation()
+  const { selected } = route.params;
+  const navigation = useNavigation();
   const icon = status => {
     switch (status) {
       case -1:
@@ -46,19 +45,23 @@ const TrackingList = ({ route, onClose }) => {
 
   return (
     <>
-      <Header navigate={() => navigation.navigate("Profile")} />
-      <View style={styles.card} className="mb-56">
-        <View style={styles.cardHeader}>
-          <View style={styles.headerContent}>
-            <View className="flex-row justify-between items-center px-2">
-            <BackButton action={() => navigation.goBack()} size={25}/>  
-            <Text className="my-2 font-bold text-xl text-center text-black ">
-              ({selected?.kode}) {selected?.lokasi}
-            </Text>
-            </View>
-          </View>
+      <View className="w-full">
+        <View
+          className="flex-row mb-4 p-4 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color="white"
+            action={() => navigation.goBack()}
+          />
+          <Text className="font-bold text-white text-lg">
+            ({selected?.kode}) {selected?.lokasi}
+          </Text>
         </View>
-        <ScrollView style={styles.cardBody}>
+      </View>
+
+      <View className="bg-[#ececec] px-4 mb-36 py-1">
+        <ScrollView className="bg-[#fff] px-2 py-4 rounded-sm">
           {selected && selected.trackings && selected.trackings.length > 0 ? (
             selected.trackings.map(tracking => (
               <View key={tracking.id} style={styles.trackingItem}>
@@ -89,12 +92,6 @@ const TrackingList = ({ route, onClose }) => {
 };
 
 const styles = StyleSheet.create({
-  cardHeader: {
-    padding: 16,
-    backgroundColor: "#ffffff",
-    borderBottomWidth: 1,
-    borderBottomColor: "#E4E6EF",
-  },
   cardTitle: {
     fontSize: 18,
     fontWeight: "bold",
