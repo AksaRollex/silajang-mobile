@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator  } from "react-native";
-import { Button, Colors, TextField } from "react-native-ui-lib";
+import { Button, Colors, ComponentsColors, TextField } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Feather from "react-native-vector-icons/Feather";
 import Octicons from "react-native-vector-icons/Octicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -19,6 +20,11 @@ import Geolocation from 'react-native-geolocation-service';
 import {  request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import Toast from 'react-native-toast-message';
+import Foundation from "react-native-vector-icons/Foundation";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+
+
 
 export default function Detail({ route, navigation }) {
   const { uuid, status, pengambilOptions } = route.params;
@@ -59,7 +65,7 @@ export default function Detail({ route, navigation }) {
               text2: uuid ? "Success update data" : "Success create data",
           });
           queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample", uuid);
+          queryClient.invalidateQueries("/administrasi/pengambil-sample");
       },
       
       onError: (error) => {
@@ -101,7 +107,7 @@ export default function Detail({ route, navigation }) {
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Failed to cancel status",
+          text2: "Kesimpulan Permohonan Harus Diterima",
         });
       });
   };
@@ -255,21 +261,22 @@ const autosave = debounce((data) => {
               </View>
             </View>
             
-            {/* Card Pertama */}
-            <View style={styles.cardContainer}>
+             {/* Card Pertama */}
+             <View style={styles.cardContainer}>
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                <FontAwesome6 name="user-large" size={29} color="black" />
+                    <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
                   <Text style={styles.value}>{data.permohonan.user.nama}</Text>
                 </View>
               </View>
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="bank" size={30} color="black" />
+                <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -278,10 +285,10 @@ const autosave = debounce((data) => {
                   </Text>
                 </View>
               </View>
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="map-location-dot" size={26} color="black"
-                  />
+                <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
@@ -290,25 +297,30 @@ const autosave = debounce((data) => {
                   </Text>
                 </View>
               </View>
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <SimpleLineIcons name="phone" size={28} color="black" />
+                  <Feather name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.telepon}
+                    {data.permohonan.user.phone}
                   </Text>
                 </View>
               </View>
             </View>
+
 
             {/* Card Kedua */}
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="target" size={30} color="black"
+                  <Feather
+                    name="target"
+                    size={30}
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -319,7 +331,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="warehouse" size={24} color="black" />
+                  <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -329,7 +341,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building" size={35} color="black" />
+                  <FontAwesome name="building-o" size={31} color="#50cc96" style={{ marginHorizontal: 3 }} />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
@@ -339,18 +351,18 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="newspaper-o" size={27} color="black" />
+                  <Foundation name="clipboard-pencil" size={32} color="#50cc96" style={{ marginLeft: 5 }} />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
                   <Text style={styles.value}>
-                    {data.permohonan.user.detail.jenis_kegiatan}
+                    {data.permohonan.kegiatan}
                   </Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Octicons name="beaker" size={33} color="black" />
+                  <AntDesign name="filter" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
@@ -360,11 +372,15 @@ const autosave = debounce((data) => {
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
-                    name="beaker"
-                    size={30}
-                    color="black"
+                    name="beaker-outline"
+                    size={33}
+                    color="#50cc96"
                   />
                 </View>
+                {/* <View style={styles.textContainer}>
+                  <Text style={styles.label}>Jenis Sampel</Text>
+                  <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
+                </View> */}
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Wadah</Text>
                   <Text style={styles.value}>{jenisWadahValues}</Text>
@@ -375,8 +391,11 @@ const autosave = debounce((data) => {
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
-                <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="car-pickup" size={31} color="black"
+              <View style={styles.iconContainer}>
+                  <FontAwesome5Icon
+                    name="dolly"
+                    size={27}
+                    color="#50cc96"
                   />
                 </View>
                 <View style={styles.textContainer}>
@@ -390,7 +409,11 @@ const autosave = debounce((data) => {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="id-card-clip" size={30} color="black" />
+                <MaterialCommunityIcons
+                    name="smart-card-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Radius Pengambilan</Text>
@@ -409,7 +432,11 @@ const autosave = debounce((data) => {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome6 name="id-card-clip" size={30} color="black" />
+                  <MaterialCommunityIcons
+                    name="smart-card-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas</Text>
@@ -418,10 +445,10 @@ const autosave = debounce((data) => {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialIcons
-                    name="date-range"
-                    size={34}
-                    color="black"></MaterialIcons>
+                  <AntDesign
+                    name="calendar"
+                    size={30}
+                    color="#50cc96"></AntDesign>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Tanggal/Jam</Text>
@@ -430,7 +457,7 @@ const autosave = debounce((data) => {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags" size={33} color="black" />
+                  <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
@@ -443,7 +470,7 @@ const autosave = debounce((data) => {
               <Text style={styles.title}>Detail Lokasi</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
+                  <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
                 
                 <View style={styles.textContainer}>
@@ -468,7 +495,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30} color="black" />
+                  <Ionicons name="compass-outline" size={30}color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
@@ -502,7 +529,7 @@ const autosave = debounce((data) => {
               <Text style={styles.title}>Hasil Pengukuran Lapangan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Air (t°C)</Text>
@@ -524,7 +551,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>pH</Text>
@@ -546,7 +573,7 @@ const autosave = debounce((data) => {
               
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DHL (µS/cm)</Text>
@@ -568,7 +595,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Salinitas (‰)</Text>
@@ -590,7 +617,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DO (mg/L)</Text>
@@ -612,7 +639,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kekeruhan</Text>
@@ -634,7 +661,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="black"></MaterialCommunityIcons>
+                  <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Klorin Bebas</Text>
@@ -659,7 +686,7 @@ const autosave = debounce((data) => {
               <Text style={styles.title}>Kondisi Lingkungan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
+                  <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Udara (t°C)</Text>
@@ -681,7 +708,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
+                  <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Cuaca</Text>
@@ -703,7 +730,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
+                  <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Arah Angin</Text>
@@ -725,7 +752,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
+                  <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kelembapan (%RH)</Text>
@@ -747,7 +774,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
-                  <FontAwesome5 name="seedling" size={28} color="black"></FontAwesome5>
+                  <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kecepatan Angin</Text>
@@ -813,7 +840,7 @@ const autosave = debounce((data) => {
 
               <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
                 <Text
-                  className={`text-center text-white text-base font-bold py-3 mt-1 ${status === 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
+                  className={`text-center text-white text-base font-bold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
                   style={{ borderRadius: 8 }}
                 >
                   {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}

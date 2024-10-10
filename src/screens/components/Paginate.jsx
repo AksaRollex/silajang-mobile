@@ -1,10 +1,14 @@
-
 import React, { memo, useState, useEffect, forwardRef, useImperativeHandle } from "react";
-import { View, Text, TextInput, FlatList, ActivityIndicator, TouchableOpacity } from "react-native";
+import { View, Text, TextInput, FlatList, ActivityIndicator, TouchableOpacity, LayoutAnimation, UIManager, Platform } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from 'react-native-vector-icons/Feather';
+
+// Aktivasi LayoutAnimation di Android
+if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
+  UIManager.setLayoutAnimationEnabledExperimental(true);
+}
 
 const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const queryClient = useQueryClient();
@@ -14,13 +18,12 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const { control, handleSubmit } = useForm();
 
-
   const { data, isFetching, refetch } = useQuery({
     queryKey: [url, page, search],
     queryFn: () => axios.post(url, { ...payload, page, search }).then(res => res.data),
     placeholderData: { data: [] },
-    // onError: error => console.error(error.response?.data),
     onSuccess: (res) => {
+      LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut); 
       if (page === 1) {
         setDataList(res.data); 
       } else {
@@ -33,13 +36,11 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
     refetch,
   }));
 
-
   useEffect(() => {
     setPage(1); 
     refetch();
   }, [search, payload]);
 
-  // Fungsi untuk memuat lebih banyak data saat user mencapai batas bawah
   const handleLoadMore = () => {
     if (!isFetchingMore && page < data.last_page) {
       setIsFetchingMore(true);
@@ -47,14 +48,12 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
     }
   };
 
-  // Memuat lebih banyak data setelah halaman diperbarui
   useEffect(() => {
     if (isFetchingMore) {
       refetch().finally(() => setIsFetchingMore(false));
     }
   }, [isFetchingMore]);
 
-  // Menghandle reset data ketika kembali ke atas
   const handleScroll = (event) => {
     const scrollOffset = event.nativeEvent.contentOffset.y;
     if (scrollOffset <= 0 && page > 1) {
@@ -91,7 +90,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const ListFooter = () => (
     <View className="flex-row justify-center mt-4">
       {isFetchingMore && (
-        <ActivityIndicator size="large" color="#312e81" />
+        <ActivityIndicator size="large" color="#312e81" style={{ transform: [{ scale: 1.1 }], opacity: isFetchingMore ? 1 : 0.5, transition: 'opacity 0.3s ease' }} />
       )}
     </View>
   );
