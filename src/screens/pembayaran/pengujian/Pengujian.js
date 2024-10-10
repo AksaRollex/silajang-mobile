@@ -10,6 +10,7 @@ import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import BackButton from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -17,6 +18,7 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
+  const [type, setTypes ] = useState('va');
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -42,6 +44,11 @@ const Pengujian = ({ navigation }) => {
     { id: 12, text: "Desember" },
   ];
 
+  const types = [
+    { id : 'va', text: 'VA'},
+    { id : 'qris', text: 'QRIS'},
+  ]
+
   const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
@@ -52,6 +59,10 @@ const Pengujian = ({ navigation }) => {
     setBulan(itemValue);
   }, []);
 
+  const handleTypeChange = useCallback ( itemValue => {
+    setRefreshKey(prevKey => prevKey + 1);
+    StateTypes(itemValue)
+  })
   const { download, PDFConfirmationModal } = useDownloadPDF({
     onSuccess: filePath => console.log("Download success:", filePath),
     onError: error => console.error("Download error:", error),
@@ -216,7 +227,21 @@ const Pengujian = ({ navigation }) => {
 
   return (
     <>
-      <Header />
+     <View className="w-full">
+        <View
+          className="flex-row mb-4 p-4 justify-between"
+          style={{ backgroundColor: Colors.brand }}>
+          <BackButton
+            size={24}
+            color={"white"}
+            action={() => navigation.goBack()}
+            className="mr-2 "
+          />
+          <Text className="font-bold text-white text-lg ">
+            Pengujian Pembayaran
+          </Text>
+        </View>
+      </View>
       <View className=" w-full h-full bg-[#ececec] ">
         <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
@@ -233,6 +258,14 @@ const Pengujian = ({ navigation }) => {
               style={styles.picker}
               onValueChange={handleMonthChange}>
               {bulans.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+            <Picker
+              selectedValue={type}
+              style={styles.picker}
+              onValueChange={handleTypeChange}>
+              {types.map(item => (
                 <Picker.Item key={item.id} label={item.text} value={item.id} />
               ))}
             </Picker>

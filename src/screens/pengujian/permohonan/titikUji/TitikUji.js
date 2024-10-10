@@ -48,6 +48,9 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     setIsModalVisible(true);
   };
   // console.log("data permohonan", permohonan);
+  const data = permohonan || {};
+  const pivotData = data.titik_permohonans;
+  console.log("data: ", data);
   const { onSuccess, onError, onSettled } = callback || {};
 
   useEffect(() => {
@@ -72,7 +75,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["TitikUji"]);
+      queryClient.invalidateQueries(["/permohonan/titik"]);
       navigation.navigate("TitikUji");
     },
     onError: error => {
@@ -89,37 +92,43 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           id: "Permohonan Pengujian",
           title: "Permohonan Pengujian",
           action: async item => {
-            try {
-              const token = await AsyncStorage.getItem("@auth-token");
-              if (token) {
-                const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
-                setPreviewUrl(reportUrl); // Set URL untuk preview
-                setModalVisible(true);
-                setDownloadComplete(false);
-              } else {
-                console.error("Token not found");
+            if (item.status >= 2) {
+              // Kondisi untuk status >= 2
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/tanda-terima?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
               }
-            } catch (error) {
-              console.error("Error mendapatkan token:", error);
             }
           },
         },
         {
-          id: "Berita Acara Pengembalian",
-          title: "Berita Acara Pengembalian",
+          id: "Berita Acara Pengambilan",
+          title: "Berita Acara Pengambilan",
           action: async item => {
-            try {
-              const token = await AsyncStorage.getItem("@auth-token");
-              if (token) {
-                const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
-                setPreviewUrl(reportUrl); // Set URL untuk preview
-                setModalVisible(true);
-                setDownloadComplete(false);
-              } else {
-                console.error("Token not found");
+            if (data.is_mandiri === 1) {
+              // Kondisi untuk is_mandiri === 1
+              try {
+                const token = await AsyncStorage.getItem("@auth-token");
+                if (token) {
+                  const reportUrl = `${API_URL}/report/${item.uuid}/berita-acara?token=${token}`;
+                  setPreviewUrl(reportUrl); // Set URL untuk preview
+                  setModalVisible(true);
+                  setDownloadComplete(false);
+                } else {
+                  console.error("Token not found");
+                }
+              } catch (error) {
+                console.error("Error mendapatkan token:", error);
               }
-            } catch (error) {
-              console.error("Error mendapatkan token:", error);
             }
           },
         },
@@ -200,6 +209,48 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     });
   };
 
+  // Fungsi untuk mendapatkan class berdasarkan data.kesimpulan_permohonan
+  function getKesimpulanClass(kesimpulan_permohonan) {
+    if (kesimpulan_permohonan === 1) {
+      return "text-indigo-600 bg-light-success"; // Diterima
+    } else if (kesimpulan_permohonan === 2) {
+      return "text-indigo-600 bg-light-danger"; // Ditolak
+    } else {
+      return "text-indigo-600 bg-light-info"; // Menunggu
+    }
+  }
+
+  // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_permohonan
+  function getKesimpulanText(kesimpulan_permohonan) {
+    if (kesimpulan_permohonan === 1) {
+      return "Diterima";
+    } else if (kesimpulan_permohonan === 2) {
+      return "Ditolak";
+    } else {
+      return "Menunggu";
+    }
+  }
+  function getPenerimaanClass(kesimpulan_sampel) {
+    if (kesimpulan_sampel === 1) {
+      return "text-indigo-600 bg-light-success"; // Diterima
+    } else if (kesimpulan_sampel === 2) {
+      return "text-indigo-600 bg-light-danger"; // Ditolak
+    } else {
+      return "text-indigo-600 bg-light-info"; // Menunggu
+    }
+  }
+
+  // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_sampel
+  function getPenerimaanText(kesimpulan_sampel) {
+    if (kesimpulan_sampel === 1) {
+      return "Diterima";
+    } else if (kesimpulan_sampel === 2) {
+      return "Ditolak";
+    } else {
+      return "Menunggu";
+    }
+  }
+
   const CardTitikUji = ({ item }) => (
     <View style={styles.row}>
       <View style={styles.card}>
@@ -219,122 +270,34 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               Selesai : {item.tanggal_selesai_uji || "-"}
             </Text>
           </View>
-
           <View>
-            <Text
-              style={styles.badge}
-              className={`text-xs text-indigo-600  mt-2
-            ${
-              status == 0
-                ? "bg-green-400"
-                : status == 1
-                ? "bg-slate-100"
-                : status == 2
-                ? "bg-slate-100"
-                : status == 3
-                ? "bg-slate-100"
-                : status == 4
-                ? "bg-slate-100"
-                : status == 5
-                ? "bg-slate-100"
-                : status == 6
-                ? "bg-slate-100"
-                : status == 7
-                ? "bg-slate-100"
-                : status == 8
-                ? "bg-slate-100"
-                : status == 9
-                ? "bg-slate-100"
-                : status == 10
-                ? "bg-slate-100"
-                : status == 11
-                ? "bg-slate-100"
-                : "bg-slate-100"
-            }`}>
-              Pengambilan :
-              {status == 0
-                ? "Mengakan Permohonan"
-                : status == 1
-                ? "Menyerahkan Sampel"
-                : status == 2
-                ? "Menyerahkan Surat Perintah Pengujian"
-                : status == 3
-                ? "Menyerahkan sampel untuk Proses Pengujian"
-                : status == 4
-                ? "Menyerahkan RDPS"
-                : status == 5
-                ? "Menyerahkan RDPS untuk Pengetikan LHU"
-                : status == 6
-                ? "Menyerahkan LHU untuk Diverifikasi"
-                : status == 7
-                ? "Mengesahkan LHU"
-                : status == 8
-                ? "Pembayaran"
-                : status == 9
-                ? "Penyerahan LHU"
-                : status == 10
-                ? "Penyerahan LHU Amandemen (Jika ada)"
-                : status == 11
-                ? "Selesai"
-                : "Menunggu"}
-            </Text>
-            <Text
-              style={styles.badge}
-              className={`text-xs text-indigo-600
-            ${
-              status == 0
-                ? "bg-green-400"
-                : status == 1
-                ? "bg-slate-100"
-                : status == 2
-                ? "bg-slate-100"
-                : status == 3
-                ? "bg-slate-100"
-                : status == 4
-                ? "bg-slate-100"
-                : status == 5
-                ? "bg-slate-100"
-                : status == 6
-                ? "bg-slate-100"
-                : status == 7
-                ? "bg-slate-100"
-                : status == 8
-                ? "bg-slate-100"
-                : status == 9
-                ? "bg-slate-100"
-                : status == 10
-                ? "bg-slate-100"
-                : status == 11
-                ? "bg-slate-100"
-                : "bg-slate-100 && text-red-500"
-            }`}>
-              Penerimaan :
-              {status == 0
-                ? "Mengakan Permohonan"
-                : status == 1
-                ? "Menyerahkan Sampel"
-                : status == 2
-                ? "Menyerahkan Surat Perintah Pengujian"
-                : status == 3
-                ? "Menyerahkan sampel untuk Proses Pengujian"
-                : status == 4
-                ? "Menyerahkan RDPS"
-                : status == 5
-                ? "Menyerahkan RDPS untuk Pengetikan LHU"
-                : status == 6
-                ? "Menyerahkan LHU untuk Diverifikasi"
-                : status == 7
-                ? "Mengesahkan LHU"
-                : status == 8
-                ? "Pembayaran"
-                : status == 9
-                ? "Penyerahan LHU"
-                : status == 10
-                ? "Penyerahan LHU Amandemen (Jika ada)"
-                : status == 11
-                ? "Selesai"
-                : "Menunggu"}
-            </Text>
+            <View>
+              <Text
+                style={styles.badge}
+                className={`${
+                  item.kesimpulan_permohonan == 1
+                    ? "text-green-600 bg-green-50" // Diterima
+                    : item.kesimpulan_permohonan == 2
+                    ? "text-red-600 bg-red-50" // Ditolak
+                    : "text-blue-600 bg-blue-50" // Menunggu
+                }`}>
+                Pengambilan: {getKesimpulanText(item.kesimpulan_permohonan)}
+              </Text>
+            </View>
+            <View>
+              <Text
+                style={styles.badge}
+                className={`${
+                  item.kesimpulan_sampel == 1
+                    ? "text-green-600 bg-green-50" // Diterima
+                    : item.kesimpulan_sampel == 2
+                    ? "text-red-600 bg-red-50" // Ditolak
+                    : "text-blue-600 bg-blue-50" // Menunggu
+                }`}>
+                Penerimaan:
+                {getPenerimaanText(item.kesimpulan_sampel)}
+              </Text>
+            </View>
             <Text
               style={styles.badge}
               className="text-xs text-indigo-600  bg-slate-100 ">
@@ -344,9 +307,20 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         </View>
         <View style={styles.cards2}>
           <MenuView
-            title="Menu Title"
+            title="Menu Report"
             actions={dropdownOptions.map(option => ({
               ...option,
+              subactions: option.subactions
+                ? option.subactions.filter(subaction => {
+                    // Filter subactions berdasarkan kondisi
+                    if (subaction.id === "Permohonan Pengujian") {
+                      return item.status >= 2; // Tampilkan jika status >= 2
+                    } else if (subaction.id === "Berita Acara Pengambilan") {
+                      return data.is_mandiri === 1; // Tampilkan jika is_mandiri === 1
+                    }
+                    return true;
+                  })
+                : null,
             }))}
             onPressAction={({ nativeEvent }) => {
               const selectedOption = dropdownOptions.find(
@@ -530,8 +504,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}
           url="/permohonan/titik"
-          queryKey={["permohonan", uuid, "titik"]}
-          className="mb-28"
+          className="mb-40"
           renderItem={CardTitikUji}></Paginate>
       </View>
 

@@ -3,7 +3,7 @@ import { View, StyleSheet, Text } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
@@ -47,7 +47,7 @@ const Keamanan = () => {
           type: "success",
           text1: "Password berhasil diperbarui",
         });
-        reset();
+        QueryClient.invalidateQueries("/auth");
         navigation.navigate("IndexProfile");
       },
       onError: error => {

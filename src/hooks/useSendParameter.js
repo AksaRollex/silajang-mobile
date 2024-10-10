@@ -1,14 +1,20 @@
-import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import axios from '../libs/axios';
+import React, { useState } from "react";
+import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import axios from "../libs/axios";
+import Toast from "react-native-toast-message";
 
-const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => (
+const ConfirmationModal = ({
+  visible,
+  onConfirm,
+  onCancel,
+  title,
+  message,
+}) => (
   <Modal
     animationType="fade"
     transparent={true}
     visible={visible}
-    onRequestClose={onCancel}
-  >
+    onRequestClose={onCancel}>
     <View style={styles.centeredView}>
       <View style={styles.modalView}>
         <Text style={styles.modalTitle}>{title}</Text>
@@ -18,7 +24,7 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => 
             <Text style={styles.textStyle}>Batalkan</Text>
           </TouchableOpacity>
           <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-            <Text style={styles.textStyle}>Ya, hapus</Text>
+            <Text style={styles.textStyle}>Ya, Simpan</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -26,12 +32,12 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => 
   </Modal>
 );
 
-export const useDelete = (callback) => {
+export const useSendParameter = callback => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [currentUrl, setCurrentUrl] = useState('');
+  const [currentUrl, setCurrentUrl] = useState("");
   const { onSuccess, onError, onSettled } = callback || {};
 
-  const showConfirmationModal = (url) => {
+  const showConfirmationModal = url => {
     setCurrentUrl(url);
     setModalVisible(true);
   };
@@ -42,54 +48,59 @@ export const useDelete = (callback) => {
 
   const handleConfirm = async () => {
     try {
-      const response = await axios.delete(currentUrl);
+      const response = await axios.post(currentUrl);
       hideConfirmationModal();
-      showToast("Data Berhasil Dihapus")
+      Toast.show({
+        text1: "Data Berhasil Disimpan",
+        text1Style: { color: "green" }, // Change this color as needed 
+        type: "success",
+      });
       onSuccess && onSuccess(response);
     } catch (error) {
-      showToast("Data Gagal Dihapus")
+      Toast.show({
+        text1: "Data Gagal Disimpan",
+        text1Style: { color: "red" }, // Change this color as needed
+        type: "error",
+      });
       onError && onError(error);
     } finally {
       onSettled && onSettled();
     }
   };
-
-  const DeleteConfirmationModal = () => (
+  const SaveConfirmationModal = () => (
     <ConfirmationModal
       visible={modalVisible}
       onConfirm={handleConfirm}
       onCancel={hideConfirmationModal}
-      title={
-        <Text style={{ color: "black"}}>Apakah anda yakin?</Text>
-      }
+      title={<Text style={{ color: "black" }}>Apakah anda yakin?</Text>}
       message={
-        <Text style={{ color: "#6B7280"}}>
-         Data yang telah dihapus tidak dapat dikembalikan !
+        <Text style={{ color: "#6B7280" }}>
+          Setelah menyimpan Data, Anda tidak dapat mengubah Parameter !
         </Text>
       }
     />
   );
 
   return {
-    delete: showConfirmationModal,
-    DeleteConfirmationModal,
+    Save: showConfirmationModal,
+    SaveConfirmationModal,
   };
 };
 
 const styles = StyleSheet.create({
   centeredView: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
   modalView: {
     margin: 20,
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 20,
     padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
+    alignItems: "center",
+    shadowColor: "#000",
     shadowOffset: {
       width: 0,
       height: 2,
@@ -100,21 +111,21 @@ const styles = StyleSheet.create({
   },
   modalTitle: {
     marginBottom: 15,
-    textAlign: 'center',
-    fontWeight: 'bold',
+    textAlign: "center",
+    fontWeight: "bold",
     fontSize: 18,
   },
   modalText: {
     marginBottom: 15,
-    textAlign: 'center',
+    textAlign: "center",
   },
   buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
+    flexDirection: "row",
+    justifyContent: "space-between",
+    width: "100%",
   },
   confirmButton: {
-    backgroundColor: '#d33',
+    backgroundColor: "#4682B4",
     borderRadius: 5,
     padding: 10,
     elevation: 2,
@@ -122,7 +133,7 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   cancelButton: {
-    backgroundColor: '#6c757d',
+    backgroundColor: "#6c757d",
     borderRadius: 5,
     padding: 10,
     elevation: 2,
@@ -130,8 +141,8 @@ const styles = StyleSheet.create({
     marginRight: 5,
   },
   textStyle: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
+    color: "white",
+    fontWeight: "bold",
+    textAlign: "center",
   },
 });
