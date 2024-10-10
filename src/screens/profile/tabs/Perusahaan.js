@@ -82,14 +82,14 @@ const Perusahaan = () => {
           lat: position.coords.latitude.toString(),
           long: position.coords.longitude.toString(),
         });
-        setModalVisible(true); // Tampilkan modal setelah lokasi ditemukan
-        setTimeout(() => {
-          setModalVisible(false);
-        }, 3000);
+        Alert.alert(
+          "Lokasi Ditemukan",
+          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
+        );
       },
-      // error => {
-      //   console.log(error.code, error.message);
-      // },
+      error => {
+        console.log(error.code, error.message);
+      },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
