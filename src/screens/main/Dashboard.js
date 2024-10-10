@@ -200,7 +200,7 @@ const styles = StyleSheet.create({
   },
   picker: {
     borderColor: "#ccc",
-    paddingHorizontal: rem(3),
+    paddingHorizontal: rem(3.55),
     borderWidth: 1,
     color: "black",
     backgroundColor: "white",

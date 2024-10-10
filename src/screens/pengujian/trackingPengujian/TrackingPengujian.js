@@ -157,9 +157,8 @@ const styles = StyleSheet.create({
     marginBottom: 4,
   },
   kode: {
-    fontSize: 18,
+    fontSize: 22,
     fontWeight: "bold",
-    marginBottom: 8,
   },
   date: {
     fontSize: 12,

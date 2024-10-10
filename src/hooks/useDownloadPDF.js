@@ -12,7 +12,30 @@ import RNFS from "react-native-fs";
 import Share from "react-native-share";
 import Pdf from "react-native-pdf";
 
-export const useDownloadPDF = (callback) => {
+const DownloadPDFModal = ({ visible, onConfirm, onCancel, title, message }) => (
+  <Modal
+    animationType="fade"
+    transparent={true}
+    visible={visible}
+    onRequestClose={onCancel}>
+    <View style={styles.centeredView}>
+      <View style={styles.modalView}>
+        <Text style={styles.modalTitle}>{title}</Text>
+        <Text style={styles.modalText}>{message}</Text>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
+            <Text style={styles.textStyle}>Batalkan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
+            <Text style={styles.textStyle}>Ya, Download</Text>
+          </TouchableOpacity>
+        </View>
+      </View>
+    </View>
+  </Modal>
+);
+
+export const useDownloadPDF = callback => {
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [downloadComplete, setDownloadComplete] = useState(false);

@@ -46,7 +46,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
 
   const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["TitikUji"]);
+      queryClient.invalidateQueries(["/permohonan/titik"]);
       navigation.navigate("TitikUji");
     },
     onError: error => {
@@ -261,7 +261,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
                     ? "text-red-600 bg-red-50" // Ditolak
                     : "text-blue-600 bg-blue-50" // Menunggu
                 }`}>
-                Pengambilan:
+                Penerimaan:
                 {getPenerimaanText(item.kesimpulan_sampel)}
               </Text>
             </View>

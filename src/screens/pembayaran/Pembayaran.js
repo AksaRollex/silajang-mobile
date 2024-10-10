@@ -5,10 +5,12 @@ import {
   StyleSheet,
   TouchableOpacity,
   RefreshControl,
+  ScrollView,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import FooterText from "../components/FooterText";
 export default function Pembayaran() {
   const [refreshing, setRefreshing] = useState(false);
   const [accordionExpanded, setAccordionExpanded] = useState(false);
@@ -37,7 +39,11 @@ export default function Pembayaran() {
 
   return (
     <>
-      <Header navigate={() => {navigation.navigate("Profile")}} />
+      <Header
+        navigate={() => {
+          navigation.navigate("Profile");
+        }}
+      />
       <View style={styles.container}>
         <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
 
@@ -45,7 +51,9 @@ export default function Pembayaran() {
         <TouchableOpacity
           style={styles.accordionItem}
           onPress={toggleAccordion}>
-          <Text style={styles.title} className="font-bold">Pilih Menu Pembayaran</Text>
+          <Text style={styles.title} className="font-bold">
+            Pilih Menu Pembayaran
+          </Text>
           <MaterialIcons
             name={
               accordionExpanded ? "keyboard-arrow-down" : "keyboard-arrow-right"
@@ -54,24 +62,25 @@ export default function Pembayaran() {
             color="#808080"
           />
         </TouchableOpacity>
+        <ScrollView>
+          {accordionExpanded && (
+            <View style={styles.subMenu}>
+              <TouchableOpacity
+                style={styles.subMenuItem}
+                onPress={buttonPressPengujianPembayaran}>
+                <Text style={styles.subMenuText}>Pengujian</Text>
+              </TouchableOpacity>
 
-        {accordionExpanded && (
-          <View style={styles.subMenu}>
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={buttonPressPengujianPembayaran}>
-              <Text style={styles.subMenuText}>Pengujian</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
-              style={styles.subMenuItem}
-              onPress={buttonPressMultipayment}>
-              <Text style={styles.subMenuText}>Multi Payment</Text>
-            </TouchableOpacity>
-          </View>
-        )}
+              <TouchableOpacity
+                style={styles.subMenuItem}
+                onPress={buttonPressMultipayment}>
+                <Text style={styles.subMenuText}>Multi Payment</Text>
+              </TouchableOpacity>
+            </View>
+          )}
+          <FooterText />
+        </ScrollView>
       </View>
-
     </>
   );
 }

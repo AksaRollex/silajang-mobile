@@ -7,7 +7,7 @@ import Icon from 'react-native-vector-icons/Feather'
 import Back from "./Back";
 import { useNavigation } from "@react-navigation/native";
 
-const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, ref) => {
+const Paginate = forwardRef(({ url, queryKey, payload, renderItem, showLoading = true, ...props }, ref) => {
   const queryClient = useQueryClient()
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -52,13 +52,13 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
   }, [data.current_page, data.last_page])
   const ListHeader = () => (
     <View className="flex-row mb-4 items-center">
-      <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} />
+      {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} /> */}
       <Controller
         control={control}
         name="search"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3"
+            className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 text-black"
             value={value}
             onChangeText={onChange}
             placeholder="Cari..."
@@ -98,7 +98,7 @@ const Paginate = forwardRef(({ url, queryKey, payload, renderItem, ...props }, r
     </View>
   );
 
-  if (isFetching) {
+  if (isFetching && showLoading) {
     return (
       <View className="flex-1 justify-center items-center">
         <ActivityIndicator size="large" color="#312e81" />

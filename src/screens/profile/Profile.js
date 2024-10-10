@@ -1,48 +1,49 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
-  Image,
-  ScrollView,
-  Animated,
   ActivityIndicator,
   Modal,
+  Linking,
+  Dimensions
 } from "react-native";
 import axios from "@/src/libs/axios";
-import Akun from "./tabs/Akun";
-import Perusahaan from "./tabs/Perusahaan";
-import Keamanan from "./tabs/Keamanan";
-import Ionicons from "react-native-vector-icons/Ionicons";
-import Fontawesome5 from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
-import Header from "../components/Header";
-import { API_URL } from "@env";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import { Button } from "react-native-ui-lib";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
-import MateriallIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
+import Icons from "react-native-vector-icons/MaterialCommunityIcons";
+import IonIcons from "react-native-vector-icons/Ionicons";
+const { width, height } = Dimensions.get('window');
+const rem = multiplier => baseRem * multiplier;
+const baseRem = 16;
 
 export default function Profile({ navigation }) {
-  const [activeComponent, setActiveComponent] = useState("Akun");
-  const [loading, setLoading] = useState(true);
-  const [imageUrl, setImageUrl] = useState("");
   const [modalVisible, setModalVisible] = useState(false); // State untuk modal visibility
   const queryClient = useQueryClient();
-  const [imageLoadError, setImageLoadError] = useState(false);
+  const [imageViewerVisible, setImageViewerVisible] = useState(false);
+  const [selectedImage, setSelectedImage] = useState('');
+  // const openWhatsApp = () => {
+  //   const phoneNumber = '+6281359512588'; // Ganti dengan nomor tujuan
+  //   const url = `whatsapp://send?phone=${phoneNumber}`;
 
-  // Menggunakan useUser untuk mendapatkan data pengguna
+  //   Linking.openURL(url).catch((err) => {
+  //     console.error('Error occurred', err);
+  //     alert('WhatsApp is not installed or there is an issue.');
+  //   });
+  // };
+
   const { data: userData, isLoading } = useUser();
 
+  console.log(userData);
   const handleLogout = () => {
-    setModalVisible(true); // Menampilkan modal saat tombol logout ditekan
+    setModalVisible(true);
   };
 
   const confirmLogout = () => {
@@ -67,6 +68,10 @@ export default function Profile({ navigation }) {
     },
   });
 
+  const openImageViewer = imageUrl => {
+    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
+    setImageViewerVisible(true);
+  };
   return (
     <>
       <View
@@ -82,33 +87,38 @@ export default function Profile({ navigation }) {
       {userData ? (
         <View
           elevetion={5}
-          className="w-full py-5 px-4 bg-[#fff] flex-row 
+          className="w-full py-5 px-4 bg-[#fff]
         "
           style={{
             borderBottomWidth: 0.5,
             borderBottomColor: "#dedede",
             elevation: 0.5,
           }}>
-          <View className="w-1/5 items-center justify-center ">
+          <View className="w-full items-center justify-center ">
             {userData ? (
-              <FastImage
-                className="rounded-full w-16 h-16 "
-                source={{
-                  uri: `${process.env.APP_URL}${userData.photo}`,
-                  priority: FastImage.priority.high,
-                }}
-                resizeMode={FastImage.resizeMode.cover}
-              />
+              <TouchableOpacity onPress={() => openImageViewer(userData.photo)}>
+                <FastImage
+                  className="rounded-full w-24 h-24 "
+                  source={{
+                    uri: `${process.env.APP_URL}${userData.photo}`,
+                    priority: FastImage.priority.high,
+                  }}
+                  resizeMode={FastImage.resizeMode.cover}
+                />
+              </TouchableOpacity>
             ) : (
               <View></View>
             )}
           </View>
-          <View className="flex-col align-center justify-center mx-2 -mt-2 ">
-            <Text className="text-base text-black font-bold font-sans my-1">
-              {userData?.nama}
+          <View className="flex-col align-center justify-center mx-2 mt-2  ">
+            <Text className="text-base text-black font-bold font-sans my-1 text-center ">
+              {userData?.nama} / {userData?.golongan.nama}
             </Text>
-            <Text className="text-sm font-bold  text-indigo-400 mt-1">
+            <Text className="text-sm font-bold  text-indigo-6 00 mt-1 text-center text-black">
               {userData?.email}
+            </Text>
+            <Text className="text-sm font-bold  text-indigo-6 00 mt-1 text-center text-black">
+              {userData?.phone}
             </Text>
           </View>
         </View>
@@ -266,6 +276,40 @@ export default function Profile({ navigation }) {
           </View>
         </View>
       </Modal>
+
+      {/* MODAL IMGE VIEWER */}
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={imageViewerVisible}
+        onRequestClose={() => setImageViewerVisible(false)}>
+        <View style={styles.imageViewerContainer}>
+          <TouchableOpacity
+            style={styles.closeButton}
+            onPress={() => setImageViewerVisible(false)}>
+              <IonIcons name="close" size={40} color="white" />
+          </TouchableOpacity>
+          <FastImage
+            style={styles.fullScreenImage}
+            source={{
+              uri: selectedImage,
+              priority: FastImage.priority.high,
+            }}
+            resizeMode={FastImage.resizeMode.contain}
+          />
+        </View>
+      </Modal>
+
+      {/* <View className="p-2 rounded-full w-14 bg-green-500 absolute bottom-5 right-5">
+        <TouchableOpacity onPress={openWhatsApp}>
+          <Icons
+            name="whatsapp"
+            size={40}
+            color="white"
+            className="bg-green-600 p-2 rounded-full"
+          />
+        </TouchableOpacity>
+      </View> */}
     </>
   );
 }
@@ -350,6 +394,27 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     fontWeight: "600",
     lineHeight: 24,
+  },
+   imageViewerContainer: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.9)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  fullScreenImage: {
+    width: width,
+    height: height,
+  },
+  closeButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 1,
+  },
+  closeButtonText: {
+    color: 'white',
+    fontSize: 24,
+    fontWeight: 'bold',
   },
   editProfileTextContainer: {
     marginBottom: 10,

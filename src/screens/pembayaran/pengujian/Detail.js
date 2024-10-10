@@ -300,6 +300,27 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
             )}
 
+            {formData.payment_type === "va" && (
+              <View style={[styles.card, isExpired && styles.disabledCard]}>
+                <View className="flex-row justify-between">
+                  <Text style={styles.cardTitle}>Nominal Pembayaran</Text>
+                  <TouchableOpacity
+                    onPress={() =>
+                      !isExpired && copyToClipboard(formData?.payment?.nominal)
+                    }>
+                    <Text
+                      style={[
+                        styles.copyButton,
+                        isExpired && styles.disabledText,
+                      ]}>
+                      Salin
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+                <Text style={styles.cardValue}>{rupiah(formData?.harga)}</Text>
+              </View>
+            )}
+            
             {formData.payment_type === "qris" && (
               <View style={[styles.card, isExpired && styles.disabledCard]}>
                 {/* <Text style={styles.warningText}>
@@ -357,7 +378,7 @@ const PengujianDetail = ({ route, navigation }) => {
                 <>
                   {formData?.payment_type === "qris" && (
                     <View className="flex items-end my-2">
-                      <View style={{  }}>
+                      <View style={{}}>
                         <TouchableOpacity
                           className="bg-indigo-600 p-3 rounded-lg"
                           onPress={handleGenerateVA}>
