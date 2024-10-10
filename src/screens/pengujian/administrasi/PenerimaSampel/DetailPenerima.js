@@ -350,7 +350,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <AntDesign name="user" size={30} color="#50cc96" />
+                  <Feather name="user" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
@@ -362,7 +362,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building-o" size={30} color="#50cc96" />
+                  <FontAwesome name="building-o" size={37} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -376,7 +376,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
                     name="map-search-outline"
-                    size={26}
+                    size={30}
                     color="#50cc96"
                   />
                 </View>
@@ -390,7 +390,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <SimpleLineIcons name="phone" size={28} color="#50cc96" />
+                  <SimpleLineIcons name="phone" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
@@ -420,7 +420,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="warehouse" size={24} color="#50cc96" />
+                  <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -432,7 +432,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building-o" size={35} color="#50cc96" />
+                  <FontAwesome name="building-o" size={37} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
@@ -444,7 +444,7 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="newspaper-o" size={27} color="#50cc96" />
+                  <FontAwesome name="newspaper-o" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
@@ -455,7 +455,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Octicons name="beaker" size={33} color="#50cc96" />
+                  <Octicons name="beaker" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Sampel</Text>
@@ -639,7 +639,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="file-text-o" size={34} color="#50cc96" />
+                  <FontAwesome name="file-text-o" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
@@ -660,7 +660,7 @@ export default function Detail({ route, navigation }) {
                 <View>
                   <Text
                     style={{
-                      fontSize: 16,
+                      fontsize: 30,
                       fontWeight: "bold",
                       marginTop: 23,
                       color: Colors.black,
@@ -679,7 +679,7 @@ export default function Detail({ route, navigation }) {
                           <EvilIcons
                             style={{ marginLeft: 8, marginTop: 2 }}
                             name="pencil"
-                            size={20}
+                            size={30}
                             color="#50cc96"
                           />
                         </TouchableOpacity>
@@ -720,7 +720,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.iconContainer}>
                   <MaterialCommunityIcons
                     name="truck-fast-outline"
-                    size={33}
+                    size={30}
                     color="#50cc96"
                   />
                 </View>
@@ -746,7 +746,7 @@ export default function Detail({ route, navigation }) {
                 <View style={styles.iconContainer}>
                   <MaterialIcons
                     name="date-range"
-                    size={34}
+                    size={30}
                     color="#50cc96"></MaterialIcons>
                 </View>
                 <View style={styles.textContainer}>
@@ -758,7 +758,7 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags-outline" size={33} color="#50cc96" />
+                  <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>

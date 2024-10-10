@@ -263,7 +263,7 @@ const autosave = debounce((data) => {
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Fontisto name="user-secret" size={35} color="black" />
+                <FontAwesome6 name="user-large" size={29} color="black" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>

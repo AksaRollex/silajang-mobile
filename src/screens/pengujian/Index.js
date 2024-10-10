@@ -15,7 +15,7 @@ import EditPembayaran from "../formComponent/EditPembayaran";
 import TambahPermohonan from "../formComponent/TambahPermohonan";
 
 import Kontrak from "./administrasi/kontrak/Kontrak"
-import DetailKontrak from "./administrasi/kontrak/Detail"
+import DetailKontrak from "./administrasi/kontrak/DetailKontrak"
 import Persetujuan from "./administrasi/Persetujuan/Persetujuan"
 import DetailPersetujuan from "./administrasi/Persetujuan/DetailPersetujuan"
 import IndexPenerima from "./administrasi/PenerimaSampel/IndexPenerima"

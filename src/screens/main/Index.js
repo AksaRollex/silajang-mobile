@@ -435,7 +435,7 @@ const DrawerContent = (props) => {
     ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", fontAwesome6: "user-large" }] : []),
     {
       name: "Master",
-      setIcon: "grid",
+      fontAwesome6: "gear",
       subItems: [
           { name: 'Master', screen: 'Master', params: {screen: 'MasterIndex'} },
           { name: 'User', screen: 'User' },
