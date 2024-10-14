@@ -122,7 +122,7 @@ const PengujianDetail = ({ route, navigation }) => {
 
           {formData?.kode ? (
             <View>
-              <Text className="text-2xl font-bold text-white text-center">
+              <Text className="text-xl font-bold text-white text-center">
                 {formData?.kode}
               </Text>
             </View>
@@ -294,8 +294,8 @@ const PengujianDetail = ({ route, navigation }) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.cardValue}>
-                  {formData?.payment?.va_number}
+                <Text className="text-base font-bold text-indigo-600">
+                  {formData?.payment?.va_number || "Nomor VA Tidak Tersedia"}
                 </Text>
               </View>
             )}
@@ -317,7 +317,7 @@ const PengujianDetail = ({ route, navigation }) => {
                     </Text>
                   </TouchableOpacity>
                 </View>
-                <Text style={styles.cardValue}>{rupiah(formData?.harga)}</Text>
+                <Text  className="text-base font-bold text-indigo-600">{rupiah(formData?.harga)}</Text>
               </View>
             )}
             

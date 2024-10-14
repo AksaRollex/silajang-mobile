@@ -17,6 +17,7 @@ import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
+import { QueryClient } from "@tanstack/react-query";
 const MultipaymentDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
@@ -110,6 +111,7 @@ const MultipaymentDetail = ({ route, navigation }) => {
           "Error",
           err.response?.data?.message || "An error occurred",
         );
+        QueryClient.invalidateQueries(`/pembayaran/multi-payment/${uuid}`);
       });
   };
 
@@ -124,9 +126,9 @@ const MultipaymentDetail = ({ route, navigation }) => {
           <Text style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
             Titik Permohonan Dipilih
           </Text>
-          <View className="p-1 bg-indigo-100 rounded-sm">
+          <View className="px-2 py-1 bg-indigo-500 rounded-md">
             <Text
-              style={{ fontWeight: "bold", color: "black" }}
+              style={{ fontWeight: "bold", color: "white" }}
               className="text-sm font-sans">
               {formData?.data?.multi_payments
                 ?.map(payment => payment.titik_permohonan.kode)
@@ -135,7 +137,7 @@ const MultipaymentDetail = ({ route, navigation }) => {
           </View>
         </View>
 
-        <View className="flex-row justify-between mt-1 border-gray-300 pb-2 ">
+        <View className="flex-row justify-between border-gray-300 pb-2 ">
           <Text className="font-bold text-black text-base">Total Harga</Text>
           <Text className="font-bold text-black text-base">
             {rupiah(formData?.data?.jumlah)}
@@ -163,11 +165,11 @@ const MultipaymentDetail = ({ route, navigation }) => {
         </Text>
       );
     } else if (formData?.data?.status === "failed") {
-      // return (
-      //   <Text style={styles.errorText}>
-      //     Pembayaran gagal. Silakan coba lagi atau hubungi admin.
-      //   </Text>
-      // );
+      return (
+        <Text className="bg-red-500 text-white text-center p-3 rounded-lg mb-4 font-bold">
+          Pembayaran gagal. Silakan coba lagi.
+        </Text>
+      );
       return null;
     } else if (formData?.data?.is_expired) {
       return (
@@ -268,15 +270,13 @@ const MultipaymentDetail = ({ route, navigation }) => {
       );
     } else if (formData?.data?.type === "qris") {
       return (
-        <View style={styles.card}>
-          <View style={styles.cardContent}>
-            <View style={[isExpired && styles.disabledCard]}>
-              <Image
-                source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
-                style={styles.qrisImage}
-                resizeMode="contain"
-              />
-            </View>
+        <View className="items-center justify-center p-5 m-3 bg-[#ececec] rounded-md">
+          <View style={[isExpired && styles.disabledCard]}>
+            <Image
+              source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
+              style={styles.qrisImage}
+              resizeMode="contain"
+            />
           </View>
         </View>
       );

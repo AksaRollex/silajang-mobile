@@ -101,7 +101,7 @@ const TambahPermohonan = ({ navigation }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-4 justify-between"
+          className="flex-row mb-4 p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -115,7 +115,7 @@ const TambahPermohonan = ({ navigation }) => {
         </View>
       </View>
       <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
+        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md my-2">
           <Controller
             control={control}
             name="industri"

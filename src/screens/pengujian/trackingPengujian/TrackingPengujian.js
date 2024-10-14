@@ -85,23 +85,12 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       </View>
       <View className="w-full h-full bg-[#ececec]">
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff] ">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
+        
         <Paginate
           key={refreshKey}
           ref={paginateRef}
           url="/tracking"
-          className="mb-32"
+          className="mb-24"
           payload={{ tahun }}
           renderItem={renderItem}
         />

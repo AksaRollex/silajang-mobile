@@ -1,15 +1,17 @@
 import React from "react";
 import { Text, View, StyleSheet } from "react-native";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { NavigationContainer } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Index";
-import Index from "../pengujian/Index";
-import IndexPembayaran from "../pembayaran/Index";
+import Pengujian from "../pengujian/Index";
+import Pembayaran from "../pembayaran/Index";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -25,83 +27,108 @@ const screenOptions = {
     elevation: 0,
     height: 60,
     backgroundColor: Colors.brand,
-    borderTopWidth: 0, 
+    borderTopWidth: 0,
   },
+};
+
+const getTabBarVisibility = route => {
+  const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+  const hideOnScreens = [
+    // PENGUJIAN
+    "TrackingPengujian",
+    "TrackingList",
+    "Permohonan",
+    "EditPermohonan",
+    "TambahPermohonan",
+    "TitikUji",
+    "FormTitikUji",
+    "Parameter",
+    // PEMBAYARAN
+    "Pembayaran",
+    "PengujianPembayaran",
+    "PengujianDetail",
+    "Multipayment",
+    "MultipaymentDetail",
+  ];
+  if (hideOnScreens.includes(routeName)) {
+    return { display: "none" };
+  }
+  return screenOptions.tabBarStyle;
 };
 
 const TabNavigator = () => {
   return (
     <Tab.Navigator screenOptions={screenOptions}>
-        <Tab.Screen
-          name="Dashboard"
-          component={Dashboard}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/home.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
+      <Tab.Screen
+        name="Dashboard"
+        component={Dashboard}
+        options={{
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={[
+                styles.iconContainer,
+                focused && styles.iconContainerFocused,
+              ]}>
+              <Image
+                source={require("@/assets/images/home.png")}
+                style={[styles.logo, focused && styles.logoFocused]}
+              />
 
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Beranda
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Pengujian.Index"
-          component={Index}
-          options={{
-            tabBarIcon: ({ focused }) => (  
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/approval.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
+              <Text style={[styles.label, focused && styles.labelFocused]}>
+                Beranda
+              </Text>
+            </View>
+          ),
+        }}
+      />
+      <Tab.Screen
+        name="Pengujian"
+        component={Pengujian}
+        options={({ route }) => ({
+          tabBarStyle: getTabBarVisibility(route),
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={[
+                styles.iconContainer,
+                focused && styles.iconContainerFocused,
+              ]}>
+              <Image
+                source={require("@/assets/images/approval.png")}
+                style={[styles.logo, focused && styles.logoFocused]}
+              />
+              <Text style={[styles.label, focused && styles.labelFocused]}>
+                Pengujian
+              </Text>
+            </View>
+          ),
+        })}
+      />
 
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Pengujian
-                </Text>
-              </View>
-            ),
-          }}
-        />
-        <Tab.Screen
-          name="Pembayaran.Index"
-          component={IndexPembayaran}
-          options={{
-            tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}>
-                <Image
-                  source={require("@/assets/images/wallet.png")}
-                  style={[styles.logo, focused && styles.logoFocused]}
-                />
-
-                <Text style={[styles.label, focused && styles.labelFocused]}>
-                  Pembayaran
-                </Text>
-              </View>
-            ),
-          }}
-        />
-     
-      </Tab.Navigator>
-  )
-}
+      <Tab.Screen
+        name="Pembayaran"
+        component={Pembayaran}
+        options={({ route }) => ({
+          tabBarStyle: getTabBarVisibility(route),
+          tabBarIcon: ({ focused }) => (
+            <View
+              style={[
+                styles.iconContainer,
+                focused && styles.iconContainerFocused,
+              ]}>
+              <Image
+                source={require("@/assets/images/wallet.png")}
+                style={[styles.logo, focused && styles.logoFocused]}
+              />
+              <Text style={[styles.label, focused && styles.labelFocused]}>
+                Pembayaran
+              </Text>
+            </View>
+          ),
+        })}
+      />
+    </Tab.Navigator>
+  );
+};
 
 export default function MainScreen() {
   return (
@@ -119,27 +146,27 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 10,
-    borderRadius: 50, 
-    backgroundColor: "transparent", 
-    paddingHorizontal: 10, 
+    borderRadius: 50,
+    backgroundColor: "transparent",
+    paddingHorizontal: 10,
   },
   iconContainerFocused: {
-    backgroundColor: "rgba(255, 255, 255, 0.2)", 
+    backgroundColor: "rgba(255, 255, 255, 0.2)",
   },
   logo: {
     width: 21,
     height: 21,
     marginBottom: 4,
-    tintColor: "white", 
+    tintColor: "white",
   },
   logoFocused: {
-    tintColor: "white", 
+    tintColor: "white",
   },
   label: {
     fontSize: 12,
-    color: "white", 
+    color: "white",
   },
   labelFocused: {
-    color: "white", 
+    color: "white",
   },
 });

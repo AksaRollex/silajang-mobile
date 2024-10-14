@@ -28,6 +28,7 @@ const throttle = (func, limit) => {
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
   const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
+  console.log(titik)
   const [showPeraturan, setShowPeraturan] = useState(false);
   const [showPaket, setShowPaket] = useState(false);
 
@@ -171,26 +172,31 @@ const Parameter = ({ route, navigation }) => {
 
   const renderPeraturan = ({ item }) => (
     <View
-      className="rounded-sm flex-row justify-between p-4 bg-[#ececec] drop-shadow-md mt-1"
+      className="rounded-sm flex-row p-2 justify-between bg-[#ececec] drop-shadow-md mt-1"
       style={{ borderWidth: 0.5 }}>
-      <Text className="text-black">{item.nama}</Text>
-      {(!titik?.save_parameter || titik.status <= 1) && (
-        <TouchableOpacity
-          onPress={() =>
-            item.selected
-              ? throttledRemovePeraturan(item.uuid)
-              : throttledAddPeraturan(item.uuid)
-          }>
-          <Text
-            style={{
-              color: item.selected ? "red" : "white",
-              backgroundColor: Colors.brand,
-            }}
-            className="p-2 rounded-sm font-sans text-bold">
-            {item.selected ? "-" : "+"}
-          </Text>
-        </TouchableOpacity>
-      )}
+      <View className="w-80">
+        <Text className="text-black text-left text-sm">{item.nama}</Text>
+      </View>
+      <View className="">
+        {(!titik?.save_parameter || titik.status <= 1) && (
+          <TouchableOpacity
+            className="justify-end items-center "
+            onPress={() =>
+              item.selected
+                ? throttledRemovePeraturan(item.uuid)
+                : throttledAddPeraturan(item.uuid)
+            }>
+            <Text
+              style={{
+                color: item.selected ? "red" : "white",
+                backgroundColor: Colors.brand,
+              }}
+              className="p-2 rounded-sm font-sans text-bold ">
+              {item.selected ? "-" : "+"}
+            </Text>
+          </TouchableOpacity>
+        )}
+      </View>
     </View>
   );
 
@@ -242,19 +248,19 @@ const Parameter = ({ route, navigation }) => {
     <View style={{ flex: 1 }}>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-4 justify-between"
+          className="flex-row mb-4 p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back size={24} color="white" action={() => navigation.goBack()} />
           <Text className="font-bold text-white text-xs mt-1">
-            {titik?.lokasi} {titik?.kode} Pilih Peraturan / Parameter
+            {titik?.lokasi} : Pilih Peraturan / Parameter
           </Text>
         </View>
       </View>
       <FlatList
         data={[1]}
         renderItem={() => (
-          <View className="bg-[#f8f8f8] py-2 px-3 rounded-md mb-20">
-            <View className="bg-[#ececec]">
+          <View className="bg-[#f8f8f8] py-2 px-3 rounded-md mb-4">
+            <View className="bg-[#ececec] ">
               <TouchableOpacity
                 onPress={() => setShowPeraturan(!showPeraturan)}
                 style={{ padding: 8, backgroundColor: Colors.brand }}>
@@ -361,7 +367,7 @@ const Parameter = ({ route, navigation }) => {
             </View>
 
             <Text className="font-sans text-black font-bold my-3 text-center">
-              Total Harga: {rupiah(titik?.harga)}
+              Total Harga : {rupiah(titik?.harga)}
             </Text>
 
             {(!titik?.save_parameter || titik.status <= 1) && (
