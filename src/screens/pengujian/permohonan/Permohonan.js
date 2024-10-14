@@ -14,6 +14,8 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
+import RNPickerSelect from "react-native-picker-select";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 import Back from "../../components/Back";
 
@@ -79,10 +81,15 @@ const Permohonan = ({ navigation }) => {
             {item.industri}
           </Text>
 
-          <Text style={[styles.badge]} className="bg-indigo-400 text-white text-xs">
-            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+          <Text
+            style={[styles.badge]}
+            className="bg-indigo-400 text-white text-xs">
+            Cara Pengambilan :{" "}
+            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
           </Text>
-          <Text style={[styles.badge]}  className="bg-emerald-400 text-white text-xs">
+          <Text
+            style={[styles.badge]}
+            className="bg-emerald-400 text-white text-xs">
             Pembayaran : {item.pembayaran}
           </Text>
 
@@ -112,11 +119,52 @@ const Permohonan = ({ navigation }) => {
     );
   };
 
+  const filtah = () => {
+    return (
+      <>
+          <View className="flex flex-row justify-end">
+            <RNPickerSelect
+              onValueChange={handleYearChange}
+              items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+              value={tahun}
+              style={{
+                inputIOS: {
+                  paddingHorizontal: rem(3.55),
+                  borderWidth: 3,
+                  color: "black",
+                },
+                inputAndroid: {
+                  paddingHorizontal: rem(3.55),
+                  borderWidth: 3,
+                  color: "black",
+                },
+              }}
+              Icon={() => {
+                return (
+                  <MaterialIcons
+                    style={{ marginTop: 16, marginRight: 12 }}
+                    name="keyboard-arrow-down"
+                    size={24}
+                    color="black"
+                  />
+                );
+              }}
+              placeholder={{
+                label: "Pilih Tahun",
+                value: null,
+                color: "grey",
+              }}
+            />
+          </View>
+      </>
+    );
+  };
+
   return (
     <>
-     <View className="w-full">
+      <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -124,30 +172,17 @@ const Permohonan = ({ navigation }) => {
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg ">
-            Permohonan
-          </Text>
+          <Text className="font-bold text-white text-lg ">Permohonan</Text>
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff]">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
         <Paginate
           className="mb-28"
           ref={paginateRef}
           key={refreshKey}
           url="/permohonan"
           payload={{ tahun: tahun }}
+          Plugin={filtah}
           renderItem={CardPermohonan}></Paginate>
       </View>
       <Icons
@@ -164,7 +199,6 @@ const Permohonan = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 10,
     borderRadius: 15,
     padding: rem(0.7),
     backgroundColor: "#fff",
@@ -188,7 +222,7 @@ const styles = StyleSheet.create({
   picker: {
     flex: 1,
     marginHorizontal: 4,
-    color : 'black'
+    color: "black",
   },
   cardTexts: {
     fontSize: rem(0.9),

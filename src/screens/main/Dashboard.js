@@ -15,7 +15,9 @@ import Header from "../components/Header";
 import FooterText from "../components/FooterText";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/AntDesign";
+import RNPickerSelect from 'react-native-picker-select';
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 
 const rem = multiplier => baseRem * multiplier;
@@ -68,18 +70,30 @@ const Dashboard = () => {
   return (
     <View style={styles.container}>
       <Header navigate={() => {navigation.navigate("Profile")}} />
-      <View className="p-4 flex items-end  ">
-        <View className="flex ">
-          <Picker
-            selectedValue={tahun}
-            style={styles.picker}
-            onValueChange={handleYearChange}>
-            {tahuns.map(item => (
-              <Picker.Item key={item.id} label={item.text} value={item.id} />
-            ))}
-          </Picker>
-        </View>
+      <View className="p-4 flex items-end">
+      <View>
+      <RNPickerSelect
+        onValueChange={handleYearChange}
+        items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+        value={tahun}
+        style={{
+          inputIOS: {
+            paddingHorizontal: rem(3.55),
+            borderWidth: 3,
+            color: "black",
+          },
+          inputAndroid: {
+            paddingHorizontal: rem(3.55),
+            borderWidth: 3,
+            color: "black",
+          },
+        }}
+        Icon={() => {
+          return <MaterialIcons style={{marginTop: 16, marginRight: 12}} name="keyboard-arrow-down" size={24} color="black" />;
+        }}
+      />
       </View>
+    </View>
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
@@ -199,9 +213,8 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   picker: {
-    borderColor: "#ccc",
     paddingHorizontal: rem(3.55),
-    borderWidth: 1,
+    borderWidth: 3,
     color: "black",
     backgroundColor: "white",
   },
@@ -212,11 +225,11 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    marginBottom: 20
   },
   cardContainer: {
     width: "48%",
     height: 160,
-    marginVertical: 10,
     borderRadius: 7,
     padding: 20,
     flexDirection: "column",
