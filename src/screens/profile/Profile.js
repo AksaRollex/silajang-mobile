@@ -51,6 +51,8 @@ export default function Profile({ navigation }) {
     logout();
   };
 
+  const [isPressed, setIsPressed] = useState(false);
+
   const { mutate: logout } = useMutation(() => axios.post("/auth/logout"), {
     onSuccess: async () => {
       await AsyncStorage.removeItem("@auth-token");

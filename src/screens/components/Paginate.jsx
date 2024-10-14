@@ -41,16 +41,15 @@ const Paginate = forwardRef(
 
     const navigation = useNavigation();
 
-    const { data, isFetching, refetch } = useQuery({
-      queryKey: queryKey ? queryKey : [url],
-      queryFn: () =>
-        axios.post(url, { ...payload, page, search }).then(res => {
-          // console.log(res.data)
-          return res.data;
-        }),
-      placeholderData: { data: [] },
-      onError: error => console.error(error.response?.data),
-    });
+  const { data, isFetching, refetch } = useQuery({
+    queryKey: queryKey ? queryKey :  [url],
+    queryFn: () => axios.post(url, { ...payload, page, search}).then(res => {
+      // console.log(res.data.data)
+      return res.data
+    }),
+    placeholderData: {data: []},
+    onError: error => console.error(error.response?.data),
+  });
 
     useImperativeHandle(ref, () => ({
       refetch,
@@ -60,10 +59,9 @@ const Paginate = forwardRef(
     //   console.log({url})
     // }, [url])
 
-    useEffect(() => {
-      console.log({ search, page, payload });
-      refetch();
-    }, [search, page, payload]);
+  useEffect(() => {
+    refetch();
+  }, [search, page, payload]);
 
     useEffect(() => {
       if (!data.data?.length) queryClient.invalidateQueries([url]);

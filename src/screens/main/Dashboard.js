@@ -19,6 +19,7 @@ import RNPickerSelect from 'react-native-picker-select';
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -94,6 +95,14 @@ const Dashboard = () => {
       />
       </View>
     </View>
+      { user.has_tagihan && (
+        <View className="p-2">
+          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
+            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+          </View>
+          </View>
+      )}
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
@@ -105,7 +114,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanBaru}
                 text="Permohonan Baru"
                 numberStyle={styles.card1}
-                icon={'users'}
+                icon={'user-group'}
                 iconColor={"#FFA500"}
               />
               <DashboardCard
@@ -121,7 +130,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanSelesai}
                 text="Permohonan Selesai"
                 numberStyle={styles.card3}
-                icon={'check'}
+                icon={'circle-check'}
                 iconColor={"#008000"}
               />
               <DashboardCard
@@ -149,7 +158,7 @@ const Dashboard = () => {
 const DashboardCard = ({ style, number, text, imageSource, numberStyle, icon, iconColor }) => (
   <View style={[styles.cardContainer, style]}>
     <View style={styles.row}>
-      <Entypo name={icon} size={30} color={iconColor} />
+      <FontAwesome6Icon name={icon} size={32} color={iconColor} />
       <Text style={[styles.cardNumber, numberStyle]}>{number}</Text>
     </View>
     <Text style={[styles.cardInfoValue, styles.cardTextColor]}>{text}</Text>

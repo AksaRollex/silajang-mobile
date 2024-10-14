@@ -5,7 +5,7 @@ import {
   ActivityIndicator,
   StyleSheet,
 } from "react-native";
-import React, { useRef, useState, useCallback } from "react";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MenuView } from "@react-native-menu/menu";
 import Paginate from "../../components/Paginate";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -17,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
 import Back from "../../components/Back";
 
 const rem = multiplier => baseRem * multiplier;
@@ -25,6 +26,7 @@ const baseRem = 16;
 const Permohonan = ({ navigation }) => {
   const [tahun, setTahun] = useState(2024);
   const [refreshKey, setRefreshKey] = useState(0);
+  const { data: user } = useUser()
 
   const tahuns = Array.from(
     { length: new Date().getFullYear() - 2021 },
@@ -176,6 +178,36 @@ const Permohonan = ({ navigation }) => {
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
+        <View className="p-4 ">
+          <View className="flex flex-row justify-between bg-[#fff]">
+            <Picker
+              selectedValue={tahun}
+              style={styles.picker}
+              onValueChange={handleYearChange}>
+              {tahuns.map(item => (
+                <Picker.Item key={item.id} label={item.text} value={item.id} />
+              ))}
+            </Picker>
+          </View>
+        </View>
+        { user.has_tagihan ? (
+          <View className="p-2">
+          <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+          <Text className="text-black mb-0 text-sm">Tidak dapat membuat Permohonan Baru</Text>
+          <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+        </View>
+          </View>
+      ) : (
+        <>
+          <Icons
+            name="plus"
+            size={28}
+            color="#fff"
+            style={styles.plusIcon}
+            onPress={() => navigation.navigate("TambahPermohonan")}
+          />
+        </>
+      )}
         <Paginate
           className="mb-28"
           ref={paginateRef}
@@ -185,13 +217,6 @@ const Permohonan = ({ navigation }) => {
           Plugin={filtah}
           renderItem={CardPermohonan}></Paginate>
       </View>
-      <Icons
-        name="plus"
-        size={28}
-        color="#fff"
-        style={styles.plusIcon}
-        onPress={() => navigation.navigate("TambahPermohonan")}
-      />
       <DeleteConfirmationModal />
     </>
   );
@@ -230,7 +255,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 20,
+    bottom: 65,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,

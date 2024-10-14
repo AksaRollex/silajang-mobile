@@ -1,4 +1,4 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -18,10 +18,19 @@ import { useDelete } from "@/src/hooks/useDelete";
 import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
 import { usePermohonan } from "@/src/services/usePermohonan";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_URL } from "@env";
+import Pdf from "react-native-pdf";
+import {
+  Menu,
+  MenuOption,
+  MenuOptions,
+  MenuTrigger,
+} from "react-native-popup-menu";
+import Icon from "react-native-vector-icons/FontAwesome";
+import { useUser } from "@/src/services";
 import BackButton from "@/src/screens/components/Back";
 import { API_URL } from "@env";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import Pdf from "react-native-pdf";
 import RNFS from "react-native-fs";
 import Share from "react-native-share";
 import { FA5Style } from "react-native-vector-icons/FontAwesome5";
@@ -32,12 +41,32 @@ const rem = multiplier => baseRem * multiplier;
 const TitikUji = ({ navigation, route, status, callback }) => {
   const { uuid } = route.params || {};
   const { data: permohonan } = usePermohonan(uuid);
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [reportUrl, setReportUrl] = useState("");
+  const { data: user } = useUser();
+  const openModal = () => {
+    setIsModalVisible(true);
+  };
+  // console.log("data permohonan", permohonan);
   const data = permohonan || {};
   const pivotData = data.titik_permohonans;
   console.log("data: ", data);
   const { onSuccess, onError, onSettled } = callback || {};
 
+  useEffect(() => {
+    console.log("DATA ANJAY", uuid);
+  }, [uuid]);
+
+  const closeModal = () => {
+    setIsModalVisible(false);
+  };
   const queryClient = useQueryClient();
+  const titikPermohonans = queryClient.getQueryData([
+    "permohonan",
+    uuid,
+    "titik",
+  ]);
+
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -113,7 +142,11 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     {
       id: "Edit",
       title: "Edit",
-      action: item => navigation.navigate("FormTitikUji", { uuid: item.uuid }),
+      action: item =>
+        navigation.navigate("FormTitikUji", {
+          uuid: item.uuid,
+          permohonan: permohonan,
+        }),
     },
     {
       id: "Hapus",
@@ -313,10 +346,40 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               }
             }}
             shouldOpenOnLongPress={false}>
+            {/* <TouchableOpacity
+        className="flex-row justify-center bg-red-600 p-2 rounded-xl absolute bottom-8 right-1 items-end"
+        onPress={openModal}>
+        <Icons name="plus" size={24} color="#fff" />
+        <Text className="text-white font-bold"></Text>
+      </TouchableOpacity>
+
+      {/* Modal to display the empty card */}
+            {/* <Modal
+        visible={isModalVisible}
+        animationType="fade"
+        onRequestClose={closeModal}
+        transparent={true}>
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-xl w-5/6 p-6 shadow-lg">
+            <Text className="text-black text-xl font-bold mb-4">Empty Card</Text>
+
+            {/* Empty card content */}
+            {/* <View className="w-full h-40 bg-gray-200 rounded-lg mb-4"></View> */}
+
+            {/* <TouchableOpacity
+              className="self-end bg-red-600 py-2 px-4 rounded-md"
+              onPress={closeModal}>
+              <Text className="text-white font-bold">Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal> */}
+
             <View>
               <Entypo name="dots-three-vertical" size={16} color="#312e81" />
             </View>
           </MenuView>
+          {/* <ActionColumn item={item} /> */}
         </View>
 
         {/* Modal untuk Preview */}
@@ -396,6 +459,37 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
+       
+        {!titikPermohonans?.data?.length && !pivotData?.length &&  (
+          <View className="p-5">
+            <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
+              <Text className="text-black mb-0">
+                Silahkan Tambah Titik Lokasi Sampel Pengujian
+              </Text>
+              <Text className="text-black text-xs">
+                Anda belum memiliki Titik Lokasi Sampel satu pun.
+              </Text>
+            </View>
+          </View>
+        )}
+        { user.has_tagihan ? (
+          <View className="p-2">
+          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
+            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+          </View>
+          </View>
+        ) : (
+        <>
+        <Icons
+          name="plus"
+          size={28}
+          color="#fff"
+          style={styles.plusIcon}
+          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+          />
+        </>
+      )}
         <Paginate
           ref={paginateRef}
           payload={{ permohonan_uuid: { uuid } }}
@@ -404,13 +498,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           renderItem={CardTitikUji}></Paginate>
       </View>
 
-      <Icons
-        name="plus"
-        size={28}
-        color="#fff"
-        style={styles.plusIcon}
-        onPress={() => navigation.navigate("FormTitikUji")}
-      />
       <DeleteConfirmationModal />
     </>
   );
@@ -479,7 +566,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 20,
+    bottom: 65,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,
