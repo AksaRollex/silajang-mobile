@@ -178,7 +178,7 @@ const Permohonan = ({ navigation }) => {
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
-        <View className="p-4 ">
+        {/* <View className="p-4 ">
           <View className="flex flex-row justify-between bg-[#fff]">
             <Picker
               selectedValue={tahun}
@@ -189,7 +189,7 @@ const Permohonan = ({ navigation }) => {
               ))}
             </Picker>
           </View>
-        </View>
+        </View> */}
         { user.has_tagihan ? (
           <View className="p-2">
           <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">

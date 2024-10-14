@@ -228,7 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   scrollViewContainer: {
-    padding: 10,
+    // padding: 10,
   },
   gridContainer: {
     flexDirection: "row",
