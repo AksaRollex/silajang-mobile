@@ -460,17 +460,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       </View>
       <View className="bg-[#ececec] w-full h-full">
        
-        {/* {user && user?.has_tagihan ? (
-          <View>
-            <Text>anjay</Text>
-          </View>
-        ) : (
-          <View></View>
-        )} */}
-        {/* <Text>
-          {titikPermohonans?.data?.length}
-        </Text> */}
-        {!titikPermohonans?.data?.length && (
+        {!titikPermohonans?.data?.length && !pivotData?.length &&  (
           <View className="p-5">
             <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
               <Text className="text-black mb-0">

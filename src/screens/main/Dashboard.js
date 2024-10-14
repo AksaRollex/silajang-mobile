@@ -81,6 +81,14 @@ const Dashboard = () => {
           </Picker>
         </View>
       </View>
+      { user.has_tagihan && (
+        <View className="p-2">
+          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
+            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+          </View>
+          </View>
+      )}
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>

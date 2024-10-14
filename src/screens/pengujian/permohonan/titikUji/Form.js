@@ -224,13 +224,7 @@ const FormTitikUji = ({
     },
   );
 
-  if (isLoadingData && uuid) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color={"#312e81"} />
-      </View>
-    );
-  }
+ 
   const onSubmit = data => {
     createOrUpdate(data, {
       onError: error => {
@@ -337,6 +331,14 @@ const FormTitikUji = ({
       getLocation();
     }
   };
+
+  if (isLoadingData && uuid) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color={"#312e81"} />
+      </View>
+    );
+  }
 
   return (
     <>
