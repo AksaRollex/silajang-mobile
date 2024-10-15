@@ -18,29 +18,17 @@ import TambahPermohonan from "./permohonan/FormTambah";
 
 const Stack = createNativeStackNavigator();
 
-export default function MainScreen() {
+const PengujianStack = () => {
   const navigation = useNavigation();
+
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="Pengujian" component={Pengujian} />
+      <Stack.Screen name="PengujianHome" component={Pengujian} />
 
       <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
       <Stack.Screen name="TrackingList" component={TrackingList} />
+      <Stack.Screen name="Permohonan" component={Permohonan} />
 
-      <Stack.Screen
-        name="Permohonan"
-        component={Permohonan}
-        options={({ route }) => ({
-          tabBarStyle: (route => {
-            const routeName = getFocusedRouteNameFromRoute(route) ?? "";
-            console.log(routeName);
-            if (routeName === "Permohonan") {
-              return { display: "none" };
-            }
-            return;
-          })(route),
-        })}
-      />
       <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
       <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
       <Stack.Screen name="TitikUji" component={TitikUji} />
@@ -48,4 +36,6 @@ export default function MainScreen() {
       <Stack.Screen name="Parameter" component={Parameter} />
     </Stack.Navigator>
   );
-}
+};
+
+export default PengujianStack;

@@ -9,8 +9,8 @@ import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Index";
-import Pengujian from "../pengujian/Index";
-import Pembayaran from "../pembayaran/Index";
+import PengujianStack from "../pengujian/Index";
+import PembayaranStack from "../pembayaran/Index";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 
 const Tab = createBottomTabNavigator();
@@ -44,7 +44,6 @@ const getTabBarVisibility = route => {
     "FormTitikUji",
     "Parameter",
     // PEMBAYARAN
-    "Pembayaran",
     "PengujianPembayaran",
     "PengujianDetail",
     "Multipayment",
@@ -82,8 +81,8 @@ const TabNavigator = () => {
         }}
       />
       <Tab.Screen
-        name="Pengujian"
-        component={Pengujian}
+        name="PengujianTab"
+        component={PengujianStack}
         options={({ route }) => ({
           tabBarStyle: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (
@@ -105,8 +104,8 @@ const TabNavigator = () => {
       />
 
       <Tab.Screen
-        name="Pembayaran"
-        component={Pembayaran}
+        name="PembayaranTab"
+        component={PembayaranStack}
         options={({ route }) => ({
           tabBarStyle: getTabBarVisibility(route),
           tabBarIcon: ({ focused }) => (

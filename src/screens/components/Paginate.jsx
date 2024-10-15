@@ -23,7 +23,15 @@ import { useNavigation } from "@react-navigation/native";
 
 const Paginate = forwardRef(
   (
-    { url, queryKey, payload, renderItem, showLoading = true, ...props },
+    {
+      url,
+      queryKey,
+      payload,
+      renderItem,
+      showLoading = true,
+      Plugin,
+      ...props
+    },
     ref,
   ) => {
     const queryClient = useQueryClient();
@@ -78,26 +86,29 @@ const Paginate = forwardRef(
       );
     }, [data.current_page, data.last_page]);
     const ListHeader = () => (
-      <View className="flex-row mb-1 items-center">
-        {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} /> */}
-        <Controller
-          control={control}
-          name="search"
-          render={({ field: { onChange, value } }) => (
-            <TextInput
-              className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 text-black"
-              value={value}
-              onChangeText={onChange}
-              placeholder="Cari..."
-            />
-          )}
-        />
-        <TouchableOpacity
-          className="bg-[#312e81] p-4 rounded-md justify-center"
-          onPress={handleSubmit(data => setSearch(data.search))}>
-          <Icon name="search" size={18} color={"white"} />
-        </TouchableOpacity>
-      </View>
+      <>
+        <View className="flex-row mb-1 items-center">
+          {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} /> */}
+          <Controller
+            control={control}
+            name="search"
+            render={({ field: { onChange, value } }) => (
+              <TextInput
+                className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 text-black"
+                value={value}
+                onChangeText={onChange}
+                placeholder="Cari..."
+              />
+            )}
+          />
+          <TouchableOpacity
+            className="bg-[#312e81] p-4 rounded-md justify-center"
+            onPress={handleSubmit(data => setSearch(data.search))}>
+            <Icon name="search" size={18} color={"white"} />
+          </TouchableOpacity>
+        </View>
+        <View>{Plugin && <Plugin />}</View>
+      </>
     );
 
     const ListFooter = () => (
@@ -161,7 +172,7 @@ const Paginate = forwardRef(
     }
 
     return (
-      <View className="flex-1 p-3" {...props}>
+      <View className="flex-1 p-4" {...props}>
         <ListHeader />
         <FlatList
           data={data.data}

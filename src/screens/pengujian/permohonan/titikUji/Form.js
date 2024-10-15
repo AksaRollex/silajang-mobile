@@ -209,13 +209,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     },
   );
 
-  if (isLoadingData && uuid) {
-    return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color={"#312e81"} />
-      </View>
-    );
-  }
+ 
   const onSubmit = data => {
     createOrUpdate(data, {
       onError: error => {
@@ -322,6 +316,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     }
   };
 
+  if (isLoadingData && uuid) {
+    return (
+      <View className="flex-1 justify-center items-center">
+        <ActivityIndicator size="large" color={"#312e81"} />
+      </View>
+    );
+  }
+
   return (
     <>
       <View
@@ -332,7 +334,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           size={24}
           color={"white"}
         />
-        <Text className="text-xl font-bold text-white">
+        <Text className="text-lg font-bold text-white">
           {uuid ? "Edit" : "Tambah"} Titik Pengujian
         </Text>
       </View>

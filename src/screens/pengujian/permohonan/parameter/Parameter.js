@@ -248,7 +248,7 @@ const Parameter = ({ route, navigation }) => {
     <View style={{ flex: 1 }}>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back size={24} color="white" action={() => navigation.goBack()} />
           <Text className="font-bold text-white text-xs mt-1">

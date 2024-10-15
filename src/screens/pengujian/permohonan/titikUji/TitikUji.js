@@ -262,10 +262,10 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               Diambil : {item.tanggal_pengambilan || "-"}
             </Text>
             <Text className=" text-xs pt-1 text-black ">
-              Diterima : {item.tanggal_diterima || "Tanggal Tidak Tersedia"}
+              Diterima : {item.tanggal_diterima || "Tanggal Belum Tersedia"}
             </Text>
             <Text className=" text-xs pt-1 text-black ">
-              Selesai : {item.tanggal_selesai_uji || "Tanggal Tidak Tersedia"}
+              Selesai : {item.tanggal_selesai_uji || "Tanggal Belum Tersedia"}
             </Text>
           </View>
           <View className="">
@@ -438,7 +438,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <BackButton
             size={24}
@@ -456,18 +456,8 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
-        {/* {user && user?.has_tagihan ? (
-          <View>
-            <Text>anjay</Text>
-          </View>
-        ) : (
-          <View></View>
-        )} */}
-        {/* <Text>
-          {titikPermohonans?.data?.length}
-        </Text> */}
-        {!titikPermohonans?.data?.length && (
-          <View className="p-5">
+        {!titikPermohonans?.data?.length && !pivotData?.length && (
+          <View className=" pt-5 px-5">
             <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
               <Text className="text-black mb-0">
                 Silahkan Tambah Titik Lokasi Sampel Pengujian
@@ -490,21 +480,24 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             </View>
           </View>
         ) : (
-          <></>
+          <>
+            <Paginate
+              ref={paginateRef}
+              payload={{ permohonan_uuid: { uuid } }}
+              url="/permohonan/titik"
+              className="mb-20"
+              renderItem={CardTitikUji}></Paginate>
+            <Icons
+              name="plus"
+              size={28}
+              color="#fff"
+              style={styles.plusIcon}
+              onPress={() =>
+                navigation.navigate("FormTitikUji", { permohonan })
+              }
+            />
+          </>
         )}
-        <Paginate
-          ref={paginateRef}
-          payload={{ permohonan_uuid: { uuid } }}
-          url="/permohonan/titik"
-          className="mb-24"
-          renderItem={CardTitikUji}></Paginate>
-        <Icons
-          name="plus"
-          size={28}
-          color="#fff"
-          style={styles.plusIcon}
-          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
-        />
       </View>
 
       <DeleteConfirmationModal />
@@ -575,7 +568,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 40,
+    bottom: 20,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,

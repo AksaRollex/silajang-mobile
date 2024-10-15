@@ -14,6 +14,8 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
+import RNPickerSelect from "react-native-picker-select";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import Back from "../../components/Back";
@@ -119,11 +121,52 @@ const Permohonan = ({ navigation }) => {
     );
   };
 
+  const filtah = () => {
+    return (
+      <>
+        <View className="flex flex-row justify-end">
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tahun",
+              value: null,
+              color: "grey",
+            }}
+          />
+        </View>
+      </>
+    );
+  };
+
   return (
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -150,11 +193,12 @@ const Permohonan = ({ navigation }) => {
           <></>
         )}
         <Paginate
-          className="mb-24"
+          className="mb-20"
           ref={paginateRef}
           key={refreshKey}
           url="/permohonan"
           payload={{ tahun: tahun }}
+          Plugin={filtah}
           renderItem={CardPermohonan}></Paginate>
         <Icons
           name="plus"
@@ -172,13 +216,13 @@ const Permohonan = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 10,
     borderRadius: 15,
     padding: rem(0.7),
     backgroundColor: "#fff",
     flexDirection: "row",
     borderTopColor: Colors.brand,
     borderTopWidth: 7,
+    marginVertical : 10
   },
   cards: {
     borderRadius: 10,
@@ -204,7 +248,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 40,
+    bottom: 30,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,

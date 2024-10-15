@@ -81,7 +81,7 @@ const EditPermohonan = ({ route, navigation }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-4 justify-between"
+          className="flex-row mb-4 p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
