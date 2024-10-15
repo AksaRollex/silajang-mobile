@@ -1,6 +1,10 @@
 import React from "react";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
-import { NavigationContainer, useNavigation } from "@react-navigation/native";
+import {
+  NavigationContainer,
+  useNavigation,
+  getFocusedRouteNameFromRoute,
+} from "@react-navigation/native";
 
 import Pengujian from "./Pengujian";
 import TrackingList from "./trackingPengujian/Detail";
@@ -14,22 +18,24 @@ import TambahPermohonan from "./permohonan/FormTambah";
 
 const Stack = createNativeStackNavigator();
 
-export default function MainScreen() {
+const PengujianStack = () => {
   const navigation = useNavigation();
+
   return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
-        <Stack.Screen name="Pengujian" component={Pengujian} />
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="PengujianHome" component={Pengujian} />
 
-        <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
-        <Stack.Screen name="TrackingList" component={TrackingList} />
+      <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />
+      <Stack.Screen name="TrackingList" component={TrackingList} />
+      <Stack.Screen name="Permohonan" component={Permohonan} />
 
-        <Stack.Screen name="Permohonan" component={Permohonan} />
-        <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
-        <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
-        <Stack.Screen name="TitikUji" component={TitikUji} />
-        <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
-        <Stack.Screen name="Parameter" component={Parameter} />
-
-      </Stack.Navigator>
+      <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
+      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
+      <Stack.Screen name="TitikUji" component={TitikUji} />
+      <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
+      <Stack.Screen name="Parameter" component={Parameter} />
+    </Stack.Navigator>
   );
-}
+};
+
+export default PengujianStack;

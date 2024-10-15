@@ -11,7 +11,7 @@ import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FooterText from "../components/FooterText";
-export default function Pembayaran() {
+export default function PembayaranStack() {
   const [refreshing, setRefreshing] = useState(false);
   const [accordionExpanded, setAccordionExpanded] = useState(false);
   const [activeComponent, setActiveComponent] = useState(null);

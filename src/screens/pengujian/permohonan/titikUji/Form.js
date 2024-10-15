@@ -4,7 +4,7 @@ import Select2 from "@/src/screens/components/Select2";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from "moment";
-import 'moment/locale/id';
+import "moment/locale/id";
 import * as React from "react";
 import { memo, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -17,7 +17,7 @@ import {
   StyleSheet,
   Text,
   TouchableOpacity,
-  View
+  View,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MultiSelect from "react-native-multiple-select";
@@ -26,13 +26,8 @@ import { Button, Colors, TextField } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
-moment.locale('id');
-const FormTitikUji = ({
-  route,
-  navigation,
-  formData,
-  mapStatusPengujian,
-}) => {
+moment.locale("id");
+const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [sampelData, setSampelData] = useState([]);
   const [selectedSampel, setSelectedSampel] = useState(null);
   const [openSampel, setOpenSampel] = useState(false);
@@ -54,7 +49,6 @@ const FormTitikUji = ({
     latitude: "",
     longitude: "",
   });
-
 
   const [tanggalJam, setTanggalJam] = useState();
   useEffect(() => {
@@ -90,18 +84,13 @@ const FormTitikUji = ({
 
   const handleWaktu = async selectedTime => {
     try {
-      const formattedTime =  moment(selectedTime).format('YYYY-MM-DD HH:mm:ss');
-      const response = await axios.post(
-        `/permohonan/titik/${uuid}/update`,
-        {
-          tanggal_pengambilan: formattedTime,
-        },
-      );
-      console.log("Data berhasil disimpan:", response.data)
-    } catch (error) {
-
-    }
-  }
+      const formattedTime = moment(selectedTime).format("YYYY-MM-DD HH:mm:ss");
+      const response = await axios.post(`/permohonan/titik/${uuid}/update`, {
+        tanggal_pengambilan: formattedTime,
+      });
+      console.log("Data berhasil disimpan:", response.data);
+    } catch (error) {}
+  };
 
   const handleCardPress = card => {
     setSelectedCard(card);
@@ -128,7 +117,6 @@ const FormTitikUji = ({
       enabled: !!uuid,
       // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
-        
         if (data) {
           setDate(new Date(data.tanggal_pengambilan))
           location.latitude = data.south,
@@ -184,7 +172,6 @@ const FormTitikUji = ({
     },
   );
 
-
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [paymentTypeError, setPaymentTypeError] = useState(null);
 
@@ -205,7 +192,6 @@ const FormTitikUji = ({
         south: location.latitude,
         east: location.longitude,
       };
-
 
       return axios.post(
         uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
@@ -301,7 +287,6 @@ const FormTitikUji = ({
             label: item.nama,
           }),
         );
-        
 
         setSampelData(formattedSampelData);
         setJenisWadah(formattedJenisWadah);
@@ -373,13 +358,15 @@ const FormTitikUji = ({
 
   return (
     <>
-      <View className="flex-row items-center justify-between p-4 bg-white">
+      <View
+        className="flex-row items-center justify-between p-3 "
+        style={{ backgroundColor: Colors.brand }}>
         <BackButton
           action={() => navigation.goBack()}
           size={24}
-          color={"black"}
+          color={"white"}
         />
-        <Text className="text-xl font-bold text-black">
+        <Text className="text-lg font-bold text-white">
           {uuid ? "Edit" : "Tambah"} Titik Pengujian
         </Text>
       </View>
@@ -394,7 +381,7 @@ const FormTitikUji = ({
         data={[{ key: "from" }]}
         renderItem={() => (
           <View className="bg-[#ececec] w-full h-full px-3 py-1">
-            <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-20">
+            <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-2">
               <Text className="text-base font-bold text-center  text-black">
                 Detail Pengiriman
               </Text>
@@ -563,45 +550,46 @@ const FormTitikUji = ({
                     )}
                   />
 
-                  <Text className="text-sans font-bold text-black mb-2">Tanggal/Jam Pengambilan</Text>
+                  <Text className="text-sans font-bold text-black mb-2">
+                    Tanggal/Jam Pengambilan
+                  </Text>
                   <View>
-                  <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                   <View className="flex-row items-center p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
-                    <Text className="text-sm flex-1 text-black">
-                      {date 
-                      ? `${moment(date).format('YYYY-MM-DD HH:mm:ss')} ` 
-                      : "Pilih Tanggal dan Waktu"}
-                    </Text>
-                    <FontAwesome5Icon
-                      name="calendar-alt"
-                      size={20}
-                      color="black"
-                      marginHorizontal={10}
-                      />
-                    
-                   </View>
-                  </TouchableOpacity>
+                    <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                      <View className="flex-row items-center p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
+                        <Text className="text-sm flex-1 text-black">
+                          {date
+                            ? `${moment(date).format("YYYY-MM-DD HH:mm:ss")} `
+                            : "Pilih Tanggal dan Waktu"}
+                        </Text>
+                        <FontAwesome5Icon
+                          name="calendar-alt"
+                          size={20}
+                          color="black"
+                          marginHorizontal={10}
+                        />
+                      </View>
+                    </TouchableOpacity>
                   </View>
-                  
-                  {showDatePicker && (
-                            <DateTimePicker
-                              value={date || new Date()}
-                              mode="date"
-                              timeZoneName="Asia/Jakarta"
-                              display={Platform.OS === "ios" ? "spinner" : "default"}
-                              onChange={handleDateChange}
-                              />
-                          )}
 
-                          {showTimePicker && isDateSelected && (
-                            <DateTimePicker
-                              value={date || new Date()}
-                              mode="time"
-                              timeZoneName="Asia/Jakarta"
-                              display={Platform.OS === "ios" ? "spinner" : "default"}
-                              onChange={handleTimeChange}
-                              />
-                          )}
+                  {showDatePicker && (
+                    <DateTimePicker
+                      value={date || new Date()}
+                      mode="date"
+                      timeZoneName="Asia/Jakarta"
+                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      onChange={handleDateChange}
+                    />
+                  )}
+
+                  {showTimePicker && isDateSelected && (
+                    <DateTimePicker
+                      value={date || new Date()}
+                      mode="time"
+                      timeZoneName="Asia/Jakarta"
+                      display={Platform.OS === "ios" ? "spinner" : "default"}
+                      onChange={handleTimeChange}
+                    />
+                  )}
 
                   <Controller
                     name="acuan_metode_id"

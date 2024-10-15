@@ -236,7 +236,7 @@ export default function Profile({ navigation }) {
               alignItems: "center",
             }}>
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15 }}>
+              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15, color : 'black'}}>
               Konfirmasi Logout
             </Text>
 
@@ -249,7 +249,7 @@ export default function Profile({ navigation }) {
               }}
             />
 
-            <Text style={{ fontSize: 16, marginBottom: 25 }}>
+            <Text style={{ fontSize: 16, marginBottom: 25 , color : 'black'}}>
               Apakah Anda yakin ingin keluar?
             </Text>
             <View style={{ flexDirection: "row" }}>

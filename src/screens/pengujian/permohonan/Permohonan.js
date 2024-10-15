@@ -14,6 +14,8 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
+import RNPickerSelect from "react-native-picker-select";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import Back from "../../components/Back";
@@ -24,7 +26,7 @@ const baseRem = 16;
 const Permohonan = ({ navigation }) => {
   const [tahun, setTahun] = useState(2024);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { data: user } = useUser()
+  const { data: user } = useUser();
 
   const tahuns = Array.from(
     { length: new Date().getFullYear() - 2021 },
@@ -77,14 +79,19 @@ const Permohonan = ({ navigation }) => {
       <View style={styles.card}>
         <View style={styles.cards}>
           <Text style={[styles.cardTexts]}>{item.tanggal}</Text>
-          <Text className="font-bold text-2xl text-black my-1">
+          <Text className="font-bold text-xl text-black my-1">
             {item.industri}
           </Text>
 
-          <Text style={[styles.badge]} className="bg-indigo-400 text-white text-xs">
-            Cara Pengambilan : {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+          <Text
+            style={[styles.badge]}
+            className="bg-indigo-400 text-white text-xs">
+            Cara Pengambilan :{" "}
+            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
           </Text>
-          <Text style={[styles.badge]}  className="bg-emerald-400 text-white text-xs">
+          <Text
+            style={[styles.badge]}
+            className="bg-emerald-400 text-white text-xs">
             Pembayaran : {item.pembayaran}
           </Text>
 
@@ -114,11 +121,52 @@ const Permohonan = ({ navigation }) => {
     );
   };
 
+  const filtah = () => {
+    return (
+      <>
+        <View className="flex flex-row justify-end">
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tahun",
+              value: null,
+              color: "grey",
+            }}
+          />
+        </View>
+      </>
+    );
+  };
+
   return (
     <>
-     <View className="w-full">
+      <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -126,50 +174,41 @@ const Permohonan = ({ navigation }) => {
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg ">
-            Permohonan
-          </Text>
+          <Text className="font-bold text-white text-lg ">Permohonan</Text>
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff]">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
-        { user.has_tagihan ? (
+        {user.has_tagihan ? (
           <View className="p-2">
-          <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
-          <Text className="text-black mb-0 text-sm">Tidak dapat membuat Permohonan Baru</Text>
-          <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
-        </View>
+            <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+              <Text className="text-black mb-0 text-sm">
+                Tidak dapat membuat Permohonan Baru
+              </Text>
+              <Text className="text-black text-xs">
+                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+              </Text>
+            </View>
           </View>
-      ) : (
-        <>
-          <Icons
-            name="plus"
-            size={28}
-            color="#fff"
-            style={styles.plusIcon}
-            onPress={() => navigation.navigate("TambahPermohonan")}
-          />
-        </>
-      )}
+        ) : (
+          <></>
+        )}
         <Paginate
-          className="mb-28"
+          className="mb-20"
           ref={paginateRef}
           key={refreshKey}
           url="/permohonan"
           payload={{ tahun: tahun }}
+          Plugin={filtah}
           renderItem={CardPermohonan}></Paginate>
+        <Icons
+          name="plus"
+          size={28}
+          color="#fff"
+          style={styles.plusIcon}
+          onPress={() => navigation.navigate("TambahPermohonan")}
+        />
       </View>
+
       <DeleteConfirmationModal />
     </>
   );
@@ -177,22 +216,22 @@ const Permohonan = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 10,
     borderRadius: 15,
     padding: rem(0.7),
     backgroundColor: "#fff",
     flexDirection: "row",
     borderTopColor: Colors.brand,
     borderTopWidth: 7,
+    marginVertical : 10
   },
   cards: {
     borderRadius: 10,
-    width: "70%",
+    width: "90%",
     marginBottom: 4,
   },
   cards2: {
     borderRadius: 10,
-    width: "30%",
+    width: "10%",
     marginBottom: 4,
     display: "flex",
     alignItems: "center",
@@ -201,7 +240,7 @@ const styles = StyleSheet.create({
   picker: {
     flex: 1,
     marginHorizontal: 4,
-    color : 'black'
+    color: "black",
   },
   cardTexts: {
     fontSize: rem(0.9),
@@ -209,7 +248,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 65,
+    bottom: 30,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,
@@ -218,7 +257,7 @@ const styles = StyleSheet.create({
   },
   badge: {
     alignSelf: "flex-start",
-    paddingVertical: 2,
+    paddingVertical: 1,
     paddingHorizontal: 4,
     borderRadius: 4,
     marginBottom: 4,

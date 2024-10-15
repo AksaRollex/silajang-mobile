@@ -617,7 +617,7 @@ const Perusahaan = () => {
               )}
 
               <View className="flex-row justify-between">
-              <Controller
+                <Controller
                   control={control}
                   name="lat"
                   rules={{ required: "Latitude Tidak Boleh Kosong" }}
@@ -709,11 +709,13 @@ const Perusahaan = () => {
                           setSelectedKotaKabupaten(value);
                         }}
                         value={value}
-                        items={kotaKabupaten.map(item => ({
-                          label: item.label,
-                          value: item.value,
-                          key: item.value, // Tambahkan key yang unik
-                        }))}
+                        items={kotaKabupaten
+                          .filter(item => item.value != null)
+                          .map(item => ({
+                            label: item.label,
+                            value: item.value,
+                            key: item.value.toString(),
+                          }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
                         // value={value}: userData.kab_kota_id
@@ -747,11 +749,13 @@ const Perusahaan = () => {
                           setSelectedKecamatan(value); // Set Kecamatan
                         }}
                         value={value}
-                        items={kecamatan.map(item => ({
-                          label: item.label,
-                          value: item.value,
-                          key: item.value, // Tambahkan key yang unik
-                        }))}
+                        items={kecamatan
+                          .filter(item => item.value != null)
+                          .map(item => ({
+                            label: item.label,
+                            value: item.value,
+                            key: item.value.toString(), // Tambahkan key yang unik
+                          }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
                         // value={value}: userData.kecamatan_id
@@ -787,11 +791,13 @@ const Perusahaan = () => {
                           setSelectedKelurahan(value); // Set Kelurahan
                         }}
                         value={value}
-                        items={kelurahan.map(item => ({
-                          label: item.label,
-                          value: item.value,
-                          key: item.value, // Tambahkan key yang unik
-                        }))}
+                        items={kelurahan
+                          .filter(item => item.value != null)
+                          .map(item => ({
+                            label: item.label,
+                            value: item.value,
+                            key: item.value.toString(), // Tambahkan key yang unik
+                          }))}
                         style={pickerSelectStyles}
                         useNativeAndroidPickerStyle={false}
                         // value={value}: userData.kelurahan_id

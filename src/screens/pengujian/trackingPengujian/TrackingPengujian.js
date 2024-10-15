@@ -7,6 +7,8 @@ import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import Header from "../../components/Header";
 import Back from "../../components/Back";
+import RNPickerSelect from "react-native-picker-select";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const TrackingPengujian = ({ navigation }) => {
   const paginateRef = useRef();
@@ -67,11 +69,52 @@ const TrackingPengujian = ({ navigation }) => {
     </View>
   );
 
+  const filtah = () => {
+    return (
+      <>
+        <View className="flex flex-row justify-end">
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tahun",
+              value: null,
+              color: "gray",
+            }}
+          />
+        </View>
+      </>
+    );
+  };
+
   return (
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -85,23 +128,12 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       </View>
       <View className="w-full h-full bg-[#ececec]">
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff] ">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
         <Paginate
           key={refreshKey}
           ref={paginateRef}
           url="/tracking"
-          className="mb-32"
+          className="mb-20"
+          Plugin={filtah}
           payload={{ tahun }}
           renderItem={renderItem}
         />
@@ -134,14 +166,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 8,
     padding: 16,
-    marginVertical: 8,
     borderTopWidth: 4,
     borderTopColor: "#4f46e5",
+    marginVertical : 10
   },
   cardContent: {
-    flex: 1,
+    borderRadius: 10,
+    width: "90%",
+    marginBottom: 4,
   },
   cardActions: {
+    borderRadius: 10,
+    width: "10%",
+    marginBottom: 4,
+    display: "flex",
+    alignItems: "center",
     justifyContent: "center",
   },
   badge: {

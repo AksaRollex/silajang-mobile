@@ -50,7 +50,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   // console.log("data permohonan", permohonan);
   const data = permohonan || {};
   const pivotData = data.titik_permohonans;
-  console.log("data: ", data);
+  // console.log("data: ", data);
   const { onSuccess, onError, onSettled } = callback || {};
 
   useEffect(() => {
@@ -243,11 +243,11 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_sampel
   function getPenerimaanText(kesimpulan_sampel) {
     if (kesimpulan_sampel === 1) {
-      return "Diterima";
+      return " Diterima";
     } else if (kesimpulan_sampel === 2) {
-      return "Ditolak";
+      return " Ditolak";
     } else {
-      return "Menunggu";
+      return " Menunggu";
     }
   }
 
@@ -256,32 +256,30 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       <View style={styles.card}>
         <View style={styles.cards}>
           <Text className="text-black text-base font-bold">{item.lokasi}</Text>
-          <Text className="font-bold text-2xl text-black my-1">
-            {item.kode}
-          </Text>
+          <Text className="font-bold text-xl text-black ">{item.kode}</Text>
           <View className="py-1">
             <Text className=" text-xs pt-1 text-black ">
               Diambil : {item.tanggal_pengambilan || "-"}
             </Text>
             <Text className=" text-xs pt-1 text-black ">
-              Diterima : {item.tanggal_diterima || "-"}
+              Diterima : {item.tanggal_diterima || "Tanggal Belum Tersedia"}
             </Text>
             <Text className=" text-xs pt-1 text-black ">
-              Selesai : {item.tanggal_selesai_uji || "-"}
+              Selesai : {item.tanggal_selesai_uji || "Tanggal Belum Tersedia"}
             </Text>
           </View>
-          <View>
+          <View className="">
             <View>
               <Text
                 style={styles.badge}
                 className={`${
                   item.kesimpulan_permohonan == 1
-                    ? "text-green-600 bg-green-50" // Diterima
+                    ? "text-green-600 bg-green-50 text-xs" // Diterima
                     : item.kesimpulan_permohonan == 2
-                    ? "text-red-600 bg-red-50" // Ditolak
-                    : "text-blue-600 bg-blue-50" // Menunggu
+                    ? "text-red-600 bg-red-50 text-xs" // Ditolak
+                    : "text-blue-600 bg-blue-50 text-xs" // Menunggu
                 }`}>
-                Pengambilan: {getKesimpulanText(item.kesimpulan_permohonan)}
+                Pengambilan : {getKesimpulanText(item.kesimpulan_permohonan)}
               </Text>
             </View>
             <View>
@@ -289,13 +287,12 @@ const TitikUji = ({ navigation, route, status, callback }) => {
                 style={styles.badge}
                 className={`${
                   item.kesimpulan_sampel == 1
-                    ? "text-green-600 bg-green-50" // Diterima
+                    ? "text-green-600 bg-green-50 text-xs" // Diterima
                     : item.kesimpulan_sampel == 2
-                    ? "text-red-600 bg-red-50" // Ditolak
-                    : "text-blue-600 bg-blue-50" // Menunggu
+                    ? "text-red-600 bg-red-50 text-xs" // Ditolak
+                    : "text-blue-600 bg-blue-50 text-xs" // Menunggu
                 }`}>
-                Penerimaan:
-                {getPenerimaanText(item.kesimpulan_sampel)}
+                Penerimaan :{getPenerimaanText(item.kesimpulan_sampel)}
               </Text>
             </View>
             <Text
@@ -441,7 +438,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <BackButton
             size={24}
@@ -450,7 +447,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             className="mr-2 "
           />
           {permohonan ? (
-            <Text className="font-bold text-white text-lg ">
+            <Text className="font-bold text-white text-md mt-1 ">
               {permohonan?.industri} : Titik Pengujian
             </Text>
           ) : (
@@ -459,9 +456,8 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         </View>
       </View>
       <View className="bg-[#ececec] w-full h-full">
-       
-        {!titikPermohonans?.data?.length && !pivotData?.length &&  (
-          <View className="p-5">
+        {!titikPermohonans?.data?.length && !pivotData?.length && (
+          <View className=" pt-5 px-5">
             <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
               <Text className="text-black mb-0">
                 Silahkan Tambah Titik Lokasi Sampel Pengujian
@@ -472,30 +468,36 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             </View>
           </View>
         )}
-        { user.has_tagihan ? (
+        {user.has_tagihan ? (
           <View className="p-2">
-          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
-            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
-          </View>
+            <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+              <Text className="text-black mb-0">
+                Tidak dapat membuat Permohonan Baru
+              </Text>
+              <Text className="text-black text-xs">
+                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+              </Text>
+            </View>
           </View>
         ) : (
-        <>
-        <Icons
-          name="plus"
-          size={28}
-          color="#fff"
-          style={styles.plusIcon}
-          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
-          />
-        </>
-      )}
-        <Paginate
-          ref={paginateRef}
-          payload={{ permohonan_uuid: { uuid } }}
-          url="/permohonan/titik"
-          className="mb-40"
-          renderItem={CardTitikUji}></Paginate>
+          <>
+            <Paginate
+              ref={paginateRef}
+              payload={{ permohonan_uuid: { uuid } }}
+              url="/permohonan/titik"
+              className="mb-20"
+              renderItem={CardTitikUji}></Paginate>
+            <Icons
+              name="plus"
+              size={28}
+              color="#fff"
+              style={styles.plusIcon}
+              onPress={() =>
+                navigation.navigate("FormTitikUji", { permohonan })
+              }
+            />
+          </>
+        )}
       </View>
 
       <DeleteConfirmationModal />
@@ -548,12 +550,12 @@ const styles = StyleSheet.create({
   },
   cards: {
     borderRadius: 10,
-    width: "70%",
+    width: "90%",
     marginBottom: 4,
   },
   cards2: {
     borderRadius: 10,
-    width: "30%",
+    width: "10%",
     marginBottom: 4,
     display: "flex",
     alignItems: "center",
@@ -566,7 +568,7 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 65,
+    bottom: 20,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,

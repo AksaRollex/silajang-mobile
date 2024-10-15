@@ -15,7 +15,9 @@ import Header from "../components/Header";
 import FooterText from "../components/FooterText";
 import { Picker } from "@react-native-picker/picker";
 import Icon from "react-native-vector-icons/AntDesign";
+import RNPickerSelect from "react-native-picker-select";
 import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
@@ -68,31 +70,58 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-      <Header navigate={() => {navigation.navigate("Profile")}} />
-      <View className="p-4 flex items-end  ">
-        <View className="flex ">
-          <Picker
-            selectedValue={tahun}
-            style={styles.picker}
-            onValueChange={handleYearChange}>
-            {tahuns.map(item => (
-              <Picker.Item key={item.id} label={item.text} value={item.id} />
-            ))}
-          </Picker>
+      <Header
+        navigate={() => {
+          navigation.navigate("Profile");
+        }}
+      />
+      <View className="p-4 flex items-end">
+        <View>
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+          />
         </View>
       </View>
-      { user.has_tagihan && (
+      {user.has_tagihan && (
         <View className="p-2">
           <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-            <Text className="text-black mb-0">Tidak dapat membuat Permohonan Baru</Text>
-            <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
+            <Text className="text-black mb-0">
+              Tidak dapat membuat Permohonan Baru
+            </Text>
+            <Text className="text-black text-xs">
+              Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+            </Text>
           </View>
-          </View>
+        </View>
       )}
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
-        <View style={styles.gridContainer}>
+        <View style={styles.gridContainer} className="px-2">
           {dashboard ? (
             <>
               <DashboardCard
@@ -100,7 +129,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanBaru}
                 text="Permohonan Baru"
                 numberStyle={styles.card1}
-                icon={'user-group'}
+                icon={"user-group"}
                 iconColor={"#FFA500"}
               />
               <DashboardCard
@@ -108,7 +137,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanDiproses}
                 text="Permohonan Proses"
                 numberStyle={styles.card2}
-                icon={'leaf'}
+                icon={"leaf"}
                 iconColor={"#6b7fde"}
               />
               <DashboardCard
@@ -116,7 +145,7 @@ const Dashboard = () => {
                 number={dashboard.permohonanSelesai}
                 text="Permohonan Selesai"
                 numberStyle={styles.card3}
-                icon={'circle-check'}
+                icon={"circle-check"}
                 iconColor={"#008000"}
               />
               <DashboardCard
@@ -124,9 +153,8 @@ const Dashboard = () => {
                 number={dashboard.permohonanTotal}
                 text="Total Permohonan"
                 numberStyle={styles.card4}
-                icon={'wallet'}
+                icon={"wallet"}
                 iconColor={"#321e81"}
-
               />
             </>
           ) : (
@@ -141,11 +169,21 @@ const Dashboard = () => {
   );
 };
 
-const DashboardCard = ({ style, number, text, imageSource, numberStyle, icon, iconColor }) => (
+const DashboardCard = ({
+  style,
+  number,
+  text,
+  imageSource,
+  numberStyle,
+  icon,
+  iconColor,
+}) => (
   <View style={[styles.cardContainer, style]}>
     <View style={styles.row}>
       <FontAwesome6Icon name={icon} size={32} color={iconColor} />
-      <Text style={[styles.cardNumber, numberStyle]}>{number}</Text>
+      <Text style={[styles.cardNumber, numberStyle]} className="text-end">
+        {number}
+      </Text>
     </View>
     <Text style={[styles.cardInfoValue, styles.cardTextColor]}>{text}</Text>
   </View>
@@ -208,24 +246,23 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   picker: {
-    borderColor: "#ccc",
     paddingHorizontal: rem(3.55),
-    borderWidth: 1,
+    borderWidth: 3,
     color: "black",
     backgroundColor: "white",
   },
   scrollViewContainer: {
-    padding: 10,
+    // padding: 10,
   },
   gridContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-between",
+    marginBottom: 20,
   },
   cardContainer: {
     width: "48%",
     height: 160,
-    marginVertical: 10,
     borderRadius: 7,
     padding: 20,
     flexDirection: "column",
