@@ -58,10 +58,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const handleDateChange = (event, selectedDate) => {
     if (event.type === "set") {
       const currentDate = selectedDate || date;
-      setDate(currentDate);
-      setShowDatePicker(false);
-      setIsDateSelected(true);
-      setShowTimePicker(true);
+      if (currentDate instanceof Date && !isNaN(currentDate)){
+        setDate(currentDate);
+        setShowDatePicker(false);
+        setIsDateSelected(true);
+        setShowTimePicker(true);
+      } else {
+        console.error("Invalid date selected")
+      }
     } else {
       setShowDatePicker(false);
     }
@@ -114,8 +118,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
-          setDate(new Date(data.tanggal_pengambilan));
-          (location.latitude = data.south), (location.longitude = data.east);
+          setDate(new Date(data.tanggal_pengambilan))
+          location.latitude = data.south,
+          location.longitude = data.east,
+          setSelectedPayment(data.payment_type)
           reset({
             lokasi: data.lokasi,
             jenis_sampel_id: data.jenis_sampel_id,
@@ -167,16 +173,22 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   );
 
   const [selectedPayment, setSelectedPayment] = useState(null);
+  const [paymentTypeError, setPaymentTypeError] = useState(null);
+
   const handleSelectedPayment = cara => {
     setSelectedPayment(cara);
+    setPaymentTypeError(null);
   };
   const { mutate: createOrUpdate, isLoading } = useMutation(
     data => {
+      if (!selectedPayment) {
+        throw new Error("silahkan pilih metode pembayaran")
+      }
       const requestData = {
         payment_type: selectedPayment === "va" ? "va" : "qris",
         ...data,
         permohonan_uuid: permohonan.uuid,
-        tanggal_pengambilan: moment(date).format("YYYY-MM-DD HH:mm:ss"),
+        tanggal_pengambilan: date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : null,
         south: location.latitude,
         east: location.longitude,
       };
@@ -211,11 +223,31 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
  
   const onSubmit = data => {
-    createOrUpdate(data, {
+    let requestData = {
+      ...data,
+      permohonan_uuid: permohonan.uuid,
+      south: location.latitude,
+      east: location.longitude,
+    };
+
+    if (permohonan && permohonan.is_mandiri) {
+      if (date) {
+        requestData.tanggal_pengambilan = moment(date).format('YYYY-MM-DD HH:mm:ss');
+      } else {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Tanggal pengambilan harus diisi"
+        });
+        return;
+      }
+    }
+
+    createOrUpdate(requestData, {
       onError: error => {
-        console.error("Form submission error:", error);
-      },
-    });
+        console.error("Form submission error:", error );
+      }
+    })
   };
 
   const handleDateTimeChange = (event, selectedDate) => {
@@ -389,6 +421,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   </Text>
                 </TouchableOpacity>
               </View>
+              {paymentTypeError && (
+                <Text className="text-red-500 text-sm mt-2">{paymentTypeError}</Text>
+              )}
 
               <Controller
                 name="lokasi"
@@ -413,7 +448,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-sans font-bold text-black">
                       Jenis Sampel
                     </Text>
 
@@ -447,7 +482,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         setSelectedJenisWadah(items);
                       }}
                       selectedItems={value || []}
-                      selectText="Pilih Jenis Wadah"
+                      selectText="  Pilih Jenis Wadah"
                       searchInputPlaceholderText="Cari Jenis Wadah..."
                       onChangeInput={text => console.log(text)}
                       altFontFamily="ProximaNova-Light"
