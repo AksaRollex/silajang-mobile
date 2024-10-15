@@ -330,7 +330,7 @@ const Akun = () => {
               </Button>
             </View>
           ) : (
-            <View className="flex-1 justify-center items-center">
+            <View className="flex-1 justify-center items-center my-4">
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
