@@ -70,7 +70,7 @@ export default function Pengujian() {
                 title="Kontrak"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Kontrak")}  
+                onPress={() => navigation.navigate("Kontrak")}   
               />
               <List.Item 
                 title="Persetujuan" 
@@ -107,16 +107,20 @@ export default function Pengujian() {
                 title="Analis"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
+                onPress={() => navigation.navigate("Analis")}    
+
               />
               <List.Item 
                 title="Koordinator Teknis" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("Kortek")}
               />
               <List.Item 
                 title="Verifikasi LHU" 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("VerifikasiLhu")} 
               />
             </List.Accordion>
 
