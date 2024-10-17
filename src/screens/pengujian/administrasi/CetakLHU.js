@@ -192,7 +192,7 @@ const CetakLHU = ({ navigation }) => {
             </View>
             <View className="my-2">
               {canUpload && (
-                <TouchableOpacity onPress={() =>  FilePicker()} className="mb-2">
+                <TouchableOpacity onPress={() =>  handleFilePicker()} className="mb-2">
                   <FontIcon name="file-upload" size={18} color="white" style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} />
                 </TouchableOpacity>
               )}
@@ -279,7 +279,6 @@ const CetakLHU = ({ navigation }) => {
         url="/administrasi/cetak-lhu"
         payload={payload}
         renderItem={renderItem}
-        className="mb-14"
       />
 
     <Modal
