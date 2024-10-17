@@ -20,7 +20,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/Feather";
-import SkeletonPlaceholder from "react-native-skeleton-placeholder";
+import { Skeleton } from "@rneui/themed";
+// import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import LinearGradient from "react-native-linear-gradient";
 
 // Aktivasi LayoutAnimation di Android
@@ -39,6 +40,7 @@ const Paginate = forwardRef(
     const [dataList, setDataList] = useState([]);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
     const { control, handleSubmit } = useForm();
+    const cardData = [1, 2, 3, 4];
 
     const { data, isFetching, refetch } = useQuery({
       queryKey: [url, page, search],
@@ -84,106 +86,106 @@ const Paginate = forwardRef(
       }
     };
 
-    const SkeletonLoader = () => (
-      <SkeletonPlaceholder backgroundColor="#e0e0e0" highlightColor="#f5f5f5">
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            padding: 15,
-            width: "100%",
-            marginTop: rem(8),
-          }}>
-          {[...Array(5)].map((_, index) => (
-            <View key={index} style={{ marginVertical: 10 }}>
-              <View
-                style={{
-                  flexDirection: "row",
-                  padding: 10,
-                  borderRadius: 15,
-                  borderTopWidth: 7,
-                  borderTopColor: "#e0e0e0",
-                }}>
-                <View style={{ width: "90%", padding: 10 }}>
-                  {/* Individual skeleton items */}
-                  <View
-                    style={{
-                      width: 100,
-                      height: 16,
-                      borderRadius: 4,
-                      backgroundColor: "#e0e0e0",
-                    }}
-                  />
-                  <View
-                    style={{
-                      marginTop: 8,
-                      width: 200,
-                      height: 24,
-                      borderRadius: 4,
-                      backgroundColor: "#e0e0e0",
-                    }}
-                  />
-                  <View
-                    style={{
-                      marginTop: 8,
-                      width: 150,
-                      height: 20,
-                      borderRadius: 4,
-                      backgroundColor: "#e0e0e0",
-                    }}
-                  />
-                  <View
-                    style={{
-                      marginTop: 8,
-                      width: 180,
-                      height: 20,
-                      borderRadius: 4,
-                      backgroundColor: "#e0e0e0",
-                    }}
-                  />
-                  <View
-                    style={{
-                      marginTop: 8,
-                      width: 250,
-                      height: 16,
-                      borderRadius: 4,
-                      backgroundColor: "#e0e0e0",
-                    }}
-                  />
-                </View>
-                <View
-                  style={{
-                    width: "10%",
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}>
-                  <View
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: 20,
-                    }}></View>
-                  <View
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: 20,
-                      marginVertical: 1,
-                    }}></View>
-                  <View
-                    style={{
-                      width: 5,
-                      height: 5,
-                      borderRadius: 20,
-                    }}></View>
-                </View>
-              </View>
-            </View>
-          ))}
-        </View>
-      </SkeletonPlaceholder>
-    );
+    // const SkeletonLoader = () => (
+    //   <SkeletonPlaceholder backgroundColor="#e0e0e0" highlightColor="#f5f5f5">
+    //     <View
+    //       style={{
+    //         flexDirection: "column",
+    //         alignItems: "center",
+    //         padding: 15,
+    //         width: "100%",
+    //         marginTop: rem(8),
+    //       }}>
+    //       {[...Array(5)].map((_, index) => (
+    //         <View key={index} style={{ marginVertical: 10 }}>
+    //           <View
+    //             style={{
+    //               flexDirection: "row",
+    //               padding: 10,
+    //               borderRadius: 15,
+    //               borderTopWidth: 7,
+    //               borderTopColor: "#e0e0e0",
+    //             }}>
+    //             <View style={{ width: "90%", padding: 10 }}>
+    //               {/* Individual skeleton items */}
+    //               <View
+    //                 style={{
+    //                   width: 100,
+    //                   height: 16,
+    //                   borderRadius: 4,
+    //                   backgroundColor: "#e0e0e0",
+    //                 }}
+    //               />
+    //               <View
+    //                 style={{
+    //                   marginTop: 8,
+    //                   width: 200,
+    //                   height: 24,
+    //                   borderRadius: 4,
+    //                   backgroundColor: "#e0e0e0",
+    //                 }}
+    //               />
+    //               <View
+    //                 style={{
+    //                   marginTop: 8,
+    //                   width: 150,
+    //                   height: 20,
+    //                   borderRadius: 4,
+    //                   backgroundColor: "#e0e0e0",
+    //                 }}
+    //               />
+    //               <View
+    //                 style={{
+    //                   marginTop: 8,
+    //                   width: 180,
+    //                   height: 20,
+    //                   borderRadius: 4,
+    //                   backgroundColor: "#e0e0e0",
+    //                 }}
+    //               />
+    //               <View
+    //                 style={{
+    //                   marginTop: 8,
+    //                   width: 250,
+    //                   height: 16,
+    //                   borderRadius: 4,
+    //                   backgroundColor: "#e0e0e0",
+    //                 }}
+    //               />
+    //             </View>
+    //             <View
+    //               style={{
+    //                 width: "10%",
+    //                 display: "flex",
+    //                 justifyContent: "center",
+    //                 alignItems: "center",
+    //               }}>
+    //               <View
+    //                 style={{
+    //                   width: 5,
+    //                   height: 5,
+    //                   borderRadius: 20,
+    //                 }}></View>
+    //               <View
+    //                 style={{
+    //                   width: 5,
+    //                   height: 5,
+    //                   borderRadius: 20,
+    //                   marginVertical: 1,
+    //                 }}></View>
+    //               <View
+    //                 style={{
+    //                   width: 5,
+    //                   height: 5,
+    //                   borderRadius: 20,
+    //                 }}></View>
+    //             </View>
+    //           </View>
+    //         </View>
+    //       ))}
+    //     </View>
+    //   </SkeletonPlaceholder>
+    // );
 
     const ListHeader = () => (
       <>
@@ -231,8 +233,119 @@ const Paginate = forwardRef(
 
     if (isFetching && page === 1) {
       return (
-        <View className="flex-1">
-          <SkeletonLoader />
+        <View className="mt-32">
+          {cardData.map((item, index) => (
+            <View
+              key={index}
+              style={{
+                flexDirection: "column",
+                alignItems: "center",
+                justifyContent: "space-between",
+                marginTop: 12,
+              }}>
+              <View>
+                <View
+                  style={{
+                    width: 390,
+                    height: 10,
+                    borderTopLeftRadius: 20,
+                    borderTopRightRadius: 20,
+                    overflow: "hidden", // Pastikan elemen anak tidak keluar dari radius
+                  }}>
+                  <Skeleton
+                    animation="wave"
+                    width={390}
+                    height={20}
+                    LinearGradientComponent={LinearGradient}
+                  />
+                </View>
+                <View
+                  LinearGradientComponent={LinearGradient}
+                  style={{ width: "90%" }}>
+                  <Skeleton
+                    animation="wave"
+                    width={390}
+                    LinearGradientComponent={LinearGradient}
+                    height={180}
+                  />
+                  {/* Nested skeleton di dalam skeleton */}
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: "5%",
+                      left: "5%",
+                    }}>
+                    <Skeleton
+                      animation="wave"
+                      width={150}
+                      height={20}
+                      LinearGradientComponent={LinearGradient}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={220}
+                      height={55}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={160}
+                      height={14}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={160}
+                      height={14}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={160}
+                      height={14}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                  </View>
+                </View>
+                <View
+                  LinearGradientComponent={LinearGradient}
+                  style={{
+                    width: "10%",
+                    position: "absolute",
+                    justifyContent: "flex-end",
+                    right: 0,
+                    top: "40%",
+                  }}>
+                  <Skeleton
+                    animation="wave"
+                    circle
+                    width={6}
+                    height={6}
+                    LinearGradientComponent={LinearGradient}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    circle
+                    width={6}
+                    height={6}
+                    LinearGradientComponent={LinearGradient}
+                    style={{ marginVertical: 3 }}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    circle
+                    width={6}
+                    height={6}
+                    LinearGradientComponent={LinearGradient}
+                  />
+                </View>
+              </View>
+            </View>
+          ))}
         </View>
       );
     }

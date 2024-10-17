@@ -58,13 +58,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const handleDateChange = (event, selectedDate) => {
     if (event.type === "set") {
       const currentDate = selectedDate || date;
-      if (currentDate instanceof Date && !isNaN(currentDate)){
+      if (currentDate instanceof Date && !isNaN(currentDate)) {
         setDate(currentDate);
         setShowDatePicker(false);
         setIsDateSelected(true);
         setShowTimePicker(true);
       } else {
-        console.error("Invalid date selected")
+        console.error("Invalid date selected");
       }
     } else {
       setShowDatePicker(false);
@@ -118,10 +118,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
-          setDate(new Date(data.tanggal_pengambilan))
-          location.latitude = data.south,
-          location.longitude = data.east,
-          setSelectedPayment(data.payment_type)
+          setDate(new Date(data.tanggal_pengambilan));
+          (location.latitude = data.south),
+            (location.longitude = data.east),
+            setSelectedPayment(data.payment_type);
           reset({
             lokasi: data.lokasi,
             jenis_sampel_id: data.jenis_sampel_id,
@@ -182,13 +182,15 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const { mutate: createOrUpdate, isLoading } = useMutation(
     data => {
       if (!selectedPayment) {
-        throw new Error("silahkan pilih metode pembayaran")
+        throw new Error("silahkan pilih metode pembayaran");
       }
       const requestData = {
         payment_type: selectedPayment === "va" ? "va" : "qris",
         ...data,
         permohonan_uuid: permohonan.uuid,
-        tanggal_pengambilan: date ? moment(date).format('YYYY-MM-DD HH:mm:ss') : null,
+        tanggal_pengambilan: date
+          ? moment(date).format("YYYY-MM-DD HH:mm:ss")
+          : null,
         south: location.latitude,
         east: location.longitude,
       };
@@ -221,7 +223,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     },
   );
 
- 
   const onSubmit = data => {
     let requestData = {
       ...data,
@@ -232,12 +233,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
     if (permohonan && permohonan.is_mandiri) {
       if (date) {
-        requestData.tanggal_pengambilan = moment(date).format('YYYY-MM-DD HH:mm:ss');
+        requestData.tanggal_pengambilan = moment(date).format(
+          "YYYY-MM-DD HH:mm:ss",
+        );
       } else {
         Toast.show({
           type: "error",
           text1: "Error",
-          text2: "Tanggal pengambilan harus diisi"
+          text2: "Tanggal pengambilan harus diisi",
         });
         return;
       }
@@ -245,9 +248,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
     createOrUpdate(requestData, {
       onError: error => {
-        console.error("Form submission error:", error );
-      }
-    })
+        console.error("Form submission error:", error);
+      },
+    });
   };
 
   const handleDateTimeChange = (event, selectedDate) => {
@@ -408,7 +411,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   style={[selectedPayment === "qris" && styles.selectedCard]}
                   onPress={() => handleSelectedPayment("qris")}>
                   <MaterialIcons
-                    name="barcode"
+                    name="qrcode"
                     size={50}
                     color="black"
                     style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
@@ -422,7 +425,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 </TouchableOpacity>
               </View>
               {paymentTypeError && (
-                <Text className="text-red-500 text-sm mt-2">{paymentTypeError}</Text>
+                <Text className="text-red-500 text-sm mt-2">
+                  {paymentTypeError}
+                </Text>
               )}
 
               <Controller
@@ -485,7 +490,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       selectText="  Pilih Jenis Wadah"
                       searchInputPlaceholderText="Cari Jenis Wadah..."
                       onChangeInput={text => console.log(text)}
-                      altFontFamily="ProximaNova-Light"
+                      altFontFamily="sans-serif"
                       tagRemoveIconColor="#CCC"
                       tagBorderColor="#CCC"
                       tagTextColor="#CCC"
@@ -494,7 +499,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       itemTextColor="#000"
                       displayKey="name"
                       searchInputStyle={{ color: "#CCC" }}
-                      submitButtonColor="black"
+                      submitButtonColor="#312e81"
                       submitButtonText="Submit"
                       // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
                       // nestedScrollEnabled={true}

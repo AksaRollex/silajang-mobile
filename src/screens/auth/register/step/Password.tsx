@@ -1,55 +1,69 @@
-import axios from "@/src/libs/axios";
+import React, { memo } from "react";
+import { Button } from "react-native";
 import { useMutation } from "@tanstack/react-query";
-import { memo } from "react";
 import { useForm, Controller } from "react-hook-form";
-import {
-  Assets,
-  Button,
-  Colors,
-  Text,
-  TextField,
-  View,
-} from "react-native-ui-lib";
-import { API_URL } from "@env";
-import { useFormStep, useFormStore } from "../Index";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
 import Toast from "react-native-toast-message";
 
-export default memo(function Credential() {
-  const { setCredential } = useFormStore();
-  const { nextStep, setIndex } = useFormStep();
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    getValues,
-  } = useForm();
+import { useNavigation } from "@react-navigation/native";
+import { useFormStore, useFormStep } from "../Index";
+import axios from "@/src/libs/axios";
+import { Colors, Text, TextField, View } from "react-native-ui-lib";
 
+const schema = yup
+  .object({
+    password: yup.string().required("Password tidak boleh kosong"),
+    password_confirmation: yup
+      .string()
+      .oneOf([yup.ref("password")], "Konfirmasi password tidak sesuai"),
+  })
+  .required();
+
+const Password = memo(() => {
   const {
-    mutate: getEmailOtp,
-    isLoading,
-    isSuccess,
-  } = useMutation(
-    data =>
-      axios.post(`/auth/register/get/email/otp`, data).then(res => res.data),
-    {
-      onSuccess: data => {
-        setCredential(getValues());
-        nextStep();
-        Toast.show({
-          type: "success",
-          text1: "Kode OTP Berhasil",
-          text2: "Kode OTP dikirim ke email anda",
-        });
-      },
-      onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-      },
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  const navigation = useNavigation();
+  const { mutate: register, status, isLoading, isSuccess } = useMutation({
+    mutationFn: data => axios.post("/auth/register", data),
+    onSuccess: async data => {
+      Toast.show({
+        type: "success",
+        text1: "Pendaftaran berhasil!",
+      });
+      navigation.navigate("login", { register: true });
     },
-  );
+    onError: error => {
+      console.error(error.response.data);
+      Toast.show({
+        type: "error",
+        text1: error.response.data.message,
+      });
+    },
+  });
+
+  const { setPassword, credential, otp, password, getEmailOtp } = useFormStore();
+  const prevStep = useFormStep(state => state.prevStep);
+
+  const onSubmit = data => {
+    setPassword(data);
+    console.log({
+      ...credential,
+      ...otp,
+      ...data,
+    });
+    register({
+      ...credential,
+      ...otp,
+      ...data,
+    });
+  };
 
   return (
     <View>
@@ -88,7 +102,7 @@ export default memo(function Credential() {
         <Text marginB-5>Email</Text>
         <Controller
           control={control}
-          name="email"
+          name="password"
           rules={{ required: "Email tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
@@ -109,9 +123,9 @@ export default memo(function Credential() {
             />
           )}
         />
-        {errors.email && (
+        {errors.password && (
           <Text color={Colors.red30} body>
-            {errors.email.message}
+            {errors.password.message}
           </Text>
         )}
       </View>
@@ -119,11 +133,10 @@ export default memo(function Credential() {
         <Text marginB-5>No. Telepon</Text>
         <Controller
           control={control}
-          name="phone"
+          name="password_confirmation"
           rules={{ required: "No. Telepon tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              keyboardType="phone-pad"
               placeholder={"No. Telepon"}
               enableErrors
               fieldStyle={{
@@ -141,9 +154,9 @@ export default memo(function Credential() {
             />
           )}
         />
-        {errors.phone && (
+        {errors.password_confirmation && (
           <Text color={Colors.red30} body>
-            {errors.phone.message}
+            {errors.password_confirmation.message}
           </Text>
         )}
       </View>
@@ -160,3 +173,5 @@ export default memo(function Credential() {
     </View>
   );
 });
+
+export default Password;

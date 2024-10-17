@@ -6,6 +6,8 @@ import { Assets, Button, Colors, Image, Text, View } from "react-native-ui-lib";
 import { create } from "zustand";
 import Credential from "./step/Credential";
 import OtpEmail from "./step/OtpEmail";
+import OtpPhone from "./step/OtpPhone";
+import Password from "./step/Password";
 
 export const useFormStore = create(set => ({
   credential: {
@@ -57,6 +59,12 @@ export default memo(function Login({ navigation }): React.JSX.Element {
         </If>
         <If isTrue={index === 1}>
           <OtpEmail />
+        </If>
+        <If isTrue={index === 2}>
+          <OtpPhone />
+        </If>
+        <If isTrue={index === 3}>
+          <Password />
         </If>
 
         <Button
