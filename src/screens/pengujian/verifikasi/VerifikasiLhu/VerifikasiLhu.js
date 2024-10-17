@@ -30,7 +30,7 @@ const pengambilOptions = [
   { id: 1, name: "Telah Diambil" },
 ];
 
-const Persetujuan = ({ navigation }) => {
+const VerifikasiLhu = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
   const [selectedPengambil, setSelectedPengambil] = useState(0);
@@ -218,21 +218,21 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold ">Persetujuan</Text>
-              </View>
+                <Text className="text-[20px] font-bold ">Verifikasi LHU</Text>
+              </View> 
             </View>
 
             <View className="flex-row justify-center">
-            <View className="mt-3 ml-[-10] mr-2"> 
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={170}
-                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              />
+              <View className="mt-3 ml-[-10] mr-2"> 
+                <HorizontalScrollMenu
+                  items={pengambilOptions}
+                  selected={selectedPengambil}
+                  onPress={item => setSelectedPengambil(item.id)}
+                  itemWidth={170}
+                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                  activeBackgroundColor={"#312e81"}
+                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                />
             </View>
 
             <MenuView
@@ -314,4 +314,4 @@ const Persetujuan = ({ navigation }) => {
   );
 };
 
-export default Persetujuan;
+export default VerifikasiLhu;

@@ -32,7 +32,6 @@ const screenOptions = {
 
 export default function MainScreen() {
   return (
-    <NavigationContainer independent={true}>
       <Tab.Navigator screenOptions={screenOptions}>
   
 
@@ -88,7 +87,6 @@ export default function MainScreen() {
         <Stack.Screen name="NonPengujian" component={NonPengujian}/>
         <Stack.Screen name="Global" component={Global}/>
       </Tab.Navigator>
-    </NavigationContainer>
   );
 }
 

@@ -25,6 +25,13 @@ import DetailPengisian from "./administrasi/PengambilSample/DetailPengisian"
 import DetailPengambilSample from "./administrasi/PengambilSample/DetailPengambilSample"
 import CetakLHU from "./administrasi/CetakLHU"
 
+
+import Analis from "./verifikasi/Analis/Analis"
+import HasilUji from "./verifikasi/Analis/HasilUji"
+import Kortek from "./verifikasi/Kortek/Kortek"
+import HasilUjis from "./verifikasi/Kortek/HasilUjis"
+import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
+
 const Stack = createNativeStackNavigator();
 const screenOptions = {
   tabBarShowLabel: false,
@@ -42,7 +49,6 @@ const screenOptions = {
 
 export default function MainScreen() {
   return (
-  <NavigationContainer independent={true}>
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
         name="PengujianIndex"
@@ -118,7 +124,27 @@ export default function MainScreen() {
         name="CetakLHU"
         component={CetakLHU}
       />
+      <Stack.Screen
+        name="Analis"
+        component={Analis}
+      />
+      <Stack.Screen
+        name="HasilUji"
+        component={HasilUji}
+      />
+      <Stack.Screen
+        name="Kortek"
+        component={Kortek}
+      />
+      <Stack.Screen
+        name="HasilUjis"
+        component={HasilUjis}
+      />
+     
+      <Stack.Screen
+        name="VerifikasiLhu"
+        component={VerifikasiLhu}
+      />
     </Stack.Navigator>
-  </NavigationContainer>
   );
 }

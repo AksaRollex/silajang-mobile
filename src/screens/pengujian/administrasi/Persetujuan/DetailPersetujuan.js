@@ -9,6 +9,8 @@ import {
   Platform,
   ScrollView,
   Modal,
+  FlatList,
+  Button,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -31,6 +33,8 @@ import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
 import { formatDate } from "@/src/libs/utils";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import MultiSelect from "react-native-multiple-select";
+
 
 const currency = (number) => {
   return number.toLocaleString("id-ID", {
@@ -56,7 +60,7 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [selectedRadius, setSelectedRadius] = useState(null);
 
   const [pengambilSample, setPengambilSample] = useState([]);
-  const [selectedPengambilSample, setSelectedPengambilSample] = useState(null);
+  const [selectedPetugas, setSelectedPetugas] = useState([]);
 
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
@@ -111,20 +115,61 @@ export default function DetailPersetujuan({ route, navigation }) {
   }, []);
 
 
-  useEffect(() => {
+    useEffect(() => {
     const fetchPengambilSample = async () => {
       try {
-        const response = await axios.get("/administrasi/pengambil-sample/petugas");
-        setPengambilSample(response.data.data);
+        const response = await axios.get('/administrasi/pengambil-sample/petugas');
+        setPengambilSample(response.data.data); // Use response.data.data for the correct array
       } catch (error) {
-        console.error("Error fetching pengambil data:", error);
+        console.error('Error fetching pengambil data:', error);
       }
     };
 
     fetchPengambilSample();
   }, []);
 
+  const savePetugas = async () => {
+    try {
+      console.log("Data yang akan dikirim:", {
+        petugas_pengambil_ids: selectedPetugas,
+      });
+  
+      const response = await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          petugas_pengambil_ids: selectedPetugas,
+        },
+        {
+          headers: {
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+  
+      console.log("Data berhasil disimpan:", response.data);
+    } catch (error) {
+      if (error.response) {
+        // Server merespons dengan status selain 2xx
+        console.error("Server response error:", error.response.data);
+      } else if (error.request) {
+        // Request dibuat tetapi tidak ada response
+        console.error("No response received:", error.request);
+      } else {
+        // Error pada saat setup request
+        console.error("Request error:", error.message);
+      }
+    }
+  };
+  
+  
 
+  useEffect(() => {
+    if (selectedPetugas.length > 0) {
+      savePetugas(); // Panggil savePetugas setelah state terupdate
+    }
+  }, [selectedPetugas]); 
+  
+  
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -137,6 +182,9 @@ export default function DetailPersetujuan({ route, navigation }) {
         }
         if (response.data.data.acuan_metode) {
           setSelectedMetode(response.data.data.acuan_metode.id)
+        }
+        if(response.data.data.petugas_pengambil_ids){
+          setSelectedPetugas(response.data.data.petugas_pengambil_ids)
         }
 
         if (response.data.data) {
@@ -350,7 +398,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const saveMetode = async status => {
     try {
-      // Log data yang akan dikirim
+      // Log data yang akan dikirim 
       console.log("Data yang akan dikirim:", {
         acuan_metode_id: status,
       });
@@ -696,7 +744,13 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
             </View>
             <View style={styles.pengambilanContainer}>
-              <Text style={styles.title}>Detail Pengambilan</Text>
+              <Text style={{
+                fontSize: 15,
+                fontWeight: "bold",
+                marginBottom: 20,
+                color: Colors.black,
+              }}
+              >Detail Pengambilan (Silahkan isi data di bawah ini)</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome5Icon
@@ -774,29 +828,49 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas</Text>
-                  <View style={styles.pickerContainer}>
-                    <RNPickerSelect
-                      placeholder={{ label: 'Pilih Petugas', value: null }}
-                      onValueChange={(value) => setSelectedPengambilSample(value)}
+                  <FlatList
+                      scrollEnabled={false}
+                      data={[{ key: 'selectPetugas' }]} 
+                      renderItem={() => (
+                        <View>
+                        <MultiSelect
+                      hideTags
                       items={pengambilSample.map(item => ({
-                        label: `${item.nama}`,
-                        value: item.id
+                        id: item.id,
+                        name: item.nama,
                       }))}
-                      style={{
-                        inputIOS: styles.pickerStyle,
-                        inputAndroid: styles.pickerStyle,
-                        iconContainer: {
-                          top: 10,
-                          right: 12,
-                        },
+                      uniqueKey="id"
+                      onSelectedItemsChange={items => {
+                        setSelectedPetugas(items); 
                       }}
-                      value={selectedPengambilSample}
-                      useNativeAndroidPickerStyle={false}
-                      Icon={() => {
-                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }} />;
-                      }}
+                      selectedItems={selectedPetugas}
+                      selectText="Pilih petugas"
+                      searchInputPlaceholderText="Cari petugas..."
+                      tagRemoveIconColor="#CED4DA"
+                      tagBorderColor="#E9ECEF"
+                      tagTextColor="#495057"
+                      selectedItemTextColor="#495057"
+                      selectedItemIconColor="#50cc96"
+                      itemTextColor="#495057"
+                      displayKey="name"
+                      searchInputStyle={styles.searchInputStyle}
+                      submitButtonColor="#312e81"
+                      submitButtonText="Pilih"
+                      styleListContainer={styles.listContainer}
+                      styleMainWrapper={styles.mainWrapper}
+                      styleTextDropdown={styles.textDropdown}
+                      styleTextDropdownSelected={styles.textDropdownSelected}
+                      styleSelectorContainer={styles.selectorContainer}
+                      styleRowList={styles.rowList}
+                      styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
+                      styleInputGroup={styles.inputGroup}
+                      fontFamily="System"
                     />
-                  </View>
+                    </View>
+                      )}
+                      keyExtractor={(item, index) => index.toString()}
+                    />
+  
                 </View>
               </View>
 
@@ -1169,4 +1243,4 @@ const styles = StyleSheet.create({
     backgroundColor: "#f8fafc",
   },
 
-});
+ });

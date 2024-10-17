@@ -4,6 +4,8 @@ import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from 'react-native-vector-icons/Feather';
+import { Skeleton } from "@rneui/themed";
+import LinearGradient from "react-native-linear-gradient";
 
 // Aktivasi LayoutAnimation di Android
 if (Platform.OS === 'android' && UIManager.setLayoutAnimationEnabledExperimental) {
@@ -17,6 +19,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   const [dataList, setDataList] = useState([]); 
   const [isFetchingMore, setIsFetchingMore] = useState(false);
   const { control, handleSubmit } = useForm();
+  const cardData = [1,2,3,4,5]
 
   const { data, isFetching, refetch } = useQuery({
     queryKey: [url, page, search],
@@ -55,10 +58,10 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   }, [isFetchingMore]);
 
   const handleScroll = (event) => {
-    const scrollOffset = event.nativeEvent.contentOffset.y;
-    if (scrollOffset <= 0 && page > 1) {
-      setPage(1); 
-    }
+    // const scrollOffset = event.nativeEvent.contentOffset.y;
+    // if (scrollOffset <= 0 && page > 1) {
+    //   setPage(1); 
+    // }
   };
 
   const ListHeader = () => (
@@ -97,8 +100,119 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
 
   if (isFetching && page === 1) {
     return (
-      <View className="flex-1 justify-center items-center">
-        <ActivityIndicator size="large" color="#312e81" />
+      <View className="mt-32">
+        {cardData.map((item, index) => (
+          <View
+            key={index}
+            style={{
+              flexDirection: "column",
+              alignItems: "center",
+              justifyContent: "space-between",
+              marginTop: 12,
+            }}>
+            <View>
+              <View
+                style={{
+                  width: 390,
+                  height: 10,
+                  borderTopLeftRadius: 20,
+                  borderTopRightRadius: 20,
+                  overflow: "hidden", // Pastikan elemen anak tidak keluar dari radius
+                }}>
+                <Skeleton
+                  animation="wave"
+                  width={390}
+                  height={20}
+                  LinearGradientComponent={LinearGradient}
+                />
+              </View>
+              <View
+                LinearGradientComponent={LinearGradient}
+                style={{ width: "90%" }}>
+                <Skeleton
+                  animation="wave"
+                  width={390}
+                  LinearGradientComponent={LinearGradient}
+                  height={180}
+                />
+                {/* Nested skeleton di dalam skeleton */}
+                <View
+                  style={{
+                    position: "absolute",
+                    top: "5%",
+                    left: "5%",
+                  }}>
+                  <Skeleton
+                    animation="wave"
+                    width={150}
+                    height={20}
+                    LinearGradientComponent={LinearGradient}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    width={220}
+                    height={55}
+                    LinearGradientComponent={LinearGradient}
+                    style={{ marginTop: 10 }}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    width={160}
+                    height={14}
+                    LinearGradientComponent={LinearGradient}
+                    style={{ marginTop: 10 }}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    width={160}
+                    height={14}
+                    LinearGradientComponent={LinearGradient}
+                    style={{ marginTop: 10 }}
+                  />
+                  <Skeleton
+                    animation="wave"
+                    width={160}
+                    height={14}
+                    LinearGradientComponent={LinearGradient}
+                    style={{ marginTop: 10 }}
+                  />
+                </View>
+              </View>
+              <View
+                LinearGradientComponent={LinearGradient}
+                style={{
+                  width: "10%",
+                  position: "absolute",
+                  justifyContent: "flex-end",
+                  right: 0,
+                  top: "40%",
+                }}>
+                <Skeleton
+                  animation="wave"
+                  circle
+                  width={6}
+                  height={6}
+                  LinearGradientComponent={LinearGradient}
+                />
+                <Skeleton
+                  animation="wave"
+                  circle
+                  width={6}
+                  height={6}
+                  LinearGradientComponent={LinearGradient}
+                  style={{ marginVertical: 3 }}
+                />
+                <Skeleton
+                  animation="wave"
+                  circle
+                  width={6}
+                  height={6}
+                  LinearGradientComponent={LinearGradient}
+                />
+              </View>
+            </View>
+          </View>
+        ))}
       </View>
     );
   }
@@ -110,15 +224,11 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
         data={dataList}
         renderItem={renderItem}
         keyExtractor={(item, index) => index.toString()}
-        onScroll={handleScroll} 
-        onEndReached={handleLoadMore} 
-        onEndReachedThreshold={0.5} 
+        onScroll={handleScroll}
+        onEndReached={handleLoadMore}
+        onEndReachedThreshold={0.5}
         ListFooterComponent={ListFooter}
-        ListEmptyComponent={() => (
-          <View className="flex-1 justify-center items-center">
-            <Text className="text-gray-500">Data kosong</Text>
-          </View>
-        )}
+        removeClippedSubviews={false}
       />
     </View>
   );
