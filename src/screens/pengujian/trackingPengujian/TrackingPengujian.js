@@ -164,10 +164,10 @@ const styles = StyleSheet.create({
   card: {
     flexDirection: "row",
     backgroundColor: "#fff",
-    borderRadius: 8,
-    padding: 16,
-    borderTopWidth: 4,
-    borderTopColor: "#4f46e5",
+    borderRadius: 15,
+    padding: rem(0.7),
+    borderTopWidth: 7,
+    borderTopColor: Colors.brand,
     marginVertical : 10
   },
   cardContent: {

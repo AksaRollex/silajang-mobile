@@ -62,7 +62,7 @@ const Pengujian = ({ navigation }) => {
 
   const handleTypeChange = useCallback(itemValue => {
     setRefreshKey(prevKey => prevKey + 1);
-    StateTypes(itemValue);
+    setTypes(itemValue);
   });
   const { download, PDFConfirmationModal } = useDownloadPDF({
     onSuccess: filePath => console.log("Download success:", filePath),
