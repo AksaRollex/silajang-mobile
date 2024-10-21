@@ -25,6 +25,7 @@ import Toast from "react-native-toast-message";
 import { Button, Colors, TextField } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { TextArea } from "react-native-ui-lib";
 
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
@@ -171,6 +172,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       },
     },
   );
+
+  console.log(data);
 
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [paymentTypeError, setPaymentTypeError] = useState(null);
@@ -380,7 +383,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         </Text>
       )}
       <FlatList
-        className="bg-[#ececec] h-full px-3 py-1"
+        className="bg-[#ececec] h-full px-1 py-1"
         data={[{ key: "from" }]}
         renderItem={() => (
           <View className="bg-[#ececec] w-full h-full px-3 py-1">
@@ -402,9 +405,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   <Text className="text-black font-bold text-lg text-center">
                     Virtual Account
                   </Text>
-                  <Text className="text-black text-justify">
+                  {/* <Text className="text-black text-justify">
                     Transfer melalui Virtual Account Bank Jatim
-                  </Text>
+                  </Text> */}
                 </TouchableOpacity>
                 <TouchableOpacity
                   className="w-1/2 bg-[#fff] rounded-sm py-12 px-2   m-0.5 items-center"
@@ -419,9 +422,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   <Text className="text-black font-bold text-lg text-center">
                     QRIS
                   </Text>
-                  <Text className="text-black text-justify">
+                  {/* <Text className="text-black text-justify">
                     Scan dan bayar melalui QRIS
-                  </Text>
+                  </Text> */}
                 </TouchableOpacity>
               </View>
               {paymentTypeError && (
@@ -478,38 +481,31 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       Jenis Wadah
                     </Text>
 
-                    <MultiSelect
-                      hideTags
-                      items={jenisWadah}
-                      uniqueKey="id"
-                      onSelectedItemsChange={items => {
-                        onChange(items);
-                        setSelectedJenisWadah(items);
-                      }}
-                      selectedItems={value || []}
-                      selectText="  Pilih Jenis Wadah"
-                      searchInputPlaceholderText="Cari Jenis Wadah..."
-                      onChangeInput={text => console.log(text)}
-                      altFontFamily="sans-serif"
-                      tagRemoveIconColor="#CCC"
-                      tagBorderColor="#CCC"
-                      tagTextColor="#CCC"
-                      selectedItemTextColor="#CCC"
-                      selectedItemIconColor="#CCC"
-                      itemTextColor="#000"
-                      displayKey="name"
-                      searchInputStyle={{ color: "#CCC" }}
-                      submitButtonColor="#312e81"
-                      submitButtonText="Submit"
-                      // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans text-black"
-                      // nestedScrollEnabled={true}
-                      // open={openJenisWadah}
-                      // value={value}
-                      // items={jenisWadah}
-                      // setOpen={setOpenJenisWadah}
-                      // setValue={onChange}
-                      // setItems={setJenisWadah}
-                    />
+                    <View className="border border-stone-300 bg-[#fff]">
+                      <MultiSelect
+                        hideTags
+                        items={jenisWadah}
+                        uniqueKey="id"
+                        onSelectedItemsChange={items => {
+                          onChange(items);
+                          setSelectedJenisWadah(items);
+                        }}
+                        selectedItems={value || []}
+                        selectText="  Pilih Jenis Wadah"
+                        searchInputPlaceholderText="Cari Jenis Wadah..."
+                        onChangeInput={text => console.log(text)}
+                        altFontFamily="sans-serif"
+                        tagRemoveIconColor="#CCC"
+                        tagTextColor="#CCC"
+                        selectedItemTextColor="#CCC"
+                        selectedItemIconColor="#CCC"
+                        itemTextColor="#000"
+                        displayKey="name"
+                        searchInputStyle={{ color: "#CCC" }}
+                        submitButtonColor='#311B74'
+                        submitButtonText="Submit"
+                      />
+                    </View>
                   </View>
                 )}
               />
@@ -522,12 +518,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     <Text className="font-sans font-bold mb-2 text-black">
                       Keterangan
                     </Text>
-                    <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                      value={value}
-                      onChangeText={onChange}
-                      error={errors.keterangan?.message}
-                    />
+                    <View className="border border-stone-300 bg-[#fff]">
+                      <TextArea
+                        className="px-2 py-4 bg-[#fff] rounded-sm font-sans"
+                        value={value}
+                        onChangeText={onChange}
+                        error={errors.keterangan?.message}
+                      />
+                    </View>
                   </View>
                 )}
               />

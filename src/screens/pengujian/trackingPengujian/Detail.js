@@ -61,7 +61,7 @@ const TrackingList = ({ route, onClose }) => {
       </View>
 
       <View className="bg-[#ececec] px-4  mb-24 ">
-        <ScrollView className="bg-[#fff] px-2 rounded-sm">
+        <ScrollView className="bg-[#fff] px-2  pt-3 rounded-sm">
           {selected && selected.trackings && selected.trackings.length > 0 ? (
             selected.trackings.map(tracking => (
               <View key={tracking.id} style={styles.trackingItem}>

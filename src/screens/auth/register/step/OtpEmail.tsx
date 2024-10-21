@@ -1,7 +1,13 @@
 import OTPInputView from "@twotalltotems/react-native-otp-input";
 import { memo } from "react";
 import { Controller, useForm } from "react-hook-form";
-import { Button, Colors, Text, TouchableOpacity, View } from "react-native-ui-lib";
+import {
+  Button,
+  Colors,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native-ui-lib";
 import { useFormStep, useFormStore } from "../Index";
 import { useMutation } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
@@ -20,7 +26,10 @@ export default memo(function OtpEmail() {
   const { mutate: verify, status: statusVerif } = useMutation(
     data =>
       axios
-        .post("/auth/register/check/email/otp", { email: credential.email, otp: data.otp })
+        .post("/auth/register/check/email/otp", {
+          email: credential.email,
+          otp: data.otp,
+        })
         .then(res => res.data),
     {
       onSuccess: data => {
@@ -43,7 +52,7 @@ export default memo(function OtpEmail() {
   const { mutate: getEmailOtp, status: statusOtp } = useMutation(
     data =>
       axios
-        .post("/auth/register/get/email/otp", { email : credential.email  })
+        .post("/auth/register/get/email/otp", { email: credential.email })
         .then(res => res.data),
     {
       onSuccess: data => {
@@ -110,12 +119,25 @@ export default memo(function OtpEmail() {
         outline
         outlineColor={Colors.brand}
         onPress={() => setIndex(0)}></Button>
-         <View style={{ flexDirection: "row", justifyContent: "center", marginTop  : 10 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: 10,
+        }}>
         <Text style={{ alignSelf: "center" }}>
           Tidak Menerima menerima Kode OTP?
         </Text>
-        <TouchableOpacity onPress={verify}>
-          <Text style={{ color: '#3b82f6', fontWeight: 'bold', fontSize : 14, marginHorizontal :5 }}>Kirim Ulang</Text>
+        <TouchableOpacity onPress={getEmailOtp}>
+          <Text
+            style={{
+              color: "#3b82f6",
+              fontWeight: "bold",
+              fontSize: 14,
+              marginHorizontal: 5,
+            }}>
+            Kirim Ulang
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

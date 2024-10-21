@@ -53,7 +53,6 @@ Toast.show({
         .then(res => res.data),
     {
       onSuccess: data => {
-        nextStep();
         Toast.show({
           type: "success",
           text1: "Kode OTP Berhasil",

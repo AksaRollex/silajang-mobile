@@ -10,7 +10,7 @@ import {
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { TextField, Colors, Button } from "react-native-ui-lib";
+import { TextField, Colors, Button, TextArea } from "react-native-ui-lib";
 import Toast from "react-native-toast-message";
 import DropDownPicker from "react-native-dropdown-picker";
 import axios from "@/src/libs/axios";
@@ -18,6 +18,7 @@ import Back from "../../components/Back";
 import Header from "../../components/Header";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Select2 from "../../components/Select2";
 
 const TambahPermohonan = ({ navigation }) => {
   const [jasaPengambilan, setJasaPengambilan] = useState([]);
@@ -55,7 +56,7 @@ const TambahPermohonan = ({ navigation }) => {
         kegiatan: getValues("kegiatan"),
         keterangan: getValues("keterangan"),
         is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
-        pembayaran: selectedPembayaran === "transfer" ? "transfer" : "Tunai",
+        pembayaran: "transfer",
         jasa_pengambilan_id: selectedJasaPengambilan,
       };
 
@@ -101,7 +102,7 @@ const TambahPermohonan = ({ navigation }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-3 justify-between"
+          className="flex-row  p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <Back
             size={24}
@@ -194,18 +195,18 @@ const TambahPermohonan = ({ navigation }) => {
                 <Text className="font-sans font-bold mb-2 text-black ">
                   Keterangan
                 </Text>
-                <TextField
-                  enableErrors
-                  placeholder="Masukkan Keterangan"
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  onChangeText={onChange}
-                  value={value}
-                />
+                <View className="border border-stone-300 bg-[#fff]">
+                  <TextArea
+                    className="px-2 py-4 bg-[#fff] rounded-sm font-sans"
+                    value={value}
+                    onChangeText={onChange}
+                  />
+                </View>
               </View>
             )}
           />
           <View>
-            <Text className="text-xl font-bold text-black mb-4 text-center">
+            <Text className="text-xl font-bold text-black my-4 text-center">
               Cara Pengambilan
             </Text>
 
@@ -220,9 +221,9 @@ const TambahPermohonan = ({ navigation }) => {
                 <Text className="font-bold text-lg text-center text-black my-2">
                   Kirim Mandiri
                 </Text>
-                <Text className="text-justify text-black text-sm">
+                {/* <Text className="text-justify text-black text-sm">
                   Kirim Sampel Uji Anda Ke Laboratorium Dinas
-                </Text>
+                </Text> */}
               </TouchableOpacity>
               <TouchableOpacity
                 style={[
@@ -234,29 +235,31 @@ const TambahPermohonan = ({ navigation }) => {
                 <Text className="font-bold text-lg text-center text-black my-2">
                   Ambil Petugas
                 </Text>
-                <Text className="text-justify text-black text-sm">
+                {/* <Text className="text-justify text-black text-sm">
                   Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi
                   Pengambilan
-                </Text>
+                </Text> */}
               </TouchableOpacity>
             </View>
           </View>
           {/* Conditionally Render TextField based on selectedCara */}
           {selectedCara === "ambilPetugas" && (
-            <DropDownPicker
-              open={OpenJasaPengambilan}
-              value={selectedJasaPengambilan}
-              items={jasaPengambilan}
-              name="jasa_pengambilan_id"
-              setOpen={setOpenJasaPengambilan}
-              setValue={setSelectedJasaPengambilan}
-              nestedScrollEnabled={true}
-              setItems={setJasaPengambilan}
-              placeholder="Pilih Jenis Pengambilan"
-              className="p-3 bg-[#fff] mb-5"
-            />
+            <Select2
+            onChangeValue={value => {
+              setSelectedJasaPengambilan(value); // Update state untuk nilai terpilih
+            }}
+            open={OpenJasaPengambilan}
+            value={selectedJasaPengambilan}
+            items={jasaPengambilan}
+            name="jasa_pengambilan_id"
+            setValue={setSelectedJasaPengambilan}
+            placeholder={{ label: "Pilih Jasa Pengambilan" }}
+            placeholderTextColor="black"
+            className="p-3 px-3 bg-[#fff] mb-5"
+          />
+          
           )}
-          <View>
+          {/* <View>
             <Text className="text-xl font-bold text-black mb-4 text-center">
               Opsi Pembayaran
             </Text>
@@ -276,7 +279,7 @@ const TambahPermohonan = ({ navigation }) => {
                 Informasikan Oleh Bendahara UPT
               </Text>
             </TouchableOpacity>
-          </View>
+          </View> */}
           <Button
             backgroundColor={Colors.brand}
             className="p-2 rounded-sm mt-4"
