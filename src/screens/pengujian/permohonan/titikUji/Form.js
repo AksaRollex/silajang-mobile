@@ -185,7 +185,12 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const { mutate: createOrUpdate, isLoading } = useMutation(
     data => {
       if (!selectedPayment) {
-        throw new Error("silahkan pilih metode pembayaran");
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Silahkan pilih metode pembayaran",
+        });
+        return Promise.reject(new Error("Silahkan pilih metode pembayaran"));
       }
       const requestData = {
         payment_type: selectedPayment === "va" ? "va" : "qris",
@@ -216,12 +221,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         navigation.navigate("TitikUji", { uuid: permohonan.uuid });
       },
       onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.response?.data?.message || "Failed to update data",
-        });
-        console.error("Mutation error:", error.response.data);
+        if (error.message !== "Silahkan pilih metode pembayaran") {
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: error.message?.data?.message || "Failed to update data"
+          })
+        }
       },
     },
   );
@@ -284,7 +290,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
         const formattedJenisWadah = wadahResponse.data.data.map(item => ({
           id: item.id,
-          name: item.nama,
+          name: `${item.nama} (${item.keterangan || "tidak ada keterangan"})`,
         }));
 
         const formattedAcuanMetode = acuanMetodeResponse.data.data.map(
@@ -410,7 +416,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   </Text> */}
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="w-1/2 bg-[#fff] rounded-sm py-12 px-2   m-0.5 items-center"
+                  className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
                   style={[selectedPayment === "qris" && styles.selectedCard]}
                   onPress={() => handleSelectedPayment("qris")}>
                   <MaterialIcons
@@ -427,11 +433,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   </Text> */}
                 </TouchableOpacity>
               </View>
-              {paymentTypeError && (
-                <Text className="text-red-500 text-sm mt-2">
-                  {paymentTypeError}
-                </Text>
-              )}
 
               <Controller
                 name="lokasi"
