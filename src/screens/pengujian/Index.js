@@ -49,7 +49,6 @@ const screenOptions = {
 
 export default function MainScreen() {
   return (
-  <NavigationContainer independent={true}>
     <Stack.Navigator screenOptions={screenOptions}>
       <Stack.Screen
         name="PengujianIndex"
@@ -147,6 +146,5 @@ export default function MainScreen() {
         component={VerifikasiLhu}
       />
     </Stack.Navigator>
-  </NavigationContainer>
   );
 }

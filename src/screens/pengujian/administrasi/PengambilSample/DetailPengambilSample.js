@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator  } from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator } from "react-native";
 import { Button, Colors, ComponentsColors, TextField } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -17,7 +17,7 @@ import { launchImageLibrary } from "react-native-image-picker";
 import { useForm, Controller } from "react-hook-form";
 import { rupiah } from "@/src/libs/utils";
 import Geolocation from 'react-native-geolocation-service';
-import {  request, PERMISSIONS, RESULTS } from 'react-native-permissions';
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
 import Toast from 'react-native-toast-message';
 import Foundation from "react-native-vector-icons/Foundation";
@@ -47,7 +47,7 @@ export default function Detail({ route, navigation }) {
     }
   )
   const { handleSubmit, control, setValue, watch } = useForm({
-    values: {...data}
+    values: { ...data }
   });
 
   const queryClient = useQueryClient();
@@ -58,25 +58,25 @@ export default function Detail({ route, navigation }) {
     },
     {
       onSuccess: () => {
-          console.log("berhasil")
-          Toast.show({
-              type: "success",
-              text1: "Success",
-              text2: uuid ? "Success update data" : "Success create data",
-          });
-          queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
-          queryClient.invalidateQueries("/administrasi/pengambil-sample");
+        console.log("berhasil")
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: uuid ? "Success update data" : "Success create data",
+        });
+        queryClient.setQueryData(["/administrasi/pengambil-sample", uuid], data);
+        queryClient.invalidateQueries("/administrasi/pengambil-sample");
       },
-      
+
       onError: (error) => {
-          Toast.show({ 
-              type: "error",
-              text1: "Error",
-              text2: "Failed to update data",
-          });
-          console.error(error);
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Failed to update data",
+        });
+        console.error(error);
       },
-  },
+    },
   )
 
   const handleBatalkanKonfirmasi = () => {
@@ -115,134 +115,134 @@ export default function Detail({ route, navigation }) {
   const onSubmit = (data) => {
     createOrUpdate(data);
   }
+
+  useEffect(() => {
+      requestLocationPermission();
+  }, []);
+
+  const requestLocationPermission = async () => {
+    try {
+      const permission =
+        Platform.OS === 'ios'
+          ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
+          : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
+
+      const result = await request(permission);
+      if (result === RESULTS.GRANTED) {
+        console.log('Location permission granted.');
+      } else {
+        console.log('Location permission denied.');
+        Alert.alert('Permission Denied', 'Location permission is required to access your location.');
+      }
+    } catch (error) {
+      console.log('Error requesting location permission:', error);
+    }
+  };
+
+  const handleCurrentLocation = () => {
+    Geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        setLocationData({
+          south: latitude.toString(),
+          east: longitude.toString(),
+        });
+        setValue('south', latitude.toString());
+        setValue('east', longitude.toString());
+        autosave({ south: latitude.toString(), east: longitude.toString() });
+      },
+      (error) => {
+        console.error('Error getting location:', error);
+        Alert.alert('Error', 'Unable to retrieve your location.');
+      },
+      { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
+    );
+  };
+
+
+  function rupiah(value) {
+    return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  const jenisWadahValues = data?.jenis_wadahs
+    ? data?.jenis_wadahs
+      .map(item => `${item.nama} (${item.keterangan})`)
+      .join(", ")
+    : "Tidak ada data";
+
+  const handleChoosePhoto = () => {
+    const options = {
+      mediaType: 'photo',
+      quality: 1,
+    };
+
+    launchImageLibrary(options, (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else {
+        const newPhoto = { uri: response.assets[0].uri };
+        setPhotos((prevPhotos) => [...prevPhotos, newPhoto]); // Tambahkan foto baru ke array
+      }
+    });
+  };
+
+  const handleDeletePhoto = (index) => {
+    setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index)); // Hapus foto berdasarkan index
+  };
+
+  const handleSubmitData = async () => {
+    const formData = new FormData();
+    console.log(photos);
+    photos.forEach((photo, index) => {
+      formData.append(`photos[]`, {
+        uri: photo.uri,
+        type: 'image/jpeg',   // Kamu bisa mengganti tipe sesuai file
+        name: `photo_${index}.jpg`,  // Penamaan bisa disesuaikan
+      });
+    });
+
+    if (file) {
+      formData.append('photos[]', {
+        uri: file.uri,
+        type: 'image/jpeg',
+        name: 'photo.jpg',
+      });
+    }
+
+    try {
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/upload-photo`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      Alert.alert('Success', 'Data berhasil disimpan.');
+    } catch (error) {
+      const message = error.response ? error.response.data.message : 'Something went wrong';
+      Alert.alert('Error', message);
+    }
+  };
+
+  function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        func.apply(this, args);
+      }, delay);
+    };
+  }
+  
+
+  const autosave = debounce((data) => {
+    createOrUpdate(watch());
+  }, 1500);
+
   if (isLoadingData && uuid) {
     return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
- }
-
- useEffect(() => {
-  requestLocationPermission();
-}, []);
-
-const requestLocationPermission = async () => {
-  try {
-    const permission =
-      Platform.OS === 'ios'
-        ? PERMISSIONS.IOS.LOCATION_WHEN_IN_USE
-        : PERMISSIONS.ANDROID.ACCESS_FINE_LOCATION;
-
-    const result = await request(permission);
-    if (result === RESULTS.GRANTED) {
-      console.log('Location permission granted.');
-    } else {
-      console.log('Location permission denied.');
-      Alert.alert('Permission Denied', 'Location permission is required to access your location.');
-    }
-  } catch (error) {
-    console.log('Error requesting location permission:', error);
-  }
-};
-
-const handleCurrentLocation = () => {
-  Geolocation.getCurrentPosition(
-    (position) => {
-      const { latitude, longitude } = position.coords;
-      setLocationData({
-        south: latitude.toString(),
-        east: longitude.toString(),
-      });
-      setValue('south', latitude.toString());
-      setValue('east', longitude.toString());
-      autosave({ south: latitude.toString(), east: longitude.toString() });
-    },
-    (error) => {
-      console.error('Error getting location:', error);
-      Alert.alert('Error', 'Unable to retrieve your location.');
-    },
-    { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 }
-  );
-};
-
-
-function rupiah(value) {
-  return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-}
-
-const jenisWadahValues = data?.jenis_wadahs
-? data?.jenis_wadahs
-    .map(item => `${item.nama} (${item.keterangan})`)
-    .join(", ")
-: "Tidak ada data";
-
-const handleChoosePhoto = () => {
-  const options = {
-    mediaType: 'photo',
-    quality: 1,
-  };
-
-  launchImageLibrary(options, (response) => {
-    if (response.didCancel) {
-      console.log('User cancelled image picker');
-    } else if (response.error) {
-      console.log('ImagePicker Error: ', response.error);
-    } else {
-      const newPhoto = { uri: response.assets[0].uri };
-      setPhotos((prevPhotos) => [...prevPhotos, newPhoto]); // Tambahkan foto baru ke array
-    }
-  });
-};
-
-const handleDeletePhoto = (index) => {
-  setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index)); // Hapus foto berdasarkan index
-};
-
-const handleSubmitData = async () => {
-  const formData = new FormData();
-  console.log(photos);
-  photos.forEach((photo, index) => {
-    formData.append(`photos[]`, {
-      uri: photo.uri,       
-      type: 'image/jpeg',   // Kamu bisa mengganti tipe sesuai file
-      name: `photo_${index}.jpg`,  // Penamaan bisa disesuaikan
-    });
-  });
-
-  if (file) {
-    formData.append('photos[]', {
-      uri: file.uri,
-      type: 'image/jpeg',
-      name: 'photo.jpg',
-    });
   }
 
-  try {
-    await axios.post(`/administrasi/pengambil-sample/${uuid}/upload-photo`, formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
-    Alert.alert('Success', 'Data berhasil disimpan.');
-  } catch (error) {
-    const message = error.response ? error.response.data.message : 'Something went wrong';
-    Alert.alert('Error', message);
-  }
-};
-
-function debounce(func, delay) {
-  let timeout;
-  return function (...args) {
-    clearTimeout(timeout);
-    timeout = setTimeout(() => {
-      func.apply(this, args);
-    }, delay);
-  };
-}
-
-const autosave = debounce((data) => {
-  createOrUpdate(watch());
-}, 1500); 
-
-
-  
   return (
     <ScrollView contentContainerStyle={styles.scrollViewContainer} showVerticalScrollIndicator={false}>
       <View style={styles.container}>
@@ -251,7 +251,7 @@ const autosave = debounce((data) => {
             <View style={styles.cardContainer}>
               <View style={{ flexDirection: "row" }}>
                 <TouchableOpacity
-                  style={{ backgroundColor: "#ef4444", width: 55, height: 45, borderRadius: 15, justifyContent: "center", alignItems: "center",}}
+                  style={{ backgroundColor: "#ef4444", width: 55, height: 45, borderRadius: 15, justifyContent: "center", alignItems: "center", }}
                   onPress={() => navigation.goBack()}>
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
@@ -260,13 +260,13 @@ const autosave = debounce((data) => {
                 </View>
               </View>
             </View>
-            
-             {/* Card Pertama */}
-             <View style={styles.cardContainer}>
+
+            {/* Card Pertama */}
+            <View style={styles.cardContainer}>
               <Text style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                    <Feather name="user" size={28} color="#50cc96" />
+                  <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Customer</Text>
@@ -276,7 +276,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                <FontAwesome name="building-o" size={33} color="#50cc96" />
+                  <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Instansi</Text>
@@ -288,7 +288,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
+                  <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
@@ -391,7 +391,7 @@ const autosave = debounce((data) => {
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
-              <View style={styles.iconContainer}>
+                <View style={styles.iconContainer}>
                   <FontAwesome5Icon
                     name="dolly"
                     size={27}
@@ -409,7 +409,7 @@ const autosave = debounce((data) => {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                <MaterialCommunityIcons
+                  <MaterialCommunityIcons
                     name="smart-card-outline"
                     size={30}
                     color="#50cc96"
@@ -419,10 +419,10 @@ const autosave = debounce((data) => {
                   <Text style={styles.label}>Radius Pengambilan</Text>
                   <Text style={styles.value}>
                     {data.permohonan?.radius_pengambilan?.radius}m
-                    {data.permohonan?.radius_pengambilan?.harga !== undefined && 
-                    data.permohonan?.radius_pengambilan?.harga !== null && 
-                    !isNaN(data.permohonan?.radius_pengambilan?.harga) ? 
-                      ` (${rupiah(data.permohonan.radius_pengambilan.harga)})` : 
+                    {data.permohonan?.radius_pengambilan?.harga !== undefined &&
+                      data.permohonan?.radius_pengambilan?.harga !== null &&
+                      !isNaN(data.permohonan?.radius_pengambilan?.harga) ?
+                      ` (${rupiah(data.permohonan.radius_pengambilan.harga)})` :
                       ` (RpNaN)`
                     }
                   </Text>
@@ -472,12 +472,12 @@ const autosave = debounce((data) => {
                 <View style={styles.iconContainer}>
                   <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
-                
+
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>South</Text>
                   <Controller
                     control={control}
-                    name="south" 
+                    name="south"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -495,7 +495,7 @@ const autosave = debounce((data) => {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="compass-outline" size={30}color="#50cc96" />
+                  <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>East</Text>
@@ -513,18 +513,18 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                       />
                     )}
-                  /> 
+                  />
                 </View>
               </View>
 
               <TouchableOpacity>
-                <Text 
-                onPress={handleCurrentLocation}
-                className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
+                <Text
+                  onPress={handleCurrentLocation}
+                  className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
               </TouchableOpacity>
             </View>
 
-            
+
             <View style={styles.cardContainer}>
               <Text style={styles.title}>Hasil Pengukuran Lapangan</Text>
               <View style={styles.infoItem}>
@@ -533,7 +533,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Air (t°C)</Text>
-                  <Controller control={control} name="lapangan.suhu_air" 
+                  <Controller control={control} name="lapangan.suhu_air"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -544,8 +544,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -555,7 +555,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>pH</Text>
-                  <Controller control={control} name="lapangan.ph" 
+                  <Controller control={control} name="lapangan.ph"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -566,18 +566,18 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
-              
+
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DHL (µS/cm)</Text>
-                  <Controller control={control} name="lapangan.dhl" 
+                  <Controller control={control} name="lapangan.dhl"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -588,8 +588,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -599,7 +599,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Salinitas (‰)</Text>
-                  <Controller control={control} name="lapangan.salinitas" 
+                  <Controller control={control} name="lapangan.salinitas"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -610,8 +610,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -621,7 +621,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>DO (mg/L)</Text>
-                  <Controller control={control} name="lapangan.do" 
+                  <Controller control={control} name="lapangan.do"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -632,8 +632,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -643,7 +643,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kekeruhan</Text>
-                  <Controller control={control} name="lapangan.kekeruhan" 
+                  <Controller control={control} name="lapangan.kekeruhan"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -654,8 +654,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -665,7 +665,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Klorin Bebas</Text>
-                  <Controller control={control} name="lapangan.klorin_bebas" 
+                  <Controller control={control} name="lapangan.klorin_bebas"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -676,8 +676,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
             </View>
@@ -690,7 +690,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Suhu Udara (t°C)</Text>
-                  <Controller control={control} name="lapangan.suhu_udara" 
+                  <Controller control={control} name="lapangan.suhu_udara"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -701,8 +701,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -712,7 +712,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Cuaca</Text>
-                  <Controller control={control} name="lapangan.cuaca" 
+                  <Controller control={control} name="lapangan.cuaca"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -723,8 +723,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -734,7 +734,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Arah Angin</Text>
-                  <Controller control={control} name="lapangan.arah_angin" 
+                  <Controller control={control} name="lapangan.arah_angin"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -745,8 +745,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -756,7 +756,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kelembapan (%RH)</Text>
-                  <Controller control={control} name="lapangan.kelembapan" 
+                  <Controller control={control} name="lapangan.kelembapan"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -767,8 +767,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -778,7 +778,7 @@ const autosave = debounce((data) => {
                 </View>
                 <View style={styles.textContainer} className="">
                   <Text style={styles.label}>Kecepatan Angin</Text>
-                  <Controller control={control} name="lapangan.kecepatan_angin" 
+                  <Controller control={control} name="lapangan.kecepatan_angin"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -789,8 +789,8 @@ const autosave = debounce((data) => {
                         className="h-10 bg-slate-50"
                         enableErrors
                       />
-                      )}
-                    />
+                    )}
+                  />
                 </View>
               </View>
             </View>
@@ -798,7 +798,7 @@ const autosave = debounce((data) => {
             <View style={styles.lokasiContainer}>
               <Text style={styles.title}>Foto Lapangan/Lokasi</Text>
               <View style={styles.infoItem}>
-              <Controller
+                <Controller
                   control={control}
                   name="photos"
                   render={({ field: { onChange } }) => (
@@ -819,7 +819,7 @@ const autosave = debounce((data) => {
                               </TouchableOpacity>
                             </View>
                           ))}
-                          <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4 bg-blue-500" onPress={handleChoosePhoto} style={{ borderRadius: 4, marginStart: "38.7%"}}>
+                          <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4 bg-blue-500" onPress={handleChoosePhoto} style={{ borderRadius: 4, marginStart: "38.7%" }}>
                             <Text className="text-white text-sm font-semibold text-center">Tambah</Text>
                           </TouchableOpacity>
                         </View>
@@ -834,29 +834,29 @@ const autosave = debounce((data) => {
               </View>
 
               <View className="w-full mt-5" >
-              <TouchableOpacity onPress={handleSubmitData}>
-                <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{  borderRadius: 8 }}>Simpan & Upload</Text>
-              </TouchableOpacity>
+                <TouchableOpacity onPress={handleSubmitData}>
+                  <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>Simpan & Upload</Text>
+                </TouchableOpacity>
 
-              <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
-                <Text
-                  className={`text-center text-white text-base font-bold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
-                  style={{ borderRadius: 8 }}
-                >
-                  {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}
-                  
-                </Text>
-              </TouchableOpacity>
-                  
-                </View>
+                <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
+                  <Text
+                    className={`text-center text-white text-base font-bold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
+                    style={{ borderRadius: 8 }}
+                  >
+                    {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}
+
+                  </Text>
+                </TouchableOpacity>
+
               </View>
+            </View>
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>
         )}
       </View>
     </ScrollView>
- 
+
   );
 }
 

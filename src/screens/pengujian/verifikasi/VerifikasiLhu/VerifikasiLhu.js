@@ -223,16 +223,16 @@ const VerifikasiLhu = ({ navigation }) => {
             </View>
 
             <View className="flex-row justify-center">
-            <View className="mt-3 ml-[-10] mr-2"> 
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={170}
-                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              />
+              <View className="mt-3 ml-[-10] mr-2"> 
+                <HorizontalScrollMenu
+                  items={pengambilOptions}
+                  selected={selectedPengambil}
+                  onPress={item => setSelectedPengambil(item.id)}
+                  itemWidth={170}
+                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                  activeBackgroundColor={"#312e81"}
+                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                />
             </View>
 
             <MenuView
