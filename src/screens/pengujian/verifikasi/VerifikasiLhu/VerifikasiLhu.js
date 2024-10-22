@@ -30,7 +30,7 @@ const pengambilOptions = [
   { id: 1, name: "Telah Diambil" },
 ];
 
-const Persetujuan = ({ navigation }) => {
+const VerifikasiLhu = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
   const [selectedPengambil, setSelectedPengambil] = useState(0);
@@ -42,7 +42,7 @@ const Persetujuan = ({ navigation }) => {
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(['pengambil-sample']);
+      queryClient.invalidateQueries(['kepala-upt  ']);
       paginateRef.current?.refetch();
     },
     onError: (error) => {
@@ -162,16 +162,7 @@ const Persetujuan = ({ navigation }) => {
             <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
-            {!isConfirmed && (
-              <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
-              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
-                  : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500'
-                    : 'bg-indigo-100 text-indigo-500'}`}>
-                {item.kesimpulan_permohonan == 1 ? 'Diterima'
-                  : item.kesimpulan_permohonan == 2 ? 'Ditolak'
-                    : 'Menunggu'}
-              </Text>
-            )}
+          
             <View className="my-2 ml-10">
               <MenuView
                 title="dropdownOptions"
@@ -218,21 +209,21 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold ">Persetujuan</Text>
-              </View>
+                <Text className="text-[20px] font-bold ">Verifikasi LHU</Text>
+              </View> 
             </View>
 
             <View className="flex-row justify-center">
-            <View className="mt-3 ml-[-10] mr-2"> 
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={170}
-                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              />
+              <View className="mt-3 ml-[-10] mr-2"> 
+                <HorizontalScrollMenu
+                  items={pengambilOptions}
+                  selected={selectedPengambil}
+                  onPress={item => setSelectedPengambil(item.id)}
+                  itemWidth={170}
+                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                  activeBackgroundColor={"#312e81"}
+                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                />
             </View>
 
             <MenuView
@@ -267,7 +258,7 @@ const Persetujuan = ({ navigation }) => {
 
       <Paginate
         ref={paginateRef}
-        url="/administrasi/pengambil-sample"
+        url="/verifikasi/kepala-upt"
         payload={{
           status: selectedPengambil,
           tahun: selectedYear,
@@ -314,4 +305,4 @@ const Persetujuan = ({ navigation }) => {
   );
 };
 
-export default Persetujuan;
+export default VerifikasiLhu;

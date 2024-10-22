@@ -23,26 +23,26 @@ const generateYears = () => {
   }
   return years
 }
-const pengambilOptions = [
-  { id: 0, name: "Menunggu Konfirmasi" },
-  { id: 1, name: "Telah Konfirmasi" },
+const kortekOptions = [
+  { id: 5, name: "Menunggu Konfirmasi" },
+  { id: 6, name: "Telah Dikonfirmasi" },
 ];
 
-const PengambilSampel = ({ navigation }) => {
+const Kortek = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
-  const [selectedPengambil, setSelectedPengambil] = useState(0);
+  const [selectedKortek, setSelectedKortek] = useState(5);
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
-  const isConfirmed = selectedPengambil === 1; // Telah Diambil
+  const isConfirmed = Kortek === 9; // Telah Diambil
 
 
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
 
     onSuccess: () => {
-      queryClient.invalidateQueries(['pengambil-sample']);
+      queryClient.invalidateQueries(['kortek']);
       paginateRef.current?.refetch()
     },
     onError: (error) => {
@@ -51,7 +51,7 @@ const PengambilSampel = ({ navigation }) => {
   });
 
   const dropdownOptions1 = [
-    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status })}
+    { id: "Hasil Uji", title: "Hasil Uji", action: item => navigation.navigate("HasilUjis", { uuid: item.uuid, status: item.status })}
   ]
 
   const dropdownOptions = [
@@ -61,41 +61,24 @@ const PengambilSampel = ({ navigation }) => {
     //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
     // },
     // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
-    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status }) },
-    { id: "Cetak Sampling", title: "Cetak Sampling", action: item => handlePreviewPS({ uuid: item.uuid }) },
-    {
-      id: "Berita Acara",
-      title: "Berita Acara",
-      subactions: [
-        {
-          id: "Berita Acara Pengambilan",
-          title: "Berita Acara Pengambilan",
-          action: item => BeritaAcara({ uuid: item.uuid })
-        },
-        {
-          id: "Data Pengambilan",
-          title: "Data Pengambilan",
-          action: item => DataPengambilan({ uuid: item.uuid })
-        }
-      ]
-    }
+    { id: "Hasil Uji", title: "Hasil Uji", action: item => navigation.navigate("HasilUjis", { uuid: item.uuid, status: item.status })},
+    { id: "RDPS", title: "RDPS", action: item => handlePreviewRDPS({ uuid: item.uuid }) },
+    { id: "Preview LHU", title: "Preview LHU", action: item => handlePreviewLhu({ uuid: item.uuid }) },
+    
   ];
 
-  const BeritaAcara = async (item) => {
+
+  const handlePreviewLhu = async (item) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
-    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/berita-acara?token=${authToken}`);
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/preview-lhu?token=${authToken}`);
     setModalVisible(true);
   }
-  const handlePreviewPS = async (item) => {
+  const handlePreviewRDPS = async (item) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
-    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/sampling?token=${authToken}`);
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/rdps?token=${authToken}`);
     setModalVisible(true);
   }
-  const DataPengambilan = async (item) => {
-    const authToken = await AsyncStorage.getItem('@auth-token');
-    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`);
-    setModalVisible(true);
-  }
+
 
   const handleDownloadPDF = async () => {
     try {
@@ -145,7 +128,7 @@ const PengambilSampel = ({ navigation }) => {
 
 
   const renderItem = ({ item }) => {
-    const isDiterima = item.kesimpulan_permohonan;
+    const isDiterima = item.text_status;
     const dropdownOptionsForItem = isDiterima ? dropdownOptions : dropdownOptions1;
 
   
@@ -155,38 +138,25 @@ const PengambilSampel = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-2 relative">
-          <View className="flex-shrink mr-20">
+        <View className="flex-row justify-between">
+          <View className="flex-1 pr-4">
 
-          {isConfirmed ? (
-              <>
-                <Text className="text-[18px] font-extrabold mb-1">
-                  {item.kode}
-                </Text>
-                <Text className="text-[18px] font-extrabold mb-2">
-                  {item.permohonan.user.nama}
-                </Text>
-              </>
-            ) : (
-              <Text className="text-[18px] font-extrabold mb-3">
-                {item.permohonan.industri}
-              </Text>
-            )}
 
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
-
+            <Text className="text-[16px] font-extrabold mb-5">{item.kode}</Text>
+            <Text className="text-[15px] font-extrabold mb-5">{item.permohonan.user.nama}</Text>
+            <Text className="text-[14px] mb-3">{item.lokasi}</Text>
+            <Text className="text-[14px] mb-3">Peraturan: <Text className="font-bold ">{item.peraturan?.nama}</Text></Text>
           </View>
-          <View className="absolute right-1 flex-col items-center">
-          <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
-              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500' 
-                : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500' 
-                : 'bg-indigo-100 text-indigo-500'}`}>
-              {item.kesimpulan_permohonan == 1 ? 'Diterima' 
-                : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
-                : 'Menunggu'}
-            </Text>           
+          <View className="flex-shrink-0 items-end">
+          <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
+            <Text 
+              className="text-[12px] text-indigo-600 font-bold text-right"
+              numberOfLines={2}
+              ellipsizeMode="tail"
+            >
+              {item.text_status}
+            </Text>
+          </View>
             <View className="my-2 ml-10">
             <MenuView
               title="dropdownOptions"
@@ -238,16 +208,17 @@ const PengambilSampel = ({ navigation }) => {
             <View className="flex-row items-center space-x-2">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
+                <Text className="text-[20px] font-bold">Koordinator Teknis</Text>
               </View>
             </View>
 
+          
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
+              <View className="mt-3 ml-[-20] mr-2">
                   <HorizontalScrollMenu
-                    items={pengambilOptions}
-                    selected={selectedPengambil}
-                    onPress={item => setSelectedPengambil(item.id)}
+                    items={kortekOptions}
+                    selected={selectedKortek}
+                    onPress={item => setSelectedKortek(item.id)}
                     itemWidth={170}
                     scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                     activeBackgroundColor={"#312e81"}
@@ -286,9 +257,9 @@ const PengambilSampel = ({ navigation }) => {
 
       <Paginate
         ref={paginateRef}
-        url="/administrasi/pengambil-sample"
+        url="/verifikasi/koordinator-teknis"
         payload={{
-          status: selectedPengambil,
+          status: selectedKortek,
           tahun: selectedYear,
           page: 1,
           per: 10,
@@ -339,4 +310,4 @@ const PengambilSampel = ({ navigation }) => {
   );
 };
 
-export default PengambilSampel; 
+export default Kortek; 

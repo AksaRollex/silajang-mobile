@@ -15,6 +15,7 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
 import { useNavigation } from '@react-navigation/native';
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -161,7 +162,8 @@ const Dashboard = () => {
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]">
+                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]"
+                onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}>
                   <View className="flex-row items-center">
                     <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#ffc300]">
@@ -171,11 +173,12 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Persetujuan Permohonan
                   </Text>
-                </View>
+                </TouchableOpacity>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]">
+                <TouchableOpacity className=" w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
+                onPress={() => navigation.navigate( 'Pengujian', { screen:  'Analis' })}>
                   <View className="flex-row items-center">
                     <Fontisto name="laboratory" size={30} color={"#f2416e"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
@@ -185,11 +188,12 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Sampel Belum Dianalisa
                   </Text>
-                </View>
+                </TouchableOpacity>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]">
+                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
+                onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
                   <View className="flex-row items-center">
                     <IonIcons name="document-text" size={30} color={"#f2416e"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
@@ -199,11 +203,12 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Dokumen Belum Diverifikasi
                   </Text>
-                </View>
+                </TouchableOpacity>
                 )}
 
                 {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0fd194]">
+                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0fd194]"
+                onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}>
                   <View>
                     <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
                     <Text className="text-[18px] font-extrabold text-[#0fd194]" >
@@ -213,10 +218,11 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Pendapatan
                   </Text>
-                </View>
+                </TouchableOpacity>
                 )}
 
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]">
+                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
+                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
                   <View className="flex flex-row">
                     <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
                     <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
@@ -226,9 +232,10 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     IKM Unit Pelayanan
                   </Text>
-                </View>
+                </TouchableOpacity>
 
-                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]">
+                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
+                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
                   <View className="flex flex-row">
                     <IonIcons name="clipboard" size={30} color={"#0090a6"} />
                     <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
@@ -238,7 +245,7 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Jumlah Responden
                   </Text>
-                </View>
+                </TouchableOpacity>
               </>
             )}
   
