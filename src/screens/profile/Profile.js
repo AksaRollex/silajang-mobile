@@ -7,7 +7,7 @@ import {
   ActivityIndicator,
   Modal,
   Linking,
-  Dimensions
+  Dimensions,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -20,7 +20,7 @@ import FastImage from "react-native-fast-image";
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
-const { width, height } = Dimensions.get('window');
+const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 
@@ -28,7 +28,7 @@ export default function Profile({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false); // State untuk modal visibility
   const queryClient = useQueryClient();
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
-  const [selectedImage, setSelectedImage] = useState('');
+  const [selectedImage, setSelectedImage] = useState("");
   // const openWhatsApp = () => {
   //   const phoneNumber = '+6281359512588'; // Ganti dengan nomor tujuan
   //   const url = `whatsapp://send?phone=${phoneNumber}`;
@@ -102,7 +102,9 @@ export default function Profile({ navigation }) {
                 <FastImage
                   className="rounded-full w-24 h-24 "
                   source={{
-                    uri: `${process.env.APP_URL}${userData.photo}`,
+                    uri: userData?.photo
+                      ? `${process.env.APP_URL}${userData.photo}`
+                      : "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg", // Ganti dengan URL foto default Anda
                     priority: FastImage.priority.high,
                   }}
                   resizeMode={FastImage.resizeMode.cover}
@@ -236,7 +238,12 @@ export default function Profile({ navigation }) {
               alignItems: "center",
             }}>
             <Text
-              style={{ fontSize: 18, fontWeight: "bold", marginBottom: 15, color : 'black'}}>
+              style={{
+                fontSize: 18,
+                fontWeight: "bold",
+                marginBottom: 15,
+                color: "black",
+              }}>
               Konfirmasi Logout
             </Text>
 
@@ -249,7 +256,7 @@ export default function Profile({ navigation }) {
               }}
             />
 
-            <Text style={{ fontSize: 16, marginBottom: 25 , color : 'black'}}>
+            <Text style={{ fontSize: 16, marginBottom: 25, color: "black" }}>
               Apakah Anda yakin ingin keluar?
             </Text>
             <View style={{ flexDirection: "row" }}>
@@ -289,7 +296,7 @@ export default function Profile({ navigation }) {
           <TouchableOpacity
             style={styles.closeButton}
             onPress={() => setImageViewerVisible(false)}>
-              <IonIcons name="close" size={40} color="white" />
+            <IonIcons name="close" size={40} color="white" />
           </TouchableOpacity>
           <FastImage
             style={styles.fullScreenImage}
@@ -397,26 +404,26 @@ const styles = StyleSheet.create({
     fontWeight: "600",
     lineHeight: 24,
   },
-   imageViewerContainer: {
+  imageViewerContainer: {
     flex: 1,
-    backgroundColor: 'rgba(0, 0, 0, 0.9)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0, 0, 0, 0.9)",
+    justifyContent: "center",
+    alignItems: "center",
   },
   fullScreenImage: {
     width: width,
     height: height,
   },
   closeButton: {
-    position: 'absolute',
+    position: "absolute",
     top: 40,
     right: 20,
     zIndex: 1,
   },
   closeButtonText: {
-    color: 'white',
+    color: "white",
     fontSize: 24,
-    fontWeight: 'bold',
+    fontWeight: "bold",
   },
   editProfileTextContainer: {
     marginBottom: 10,

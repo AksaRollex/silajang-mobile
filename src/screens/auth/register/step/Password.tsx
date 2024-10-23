@@ -1,5 +1,5 @@
 import React, { memo } from "react";
-import { Button } from "react-native";
+import { Button } from "react-native-ui-lib";
 import { useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -21,7 +21,7 @@ const schema = yup
   })
   .required();
 
-const Password = memo(() => {
+  const Password = memo(() => {
   const {
     control,
     handleSubmit,
@@ -31,7 +31,12 @@ const Password = memo(() => {
   });
 
   const navigation = useNavigation();
-  const { mutate: register, status, isLoading, isSuccess } = useMutation({
+  const {
+    mutate: register,
+    status,
+    isLoading,
+    isSuccess,
+  } = useMutation({
     mutationFn: data => axios.post("/auth/register", data),
     onSuccess: async data => {
       Toast.show({
@@ -49,65 +54,37 @@ const Password = memo(() => {
     },
   });
 
-  const { setPassword, credential, otp, password, getEmailOtp } = useFormStore();
+  const { setPassword, credential, otp, password, getEmailOtp } =
+    useFormStore();
   const prevStep = useFormStep(state => state.prevStep);
 
   const onSubmit = data => {
     setPassword(data);
     console.log({
       ...credential,
-      ...otp,
       ...data,
+      otp_email: otp.email,
+      otp_phone: otp.phone,
     });
     register({
       ...credential,
-      ...otp,
       ...data,
+      otp_email: otp.email,
+      otp_phone: otp.phone,
     });
   };
 
   return (
     <View>
       <View marginB-20>
-        <Text marginB-5>Nama</Text>
-        <Controller
-          control={control}
-          name="nama"
-          rules={{ required: "Nama tidak boleh kosong" }}
-          render={({ field: { onChange, value } }) => (
-            <TextField
-              placeholder={"Nama"}
-              enableErrors
-              fieldStyle={{
-                paddingVertical: 8,
-                paddingHorizontal: 15,
-                borderRadius: 5,
-                borderWidth: 1,
-                borderColor: Colors.grey50,
-              }}
-              containerStyle={{
-                marginBottom: -20,
-              }}
-              onChangeText={onChange}
-              value={value}
-            />
-          )}
-        />
-        {errors.nama && (
-          <Text color={Colors.red30} body>
-            {errors.nama.message}
-          </Text>
-        )}
-      </View>
-      <View marginB-20>
-        <Text marginB-5>Email</Text>
+        <Text marginB-5>Password</Text>
         <Controller
           control={control}
           name="password"
-          rules={{ required: "Email tidak boleh kosong" }}
+          rules={{ required: "Password tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"Email"}
+              placeholder={"Password"}
               enableErrors
               fieldStyle={{
                 paddingVertical: 8,
@@ -131,14 +108,14 @@ const Password = memo(() => {
         )}
       </View>
       <View marginB-20>
-        <Text marginB-5>No. Telepon</Text>
+        <Text marginB-5>Konfirmasi Password</Text>
         <Controller
           control={control}
           name="password_confirmation"
-          rules={{ required: "No. Telepon tidak boleh kosong" }}
+          rules={{ required: "Konfirmasi Password tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
-              placeholder={"No. Telepon"}
+              placeholder={"Konfirmasi Password"}
               enableErrors
               fieldStyle={{
                 paddingVertical: 8,
@@ -162,11 +139,11 @@ const Password = memo(() => {
         )}
       </View>
       <Button
-        label="Selanjutnya"
+        label="Daftar"
         backgroundColor={Colors.brand}
         paddingV-12
         borderRadius={5}
-        onPress={handleSubmit(getEmailOtp)}
+        onPress={handleSubmit(onSubmit)}
         iconOnRight
         iconSource={Assets.getAssetByPath("icons.chevronRight")}
         iconStyle={{ width: 20, height: 28 }}

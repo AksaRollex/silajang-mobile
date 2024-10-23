@@ -5,13 +5,13 @@ import {
   Button,
   Colors,
   Text,
-  Toast,
   TouchableOpacity,
   View,
 } from "react-native-ui-lib";
 import { useFormStep, useFormStore } from "../Index";
 import { useMutation } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
+import Toast from "react-native-toast-message";
 
 export default memo(function OtpPhone() {
   const { otp, setOtp, credential } = useFormStore();
@@ -26,15 +26,23 @@ export default memo(function OtpPhone() {
   const { mutate: verify, status: statusVerif } = useMutation(
     data =>
       axios
-        .post("/auth/register/check/phone/otp", { phone: credential.phone })
+        .post("/auth/register/check/phone/otp", {
+          phone: credential.phone,
+          otp: data.otp,
+        })
         .then(res => res.data),
     {
-      onSuccess: data => {
-nextStep();
-Toast.show({
-          type: "success",
+      onSuccess: (data, ctx) => {
+        console.log(ctx)
+        setOtp({
+          ...otp,
+          phone: ctx.otp,
+        })
+        Toast.show({
+          type: "success", 
           text1: "Kode OTP Berhasil Diverifikasi",
         });
+        nextStep();
       },
       onError: error => {
         console.error(error.response.data);
@@ -56,7 +64,7 @@ Toast.show({
         Toast.show({
           type: "success",
           text1: "Kode OTP Berhasil",
-          text2: "Kode OTP dikirim ke No. Telepon anda",
+          text2: "Kode OTP dikirim ke Whatsapp anda",
         });
       },
       onError: error => {
@@ -102,7 +110,7 @@ Toast.show({
         )}
       </View>
       <Button
-        label="Login"
+        label="Selanjutnya"
         backgroundColor={Colors.brand}
         paddingV-12
         marginB-10
@@ -116,12 +124,25 @@ Toast.show({
         outline
         outlineColor={Colors.brand}
         onPress={() => setIndex(0)}></Button>
-      <View style={{ flexDirection: "row", justifyContent: "center", marginTop  : 10 }}>
+      <View
+        style={{
+          flexDirection: "row",
+          justifyContent: "center",
+          marginTop: 10,
+        }}>
         <Text style={{ alignSelf: "center" }}>
           Tidak Menerima menerima Kode OTP?
         </Text>
         <TouchableOpacity onPress={getPhoneOtp}>
-          <Text style={{ color: '#3b82f6', fontWeight: 'bold', fontSize : 14, marginHorizontal :5 }}>Kirim Ulang</Text>
+          <Text
+            style={{
+              color: "#3b82f6",
+              fontWeight: "bold",
+              fontSize: 14,
+              marginHorizontal: 5,
+            }}>
+            Kirim Ulang
+          </Text>
         </TouchableOpacity>
       </View>
     </View>

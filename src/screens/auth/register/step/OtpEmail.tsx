@@ -32,11 +32,17 @@ export default memo(function OtpEmail() {
         })
         .then(res => res.data),
     {
-      onSuccess: data => {
+      onSuccess: (data, ctx) => {
+        console.log(ctx)
+        setOtp({
+          ...otp,
+          email: ctx.otp,
+        })
         Toast.show({
           type: "success",
           text1: "Kode OTP Berhasil Diverifikasi",
         });
+        console.log(otp);
         nextStep();
       },
       onError: error => {
