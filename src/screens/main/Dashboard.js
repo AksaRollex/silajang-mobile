@@ -1,6 +1,7 @@
 import axios from "@/src/libs/axios";
 import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from "react";
 import {
   ActivityIndicator,
@@ -9,13 +10,21 @@ import {
   Text,
   View
 } from "react-native";
+import {
+    LineChart,
+    BarChart,
+    PieChart,
+    ProgressChart,
+    ContributionGraph,
+    StackedBarChart
+  } from "react-native-chart-kit";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
-import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Dimensions } from "react-native";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -29,13 +38,79 @@ const Dashboard = () => {
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
   const navigation = useNavigation();
+  const screenWidth = Dimensions.get("window").width;
+  const [chartData, setChartData] = useState(null);
+
+  const data = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+    datasets: [
+      {
+        data: [30, 60, 90, 120, 150],
+        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+        strokeWidth: 2,
+      },
+    ],
+  };
+
+  const chartConfig = {
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientToOpacity: 0,
+    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`, 
+    strokeWidth: 0,
+    barPercentage: 0.5,
+    decimalPlaces: 2,
+    useShadowColorFromDataset: false,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    // propsForDots: {
+    //   r: "6",
+    //   strokeWidth: "2",
+    //   stroke: "#312e81" // Warna dot senada dengan line
+    // },
+    style: {
+      borderRadius: 16,
+    },
+    propsForBackgroundLines: {
+      strokeWidth: 1,
+      stroke: "#e2e8f0",
+      strokeDasharray: "0",
+    }
+  };
+  
+  useEffect(() => {
+    // Fetch dashboard data on component mount
+    const fetchDashboardData = async () => {
+      try {
+        const endpoint = user.role.name === 'customer' ? 'customer' : 'admin';
+        const response = await axios.post(`/dashboard/${endpoint}`, { tahun });
+
+        setDashboard(response.data);
+
+        // Transform chart data
+        if (response.data.chartSampels) {
+          setChartData({
+            labels: response.data.chartSampels.categories,
+            datasets: [
+              {
+                data: response.data.chartSampels.data,
+                color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
+                strokeWidth: 2,
+              },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, [tahun, user.role.name]);
 
   const Penerima = () => {
     navigation.navigate("Penerima");
   };
 
   const handlePress = () => {
-    const uuid = '7cd62078-6101-4ef3-ad6f-28afe23d81b9';
     navigation.navigate("Penerima", { uuid });
   }
 
@@ -246,6 +321,31 @@ const Dashboard = () => {
                     Jumlah Responden
                   </Text>
                 </TouchableOpacity>
+
+                
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                    <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-14 mt-4">
+                    <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
+                    {chartData ? (
+                        <LineChart
+                        data={chartData}
+                        width={screenWidth - 40}
+                        height={340}
+                        verticalLabelRotation={20}
+                        chartConfig={chartConfig}
+                        bezier
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16
+                        }}
+                        fromZero
+                        yAxisInterval={1}
+                        />
+                    ) : (
+                        <ActivityIndicator size="large" color="#312e81" />
+                    )}
+                    </View>
+                )}
               </>
             )}
   
