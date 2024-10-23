@@ -34,9 +34,9 @@ import Parameter from "./Parameter";
 import { formatDate } from "@/src/libs/utils";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MultiSelect from "react-native-multiple-select";
+import { API_URL } from "@env";
 
-
-const currency = (number) => {
+const currency = number => {
   return number.toLocaleString("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -65,7 +65,7 @@ export default function DetailPersetujuan({ route, navigation }) {
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
 
-  const [obyekPelayanan, setObyekPelayanan] = useState('');
+  const [obyekPelayanan, setObyekPelayanan] = useState("");
 
   const [modalVisible, setModalVisible] = useState({
     visible: false,
@@ -114,14 +114,15 @@ export default function DetailPersetujuan({ route, navigation }) {
     fetchMetode();
   }, []);
 
-
-    useEffect(() => {
+  useEffect(() => {
     const fetchPengambilSample = async () => {
       try {
-        const response = await axios.get('/administrasi/pengambil-sample/petugas');
+        const response = await axios.get(
+          "/administrasi/pengambil-sample/petugas",
+        );
         setPengambilSample(response.data.data); // Use response.data.data for the correct array
       } catch (error) {
-        console.error('Error fetching pengambil data:', error);
+        console.error("Error fetching pengambil data:", error);
       }
     };
 
@@ -133,7 +134,7 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data yang akan dikirim:", {
         petugas_pengambil_ids: selectedPetugas,
       });
-  
+
       const response = await axios.post(
         `/administrasi/pengambil-sample/${uuid}/update`,
         {
@@ -141,11 +142,11 @@ export default function DetailPersetujuan({ route, navigation }) {
         },
         {
           headers: {
-            'Content-Type': 'application/json',
+            "Content-Type": "application/json",
           },
-        }
+        },
       );
-  
+
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
       if (error.response) {
@@ -160,35 +161,36 @@ export default function DetailPersetujuan({ route, navigation }) {
       }
     }
   };
-  
-  
 
   useEffect(() => {
     if (selectedPetugas.length > 0) {
       savePetugas(); // Panggil savePetugas setelah state terupdate
     }
-  }, [selectedPetugas]); 
-  
-  
+  }, [selectedPetugas]);
+
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/administrasi/pengambil-sample/${uuid}`);
+        const response = await axios.get(
+          `/administrasi/pengambil-sample/${uuid}`,
+        );
         console.log("Response data:", response.data);
         setData(response.data.data);
 
         if (response.data.data.permohonan.radius_pengambilan) {
-          setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id)
+          setSelectedRadius(
+            response.data.data.permohonan.radius_pengambilan_id,
+          );
         }
         if (response.data.data.acuan_metode) {
-          setSelectedMetode(response.data.data.acuan_metode.id)
+          setSelectedMetode(response.data.data.acuan_metode.id);
         }
-        if(response.data.data.petugas_pengambil_ids){
-          setSelectedPetugas(response.data.data.petugas_pengambil_ids)
+        if (response.data.data.petugas_pengambil_ids) {
+          setSelectedPetugas(response.data.data.petugas_pengambil_ids);
         }
 
         if (response.data.data) {
-          setObyekPelayanan(response.data.data.obyek_pelayanan || ''); // Atur state ke obyek_pelayanan
+          setObyekPelayanan(response.data.data.obyek_pelayanan || ""); // Atur state ke obyek_pelayanan
         }
         setLoading(false);
       } catch (error) {
@@ -201,10 +203,11 @@ export default function DetailPersetujuan({ route, navigation }) {
   }, [uuid]);
 
   useEffect(() => {
-
     const fetchData = async () => {
       try {
-        const response = await axios.get(`/administrasi/pengambil-sample/${uuid}`);
+        const response = await axios.get(
+          `/administrasi/pengambil-sample/${uuid}`,
+        );
         if (response.data.data && response.data.data.tanggal_pengambilan) {
           setDate(new Date(response.data.data.tanggal_pengambilan));
         }
@@ -236,7 +239,6 @@ export default function DetailPersetujuan({ route, navigation }) {
         ) {
           setInterpretasi(response.data.data.hasil_pengujian);
         }
-
 
         setLoading(false);
       } catch (error) {
@@ -278,47 +280,52 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
-  const formatDateTime = (date) => {
+  const formatDateTime = date => {
     const year = date.getFullYear();
-    const month = String(date.getMonth() + 1).padStart(2, '0');
-    const day = String(date.getDate()).padStart(2, '0');
-    const hours = String(date.getHours()).padStart(2, '0');
-    const minutes = String(date.getMinutes()).padStart(2, '0');
-    const seconds = String(date.getSeconds()).padStart(2, '0');
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const day = String(date.getDate()).padStart(2, "0");
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+    const seconds = String(date.getSeconds()).padStart(2, "0");
 
     return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
   };
 
-  const handleWaktu = async (selectedDateTime) => {
+  const handleWaktu = async selectedDateTime => {
     const formattedDateTime = formatDateTime(selectedDateTime);
     try {
-      const response = await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
-        tanggal_pengambilan: formattedDateTime,
-      });
+      const response = await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          tanggal_pengambilan: formattedDateTime,
+        },
+      );
       console.log("Data berhasil disimpan:", response.data);
     } catch (error) {
       // console.error("Gagal menyimpan data:", error.response ? error.response.data : error.message);
     }
   };
 
-  const updateRadius = async (value) => {
+  const updateDataToServer = async updatedData => {
     try {
-      const payload = {
-        permohonan: {
-          radius_pengambilan_id: value
-        }
-      };
-      console.log('Payload yang dikirim:', payload.permohonan.radius_pengambilan_id);
-
-      await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, payload);
-      fetchPermohonan();
+      const response = await axios.post(
+        `${API_URL}/administrasi/pengambil-sample/${uuid}/update`,
+        updatedData,
+      );
+      console.log("Data successfully updated on server:", response.data);
     } catch (error) {
-      console.error('Error updating radius pengambilan:', error.response);
+      console.error("Error updating data to server:", error);
     }
   };
 
   function rupiah(value) {
-    return 'Rp. ' + value.toLocaleString('id-ID', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    return (
+      "Rp. " +
+      value.toLocaleString("id-ID", {
+        minimumFractionDigits: 2,
+        maximumFractionDigits: 2,
+      })
+    );
   }
 
   if (loading) {
@@ -351,7 +358,6 @@ export default function DetailPersetujuan({ route, navigation }) {
   };
 
   const saveStatus = async status => {
-
     const response = await axios.post(
       `/administrasi/pengambil-sample/${uuid}/update`,
       {
@@ -359,7 +365,6 @@ export default function DetailPersetujuan({ route, navigation }) {
       },
     );
     console.log("Data berhasil disimpan:", response.data);
-
   };
 
   const saveInterpretasi = value => {
@@ -398,7 +403,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const saveMetode = async status => {
     try {
-      // Log data yang akan dikirim 
+      // Log data yang akan dikirim
       console.log("Data yang akan dikirim:", {
         acuan_metode_id: status,
       });
@@ -408,7 +413,7 @@ export default function DetailPersetujuan({ route, navigation }) {
         `/administrasi/pengambil-sample/${uuid}/update`,
         {
           acuan_metode_id: status, // Data yang dikirim
-        }
+        },
       );
 
       // Log data yang diterima setelah berhasil disimpan
@@ -433,7 +438,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     );
   };
 
-
   const updateKondisiSampel = async (kondisiSampel, keterangan = "") => {
     try {
       const response = await axios.post(
@@ -451,7 +455,6 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
     }
   };
-
 
   return (
     <ScrollView
@@ -506,7 +509,11 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
+                  <MaterialCommunityIcons
+                    name="map-search-outline"
+                    size={29}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat</Text>
@@ -522,9 +529,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>No. Telepon/WhatsApp</Text>
-                  <Text style={styles.value}>
-                    {data.permohonan.user.phone}
-                  </Text>
+                  <Text style={styles.value}>{data.permohonan.user.phone}</Text>
                 </View>
               </View>
             </View>
@@ -534,11 +539,7 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Feather
-                    name="target"
-                    size={30}
-                    color="#50cc96"
-                  />
+                  <Feather name="target" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Lokasi/Titik Uji</Text>
@@ -548,7 +549,11 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96" />
+                  <MaterialCommunityIcons
+                    name="warehouse"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -558,7 +563,12 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome name="building-o" size={31} color="#50cc96" style={{ marginHorizontal: 3 }} />
+                  <FontAwesome
+                    name="building-o"
+                    size={31}
+                    color="#50cc96"
+                    style={{ marginHorizontal: 3 }}
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Alamat Industri</Text>
@@ -568,13 +578,16 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Foundation name="clipboard-pencil" size={32} color="#50cc96" style={{ marginLeft: 5 }} />
+                  <Foundation
+                    name="clipboard-pencil"
+                    size={32}
+                    color="#50cc96"
+                    style={{ marginLeft: 5 }}
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jenis Kegiatan Industri</Text>
-                  <Text style={styles.value}>
-                    {data.permohonan.kegiatan}
-                  </Text>
+                  <Text style={styles.value}>{data.permohonan.kegiatan}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -609,14 +622,12 @@ export default function DetailPersetujuan({ route, navigation }) {
                 <Text style={styles.optionText}>Tidak</Text>
                 <Switch
                   value={interpretasi === 1}
-                  onValueChange={(value) => saveInterpretasi(value ? 1 : 0)}
+                  onValueChange={value => saveInterpretasi(value ? 1 : 0)}
                   trackColor={{ false: "#767577", true: "#312e81" }}
                   thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
                 />
                 <Text style={styles.optionText}>Ada</Text>
               </View>
-
-
 
               <Text style={styles.value}>Kesimpulan Permohonan</Text>
 
@@ -676,7 +687,8 @@ export default function DetailPersetujuan({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Peraturan</Text>
                   <Text style={styles.value}>
-                    {data?.peraturan?.nama || ''} - {data?.peraturan?.nomor || ''}
+                    {data?.peraturan?.nama || ""} -{" "}
+                    {data?.peraturan?.nomor || ""}
                   </Text>
                 </View>
               </View>
@@ -685,39 +697,57 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <View className="bg-[#e8fff3] p-2 rounded-lg mr-2">
                     <FontAwesome6 name="vial" size={32} color="#50cc96" />
                   </View>
-                  <Text style={styles.label} className="mb-2">Parameter</Text>
+                  <Text style={styles.label} className="mb-2">
+                    Parameter
+                  </Text>
                 </View>
                 <View className="flex-row justify-between mb-1">
-                  <Text className="text-base ml-14 font-bold text-black">Nama</Text>
+                  <Text className="text-base ml-14 font-bold text-black">
+                    Nama
+                  </Text>
                   <Text className="text-base font-bold text-black">Harga</Text>
                 </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
-                    <View key={index} className="flex-row justify-between items-center py-2">
+                    <View
+                      key={index}
+                      className="flex-row justify-between items-center py-2">
                       <View className="flex-row items-center">
-                        <Text className="text-sm text-black ml-14 font-bold">{item.nama}</Text>
-                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
-                          <EvilIcons name="pencil" size={20} color="black" style={{ marginLeft: 10 }} />
+                        <Text className="text-sm text-black ml-14 font-bold">
+                          {item.nama}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => handleParameter(item, uuid)}>
+                          <EvilIcons
+                            name="pencil"
+                            size={20}
+                            color="black"
+                            style={{ marginLeft: 10 }}
+                          />
                         </TouchableOpacity>
                       </View>
-                      <Text className="text-sm text-black font-bold">{rupiah(item.harga)}</Text>
+                      <Text className="text-sm text-black font-bold">
+                        {rupiah(item.harga)}
+                      </Text>
                       <View
                         style={{
-                          position: 'absolute',
+                          position: "absolute",
                           bottom: 0,
                           left: 55,
                           right: 0,
                           height: 1,
-                          backgroundColor: 'transparent',
+                          backgroundColor: "transparent",
                           borderBottomWidth: 1,
-                          borderColor: '#e5e7eb',
-                          borderStyle: 'dashed',
+                          borderColor: "#e5e7eb",
+                          borderStyle: "dashed",
                         }}
                       />
                     </View>
                   ))
                 ) : (
-                  <Text className="text-base text-gray-500 italic">No parameters available</Text>
+                  <Text className="text-base text-gray-500 italic">
+                    No parameters available
+                  </Text>
                 )}
                 <Modal
                   animationType="fade"
@@ -744,27 +774,28 @@ export default function DetailPersetujuan({ route, navigation }) {
               </View>
             </View>
             <View style={styles.pengambilanContainer}>
-              <Text style={{
-                fontSize: 15,
-                fontWeight: "bold",
-                marginBottom: 20,
-                color: Colors.black,
-              }}
-              >Detail Pengambilan (Silahkan isi data di bawah ini)</Text>
+              <Text
+                style={{
+                  fontSize: 15,
+                  fontWeight: "bold",
+                  marginBottom: 20,
+                  color: Colors.black,
+                }}>
+                Detail Pengambilan (Silahkan isi data di bawah ini)
+              </Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <FontAwesome5Icon
-                    name="dolly"
-                    size={27}
-                    color="#50cc96"
-                  />
+                  <FontAwesome5Icon name="dolly" size={27} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Jasa Pengambilan</Text>
                   <Text style={styles.value}>
-                    {data?.permohonan?.jasa_pengambilan?.wilayah || ''}
+                    {data?.permohonan?.jasa_pengambilan?.wilayah || ""}
                     {data?.permohonan?.user?.golongan_id == 1 && (
-                      <Text> ({currency(data?.permohonan?.jasa_pengambilan?.harga)})</Text>
+                      <Text>
+                        {" "}
+                        ({currency(data?.permohonan?.jasa_pengambilan?.harga)})
+                      </Text>
                     )}
                   </Text>
                 </View>
@@ -781,25 +812,42 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.label}>Radius Pengambilan</Text>
                   <View style={styles.pickerContainer}>
                     <RNPickerSelect
-                      placeholder={{ label: 'Pilih Radius', value: null }}
+                      placeholder={{ label: "Pilih Radius", value: null }}
                       onValueChange={value => {
-                        console.log('Selected radius value:', value);
-                        setSelectedRadius(value);
-                        updateRadius(value)
+                        console.log("Selected radius value:", value);
+                        setData(prevData => {
+                          if (prevData) {
+                            const updatedData = {
+                              ...prevData,
+                              permohonan: {
+                                ...prevData.permohonan,
+                                radius_pengambilan_id: value, // Update radius_pengambilan_id
+                              },
+                            };
+
+                            // Setelah state diubah, kirim data ke server
+                            updateDataToServer(updatedData);
+
+                            return updatedData;
+                          }
+                          return prevData; // Jika tidak ada data sebelumnya, kembalikan apa adanya
+                        });
                       }}
                       items={radiusPengambilan.map(item => ({
-                        label: `${item.nama} (${item.radius}m) - ${currency(item.harga)}`,
-                        value: item.id
+                        label: `${item.nama} (${item.radius}m) - ${currency(
+                          item.harga,
+                        )}`,
+                        value: item.id,
                       }))}
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
                           fontSize: 13.5,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                           fontSize: 13.5,
                         },
                         iconContainer: {
@@ -810,13 +858,19 @@ export default function DetailPersetujuan({ route, navigation }) {
                       value={selectedRadius}
                       useNativeAndroidPickerStyle={false}
                       Icon={() => {
-                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }} />;
+                        return (
+                          <FontAwesome6
+                            name="caret-down"
+                            size={11}
+                            color="#999"
+                            style={{ marginTop: 4 }}
+                          />
+                        );
                       }}
                     />
                   </View>
                 </View>
               </View>
-
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -829,48 +883,66 @@ export default function DetailPersetujuan({ route, navigation }) {
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas</Text>
                   <FlatList
-                      scrollEnabled={false}
-                      data={[{ key: 'selectPetugas' }]} 
-                      renderItem={() => (
-                        <View>
+                    scrollEnabled={false}
+                    data={[{ key: "selectPetugas" }]}
+                    renderItem={() => (
+                      <View>
                         <MultiSelect
-                      hideTags
-                      items={pengambilSample.map(item => ({
-                        id: item.id,
-                        name: item.nama,
-                      }))}
-                      uniqueKey="id"
-                      onSelectedItemsChange={items => {
-                        setSelectedPetugas(items); 
-                      }}
-                      selectedItems={selectedPetugas}
-                      selectText="Pilih petugas"
-                      searchInputPlaceholderText="Cari petugas..."
-                      tagRemoveIconColor="#CED4DA"
-                      tagBorderColor="#E9ECEF"
-                      tagTextColor="#495057"
-                      selectedItemTextColor="#495057"
-                      selectedItemIconColor="#50cc96"
-                      itemTextColor="#495057"
-                      displayKey="name"
-                      searchInputStyle={styles.searchInputStyle}
-                      submitButtonColor="#312e81"
-                      submitButtonText="Pilih"
-                      styleListContainer={styles.listContainer}
-                      styleMainWrapper={styles.mainWrapper}
-                      styleTextDropdown={styles.textDropdown}
-                      styleTextDropdownSelected={styles.textDropdownSelected}
-                      styleSelectorContainer={styles.selectorContainer}
-                      styleRowList={styles.rowList}
-                      styleDropdownMenuSubsection={styles.dropdownMenuSubsection}
-                      styleInputGroup={styles.inputGroup}
-                      fontFamily="System"
-                    />
-                    </View>
-                      )}
-                      keyExtractor={(item, index) => index.toString()}
-                    />
-  
+                          hideTags
+                          items={pengambilSample.map(item => ({
+                            id: item.id,
+                            name: item.nama,
+                          }))}
+                          uniqueKey="id"
+                          onSelectedItemsChange={items => {
+                            setSelectedPetugas(items);
+                            // Update petugas_pengambil_ids di dalam data yang sudah ada
+                            setData(prevData => {
+                              if (prevData) {
+                                const updatedData = {
+                                  ...prevData,
+                                  petugas_pengambil_ids: items, // Update petugas_pengambil_ids dengan item yang dipilih
+                                };
+
+                                // Setelah state diubah, kirim data ke server
+                                updateDataToServer(updatedData);
+
+                                return updatedData;
+                              }
+                              return prevData; // Jika tidak ada data sebelumnya, kembalikan apa adanya
+                            });
+                          }}
+                          selectedItems={selectedPetugas}
+                          selectText="Pilih petugas"
+                          searchInputPlaceholderText="Cari petugas..."
+                          tagRemoveIconColor="#CED4DA"
+                          tagBorderColor="#E9ECEF"
+                          tagTextColor="#495057"
+                          selectedItemTextColor="#495057"
+                          selectedItemIconColor="#50cc96"
+                          itemTextColor="#495057"
+                          displayKey="name"
+                          searchInputStyle={styles.searchInputStyle}
+                          submitButtonColor="#312e81"
+                          submitButtonText="Pilih"
+                          styleListContainer={styles.listContainer}
+                          styleMainWrapper={styles.mainWrapper}
+                          styleTextDropdown={styles.textDropdown}
+                          styleTextDropdownSelected={
+                            styles.textDropdownSelected
+                          }
+                          styleSelectorContainer={styles.selectorContainer}
+                          styleRowList={styles.rowList}
+                          styleDropdownMenuSubsection={
+                            styles.dropdownMenuSubsection
+                          }
+                          styleInputGroup={styles.inputGroup}
+                          fontFamily="System"
+                        />
+                      </View>
+                    )}
+                    keyExtractor={(item, index) => index.toString()}
+                  />
                 </View>
               </View>
 
@@ -925,31 +997,34 @@ export default function DetailPersetujuan({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
+                  <Ionicons
+                    name="pricetags-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
-                <View style={styles.textContainer} >
+                <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
                   <View style={styles.pickerContainer}>
                     <RNPickerSelect
-                      placeholder={{ label: 'Pilih Metode', value: null }}
+                      placeholder={{ label: "Pilih Metode", value: null }}
                       onValueChange={value => {
-                        setSelectedMetode(value)
-                        saveMetode(value)
+                        setSelectedMetode(value);
+                        saveMetode(value);
                       }}
                       items={metode.map(item => ({
                         label: `${item.nama}`,
-                        value: item.id
+                        value: item.id,
                       }))}
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                           fontSize: 13.5,
-
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontWeight: 'bold',
+                          fontWeight: "bold",
                           fontSize: 13.5,
                         },
                         iconContainer: {
@@ -960,7 +1035,14 @@ export default function DetailPersetujuan({ route, navigation }) {
                       value={selectedMetode}
                       useNativeAndroidPickerStyle={false}
                       Icon={() => {
-                        return <FontAwesome6 name="caret-down" size={11} color="#999" style={{ marginTop: 4 }} />;
+                        return (
+                          <FontAwesome6
+                            name="caret-down"
+                            size={11}
+                            color="#999"
+                            style={{ marginTop: 4 }}
+                          />
+                        );
                       }}
                     />
                   </View>
@@ -1160,7 +1242,7 @@ const styles = StyleSheet.create({
     padding: 10,
     backgroundColor: "#f8fafc",
     borderRadius: 8,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderWidth: 1,
   },
   dateTimeText: {
@@ -1211,11 +1293,11 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 8,
-    backgroundColor: '#f8fafc',
-    width: 290,  // Memperluas lebar picker
-    overflow: 'hidden',
+    backgroundColor: "#f8fafc",
+    width: 290, // Memperluas lebar picker
+    overflow: "hidden",
     // shadowOpacity: 0.1,
     // shadowRadius: 3,
     // elevation: 2,
@@ -1223,10 +1305,10 @@ const styles = StyleSheet.create({
   pickerStyle: {
     fontSize: 12,
     paddingVertical: 8,
-    paddingHorizontal: 15,  // Menambah padding horizontal agar lebih lebar
-    color: '#333333',
-    width: '100%',
-    height: 40,  // Membuat picker lebih tinggi
+    paddingHorizontal: 15, // Menambah padding horizontal agar lebih lebar
+    color: "#333333",
+    width: "100%",
+    height: 40, // Membuat picker lebih tinggi
   },
 
   inputStyle: {
@@ -1234,13 +1316,12 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     paddingVertical: 8,
     paddingHorizontal: 15,
-    color: '#333333',
-    width: '100%',
-    height: 40,  // Sama dengan tinggi picker
+    color: "#333333",
+    width: "100%",
+    height: 40, // Sama dengan tinggi picker
     borderWidth: 1,
-    borderColor: '#cccccc',
+    borderColor: "#cccccc",
     borderRadius: 8,
     backgroundColor: "#f8fafc",
   },
-
- });
+});
