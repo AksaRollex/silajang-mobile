@@ -299,7 +299,7 @@ const VerifikasiLhu = ({ navigation }) => {
                   items={VerifikasiOptions}
                   selected={selectedVerifikasi}
                   onPress={item => setSelectedVerifikasi(item.id)}
-                  itemWidth={170}
+                  itemWidth={200}
                   scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                   activeBackgroundColor={"#312e81"}
                   buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
