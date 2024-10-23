@@ -127,8 +127,8 @@ const Dashboard = () => {
                   <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
                     Total Permohonan
                   </Text>
-                </View>
           <TextFooter />
+                </View>
 
               </> 
             ) : (
