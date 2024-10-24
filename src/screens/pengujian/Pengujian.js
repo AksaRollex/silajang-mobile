@@ -156,7 +156,7 @@ export default function Pengujian() {
                 className='px-5 bg-[#f8f8f8]' 
               />
             </List.Accordion>
-            <TextFooter />
+            <TextFooter/>
           </ScrollView>
         </View>
       )

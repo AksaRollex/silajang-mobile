@@ -1,21 +1,17 @@
 import axios from "@/src/libs/axios";
 import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
+import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
-import { useNavigation } from '@react-navigation/native';
-import { TouchableOpacity } from "react-native-gesture-handler";
+import { Dimensions } from "react-native";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -29,13 +25,147 @@ const Dashboard = () => {
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
   const navigation = useNavigation();
+  const screenWidth = Dimensions.get("window").width;
+  const [chartData, setChartData] = useState(null);
+  const [chartPeraturans, setChartPeraturans] = useState({
+    categories: [],
+    data: [],
+  });
+  const [chartParameters, setChartParameters] = useState({
+    categories: [],
+    data: [],
+  });
+
+  const data = {
+    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+    datasets: [
+      {
+        data: [30, 60, 90, 120, 150],
+        color: (opacity = 1) => `rgba(134, 65, 244, ${opacity})`,
+        strokeWidth: 2,
+      },
+    ],
+  };
+
+  useEffect(() => {
+    // Fetch dashboard data on component mount
+    const fetchDashboardData = async () => {
+      try {
+        const endpoint = user.role.name === 'customer' ? 'customer' : 'admin';
+        const response = await axios.post(`/dashboard/${endpoint}`, { tahun });
+
+        setDashboard(response.data);
+
+        // Transform chart data
+        if (response.data.chartSampels) {
+          setChartData({
+            labels: response.data.chartSampels.categories,
+            datasets: [
+              {
+                data: response.data.chartSampels.data,
+                color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
+                strokeWidth: 2,
+              },
+            ],
+          });
+        }
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, [tahun, user.role.name]);
+
+  const chartConfig = {
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientToOpacity: 0,
+    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`, 
+    strokeWidth: 0,
+    barPercentage: 0.5,
+    decimalPlaces: 2,
+    useShadowColorFromDataset: false,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    // propsForDots: {
+    //   r: "6",
+    //   strokeWidth: "2",
+    //   stroke: "#312e81" // Warna dot senada dengan line
+    // },
+    style: {
+      borderRadius: 16,
+    },
+    propsForBackgroundLines: {
+      strokeWidth: 1,
+      stroke: "#e2e8f0",
+      strokeDasharray: "0",
+    }
+  };
+  
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.post("/dashboard/admin", { tahun: 2024 });
+        const peraturanData = response.data.chartPeraturans;
+
+        if (peraturanData) {
+          const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
+
+          // Array warna tetap untuk setiap bagian
+          const colors = ['#C70039', '#44CD40', '#404FCD', '#EBD22F', '#333333'];
+
+          setChartPeraturans({
+            categories: peraturanData.categories,
+            data: peraturanData.data.map((value, index) => ({
+              name: peraturanData.categories[index],
+              population: value,
+              percentage: ((value / total) * 100).toFixed(2), 
+              color: colors[index % colors.length], 
+            })),
+          });
+        }
+        setDashboard(response.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  
+  useEffect(() => {
+    // Fetch dashboard data on component mount
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.post('/dashboard/admin', { tahun: 2024 });
+        const parameterData = response.data.chartParameters;
+
+        if (parameterData) {
+          // Set chartPeraturans data for Pie chart
+          const pieSections = parameterData.data.map((value) => ({
+            percentage: value,
+            color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color
+          }));
+          setChartParameters({
+            categories: parameterData.categories,
+            data: pieSections,
+          });
+        }
+
+        setDashboard(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const Penerima = () => {
     navigation.navigate("Penerima");
   };
 
   const handlePress = () => {
-    const uuid = '7cd62078-6101-4ef3-ad6f-28afe23d81b9';
     navigation.navigate("Penerima", { uuid });
   }
 
@@ -246,6 +376,82 @@ const Dashboard = () => {
                     Jumlah Responden
                   </Text>
                 </TouchableOpacity>
+
+                
+                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                    <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                    <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
+                    {chartData ? (
+                        <LineChart
+                        data={chartData}
+                        width={screenWidth - 40}
+                        height={340}
+                        verticalLabelRotation={20}
+                        chartConfig={chartConfig}
+                        bezier
+                        style={{
+                            marginVertical: 8,
+                            borderRadius: 16
+                        }}
+                        fromZero
+                        yAxisInterval={1}
+                        />
+                    ) : (
+                        <ActivityIndicator size="large" color="#312e81" />
+                    )}
+                    </View>
+                )}
+
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                  <Text className="text-lg font-bold p-3">
+                    {chartPeraturans.data.length > 1
+                      ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
+                      : "Peraturan Paling Banyak Digunakan"}
+                  </Text>
+                  
+                  <View className="ml-16">
+                  <PieChart
+                   className="ml-96"
+                    data={chartPeraturans.data}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={{
+                      backgroundColor: "#1cc910",
+                      backgroundGradientFrom: "#eff3ff",
+                      backgroundGradientTo: "#efefef",
+                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    }}
+                    accessor={"population"}
+                    backgroundColor={"transparent"}
+                    paddingLeft={"15"}
+                    hasLegend={false}
+                  />
+                  </View>
+
+                  <View style={styles.legendContainer}>
+                    {chartPeraturans.data.map((item, index) => (
+                      <View key={index} style={styles.legendItem}>
+                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                        <Text style={styles.legendText}>
+                          <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+            
+                
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-14 mt-4">
+                  <Text className="text-lg font-bold p-3">
+                    {chartParameters.data.length > 1
+                      ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
+                      : "Parameter Paling Banyak Digunakan"}
+                  </Text>
+                </View>
+
               </>
             )}
   
@@ -259,19 +465,25 @@ const Dashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0d47a133",
+  legendContainer: {
+    marginTop: 20,
   },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: "#312e81",
-    alignItems: "center",
-    justifyContent: "center",
+  legendItem: {
     flexDirection: "row",
-    elevation: 4,
+    alignItems: "center",
+    marginBottom: 5,
   },
+  legendColor: {
+    width: 16,
+    height: 16,
+    borderRadius: 20, 
+    marginRight: 6,
+  },
+  legendText: {
+    fontSize: 13,
+    color: "#333",
+  },
+
   logo: {
     width: 40,
     height: 40,
