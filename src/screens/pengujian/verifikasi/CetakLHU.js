@@ -44,6 +44,8 @@ const CetakLHU = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState('');
   const [selectedFile, setSelectedFile] = useState(null);
   const [revisiNote, setRevisiNote] = useState(''); 
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null); 
 
   const dropdownOptions = [
   ];
@@ -70,41 +72,48 @@ const CetakLHU = ({ navigation }) => {
     }
   };
 
-  const handleUploadPDF = async (item) => {
-    if (!selectedFile) {
-      Alert.alert('Error', 'Please select a PDF file first');
-      return;
-    }
-
+  const handleUploadPDF = async () => {
     try {
-      const authToken = await AsyncStorage.getItem('@auth-token');
-      const fileContent = await RNFS.readFile(selectedFile.uri, 'base64');
-
+      if (!selectedFile) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Please select a PDF file first'
+        });
+        return;
+      }
+  
       const formData = new FormData();
       formData.append('file', {
         uri: selectedFile.uri,
         type: selectedFile.type,
-        name: selectedFile.name,
+        name: selectedFile.name
       });
-      formData.append('uuid', item.uuid);
-
-      const response = await axios.post('/api/v1/upload', formData, {
+  
+      const response = await axios.post(`/administrasi/cetak-lhu/upload/`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
-          'Authorization': `Bearer ${authToken}`,
         },
       });
+  
+      setSelectedFile(null);
+      setUploadModalVisible(false);
 
-      if (response.data.success) {
-        Alert.alert('Success', 'PDF uploaded successfully');
-        setSelectedFile(null);
-        // You might want to refresh the list or update the item status here
-      } else {
-        Alert.alert('Error', 'Failed to upload PDF');
-      }
+      Toast.show({
+        type: 'success',
+        text1: 'Success',
+        text2: 'File berhasil diupload'
+      });
+  
+      paginateRef.current?.refetch();
+  
     } catch (error) {
-      console.error('Upload error:', error);
-      Alert.alert('Error', 'Failed to upload PDF');
+      console.error('Upload error:', error.response.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.response?.data?.message || 'Failed to upload file'
+      });
     }
   };
 
@@ -185,25 +194,36 @@ const CetakLHU = ({ navigation }) => {
             </Text>
           </View>
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
+          <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
               <Text className="text-[12px] text-indigo-600 font-bold text-right">
                 {item.text_status}
               </Text>
             </View>
             <View className="my-2">
               {canUpload && (
-                <TouchableOpacity onPress={() =>  FilePicker()} className="mb-2">
-                  <FontIcon name="file-upload" size={18} color="white" style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} />
-                </TouchableOpacity>
-              )}
-              {canUpload && selectedFile && (
-                <TouchableOpacity onPress={() => handleUploadPDF(item)} className="mb-2">
-                  <FontIcon name="upload" size={18} color="white" style={{ backgroundColor: "green", padding: 12, borderRadius: 8 }} />
+                <TouchableOpacity 
+                  onPress={() => {
+                    setCurrentItem(item);
+                    setUploadModalVisible(true);
+                  }} 
+                  className="mb-2"
+                >
+                  <FontIcon 
+                    name="file-upload" 
+                    size={18} 
+                    color="white" 
+                    style={{ backgroundColor: "blue", padding: 12, borderRadius: 8 }} 
+                  />
                 </TouchableOpacity>
               )}
               {showPreview && (
                 <TouchableOpacity onPress={() => handlePreviewLHU(item)} className="mb-2">
-                  <FontIcon name="file-pdf" size={18} color="white" style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} />
+                  <FontIcon 
+                    name="file-pdf" 
+                    size={18} 
+                    color="white" 
+                    style={{ backgroundColor: "red", padding: 12, borderRadius: 8 }} 
+                  />
                 </TouchableOpacity>
               )}
             </View>
@@ -279,7 +299,6 @@ const CetakLHU = ({ navigation }) => {
         url="/administrasi/cetak-lhu"
         payload={payload}
         renderItem={renderItem}
-        className="mb-14"
       />
 
     <Modal
@@ -312,6 +331,76 @@ const CetakLHU = ({ navigation }) => {
           </View>
         </View>
       </Modal> 
+
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={uploadModalVisible}
+        onRequestClose={() => {
+          setUploadModalVisible(false);
+          setSelectedFile(null);
+        }}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-bold text-black">Upload File</Text>
+              <TouchableOpacity 
+                onPress={() => {
+                  setUploadModalVisible(false);
+                  setSelectedFile(null);
+                }}
+              >
+                <AntDesign 
+                  name="close"
+                  size={20}
+                  color="#666"
+                />
+              </TouchableOpacity>
+            </View>
+            
+            {selectedFile ? (
+              <View className="mb-4">
+                <View className="bg-[#f8f8f8] p-2 rounded-lg shadow">
+                <View className="flex-row items-center justify-between">
+                  <View className="flex-1 mr-2">
+                    <Text className="text-sm mb-1">Selected File:</Text>
+                    <Text className="text-sm font-bold">{selectedFile.name}</Text>
+                  </View>
+                  <TouchableOpacity 
+                    onPress={() => setSelectedFile(null)}
+                    className="bg-gray-200 p-2 rounded-full"
+                  >
+                    <AntDesign name="close" size={16} color="black" />
+                  </TouchableOpacity>
+                </View>
+                </View>
+                <View className="flex-row justify-end mt-4">
+                  <TouchableOpacity 
+                    onPress={handleUploadPDF}
+                    className="bg-indigo-600 px-4 py-2 rounded"
+                  >
+                    <Text className="text-white font-bold">Upload</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text className="text-sm mb-4">Silakan pilih file PDF yang akan diupload</Text>
+                <View className="flex-row justify-end">
+                  <TouchableOpacity 
+                    onPress={handleFilePicker}
+                    className="bg-indigo-600 px-4 py-2 rounded"
+                  >
+                    <Text className="text-white font-bold">Pilih File</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
+          </View>
+        </View>
+      </Modal>
+
     </View>
   );
 };

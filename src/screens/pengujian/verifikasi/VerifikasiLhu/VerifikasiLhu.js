@@ -38,6 +38,31 @@ const VerifikasiLhu = ({ navigation }) => {
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [selectedUuid, setSelectedUuid] = useState(null);
+
+  const confirmationModal = (action, uuid) => {
+    setConfirmAction(action);
+    setSelectedUuid(uuid);
+    setConfirmModalVisible(true);
+  };
+  
+  const handleConfirm = async () => {
+    try {
+      if (confirmAction === 'verify') {
+        await Verifikasi(selectedUuid);
+      } else if (confirmAction === 'reject') {
+        await TolakVerifikasi(selectedUuid);
+      }
+    } catch (error) {
+      console.error('Action error:', error);
+    } finally {
+      setConfirmModalVisible(false);
+      setConfirmAction(null);
+      setSelectedUuid(null);
+    }
+  };
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -212,8 +237,8 @@ const VerifikasiLhu = ({ navigation }) => {
 
     const dropdownOptionsMenunggu = [
       { id: "Preview", title: "Preview", action: (item) => PreviewVerifikasi(item) },
-      { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => Verifikasi(item.uuid) },
-      { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => TolakVerifikasi(item.uuid) },
+      { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => confirmationModal('verify', item.uuid) },
+      { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => confirmationModal('reject', item.uuid) },
     ];
     
     const dropdownOptionsTelah = [
@@ -374,6 +399,45 @@ const VerifikasiLhu = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      <Modal
+      transparent={true}
+      animationType="fade"
+      visible={confirmModalVisible}
+      onRequestClose={() => setConfirmModalVisible(false)}
+    >
+      <View className="flex-1 justify-center items-center bg-black/50">
+        <View className="bg-white rounded-lg w-[80%] p-4">
+          <Text className="text-lg font-bold text-black mb-4">
+            {confirmAction === 'verify' 
+              ? 'Konfirmasi Verifikasi LHU'
+              : 'Konfirmasi Tolak Verifikasi'}
+          </Text>
+          
+          <Text className="text-black mb-4">
+            {confirmAction === 'verify'
+              ? 'Apakah Anda yakin ingin memverifikasi LHU ini?'
+              : 'Apakah Anda yakin ingin menolak verifikasi LHU ini?'}
+          </Text>
+
+          <View className="flex-row justify-end space-x-2">
+            <TouchableOpacity 
+              onPress={() => setConfirmModalVisible(false)}
+              className="bg-gray-200 p-2 rounded-md"
+            >
+              <Text className="text-black">Batal</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={handleConfirm}
+              className="bg-indigo-900 p-2 rounded-md"
+            >
+              <Text className="text-white">Ya, Lanjutkan</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
 
       <DeleteConfirmationModal />
     </View>
