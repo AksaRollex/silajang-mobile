@@ -16,8 +16,7 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
-import Pengujian from "../konfigurasi/Pengujian";
-import Website from "../konfigurasi/Website";
+import KonfigurasiNavigator from "../konfigurasi/Index";
 import MasterNavigator from "../master/master/Index";
 import IndexUser from "../master/user/Index";
 import IndexWilayah from "../master/wilayah/Index";
@@ -446,8 +445,7 @@ const DrawerContent = (props) => {
       name: "Konfigurasi",
       fontAwesome: "wrench",
       subItems: [
-        { name: "Pengujian", screen: "Pengujian" },
-        { name: "Website", screen: "Website" },
+        { name: "Pengujian", screen: "PengujianKonfig", params: {screen: 'KonfigurasiIndex'} },
       ],
     },
   ];
@@ -480,10 +478,9 @@ const Admin = () =>  (
         <Drawer.Screen name="Profile" component={Profile} />
         {/* <Drawer.Screen name="MasterIndex" component={MasterNavigator} /> */}
         <Drawer.Screen name="Master" component={MasterNavigator} />
+        <Drawer.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
         <Drawer.Screen name="User" component={IndexUser} />
         <Drawer.Screen name="Wilayah" component={IndexWilayah} />
-        <Drawer.Screen name="Pengujian" component={Pengujian} />
-        <Drawer.Screen name="Website" component={Website} />
       </Drawer.Navigator>
     </NavigationContainer>
   )

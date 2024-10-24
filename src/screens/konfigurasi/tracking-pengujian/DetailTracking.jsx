@@ -1,12 +1,12 @@
 import { View, Text } from 'react-native'
 import React from 'react'
 
-const Website = () => {
+const DetailTracking = () => {
   return (
     <View>
-      <Text>Website</Text>
+      <Text>DetailTracking</Text>
     </View>
   )
 }
 
-export default Website
+export default DetailTracking
