@@ -111,7 +111,7 @@ const Dashboard = () => {
           const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
 
           // Array warna tetap untuk setiap bagian
-          const colors = ['#C70039', '#44CD40', '#404FCD', '#EBD22F', '#333333'];
+          const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
 
           setChartPeraturans({
             categories: peraturanData.categories,
@@ -142,16 +142,21 @@ const Dashboard = () => {
 
         if (parameterData) {
           // Set chartPeraturans data for Pie chart
-          const pieSections = parameterData.data.map((value) => ({
-            percentage: value,
-            color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color
-          }));
+          const total = parameterData.data.reduce((acc, value) => acc + value, 0);
+
+          // Array warna tetap untuk setiap bagian
+          const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300'];
+
           setChartParameters({
             categories: parameterData.categories,
-            data: pieSections,
+            data: parameterData.data.map((value, index) => ({
+              name: parameterData.categories[index],
+              population: value,
+              percentage: ((value / total) * 100).toFixed(2), 
+              color: colors[index % colors.length], 
+            })),
           });
         }
-
         setDashboard(response.data);
       } catch (error) {
         console.error('Error fetching dashboard data:', error);
@@ -429,13 +434,14 @@ const Dashboard = () => {
                   />
                   </View>
 
-                  <View style={styles.legendContainer}>
+                  <View style={styles.legendContainer} className="break-words">
                     {chartPeraturans.data.map((item, index) => (
                       <View key={index} style={styles.legendItem}>
                         <View style={[styles.legendColor, { backgroundColor: item.color }]} />
                         <Text style={styles.legendText}>
                           <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
                         </Text>
+
                       </View>
                     ))}
                   </View>
@@ -444,12 +450,46 @@ const Dashboard = () => {
             
                 
 
-                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-14 mt-4">
-                  <Text className="text-lg font-bold p-3">
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-16 mt-4">
+                  <Text className="text-lg font-bold p-3 truncate">
                     {chartParameters.data.length > 1
                       ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
                       : "Parameter Paling Banyak Digunakan"}
                   </Text>
+
+                  <View className="ml-16">
+                          <PieChart
+                          className="breack-words"
+                            data={chartParameters.data}
+                            width={screenWidth}
+                            height={300}
+                            chartConfig={{
+                              backgroundColor: "#1cc910",
+                              backgroundGradientFrom: "#eff3ff",
+                              backgroundGradientTo: "#efefef",
+                              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                            }}
+                            accessor={"population"}
+                            backgroundColor={"transparent"}
+                            paddingLeft={"15"}
+                            hasLegend={false}
+                            // avoidFalseZeros={true}
+                          />
+
+                          
+                        </View>
+                        <View style={styles.legendContainer} className="break-words">
+                    {chartParameters.data.map((item, index) => (
+                      <View key={index} style={styles.legendItem} >
+                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                        <Text style={styles.legendText}>
+                          <Text className="text-[12px] font-extrabold ml-4">{item.percentage}%</Text> - {item.name}
+                        </Text>
+
+                      </View>
+                    ))}
+                  </View>
+
                 </View>
 
               </>
