@@ -3,21 +3,8 @@ import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState } from "react";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  Text,
-  View
-} from "react-native";
-import {
-    LineChart,
-    BarChart,
-    PieChart,
-    ProgressChart,
-    ContributionGraph,
-    StackedBarChart
-  } from "react-native-chart-kit";
+import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
+import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -40,6 +27,14 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const screenWidth = Dimensions.get("window").width;
   const [chartData, setChartData] = useState(null);
+  const [chartPeraturans, setChartPeraturans] = useState({
+    categories: [],
+    data: [],
+  });
+  const [chartParameters, setChartParameters] = useState({
+    categories: [],
+    data: [],
+  });
 
   const data = {
     labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
@@ -52,30 +47,6 @@ const Dashboard = () => {
     ],
   };
 
-  const chartConfig = {
-    backgroundGradientFromOpacity: 0,
-    backgroundGradientToOpacity: 0,
-    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`, 
-    strokeWidth: 0,
-    barPercentage: 0.5,
-    decimalPlaces: 2,
-    useShadowColorFromDataset: false,
-    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    // propsForDots: {
-    //   r: "6",
-    //   strokeWidth: "2",
-    //   stroke: "#312e81" // Warna dot senada dengan line
-    // },
-    style: {
-      borderRadius: 16,
-    },
-    propsForBackgroundLines: {
-      strokeWidth: 1,
-      stroke: "#e2e8f0",
-      strokeDasharray: "0",
-    }
-  };
-  
   useEffect(() => {
     // Fetch dashboard data on component mount
     const fetchDashboardData = async () => {
@@ -105,6 +76,90 @@ const Dashboard = () => {
 
     fetchDashboardData();
   }, [tahun, user.role.name]);
+
+  const chartConfig = {
+    backgroundGradientFromOpacity: 0,
+    backgroundGradientToOpacity: 0,
+    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`, 
+    strokeWidth: 0,
+    barPercentage: 0.5,
+    decimalPlaces: 2,
+    useShadowColorFromDataset: false,
+    labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+    // propsForDots: {
+    //   r: "6",
+    //   strokeWidth: "2",
+    //   stroke: "#312e81" // Warna dot senada dengan line
+    // },
+    style: {
+      borderRadius: 16,
+    },
+    propsForBackgroundLines: {
+      strokeWidth: 1,
+      stroke: "#e2e8f0",
+      strokeDasharray: "0",
+    }
+  };
+  
+  useEffect(() => {
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.post("/dashboard/admin", { tahun: 2024 });
+        const peraturanData = response.data.chartPeraturans;
+
+        if (peraturanData) {
+          const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
+
+          // Array warna tetap untuk setiap bagian
+          const colors = ['#C70039', '#44CD40', '#404FCD', '#EBD22F', '#333333'];
+
+          setChartPeraturans({
+            categories: peraturanData.categories,
+            data: peraturanData.data.map((value, index) => ({
+              name: peraturanData.categories[index],
+              population: value,
+              percentage: ((value / total) * 100).toFixed(2), 
+              color: colors[index % colors.length], 
+            })),
+          });
+        }
+        setDashboard(response.data);
+      } catch (error) {
+        console.error("Error fetching dashboard data:", error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
+
+  
+  useEffect(() => {
+    // Fetch dashboard data on component mount
+    const fetchDashboardData = async () => {
+      try {
+        const response = await axios.post('/dashboard/admin', { tahun: 2024 });
+        const parameterData = response.data.chartParameters;
+
+        if (parameterData) {
+          // Set chartPeraturans data for Pie chart
+          const pieSections = parameterData.data.map((value) => ({
+            percentage: value,
+            color: `#${Math.floor(Math.random() * 16777215).toString(16)}`, // Random color
+          }));
+          setChartParameters({
+            categories: parameterData.categories,
+            data: pieSections,
+          });
+        }
+
+        setDashboard(response.data);
+      } catch (error) {
+        console.error('Error fetching dashboard data:', error);
+      }
+    };
+
+    fetchDashboardData();
+  }, []);
 
   const Penerima = () => {
     navigation.navigate("Penerima");
@@ -202,8 +257,8 @@ const Dashboard = () => {
                   <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
                     Total Permohonan
                   </Text>
-          <TextFooter />
                 </View>
+          <TextFooter />
 
               </> 
             ) : (
@@ -324,7 +379,7 @@ const Dashboard = () => {
 
                 
                 {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                    <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-14 mt-4">
+                    <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
                     <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
                     {chartData ? (
                         <LineChart
@@ -346,6 +401,57 @@ const Dashboard = () => {
                     )}
                     </View>
                 )}
+
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                  <Text className="text-lg font-bold p-3">
+                    {chartPeraturans.data.length > 1
+                      ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
+                      : "Peraturan Paling Banyak Digunakan"}
+                  </Text>
+                  
+                  <View className="ml-16">
+                  <PieChart
+                   className="ml-96"
+                    data={chartPeraturans.data}
+                    width={screenWidth}
+                    height={220}
+                    chartConfig={{
+                      backgroundColor: "#1cc910",
+                      backgroundGradientFrom: "#eff3ff",
+                      backgroundGradientTo: "#efefef",
+                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    }}
+                    accessor={"population"}
+                    backgroundColor={"transparent"}
+                    paddingLeft={"15"}
+                    hasLegend={false}
+                  />
+                  </View>
+
+                  <View style={styles.legendContainer}>
+                    {chartPeraturans.data.map((item, index) => (
+                      <View key={index} style={styles.legendItem}>
+                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                        <Text style={styles.legendText}>
+                          <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                </View>
+
+            
+                
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-14 mt-4">
+                  <Text className="text-lg font-bold p-3">
+                    {chartParameters.data.length > 1
+                      ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
+                      : "Parameter Paling Banyak Digunakan"}
+                  </Text>
+                </View>
+
               </>
             )}
   
@@ -359,19 +465,25 @@ const Dashboard = () => {
 };
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#0d47a133",
+  legendContainer: {
+    marginTop: 20,
   },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: "#312e81",
-    alignItems: "center",
-    justifyContent: "center",
+  legendItem: {
     flexDirection: "row",
-    elevation: 4,
+    alignItems: "center",
+    marginBottom: 5,
   },
+  legendColor: {
+    width: 16,
+    height: 16,
+    borderRadius: 20, 
+    marginRight: 6,
+  },
+  legendText: {
+    fontSize: 13,
+    color: "#333",
+  },
+
   logo: {
     width: 40,
     height: 40,

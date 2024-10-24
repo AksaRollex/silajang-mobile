@@ -90,12 +90,7 @@ export default function Pengujian() {
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("IndexPenerima")}  
               />
-              <List.Item 
-                title="Cetak LHU" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("CetakLHU")}    
-              />
+            
             </List.Accordion>
 
             <List.Accordion
@@ -115,6 +110,12 @@ export default function Pengujian() {
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Kortek")}
+              />
+                <List.Item 
+                title="Cetak LHU" 
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]' 
+                onPress={() => navigation.navigate("CetakLHU")}    
               />
               <List.Item 
                 title="Verifikasi LHU" 

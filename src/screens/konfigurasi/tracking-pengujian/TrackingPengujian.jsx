@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, TextComponent } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather";
@@ -30,7 +30,6 @@ const TrackingPengujian = ({ navigation }) => {
     return years;
   };
 
-  // Generate month options
   const monthOptions = [
     { id: 1, title: "Januari" },
     { id: 2, title: "Februari" },
@@ -46,6 +45,22 @@ const TrackingPengujian = ({ navigation }) => {
     { id: 12, title: "Desember" },
   ];
 
+  const handleYearChange = (event) => {
+    setSelectedYear(event.nativeEvent.event);
+    paginateRef.current?.refetch();
+  };
+
+  const handleMonthChange = (event) => {
+    setSelectedMonth(event.nativeEvent.event);
+    paginateRef.current?.refetch();
+  };
+
+  useEffect(() => {
+    if (paginateRef.current) {
+      paginateRef.current.refetch();
+    }
+  }, [selectedYear, selectedMonth]);
+
   const { delete: deletePeraturan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["/tracking"]);
@@ -58,54 +73,67 @@ const TrackingPengujian = ({ navigation }) => {
 
   const dropdownOptions = [
     {
-      id: "Detail",
-      title: "Detail",
-      action: item => navigation.navigate("DetailTrackingPengujian", { uuid: item.uuid }),
-      icon: 'eye'
-    },
-    {
-      id: "Edit",
-      title: "Edit",
-      action: item => navigation.navigate("FormTrackingPengujian", { uuid: item.uuid }),
-      icon: 'edit'
+      id: "Tracking",
+      title: "Tracking",
+      action: item => navigation.navigate("DetailTracking", { uuid: item.uuid }),
     },
   ];
 
+  const mapStatusPengujian = (status) => {
+    return status < 0 ? 'Revisi' : 'Info';
+  };
+
   const CardTrackingPengujian = ({ item }) => (
     <View
-      className="my-2 bg-white rounded-lg shadow-md p-4 mx-4"
-      style={{ elevation: 3 }}>
+      className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+      style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-start">
         <View className="flex-1">
           <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-base font-bold">{item.kode}</Text>
-            <View className={`px-3 py-1 rounded-full ${
+            <Text className="text-[13px] font-poppins-bold">{item.kode}</Text>
+            <View className={`px-3 py-1 rounded-full flex-row items-center ${
               item.status < 0 ? 'bg-yellow-100' : 'bg-blue-100'
             }`}>
-              <Text className={`text-xs ${
+              <Text className={`text-[11px] ${
                 item.status < 0 ? 'text-yellow-800' : 'text-blue-800'
               }`}>
-                {item.status < 0 ? 'Revisi' : 'Info'}
+                {`Status ${Math.abs(item.status)}`}
               </Text>
             </View>
           </View>
           
-          <Text className="text-sm mb-1">Pelanggan: {item.permohonan?.user?.nama}</Text>
-          <Text className="text-sm mb-1">Titik Uji/Lokasi: {item.lokasi}</Text>
-          
-          <View className="mt-2 space-y-1">
-            <Text className="text-xs text-gray-600">
-              Tanggal Dibuat: {item.tanggal || '-'}
-            </Text>
-            <Text className="text-xs text-gray-600">
-              Tanggal Diterima: {item.tanggal_diterima || '-'}
-            </Text>
-            <Text className="text-xs text-gray-600">
-              Tanggal Selesai: {item.tanggal_selesai || '-'}
-            </Text>
-            <Text className="text-xs text-gray-600">
-              Tanggal Pengesahan LHU: {item.tracking_status_7 || '-'}
-            </Text>
+          <View className="flex-col space-y-2">
+            <View>
+              <Text className="text-[12px] font-poppins-bold text-gray-700">Pelanggan:</Text>
+              <Text className="text-[12px] font-poppins-semibold" 
+                    numberOfLines={2} 
+                    style={{ flexWrap: 'wrap' }}>
+                {item.permohonan?.user?.nama}
+              </Text>
+            </View>
+  
+            <View>
+              <Text className="text-[12px] font-poppins-bold text-gray-700">Titik Uji/Lokasi:</Text>
+              <Text className="text-[12px] font-poppins-semibold" 
+                    numberOfLines={2}>
+                {item.lokasi}
+              </Text>
+            </View>
+            
+            <View className="space-y-1">
+              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+                Tanggal Dibuat: {item.tanggal || '-'}
+              </Text>
+              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+                Tanggal Diterima: {item.tanggal_diterima || '-'}
+              </Text>
+              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+                Tanggal Selesai: {item.tanggal_selesai || '-'}
+              </Text>
+              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+                Tanggal Pengesahan LHU: {item.tracking_status_7 || '-'}
+              </Text>
+            </View>
           </View>
         </View>
         
@@ -123,15 +151,15 @@ const TrackingPengujian = ({ navigation }) => {
             }
           }}
           shouldOpenOnLongPress={false}>
-          <View className="p-2">
-            <Entypo name="dots-three-vertical" size={16} color="#374151" />
+          <View>
+            <Entypo name="dots-three-vertical" size={15} color="#312e81" />
           </View>
         </MenuView>
       </View>
-
+  
       {item.status < 0 && item.keterangan_revisi && (
         <View className="mt-3 bg-yellow-50 p-3 rounded-md">
-          <Text className="text-xs text-yellow-800">
+          <Text className="text-[11px] text-yellow-800">
             Keterangan Revisi: {item.keterangan_revisi}
           </Text>
         </View>
@@ -145,6 +173,7 @@ const TrackingPengujian = ({ navigation }) => {
         <View className="flex-row justify-end space-x-3">
           <MenuView
             title="Pilih Tahun"
+            onPressAction={handleYearChange}
             actions={generateYears().map(option => ({
               id: option.id.toString(),
               title: option.title,
@@ -157,12 +186,12 @@ const TrackingPengujian = ({ navigation }) => {
                   backgroundColor: "white",
                   padding: 12,
                   borderRadius: 8,
-                  width: 185, 
+                  width: 185,
                   borderColor: "#d1d5db",
                   borderWidth: 1
                 }}>
                 <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
-                  Tahun
+                  {`Tahun: ${selectedYear}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
               </View>
@@ -171,6 +200,7 @@ const TrackingPengujian = ({ navigation }) => {
 
           <MenuView
             title="Pilih Bulan"
+            onPressAction={handleMonthChange}
             actions={monthOptions.map(option => ({
               id: option.id.toString(),
               title: option.title,
@@ -183,12 +213,12 @@ const TrackingPengujian = ({ navigation }) => {
                   backgroundColor: "white",
                   padding: 12,
                   borderRadius: 8,
-                  width: 185, 
+                  width: 185,
                   borderColor: "#d1d5db",
-                }}>
                   borderWidth: 1
+                }}>
                 <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
-                  Bulan
+                  {`Bulan: ${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
               </View>
