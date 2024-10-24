@@ -26,6 +26,7 @@ import axios from "@/src/libs/axios";
 
 export default function Detail({ route, navigation }) {
   const { uuid } = route.params;
+  console.log(uuid)
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [checked, setChecked] = useState();
