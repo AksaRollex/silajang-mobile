@@ -132,7 +132,8 @@ export default function Pengujian() {
               <List.Item 
                 title="Laporan Hasil Pengujian"
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("LaporanHasilPengujian")} 
               />
               <List.Item 
                 title="Kendali Mutu" 
