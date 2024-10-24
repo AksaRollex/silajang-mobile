@@ -23,14 +23,16 @@ import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
 import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
 import DetailPengisian from "./administrasi/PengambilSample/DetailPengisian"
 import DetailPengambilSample from "./administrasi/PengambilSample/DetailPengambilSample"
-import CetakLHU from "./administrasi/CetakLHU"
 
 
 import Analis from "./verifikasi/Analis/Analis"
 import HasilUji from "./verifikasi/Analis/HasilUji"
 import Kortek from "./verifikasi/Kortek/Kortek"
 import HasilUjis from "./verifikasi/Kortek/HasilUjis"
+import CetakLHU from "./verifikasi/CetakLHU"
 import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
+import LaporanHasilPengujian from "./report/LaporanHasilPengujian/"
+import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
 const screenOptions = {
@@ -144,6 +146,11 @@ export default function MainScreen() {
       <Stack.Screen
         name="VerifikasiLhu"
         component={VerifikasiLhu}
+      />
+
+      <Stack.Screen
+        name="LaporanHasilPengujian"
+        component={LaporanHasilPengujian}
       />
     </Stack.Navigator>
   );
