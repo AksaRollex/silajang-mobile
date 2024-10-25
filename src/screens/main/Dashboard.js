@@ -2,7 +2,7 @@ import axios from "@/src/libs/axios";
 import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
 import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { ActivityIndicator, ScrollView, StyleSheet, Text, View } from "react-native";
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import { TouchableOpacity } from "react-native-gesture-handler";
@@ -12,6 +12,8 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { TextFooter } from "../components/TextFooter";
 import { Dimensions } from "react-native";
+import Paginate from "@/src/screens/components/Paginate";
+import { MenuView } from "@react-native-menu/menu";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -25,6 +27,7 @@ const Dashboard = () => {
   const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
   const navigation = useNavigation();
+  const paginateRef = useRef();
   const screenWidth = Dimensions.get("window").width;
   const [chartData, setChartData] = useState(null);
   const [chartPeraturans, setChartPeraturans] = useState({
@@ -174,18 +177,28 @@ const Dashboard = () => {
     navigation.navigate("Penerima", { uuid });
   }
 
-  useEffect(() => {
-    const years = [];
-    for (let i = tahun; i >= 2022; i--) {
-      years.push({ id: i, text: i });
+  const currentYear = new Date().getFullYear();
+  
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+
+  const generateYears = () => {
+    let years = [];
+    for (let i = currentYear; i >= 2022; i--) {
+      years.push({ id: i, title: String(i) });
     }
-    setTahuns(years);
-  }, [tahun]);
-  // axios.get("/dashboard/get", {
-  //   params: {
-  //     tahun: 2024, // Misalnya, tahun 2024
-  //   },
-  // })
+    return years;
+  };
+
+  const handleYearChange = (event) => {
+    setSelectedYear(event.nativeEvent.event);
+    paginateRef.current?.refetch();
+  };
+
+  useEffect(() => {
+    if (paginateRef.current) {
+      paginateRef.current.refetch();
+    }
+  }, [selectedYear]);
 
   useEffect(() => {
     user.role.name == 'customer' ? 
@@ -208,6 +221,37 @@ const Dashboard = () => {
       })
   }, []);
 
+
+  const YearSelector = () => (
+    <View className="w-full ml-72 mt-1 mb-4">
+      <MenuView
+        title="Pilih Tahun"
+        onPressAction={handleYearChange}
+        actions={generateYears().map(option => ({
+          id: option.id.toString(),
+          title: option.title,
+        }))}>
+        <View style={{ marginRight: 10 }}>
+          <View style={{
+            flexDirection: "row",
+            alignItems: "center",
+            backgroundColor: "white",
+            padding: 8,
+            borderRadius: 8,
+            width: 120,
+            borderColor: "#d1d5db",
+            borderWidth: 1
+          }}>
+            <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14 }}>
+              {`Tahun: ${selectedYear}`}
+            </Text>
+            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+          </View>
+        </View>
+      </MenuView>
+    </View>
+  );
+
   return (
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
@@ -217,6 +261,7 @@ const Dashboard = () => {
             {user.role.name === 'customer' ? (
               <>
                 <View style={[styles.cardContainer, styles.cardNew]}>
+
                   <View style={styles.row}>
                     <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
                     <Text style={[styles.cardNumber, styles.card1]}>
@@ -264,10 +309,41 @@ const Dashboard = () => {
                   </Text>
                 </View>
           <TextFooter />
-
               </> 
+              
             ) : (
               <>
+              <View >
+                <View className="w-full ml-72 mt-1 mb-4">
+                  <MenuView
+                    title="Pilih Tahun"
+                    onPressAction={handleYearChange}
+                    actions={generateYears().map(option => ({
+                      id: option.id.toString(),
+                      title: option.title,
+                    }))}>
+                    <View style={{ marginRight: 10 }}>
+                      <View
+                        style={{
+                          flexDirection: "row",
+                          alignItems: "center",
+                          backgroundColor: "white",
+                          padding: 8,
+                          borderRadius: 8,
+                          width: 120,
+                          borderColor: "#d1d5db",
+                          borderWidth: 1
+                        }}>
+                        <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14 }}>
+                          {`Tahun: ${selectedYear}`}
+                        </Text>
+                        <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                      </View>
+                    </View>
+                  </MenuView>
+                </View>
+                </View>
+            
                 {['admin', 'kepala-upt'].includes(user.role.name) && (
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
                   <View className="flex-row items-center">
