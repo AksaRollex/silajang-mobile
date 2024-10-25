@@ -437,8 +437,8 @@ const DrawerContent = (props) => {
       fontAwesome6: "gear",
       subItems: [
           { name: 'Master', screen: 'Master', params: {screen: 'MasterIndex'} },
-          { name: 'User', screen: 'User' },
-          { name: 'Wilayah', screen: 'Wilayah' },
+          { name: 'User', screen: 'User', params: { screen: 'IndexUser' } },
+          { name: 'Wilayah', screen: 'Wilayah', params: { screen: 'IndexWilayah' } },
       ],
     },
     {
