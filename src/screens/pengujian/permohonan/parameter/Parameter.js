@@ -199,16 +199,30 @@ const Paginates = forwardRef(
     );
   },
 );
-// Fungsi throttle untuk membatasi frekuensi pemanggilan fungsi
 const throttle = (func, limit) => {
-  let inThrottle;
-  return function () {
-    const args = arguments;
+  let lastRun = 0;
+  let timeout = null;
+
+  return function (...args) {
     const context = this;
-    if (!inThrottle) {
+    const now = Date.now();
+
+    // Clear existing timeout
+    if (timeout) {
+      clearTimeout(timeout);
+    }
+
+    // If it's first run or enough time has elapsed
+    if (!lastRun || now - lastRun >= limit) {
       func.apply(context, args);
-      inThrottle = true;
-      setTimeout(() => (inThrottle = false), limit);
+      lastRun = now;
+    } else {
+      // Schedule next execution
+      timeout = setTimeout(() => {
+        func.apply(context, args);
+        lastRun = Date.now();
+        timeout = null;
+      }, limit - (now - lastRun));
     }
   };
 };
@@ -329,32 +343,98 @@ const Parameter = ({ route, navigation }) => {
 
   // Menggunakan useCallback dan throttle untuk membatasi frekuensi pemanggilan
   const throttledAddPeraturan = useCallback(
-    throttle(uuid => addPeraturan.mutate(uuid), 1500),
+    throttle(uuid => {
+      if (!addPeraturan.isLoading) {
+        addPeraturan.mutate(uuid, {
+          onSuccess: () => {
+            console.log("Peraturan added successfully");
+          },
+          onError: error => {
+            console.error("Error adding peraturan:", error);
+          },
+        });
+      }
+    }, 1500),
     [addPeraturan],
   );
 
   const throttledRemovePeraturan = useCallback(
-    throttle(uuid => removePeraturan.mutate(uuid), 1500),
+    throttle(uuid => {
+      if (!removePeraturan.isLoading) {
+        removePeraturan.mutate(uuid, {
+          onSuccess: () => {
+            console.log("Peraturan removed successfully");
+          },
+          onError: error => {
+            console.error("Error removing peraturan:", error);
+          },
+        });
+      }
+    }, 1500),
     [removePeraturan],
   );
 
   const throttledAddParameter = useCallback(
-    throttle(uuid => addParameter.mutate(uuid), 1500),
+    throttle(uuid => {
+      if (!addParameter.isLoading) {
+        addParameter.mutate(uuid, {
+          onSuccess: () => {
+            console.log("Parameter added successfully");
+          },
+          onError: error => {
+            console.error("Error adding parameter:", error);
+          },
+        });
+      }
+    }, 1500),
     [addParameter],
   );
 
   const throttledRemoveParameter = useCallback(
-    throttle(uuid => removeParameter.mutate(uuid), 1500),
+    throttle(uuid => {
+      if (!removeParameter.isLoading) {
+        removeParameter.mutate(uuid, {
+          onSuccess: () => {
+            console.log("Parameter removed successfully");
+          },
+          onError: error => {
+            console.error("Error removing parameter:", error);
+          },
+        });
+      }
+    }, 1500),
     [removeParameter],
   );
 
   const throttledStoreFromPaket = useCallback(
-    throttle(id => storeFromPaket.mutate(id), 1500),
+    throttle(id => {
+      if (!storeFromPaket.isLoading) {
+        storeFromPaket.mutate(id, {
+          onSuccess: () => {
+            console.log("Package stored successfully");
+          },
+          onError: error => {
+            console.error("Error storing package:", error);
+          },
+        });
+      }
+    }, 1500),
     [storeFromPaket],
   );
 
   const throttledRemoveFromPaket = useCallback(
-    throttle(id => removeFromPaket.mutate(id), 1500),
+    throttle(id => {
+      if (!removeFromPaket.isLoading) {
+        removeFromPaket.mutate(id, {
+          onSuccess: () => {
+            console.log("Package removed successfully");
+          },
+          onError: error => {
+            console.error("Error removing package:", error);
+          },
+        });
+      }
+    }, 1500),
     [removeFromPaket],
   );
 

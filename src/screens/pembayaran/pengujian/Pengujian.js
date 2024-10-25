@@ -183,11 +183,11 @@ const Pengujian = ({ navigation }) => {
               className={` bg-slate-100 ${getStatusStyle(item)}`}>
               {statusText}
             </Text>
-            {/* <Text
+            <Text
               style={[styles.badge, styles[statusStyle]]}
               className={` bg-slate-100 text-black mx-2`}>
               {item.payment_type}
-            </Text> */}
+            </Text>
           </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.lokasi}
@@ -348,7 +348,7 @@ const Pengujian = ({ navigation }) => {
           className="mb-20"
           url="/pembayaran/pengujian"
           Plugin={filtah}
-          payload={{ tahun, bulan }}
+          payload={{ tahun, bulan, type }}
           renderItem={CardPembayaran}
           ref={PaginateRef}></Paginate>
       </View>

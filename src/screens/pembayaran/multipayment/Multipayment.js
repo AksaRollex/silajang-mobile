@@ -19,7 +19,7 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
-  const [type, setType] = useState("qris");
+  const [type, setType] = useState("va");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -194,7 +194,7 @@ const Pengujian = ({ navigation }) => {
             style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
             {item.multi_payments
               ?.map(payment => payment.titik_permohonan.kode)
-              .join(", ") || "Lokasi Kosong"}
+              .join(", ") || ""}
           </Text>
           <Text style={[styles.cardTexts]}>{rupiah(item.jumlah)}</Text>
         </View>
