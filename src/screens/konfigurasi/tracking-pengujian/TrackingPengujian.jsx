@@ -15,10 +15,10 @@ import Paginate from "@/src/screens/components/Paginate";
 const TrackingPengujian = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
-  
+
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  
+
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
 
@@ -75,51 +75,65 @@ const TrackingPengujian = ({ navigation }) => {
     {
       id: "Tracking",
       title: "Tracking",
-      action: item => navigation.navigate("DetailTracking", { uuid: item.uuid }),
+      action: item => navigation.navigate("DetailTracking", { selected: item }),
     },
   ];
 
   const mapStatusPengujian = (status) => {
-    return status < 0 ? 'Revisi' : 'Info';
+    const statusPengujian = {
+      "-1": "Revisi",
+      0: "Mengajukan Permohonan",
+      1: "Menyerahkan Sampel",
+      2: "Menyerahkan Surat Perintah Pengujian",
+      3: "Menyerahkan sampel untuk Proses Pengujian",
+      4: "Menyerahkan RDPS",
+      5: "Menyerahkan RDPS untuk Pengetikan LHU",
+      6: "Menyerahkan LHU untuk Diverifikasi",
+      7: "Mengesahkan LHU",
+      8: "Pembayaran",
+      9: "Penyerahan LHU",
+      10: "Penyerahan LHU Amandemen (Jika ada)",
+      11: "Selesai"
+    };
+
+    return statusPengujian[status] || "Sedang Diproses";
   };
 
   const CardTrackingPengujian = ({ item }) => (
     <View
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
-      <View className="flex-row justify-between items-start">
-        <View className="flex-1">
-          <View className="flex-row justify-between items-center mb-2">
-            <Text className="text-[13px] font-poppins-bold">{item.kode}</Text>
-            <View className={`px-3 py-1 rounded-full flex-row items-center ${
-              item.status < 0 ? 'bg-yellow-100' : 'bg-blue-100'
-            }`}>
-              <Text className={`text-[11px] ${
-                item.status < 0 ? 'text-yellow-800' : 'text-blue-800'
+      <View className="flex-row items-center ">
+        <View className="" style={{ width: "90%" }}>
+          <View className="flex-col justify-between items-start mb-2">
+            <Text className="text-[17px] font-poppins-bold">{item.kode}</Text>
+            <View className={` py-1 rounded-full  ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'
               }`}>
-                {`Status ${Math.abs(item.status)}`}
+              <Text className={`text-[12px] font-bold  text-right ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'
+                }`} numberOfLines={2}>
+                {mapStatusPengujian(item.status)}
               </Text>
             </View>
           </View>
-          
+
           <View className="flex-col space-y-2">
             <View>
               <Text className="text-[12px] font-poppins-bold text-gray-700">Pelanggan:</Text>
-              <Text className="text-[12px] font-poppins-semibold" 
-                    numberOfLines={2} 
-                    style={{ flexWrap: 'wrap' }}>
+              <Text className="text-[12px] font-poppins-semibold"
+                numberOfLines={2}
+                style={{ flexWrap: 'wrap' }}>
                 {item.permohonan?.user?.nama}
               </Text>
             </View>
-  
+
             <View>
               <Text className="text-[12px] font-poppins-bold text-gray-700">Titik Uji/Lokasi:</Text>
-              <Text className="text-[12px] font-poppins-semibold" 
-                    numberOfLines={2}>
+              <Text className="text-[12px] font-poppins-semibold"
+                numberOfLines={2}>
                 {item.lokasi}
               </Text>
             </View>
-            
+
             <View className="space-y-1">
               <Text className="text-[11px] font-poppins-semibold text-gray-600">
                 Tanggal Dibuat: {item.tanggal || '-'}
@@ -136,27 +150,31 @@ const TrackingPengujian = ({ navigation }) => {
             </View>
           </View>
         </View>
-        
-        <MenuView
-          title="Options"
-          actions={dropdownOptions.map(option => ({
-            ...option,
-          }))}
-          onPressAction={({ nativeEvent }) => {
-            const selectedOption = dropdownOptions.find(
-              option => option.title === nativeEvent.event,
-            );
-            if (selectedOption) {
-              selectedOption.action(item);
-            }
-          }}
-          shouldOpenOnLongPress={false}>
-          <View>
-            <Entypo name="dots-three-vertical" size={15} color="#312e81" />
-          </View>
-        </MenuView>
+        <View style={{ width: "10%" }} className=" flex justify-start items-center">
+
+          <MenuView
+
+            title="Options"
+            actions={dropdownOptions.map(option => ({
+              ...option,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = dropdownOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                selectedOption.action(item);
+              }
+            }}
+            shouldOpenOnLongPress={false}>
+            <View>
+              <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+            </View>
+          </MenuView>
+        </View>
+
       </View>
-  
+
       {item.status < 0 && item.keterangan_revisi && (
         <View className="mt-3 bg-yellow-50 p-3 rounded-md">
           <Text className="text-[11px] text-yellow-800">
@@ -165,6 +183,7 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       )}
     </View>
+
   );
 
   return (
