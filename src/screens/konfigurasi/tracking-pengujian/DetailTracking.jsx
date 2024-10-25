@@ -109,9 +109,9 @@ const DetailTracking = ({ route, navigation }) => {
                       .map(param => (
                         <View key={param.id} className="flex-row justify-between items-center mb-2 pr-2">
                           <Text className="flex-1 text-xs text-black mr-2 font-semibold">
-                            {param.nama} {param.keterangan ? `(${param.keterangan})` : ''}
+                            { ' • '+ param.nama} {param.keterangan ? `(${param.keterangan})` : ''}
                           </Text>
-                          {renderBadge(param.pivot?.acc_analis)}
+                          {renderBadge( param.pivot?.acc_analis)}
                         </View>
                       ))}
                   </View>
@@ -120,15 +120,15 @@ const DetailTracking = ({ route, navigation }) => {
                 {tracking.status === 7 && (
                   <View className="mt-2 bg-gray-50 p-3 rounded-lg">
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">Cetak LHU</Text>
+                      <Text className="text-xs text-gray-700">• Cetak LHU</Text>
                       {renderBadge(selected.sertifikat)}
                     </View>
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">Verifikasi LHU</Text>
+                      <Text className="text-xs text-gray-700">• Verifikasi LHU</Text>
                       {renderBadge(selected.verifikasi_lhu)}
                     </View>
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">Tanda Tangan TTE</Text>
+                      <Text className="text-xs text-gray-700">• Tanda Tangan TTE</Text>
                       {renderBadge(selected.status_tte)}
                     </View>
                   </View>
