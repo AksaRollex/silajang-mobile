@@ -199,7 +199,7 @@ const Dashboard = () => {
             borderWidth: 1
           }}>
             <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14, }}>
-              {`Tahun: ${selectedYear}`}
+              {` Tahun: ${selectedYear}`}
             </Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="black" />
           </View>
