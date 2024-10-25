@@ -4,6 +4,7 @@ import {
   FlatList,
   ActivityIndicator,
   StyleSheet,
+  Image,
 } from "react-native";
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MenuView } from "@react-native-menu/menu";
@@ -16,6 +17,9 @@ import { useDelete } from "@/src/hooks/useDelete";
 import { Picker } from "@react-native-picker/picker";
 import RNPickerSelect from "react-native-picker-select";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import EvilIcons from "react-native-vector-icons/EvilIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import Back from "../../components/Back";
@@ -26,7 +30,7 @@ const baseRem = 16;
 const Permohonan = ({ navigation }) => {
   const [tahun, setTahun] = useState(2024);
   const [refreshKey, setRefreshKey] = useState(0);
-  const { data: user } = useUser()
+  const { data: user } = useUser();
 
   const tahuns = Array.from(
     { length: new Date().getFullYear() - 2021 },
@@ -59,18 +63,34 @@ const Permohonan = ({ navigation }) => {
       id: "TitikUji",
       title: "TitikUji",
       action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
+      icon: {
+        uri: Platform.select({
+          ios: "path/to/location_icon.png", // Ganti dengan path ikon Anda
+          android: "path/to/ic_menu_mylocation.png", // Ganti dengan path ikon Anda
+        }),
+      },
     },
     {
       id: "Edit",
       title: "Edit",
-      action: item =>
-        navigation.navigate("EditPermohonan", { uuid: item.uuid }),
-      Icon: "edit",
+      action: item => navigation.navigate("EditPermohonan", { uuid: item.uuid }),
+      icon: {
+        uri: Platform.select({
+          ios: "path/to/pencil_icon.png", // Ganti dengan path ikon Anda
+          android: "path/to/ic_menu_edit.png", // Ganti dengan path ikon Anda
+        }),
+      },
     },
     {
       id: "Hapus",
       title: "Hapus",
       action: item => deletePermohonan(`/permohonan/${item.uuid}`),
+      icon: {
+        uri: Platform.select({
+          ios: "path/to/trash_icon.png", // Ganti dengan path ikon Anda
+          android: "path/to/ic_menu_delete.png", // Ganti dengan path ikon Anda
+        }),
+      },
     },
   ];
 
@@ -101,17 +121,24 @@ const Permohonan = ({ navigation }) => {
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
-              ...option,
+              id: option.id,
+              title: option.title,
+              image: option.icon,
+              imageColor: "white", // Warna ikon
+              titleColor: "white", // Warna teks
+              imageSize: 5,
             }))}
             onPressAction={({ nativeEvent }) => {
               const selectedOption = dropdownOptions.find(
-                option => option.title === nativeEvent.event,
+                option => option.id === nativeEvent.event,
               );
               if (selectedOption) {
                 selectedOption.action(item);
               }
             }}
-            shouldOpenOnLongPress={false}>
+            shouldOpenOnLongPress={false}
+            style={{ backgroundColor: "white" }} // Latar belakang putih
+          >
             <View>
               <Entypo name="dots-three-vertical" size={16} color="#312e81" />
             </View>
@@ -124,40 +151,40 @@ const Permohonan = ({ navigation }) => {
   const filtah = () => {
     return (
       <>
-          <View className="flex flex-row justify-end">
-            <RNPickerSelect
-              onValueChange={handleYearChange}
-              items={tahuns.map(item => ({ label: item.text, value: item.id }))}
-              value={tahun}
-              style={{
-                inputIOS: {
-                  paddingHorizontal: rem(3.55),
-                  borderWidth: 3,
-                  color: "black",
-                },
-                inputAndroid: {
-                  paddingHorizontal: rem(3.55),
-                  borderWidth: 3,
-                  color: "black",
-                },
-              }}
-              Icon={() => {
-                return (
-                  <MaterialIcons
-                    style={{ marginTop: 16, marginRight: 12 }}
-                    name="keyboard-arrow-down"
-                    size={24}
-                    color="black"
-                  />
-                );
-              }}
-              placeholder={{
-                label: "Pilih Tahun",
-                value: null,
-                color: "grey",
-              }}
-            />
-          </View>
+        <View className="flex flex-row justify-end">
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tahun",
+              value: null,
+              color: "grey",
+            }}
+          />
+        </View>
       </>
     );
   };
@@ -190,24 +217,28 @@ const Permohonan = ({ navigation }) => {
             </Picker>
           </View>
         </View> */}
-        { user.has_tagihan ? (
+        {user.has_tagihan ? (
           <View className="p-2">
-          <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
-          <Text className="text-black mb-0 text-sm">Tidak dapat membuat Permohonan Baru</Text>
-          <Text className="text-black text-xs">Harap selesaikan tagihan pembayaran Anda terlebih dahulu.</Text>
-        </View>
+            <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+              <Text className="text-black mb-0 text-sm">
+                Tidak dapat membuat Permohonan Baru
+              </Text>
+              <Text className="text-black text-xs">
+                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+              </Text>
+            </View>
           </View>
-      ) : (
-        <>
-          <Icons
-            name="plus"
-            size={28}
-            color="#fff"
-            style={styles.plusIcon}
-            onPress={() => navigation.navigate("TambahPermohonan")}
-          />
-        </>
-      )}
+        ) : (
+          <>
+            <Icons
+              name="plus"
+              size={28}
+              color="#fff"
+              style={styles.plusIcon}
+              onPress={() => navigation.navigate("TambahPermohonan")}
+            />
+          </>
+        )}
         <Paginate
           className="mb-28"
           ref={paginateRef}
