@@ -3,7 +3,6 @@ import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-nati
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
-import RNFS from "react-native-fs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -11,6 +10,9 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
 import Foundation from "react-native-vector-icons/Foundation";
 import Feather from "react-native-vector-icons/Feather";
+import RNFS from "react-native-fs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {APP_URL} from "@env";
 
 const bulans = [
     { id: 1, name: 'Januari' },
@@ -79,57 +81,47 @@ export default function DetailKontrak({ route, navigation }) {
         return '';
     }, [data])
 
-    const downloadFile = async () => {
-        if (!data.kontrak.dokumen_permohonan) {
+    const HandleDownloadFile = async () => {
+        if (data?.kontrak?.dokumen_permohonan) {
+            const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
+            const fileName = 'Dokumen Permohonan';
+            const fileExtension = fileUrl.split('.').pop();
+            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`;
+    
+            try {
+                const options = {
+                    fromUrl: fileUrl,
+                    toFile: localFilePath,
+                };
+    
+                const result = await RNFS.downloadFile(options).promise;
+    
+                if (result.statusCode === 200) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Success',
+                        text2: 'File downloaded successfully',
+                    });
+                } else {
+                    throw new Error('Download failed');
+                }
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Failed to download the file',
+                });
+            }
+        } else {
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: 'Dokumen Permohonan Tidak Ditemukan',
+                text2: 'Dokumen Permohonan tidak ditemukan',
             });
-        }
-
-        const fileName = "Dokumen Permohonan.pdf";
-        const fileDir = Platform.select({
-          ios: RNFS.DocumentDirectoryPath,
-          android: RNFS.DownloadDirectoryPath,
-        });
-        const filePath = `${fileDir}/${fileName}`;
-        
-        setLoading(true);
-    
-        try {
-          const options = {
-            fromUrl: `/storage/${data.kontrak.dokumen_permohonan}`,
-            toFile: filePath,
-            background: true,
-          };
-    
-          const response = await RNFS.downloadFile(options).promise;
-
-          if (response.statusCode === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Dokumen Permohonan Berhasil Diunduh',
-            })
-          } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Dokumen Permohonan Gagal Diunduh',
-            });
-          }
-    
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Terjadi kesalahan saat mengunduh file',
-            });
-        } finally {
-          setLoading(false); 
         }
     };
+    
 
     if (loading) {
         return (
@@ -269,7 +261,7 @@ export default function DetailKontrak({ route, navigation }) {
                         <View className="flex-row items-center mb-[15px]">
                             <TouchableOpacity 
                                 className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]" 
-                                onPress={() => downloadFile()}
+                                onPress={() => HandleDownloadFile()}
                             >
                                 <Octicons name="download" size={32} color="black" />
                             </TouchableOpacity>
