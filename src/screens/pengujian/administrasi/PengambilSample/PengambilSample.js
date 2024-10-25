@@ -278,8 +278,6 @@ const PengambilSampel = ({ navigation }) => {
                 </View>
               </MenuView>
             </View>
-
-
           </View>
         </View>
       </View>
