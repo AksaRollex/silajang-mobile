@@ -28,8 +28,11 @@ const Dashboard = () => {
   const { data: user } = useUser();
   const navigation = useNavigation();
   const paginateRef = useRef();
+  const [isLoading, setIsLoading] = useState(false);
   const screenWidth = Dimensions.get("window").width;
   const [chartData, setChartData] = useState(null);
+  const currentYear = new Date().getFullYear();
+  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [chartPeraturans, setChartPeraturans] = useState({
     categories: [],
     data: [],
@@ -50,50 +53,79 @@ const Dashboard = () => {
     ],
   };
 
-  useEffect(() => {
-    // Fetch dashboard data on component mount
-    const fetchDashboardData = async () => {
-      try {
-        const endpoint = user.role.name === 'customer' ? 'customer' : 'admin';
-        const response = await axios.post(`/dashboard/${endpoint}`, { tahun });
 
-        setDashboard(response.data);
+  const fetchDashboardData = async (year) => {
+    setIsLoading(true);
+    try {
+      const endpoint = user.role.name === 'customer' ? 'customer' : 'admin';
+      const response = await axios.post(`/dashboard/${endpoint}`, { tahun: parseInt(year) });
 
-        // Transform chart data
-        if (response.data.chartSampels) {
-          setChartData({
-            labels: response.data.chartSampels.categories,
-            datasets: [
-              {
-                data: response.data.chartSampels.data,
-                color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
-                strokeWidth: 2,
-              },
-            ],
-          });
-        }
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
+      setDashboard(response.data);
+
+      // Set chart data if available
+      if (response.data.chartSampels) {
+        setChartData({
+          labels: response.data.chartSampels.categories,
+          datasets: [{
+            data: response.data.chartSampels.data,
+            color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
+            strokeWidth: 2,
+          }],
+        });
       }
-    };
 
-    fetchDashboardData();
-  }, [tahun, user.role.name]);
+      // Set peraturan chart data
+      if (response.data.chartPeraturans) {
+        const peraturanData = response.data.chartPeraturans;
+        const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
+        const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
+
+        setChartPeraturans({
+          categories: peraturanData.categories,
+          data: peraturanData.data.map((value, index) => ({
+            name: peraturanData.categories[index],
+            population: value,
+            percentage: ((value / total) * 100).toFixed(2),
+            color: colors[index % colors.length],
+          })),
+        });
+      }
+
+      // Set parameter chart data
+      if (response.data.chartParameters) {
+        const parameterData = response.data.chartParameters;
+        const total = parameterData.data.reduce((acc, value) => acc + value, 0);
+        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300'];
+
+        setChartParameters({
+          categories: parameterData.categories,
+          data: parameterData.data.map((value, index) => ({
+            name: parameterData.categories[index],
+            population: value,
+            percentage: ((value / total) * 100).toFixed(2),
+            color: colors[index % colors.length],
+          })),
+        });
+      }
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    }
+  };
+
+  // Effect to fetch data when year changes
+  useEffect(() => {
+    fetchDashboardData(selectedYear);
+  }, [selectedYear, user.role.name]);
 
   const chartConfig = {
     backgroundGradientFromOpacity: 0,
     backgroundGradientToOpacity: 0,
-    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`, 
+    color: (opacity = 0) => `rgba(49, 46, 129, ${opacity})`,
     strokeWidth: 0,
     barPercentage: 0.5,
     decimalPlaces: 2,
     useShadowColorFromDataset: false,
     labelColor: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-    // propsForDots: {
-    //   r: "6",
-    //   strokeWidth: "2",
-    //   stroke: "#312e81" // Warna dot senada dengan line
-    // },
     style: {
       borderRadius: 16,
     },
@@ -103,83 +135,6 @@ const Dashboard = () => {
       strokeDasharray: "0",
     }
   };
-  
-  useEffect(() => {
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.post("/dashboard/admin", { tahun: 2024 });
-        const peraturanData = response.data.chartPeraturans;
-
-        if (peraturanData) {
-          const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
-
-          // Array warna tetap untuk setiap bagian
-          const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
-
-          setChartPeraturans({
-            categories: peraturanData.categories,
-            data: peraturanData.data.map((value, index) => ({
-              name: peraturanData.categories[index],
-              population: value,
-              percentage: ((value / total) * 100).toFixed(2), 
-              color: colors[index % colors.length], 
-            })),
-          });
-        }
-        setDashboard(response.data);
-      } catch (error) {
-        console.error("Error fetching dashboard data:", error);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
-
-  
-  useEffect(() => {
-    // Fetch dashboard data on component mount
-    const fetchDashboardData = async () => {
-      try {
-        const response = await axios.post('/dashboard/admin', { tahun: 2024 });
-        const parameterData = response.data.chartParameters;
-
-        if (parameterData) {
-          // Set chartPeraturans data for Pie chart
-          const total = parameterData.data.reduce((acc, value) => acc + value, 0);
-
-          // Array warna tetap untuk setiap bagian
-          const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300'];
-
-          setChartParameters({
-            categories: parameterData.categories,
-            data: parameterData.data.map((value, index) => ({
-              name: parameterData.categories[index],
-              population: value,
-              percentage: ((value / total) * 100).toFixed(2), 
-              color: colors[index % colors.length], 
-            })),
-          });
-        }
-        setDashboard(response.data);
-      } catch (error) {
-        console.error('Error fetching dashboard data:', error);
-      }
-    };
-
-    fetchDashboardData();
-  }, []);
-
-  const Penerima = () => {
-    navigation.navigate("Penerima");
-  };
-
-  const handlePress = () => {
-    navigation.navigate("Penerima", { uuid });
-  }
-
-  const currentYear = new Date().getFullYear();
-  
-  const [selectedYear, setSelectedYear] = useState(currentYear.toString());
 
   const generateYears = () => {
     let years = [];
@@ -190,8 +145,9 @@ const Dashboard = () => {
   };
 
   const handleYearChange = (event) => {
-    setSelectedYear(event.nativeEvent.event);
-    paginateRef.current?.refetch();
+    const selectedYear = event.nativeEvent.event; 
+    setSelectedYear(selectedYear); 
+    fetchDashboardData(selectedYear); 
   };
 
   useEffect(() => {
@@ -201,24 +157,24 @@ const Dashboard = () => {
   }, [selectedYear]);
 
   useEffect(() => {
-    user.role.name == 'customer' ? 
-    axios
-      .post("/dashboard/" + 'customer', { tahun: tahun })
-      .then(response => {
-        setDashboard(response.data);
-      })
-      .catch(error => {
-        console.error("error fetching data dashboard ", error);
-      })
+    user.role.name == 'customer' ?
+      axios
+        .post("/dashboard/" + 'customer', { tahun: tahun })
+        .then(response => {
+          setDashboard(response.data);
+        })
+        .catch(error => {
+          console.error("error fetching data dashboard ", error);
+        })
       :
       axios
-      .post("/dashboard/" + 'admin', { tahun: tahun })
-      .then(response => {
-        setDashboard(response.data);
-      })
-      .catch(error => {
-        console.error("error fetching data dashboard ", error);
-      })
+        .post("/dashboard/" + 'admin', { tahun: tahun })
+        .then(response => {
+          setDashboard(response.data);
+        })
+        .catch(error => {
+          console.error("error fetching data dashboard ", error);
+        })
   }, []);
 
 
@@ -242,7 +198,7 @@ const Dashboard = () => {
             borderColor: "#d1d5db",
             borderWidth: 1
           }}>
-            <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14 }}>
+            <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14, }}>
               {`Tahun: ${selectedYear}`}
             </Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -253,68 +209,68 @@ const Dashboard = () => {
   );
 
   return (
-      <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
-        showsVerticalScrollIndicator={false}>
-        {dashboard ? (
-          <>
-            {user.role.name === 'customer' ? (
-              <>
-                <View style={[styles.cardContainer, styles.cardNew]}>
+    <ScrollView
+      contentContainerStyle={styles.scrollViewContainer}
+      showsVerticalScrollIndicator={false}>
+      {dashboard ? (
+        <>
+          {user.role.name === 'customer' ? (
+            <>
+              <View style={[styles.cardContainer, styles.cardNew]}>
 
-                  <View style={styles.row}>
-                    <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
-                    <Text style={[styles.cardNumber, styles.card1]}>
-                      {dashboard.permohonanBaru}
-                    </Text>
-                  </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                    Permohonan Baru
+                <View style={styles.row}>
+                  <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
+                  <Text style={[styles.cardNumber, styles.card1]}>
+                    {dashboard.permohonanBaru}
                   </Text>
                 </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Baru
+                </Text>
+              </View>
 
-                <View style={[styles.cardContainer, styles.cardCompleted]}>
-                  <View style={styles.row}>
-                    <FontAwesome5 name="leaf" size={30} color={"#ffc300"} />
-                    <Text style={[styles.cardNumber, styles.card3]}>
-                      {dashboard.permohonanDiproses}
-                    </Text>
-                  </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                    Permohonan Diproses
+              <View style={[styles.cardContainer, styles.cardCompleted]}>
+                <View style={styles.row}>
+                  <FontAwesome5 name="leaf" size={30} color={"#ffc300"} />
+                  <Text style={[styles.cardNumber, styles.card3]}>
+                    {dashboard.permohonanDiproses}
                   </Text>
                 </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Diproses
+                </Text>
+              </View>
 
-                <View style={[styles.cardContainer, styles.cardTotal]}>
-                  <View style={styles.row}>
-                    <FontAwesome5 name="book-open" size={32} color={"#50cc88"} />
-                    <Text style={[styles.cardNumber, styles.card4]}>
-                      {dashboard.permohonanSelesai}
-                    </Text>
-                  </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                    Permohonan Selesai
+              <View style={[styles.cardContainer, styles.cardTotal]}>
+                <View style={styles.row}>
+                  <FontAwesome5 name="book-open" size={32} color={"#50cc88"} />
+                  <Text style={[styles.cardNumber, styles.card4]}>
+                    {dashboard.permohonanSelesai}
                   </Text>
                 </View>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Permohonan Selesai
+                </Text>
+              </View>
 
-                <View style={[styles.cardContainer, styles.cardProcess]}>
-                  <View style={styles.row}>
-                    <FontAwesome5 name="wallet" size={32} color={"#5a3dff"} />
-                    <Text style={[styles.cardNumber, styles.card2]}>
-                      {dashboard.permohonanTotal}
-                    </Text>
-                  </View>
-                  <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
-                    Total Permohonan
+              <View style={[styles.cardContainer, styles.cardProcess]}>
+                <View style={styles.row}>
+                  <FontAwesome5 name="wallet" size={32} color={"#5a3dff"} />
+                  <Text style={[styles.cardNumber, styles.card2]}>
+                    {dashboard.permohonanTotal}
                   </Text>
                 </View>
-          <TextFooter />
-              </> 
-              
-            ) : (
-              <>
+                <Text style={[styles.cardInfoValue, styles.cardTextColor]}>
+                  Total Permohonan
+                </Text>
+              </View>
+              <TextFooter />
+            </>
+
+          ) : (
+            <>
               <View >
-                <View className="w-full ml-72 mt-1 mb-4">
+                {/* <View className="w-full ml-72 mt-1 mb-4">
                   <MenuView
                     title="Pilih Tahun"
                     onPressAction={handleYearChange}
@@ -341,10 +297,14 @@ const Dashboard = () => {
                       </View>
                     </View>
                   </MenuView>
-                </View>
-                </View>
-            
-                {['admin', 'kepala-upt'].includes(user.role.name) && (
+                </View> */}
+
+                <YearSelector />
+                
+              </View>
+              
+
+              {['admin', 'kepala-upt'].includes(user.role.name) && (
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
                   <View className="flex-row items-center">
                     <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
@@ -355,10 +315,10 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Customers
                   </Text>
-                </View> 
-                )}
+                </View>
+              )}
 
-                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && ( 
+              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#5a3dff]">
                   <View className="flex-row items-center">
                     <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
@@ -369,12 +329,12 @@ const Dashboard = () => {
                   <Text className="text-[16px] font-medium text-black text-left">
                     Total Permohonan
                   </Text>
-                </View> 
-                )}
+                </View>
+              )}
 
-                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]"
-                onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}>
+                  onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}>
                   <View className="flex-row items-center">
                     <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#ffc300]">
@@ -385,11 +345,11 @@ const Dashboard = () => {
                     Persetujuan Permohonan
                   </Text>
                 </TouchableOpacity>
-                )}
+              )}
 
-                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <TouchableOpacity className=" w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
-                onPress={() => navigation.navigate( 'Pengujian', { screen:  'Analis' })}>
+                  onPress={() => navigation.navigate('Pengujian', { screen: 'Analis' })}>
                   <View className="flex-row items-center">
                     <Fontisto name="laboratory" size={30} color={"#f2416e"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
@@ -400,11 +360,11 @@ const Dashboard = () => {
                     Sampel Belum Dianalisa
                   </Text>
                 </TouchableOpacity>
-                )}
+              )}
 
-                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
-                onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
+                  onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
                   <View className="flex-row items-center">
                     <IonIcons name="document-text" size={30} color={"#f2416e"} />
                     <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
@@ -415,11 +375,11 @@ const Dashboard = () => {
                     Dokumen Belum Diverifikasi
                   </Text>
                 </TouchableOpacity>
-                )}
+              )}
 
-                {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
                 <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0fd194]"
-                onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}>
+                  onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}>
                   <View>
                     <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
                     <Text className="text-[18px] font-extrabold text-[#0fd194]" >
@@ -430,70 +390,70 @@ const Dashboard = () => {
                     Pendapatan
                   </Text>
                 </TouchableOpacity>
-                )}
+              )}
 
-                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
+              <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
                 onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
-                  <View className="flex flex-row">
-                    <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
-                    <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
-                      {dashboard.total?.toFixed(2)}
-                    </Text>
-                  </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
-                    IKM Unit Pelayanan
+                <View className="flex flex-row">
+                  <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
+                  <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
+                    {dashboard.total?.toFixed(2)}
                   </Text>
-                </TouchableOpacity>
+                </View>
+                <Text className="text-[16px] font-medium text-black text-left">
+                  IKM Unit Pelayanan
+                </Text>
+              </TouchableOpacity>
 
-                <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
+              <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
                 onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
-                  <View className="flex flex-row">
-                    <IonIcons name="clipboard" size={30} color={"#0090a6"} />
-                    <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
-                      {dashboard.jumlah}
-                    </Text>
-                  </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
-                    Jumlah Responden
+                <View className="flex flex-row">
+                  <IonIcons name="clipboard" size={30} color={"#0090a6"} />
+                  <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
+                    {dashboard.jumlah}
                   </Text>
-                </TouchableOpacity>
-
-                
-                {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                    <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
-                    <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
-                    {chartData ? (
-                        <LineChart
-                        data={chartData}
-                        width={screenWidth - 40}
-                        height={340}
-                        verticalLabelRotation={20}
-                        chartConfig={chartConfig}
-                        bezier
-                        style={{
-                            marginVertical: 8,
-                            borderRadius: 16
-                        }}
-                        fromZero
-                        yAxisInterval={1}
-                        />
-                    ) : (
-                        <ActivityIndicator size="large" color="#312e81" />
-                    )}
-                    </View>
-                )}
+                </View>
+                <Text className="text-[16px] font-medium text-black text-left">
+                  Jumlah Responden
+                </Text>
+              </TouchableOpacity>
 
 
+              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
-                  <Text className="text-lg font-bold p-3">
-                    {chartPeraturans.data.length > 1
-                      ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
-                      : "Peraturan Paling Banyak Digunakan"}
-                  </Text>
-                  
-                  <View className="ml-16">
+                  <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
+                  {chartData ? (
+                    <LineChart
+                      data={chartData}
+                      width={screenWidth - 40}
+                      height={340}
+                      verticalLabelRotation={20}
+                      chartConfig={chartConfig}
+                      bezier
+                      style={{
+                        marginVertical: 8,
+                        borderRadius: 16
+                      }}
+                      fromZero
+                      yAxisInterval={1}
+                    />
+                  ) : (
+                    <ActivityIndicator size="large" color="#312e81" />
+                  )}
+                </View>
+              )}
+
+
+              <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                <Text className="text-lg font-bold p-3">
+                  {chartPeraturans.data.length > 1
+                    ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
+                    : "Peraturan Paling Banyak Digunakan"}
+                </Text>
+
+                <View className="ml-16">
                   <PieChart
-                   className="ml-96"
+                    className="ml-96"
                     data={chartPeraturans.data}
                     width={screenWidth}
                     height={220}
@@ -508,75 +468,75 @@ const Dashboard = () => {
                     paddingLeft={"15"}
                     hasLegend={false}
                   />
-                  </View>
-
-                  <View style={styles.legendContainer} className="break-words">
-                    {chartPeraturans.data.map((item, index) => (
-                      <View key={index} style={styles.legendItem}>
-                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                        <Text style={styles.legendText}>
-                          <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
-                        </Text>
-
-                      </View>
-                    ))}
-                  </View>
                 </View>
 
-            
-                
+                <View style={styles.legendContainer} className="break-words">
+                  {chartPeraturans.data.map((item, index) => (
+                    <View key={index} style={styles.legendItem}>
+                      <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                      <Text style={styles.legendText}>
+                        <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
+                      </Text>
 
-                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-16 mt-4">
-                  <Text className="text-lg font-bold p-3 truncate">
-                    {chartParameters.data.length > 1
-                      ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
-                      : "Parameter Paling Banyak Digunakan"}
-                  </Text>
+                    </View>
+                  ))}
+                </View>
+              </View>
 
-                  <View className="ml-16">
-                          <PieChart
-                          className="breack-words"
-                            data={chartParameters.data}
-                            width={screenWidth}
-                            height={300}
-                            chartConfig={{
-                              backgroundColor: "#1cc910",
-                              backgroundGradientFrom: "#eff3ff",
-                              backgroundGradientTo: "#efefef",
-                              color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                            }}
-                            accessor={"population"}
-                            backgroundColor={"transparent"}
-                            paddingLeft={"15"}
-                            hasLegend={false}
-                            // avoidFalseZeros={true}
-                          />
 
-                          
-                        </View>
-                        <View style={styles.legendContainer} className="break-words">
-                    {chartParameters.data.map((item, index) => (
-                      <View key={index} style={styles.legendItem} >
-                        <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                        <Text style={styles.legendText}>
-                          <Text className="text-[12px] font-extrabold ml-4">{item.percentage}%</Text> - {item.name}
-                        </Text>
 
-                      </View>
-                    ))}
-                  </View>
+
+              <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-16 mt-4">
+                <Text className="text-lg font-bold p-3 truncate">
+                  {chartParameters.data.length > 1
+                    ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
+                    : "Parameter Paling Banyak Digunakan"}
+                </Text>
+
+                <View className="ml-16">
+                  <PieChart
+                    className="breack-words"
+                    data={chartParameters.data}
+                    width={screenWidth}
+                    height={300}
+                    chartConfig={{
+                      backgroundColor: "#1cc910",
+                      backgroundGradientFrom: "#eff3ff",
+                      backgroundGradientTo: "#efefef",
+                      color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                    }}
+                    accessor={"population"}
+                    backgroundColor={"transparent"}
+                    paddingLeft={"15"}
+                    hasLegend={false}
+                  // avoidFalseZeros={true}
+                  />
+
 
                 </View>
+                <View style={styles.legendContainer} className="break-words">
+                  {chartParameters.data.map((item, index) => (
+                    <View key={index} style={styles.legendItem} >
+                      <View style={[styles.legendColor, { backgroundColor: item.color }]} />
+                      <Text style={styles.legendText}>
+                        <Text className="text-[12px] font-extrabold ml-4">{item.percentage}%</Text> - {item.name}
+                      </Text>
 
-              </>
-            )}
-  
-          </>
-        ) : (
-          <View className="h-full justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
-        )}
+                    </View>
+                  ))}
+                </View>
 
-      </ScrollView>
+              </View>
+
+            </>
+          )}
+
+        </>
+      ) : (
+        <View className="h-full justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+      )}
+
+    </ScrollView>
   )
 };
 
@@ -592,7 +552,7 @@ const styles = StyleSheet.create({
   legendColor: {
     width: 16,
     height: 16,
-    borderRadius: 20, 
+    borderRadius: 20,
     marginRight: 6,
   },
   legendText: {

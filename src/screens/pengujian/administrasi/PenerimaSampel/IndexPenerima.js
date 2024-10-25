@@ -266,7 +266,7 @@ const PenerimaSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="bg-white p-4">
+      <View className="p-3">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
             <View className="flex-row items-center space-x-2 mb-4">
@@ -276,7 +276,19 @@ const PenerimaSampel = ({ navigation }) => {
               </View>
             </View>
 
-            <View className="flex-row justify-content-center">
+            <View className="flex-row justify-center">
+              <View className="mt-3 ml-[-10] mr-2">
+                  <HorizontalScrollMenu
+                    items={pengambilOptions}
+                    selected={selectedPengambil}
+                    onPress={item => setSelectedPengambil(item.id)}
+                    itemWidth={170}
+                    scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                    activeBackgroundColor={"#312e81"}
+                    buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                  />
+              </View>
+
               <MenuView
                 title="filterOptions"
                 actions={filterOptions.map(option => ({
@@ -288,40 +300,18 @@ const PenerimaSampel = ({ navigation }) => {
                     option => option.title === nativeEvent.event,
                   );
                   if (selectedOption) {
-                    setSelectedYear(selectedOption.title);
+                    setSelectedYear(selectedOption.title)
+                    // console.log(selectedOption.title)
                   }
                 }}
-                shouldOpenOnLongPress={false}>
-                <View>
-                  <MaterialCommunityIcons
-                    name="filter-menu-outline"
-                    size={24}
-                    color="white"
-                    style={{
-                      backgroundColor: "#312e81",
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
-                  />
+                shouldOpenOnLongPress={false}
+                
+              >
+                <View style={{ marginEnd: 60 }}>
+                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
                 </View>
               </MenuView>
-            </View>
-
-            <View className="flex-row items-start space-x-2 mt-4">
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={185}
-                scrollAreaStyle={{ height: 30, justifyContent: "flex-start" }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{
-                  marginRight: 10,
-                  borderRadius: 20,
-                  justifyContent: "flex-start",
-                }}
-              />
-            </View>
+            </View>   
           </View>
         </View>
       </View>
