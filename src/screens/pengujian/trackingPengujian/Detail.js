@@ -47,7 +47,7 @@ const TrackingList = ({ route, onClose }) => {
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-4 justify-between"
+          className="flex-row mb-4 p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <BackButton
             size={24}
@@ -55,13 +55,13 @@ const TrackingList = ({ route, onClose }) => {
             action={() => navigation.goBack()}
           />
           <Text className="font-bold text-white text-lg">
-            ({selected?.kode}) {selected?.lokasi}
+            {selected?.kode} {selected?.lokasi}
           </Text>
         </View>
       </View>
 
-      <View className="bg-[#ececec] px-4 mb-36 py-1">
-        <ScrollView className="bg-[#fff] px-2 py-4 rounded-sm">
+      <View className="bg-[#ececec] px-4  mb-24 ">
+        <ScrollView className="bg-[#fff] px-2  pt-3 rounded-sm">
           {selected && selected.trackings && selected.trackings.length > 0 ? (
             selected.trackings.map(tracking => (
               <View key={tracking.id} style={styles.trackingItem}>
@@ -83,7 +83,7 @@ const TrackingList = ({ route, onClose }) => {
               </View>
             ))
           ) : (
-            <Text>No trackings available</Text>
+            <Text>Tidak ada tracking tersedia</Text>
           )}
         </ScrollView>
       </View>

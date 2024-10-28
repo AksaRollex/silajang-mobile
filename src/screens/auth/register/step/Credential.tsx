@@ -10,6 +10,7 @@ import {
   TextField,
   View,
 } from "react-native-ui-lib";
+import { API_URL } from "@env";
 import { useFormStep, useFormStore } from "../Index";
 import Toast from "react-native-toast-message";
 
@@ -29,7 +30,7 @@ export default memo(function Credential() {
     isSuccess,
   } = useMutation(
     data =>
-      axios.post("/auth/register/get/email/otp", data).then(res => res.data),
+      axios.post(`/auth/register/get/email/otp`, data).then(res => res.data),
     {
       onSuccess: data => {
         setCredential(getValues());

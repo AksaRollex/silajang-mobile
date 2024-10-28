@@ -1,8 +1,8 @@
 import { View, Text, StyleSheet } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import React, { useRef, useState, useCallback } from "react";
-import Header from "../../components/Header";
 import { rupiah } from "@/src/libs/utils";
+import RNPickerSelect from "react-native-picker-select";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
@@ -11,6 +11,7 @@ import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -18,7 +19,7 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
-  const [type, setType] = useState("qris");
+  const [type, setType] = useState("va");
   const [refreshKey, setRefreshKey] = useState(0);
 
   const tahuns = Array.from(
@@ -44,11 +45,10 @@ const Pengujian = ({ navigation }) => {
     { id: 12, text: "Desember" },
   ];
 
-
   const types = [
     { id: "va", text: "VA" },
     { id: "qris", text: "QRIS" },
-  ]
+  ];
   const handleYearChange = useCallback(itemValue => {
     setTahun(itemValue);
     setRefreshKey(prevKey => prevKey + 1);
@@ -184,11 +184,6 @@ const Pengujian = ({ navigation }) => {
               className={` bg-slate-100 ${getStatusStyle(item)}`}>
               {statusText}
             </Text>
-            <Text
-              style={[styles.badge, styles[statusStyle]]}
-              className={` bg-slate-100 text-black mx-2`}>
-              {item.type}
-            </Text>
           </View>
           <Text style={[styles.cardTexts, { fontSize: 15 }]}>
             {item.multi_payments
@@ -199,7 +194,7 @@ const Pengujian = ({ navigation }) => {
             style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
             {item.multi_payments
               ?.map(payment => payment.titik_permohonan.kode)
-              .join(", ") || "Lokasi Kosong"}
+              .join(", ") || ""}
           </Text>
           <Text style={[styles.cardTexts]}>{rupiah(item.jumlah)}</Text>
         </View>
@@ -229,11 +224,112 @@ const Pengujian = ({ navigation }) => {
     );
   };
 
+  const filtah = () => {
+    return (
+      <View className="py-2 ">
+        <View className="flex flex-row justify-between bg-[#fff]">
+          <RNPickerSelect
+            onValueChange={handleYearChange}
+            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+            value={tahun}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tahun",
+              value: null,
+              color: "grey",
+            }}></RNPickerSelect>
+          <RNPickerSelect
+            items={bulans.map(item => ({ label: item.text, value: item.id }))}
+            value={bulan}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(5),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            onValueChange={handleMonthChange}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Bulan",
+              value: null,
+              color: "grey",
+            }}></RNPickerSelect>
+          <RNPickerSelect
+            items={types.map(item => ({ label: item.text, value: item.id }))}
+            value={type}
+            style={{
+              inputIOS: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+              inputAndroid: {
+                paddingHorizontal: rem(3.55),
+                borderWidth: 3,
+                color: "black",
+              },
+            }}
+            onValueChange={handleTypeChange}
+            Icon={() => {
+              return (
+                <MaterialIcons
+                  style={{ marginTop: 16, marginRight: 12 }}
+                  name="keyboard-arrow-down"
+                  size={24}
+                  color="black"
+                />
+              );
+            }}
+            placeholder={{
+              label: "Pilih Tipe",
+              value: null,
+              color: "grey",
+            }}></RNPickerSelect>
+        </View>
+      </View>
+    );
+  };
   return (
     <>
       <View className="w-full">
         <View
-          className="flex-row mb-4 p-4 justify-between"
+          className="flex-row p-3 justify-between"
           style={{ backgroundColor: Colors.brand }}>
           <BackButton
             size={24}
@@ -241,44 +337,15 @@ const Pengujian = ({ navigation }) => {
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg ">
-            Multipayment
-          </Text>
+          <Text className="font-bold text-white text-lg ">Multipayment</Text>
         </View>
       </View>
       <View className=" w-full h-full bg-[#ececec] ">
-        <View className="p-4 ">
-          <View className="flex flex-row justify-between bg-[#fff]">
-            <Picker
-              selectedValue={tahun}
-              style={styles.picker}
-              onValueChange={handleYearChange}>
-              {tahuns.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-            <Picker
-              selectedValue={bulan}
-              style={styles.picker}
-              onValueChange={handleMonthChange}>
-              {bulans.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-            <Picker
-              selectedValue={type}
-              style={styles.picker}
-              onValueChange={handleTypeChange}>
-              {types.map(item => (
-                <Picker.Item key={item.id} label={item.text} value={item.id} />
-              ))}
-            </Picker>
-          </View>
-        </View>
         <Paginate
           key={refreshKey}
-          className="mb-28"
+          className="mb-20"
           url="/pembayaran/multi-payment"
+          Plugin={filtah}
           payload={{ tahun, bulan, type }}
           renderItem={CardPembayaran}
           ref={PaginateRef}></Paginate>
@@ -300,12 +367,12 @@ const styles = StyleSheet.create({
   },
   cards: {
     borderRadius: 10,
-    width: "70%",
+    width: "90%",
     marginBottom: 4,
   },
   cards2: {
     borderRadius: 10,
-    width: "30%",
+    width: "10%",
     marginBottom: 4,
     display: "flex",
     alignItems: "center",

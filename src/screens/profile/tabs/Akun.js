@@ -290,7 +290,7 @@ const Akun = () => {
                       editable={false}
                       enableErrors
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                      placeholderTextColor="black"
+                      placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
                     />
@@ -310,7 +310,7 @@ const Akun = () => {
                       enableErrors
                       editable={false}
                       className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                      placeholderTextColor="black"
+                      placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
                     />
@@ -330,7 +330,7 @@ const Akun = () => {
               </Button>
             </View>
           ) : (
-            <View className="flex-1 justify-center items-center">
+            <View className="flex-1 justify-center items-center my-4">
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}

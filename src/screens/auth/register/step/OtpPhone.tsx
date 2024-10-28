@@ -13,7 +13,7 @@ import { useMutation } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 
-export default memo(function OtpEmail() {
+export default memo(function OtpPhone() {
   const { otp, setOtp, credential } = useFormStore();
   const { nextStep, setIndex } = useFormStep();
   const {
@@ -26,8 +26,8 @@ export default memo(function OtpEmail() {
   const { mutate: verify, status: statusVerif } = useMutation(
     data =>
       axios
-        .post("/auth/register/check/email/otp", {
-          email: credential.email,
+        .post("/auth/register/check/phone/otp", {
+          phone: credential.phone,
           otp: data.otp,
         })
         .then(res => res.data),
@@ -36,13 +36,12 @@ export default memo(function OtpEmail() {
         console.log(ctx)
         setOtp({
           ...otp,
-          email: ctx.otp,
+          phone: ctx.otp,
         })
         Toast.show({
-          type: "success",
+          type: "success", 
           text1: "Kode OTP Berhasil Diverifikasi",
         });
-        console.log(otp);
         nextStep();
       },
       onError: error => {
@@ -55,17 +54,17 @@ export default memo(function OtpEmail() {
     },
   );
 
-  const { mutate: getEmailOtp, status: statusOtp } = useMutation(
+  const { mutate: getPhoneOtp, status: statusOtp } = useMutation(
     data =>
       axios
-        .post("/auth/register/get/email/otp", { email: credential.email })
+        .post("/auth/register/get/phone/otp", { phone: credential.phone })
         .then(res => res.data),
     {
       onSuccess: data => {
         Toast.show({
           type: "success",
           text1: "Kode OTP Berhasil",
-          text2: "Kode OTP dikirim ke Email Anda",
+          text2: "Kode OTP dikirim ke Whatsapp anda",
         });
       },
       onError: error => {
@@ -81,8 +80,8 @@ export default memo(function OtpEmail() {
   return (
     <View>
       <View marginB-10>
-        <Text>Masukkan Kode OTP yang dikirimkan ke Email Anda</Text>
-        <Text color={Colors.blue40}>{credential.email}</Text>
+        <Text>Masukkan Kode OTP yang dikirimkan ke Whatsapp Anda</Text>
+        <Text color={Colors.blue40}>{credential.phone}</Text>
       </View>
       <View marginB-20>
         <Text marginB-5>Kode OTP</Text>
@@ -99,7 +98,7 @@ export default memo(function OtpEmail() {
               onCodeChanged={code => onChange(code)}
               autoFocusOnLoad
               onCodeFilled={handleSubmit(data =>
-                login({ ...data, otp: watch("otp") }),
+                verify({ ...data, otp: watch("otp") }),
               )}
             />
           )}
@@ -111,7 +110,7 @@ export default memo(function OtpEmail() {
         )}
       </View>
       <Button
-        label="Submit"
+        label="Selanjutnya"
         backgroundColor={Colors.brand}
         paddingV-12
         marginB-10
@@ -134,7 +133,7 @@ export default memo(function OtpEmail() {
         <Text style={{ alignSelf: "center" }}>
           Tidak Menerima menerima Kode OTP?
         </Text>
-        <TouchableOpacity onPress={getEmailOtp}>
+        <TouchableOpacity onPress={getPhoneOtp}>
           <Text
             style={{
               color: "#3b82f6",

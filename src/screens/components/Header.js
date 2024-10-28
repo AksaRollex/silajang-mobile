@@ -9,7 +9,7 @@ const rem = multiplier => baseRem * multiplier;
 export default function Header({ navigate }) {
   return (
     <View style={styles.container}>
-      <View className=" p-3 flex-row justify-between items-center" style={{ backgroundColor : Colors.brand }}>
+      <View className=" p-2 flex-row justify-between items-center" style={{ backgroundColor : Colors.brand }}>
         <View className="flex-row items-center gap-2">
           <Image
             source={require("@/assets/images/logo.png")}

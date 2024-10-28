@@ -10,6 +10,7 @@ import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Back from "../../components/Back";
+import { API_URL } from "@env";
 
 import { TouchableOpacity } from "react-native-ui-lib";
 
@@ -40,7 +41,7 @@ const Keamanan = () => {
   };
 
   const updateKeamanan = useMutation(
-    data => axios.put("/user/updateKeamanan", data),
+    data => axios.post(`${API_URL}/user/security`, data),
     {
       onSuccess: () => {
         Toast.show({
