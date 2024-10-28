@@ -21,6 +21,8 @@ import PembayaranStack from "../pembayaran/Index";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PermohonanScreen from "../pengujian/permohonan/Permohonan";
 import TrackingPengujianScreen from "../pengujian/trackingPengujian/TrackingPengujian";
+import PengujianPembayaran from "../pembayaran/pengujian/Pengujian";
+import MultiPayment from "../pembayaran/multipayment/Multipayment";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -40,7 +42,8 @@ const screenOptions = {
   },
 };
 
-const getTabBarVisibility = route => {
+// Fungsi untuk mengatur visibilitas tab bar
+const getTabBarVisibility = (route) => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? "";
   const hideOnScreens = [
     "TrackingPengujian",
@@ -56,20 +59,31 @@ const getTabBarVisibility = route => {
     "Multipayment",
     "MultipaymentDetail",
   ];
+
   if (hideOnScreens.includes(routeName)) {
     return { display: "none" };
   }
-  return screenOptions.tabBarStyle;
+  return {
+    position: "absolute",
+    bottom: 0,
+    right: 0,
+    left: 0,
+    elevation: 0,
+    height: 60,
+    backgroundColor: Colors.brand,
+    borderTopWidth: 0,
+  };
 };
 
-// Custom Tab Bar Component with Dropdown
-const CustomTabBar = ({ state, descriptors, navigation }) => {
-  const [dropdownVisible, setDropdownVisible] = useState(false);
+const CustomTabBar = props => {
+  const { state, descriptors, navigation } = props;
+  const [pengujianDropdownVisible, setPengujianDropdownVisible] = useState(false);
+  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] = useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const pengujianTabRef = useRef(null);
+  const pembayaranTabRef = useRef(null);
   const isFirstRender = useRef(true);
 
-  // Prevent modal from showing on first render
   useEffect(() => {
     if (isFirstRender.current) {
       isFirstRender.current = false;
@@ -83,41 +97,55 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
           x: pageX,
           width: width,
         });
-        setDropdownVisible(true);
+        setPengujianDropdownVisible(true);
+        setPembayaranDropdownVisible(false);
       });
     }
   };
 
-  const navigateToScreen = screenName => {
-    setDropdownVisible(false);
-    navigation.navigate("Permohonan");
+  const handlePembayaranPress = () => {
+    if (pembayaranTabRef.current) {
+      pembayaranTabRef.current.measure((x, y, width, height, pageX, pageY) => {
+        setDropdownPosition({
+          x: pageX,
+          width: width,
+        });
+        setPembayaranDropdownVisible(true);
+        setPengujianDropdownVisible(false);
+      });
+    }
   };
+
+  const closeAllDropdowns = () => {
+    setPengujianDropdownVisible(false);
+    setPembayaranDropdownVisible(false);
+  };
+
+  if (!state) return null;
 
   return (
     <View style={{ position: "relative" }}>
-      {/* Dropdown Menu */}
+      {/* Pengujian Dropdown Menu */}
       <Modal
         transparent={true}
-        visible={dropdownVisible}
-        onRequestClose={() => setDropdownVisible(false)}
+        visible={pengujianDropdownVisible}
+        onRequestClose={closeAllDropdowns}
         animationType="fade">
-        <Pressable
-          style={styles.modalOverlay}
-          onPress={() => setDropdownVisible(false)}>
+        <Pressable style={styles.modalOverlay} onPress={closeAllDropdowns}>
           <View
             style={[
               styles.dropdownContainer,
               {
                 left: dropdownPosition.x,
                 width: dropdownPosition.width,
-                bottom: 60, // Position above tab bar
+                bottom: 60,
               },
             ]}>
             <TouchableOpacity
               style={styles.dropdownItem}
               onPress={() => {
                 navigation.navigate("Permohonan");
-                setDropdownVisible(false); // Tutup dropdown setelah navigasi
+                closeAllDropdowns();
               }}>
               <Text style={styles.dropdownText}>Permohonan</Text>
             </TouchableOpacity>
@@ -125,9 +153,45 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               style={styles.dropdownItem}
               onPress={() => {
                 navigation.navigate("TrackingPengujian");
-                setDropdownVisible(false); // Tutup dropdown setelah navigasi
+                closeAllDropdowns();
               }}>
               <Text style={styles.dropdownText}>Tracking Pengujian</Text>
+            </TouchableOpacity>
+          </View>
+        </Pressable>
+      </Modal>
+
+      {/* Pembayaran Dropdown Menu */}
+      <Modal
+        transparent={true}
+        visible={pembayaranDropdownVisible}
+        onRequestClose={closeAllDropdowns}
+        animationType="fade">
+        <Pressable style={styles.modalOverlay} onPress={closeAllDropdowns}>
+          <View
+            style={[
+              styles.dropdownContainer,
+              {
+                left: dropdownPosition.x,
+                width: dropdownPosition.width,
+                bottom: 60,
+              },
+            ]}>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => {
+                navigation.navigate("PengujianPembayaran");
+                closeAllDropdowns();
+              }}>
+              <Text style={styles.dropdownText}>Pengujian</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={styles.dropdownItem}
+              onPress={() => {
+                navigation.navigate("Multipayment");
+                closeAllDropdowns();
+              }}>
+              <Text style={styles.dropdownText}>Multi Payment</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -144,6 +208,10 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
               handlePengujianPress();
               return;
             }
+            if (route.name === "PembayaranTab") {
+              handlePembayaranPress();
+              return;
+            }
             navigation.navigate(route.name);
           };
 
@@ -151,7 +219,13 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
             <TouchableOpacity
               key={index}
               onPress={onPress}
-              ref={route.name === "PengujianTab" ? pengujianTabRef : null}
+              ref={
+                route.name === "PengujianTab"
+                  ? pengujianTabRef
+                  : route.name === "PembayaranTab"
+                  ? pembayaranTabRef
+                  : null
+              }
               style={styles.tabItem}>
               {route.name === "Dashboard" && (
                 <View
@@ -163,8 +237,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     source={require("@/assets/images/home.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
                     Beranda
                   </Text>
                 </View>
@@ -179,8 +252,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     source={require("@/assets/images/approval.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
                     Pengujian
                   </Text>
                 </View>
@@ -195,8 +267,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     source={require("@/assets/images/wallet.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
                     Pembayaran
                   </Text>
                 </View>
@@ -218,16 +289,31 @@ const TabNavigator = () => {
             tabBar={props => <CustomTabBar {...props} />}
             screenOptions={screenOptions}>
             <Tab.Screen name="Dashboard" component={Dashboard} />
-            <Tab.Screen name="PengujianTab" component={PengujianStack} />
-            <Tab.Screen name="PembayaranTab" component={PembayaranStack} />
+            <Tab.Screen 
+              name="PengujianTab" 
+              component={PengujianStack}
+              options={({ route }) => ({
+                tabBarStyle: getTabBarVisibility(route),
+              })} 
+            />
+            <Tab.Screen 
+              name="PembayaranTab" 
+              component={PembayaranStack}
+              options={({ route }) => ({
+                tabBarStyle: getTabBarVisibility(route),
+              })} 
+            />
           </Tab.Navigator>
         )}
       </Stack.Screen>
       <Stack.Screen name="Permohonan" component={PermohonanScreen} />
       <Stack.Screen name="TrackingPengujian" component={TrackingPengujianScreen} />
+      <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
+      <Stack.Screen name="Multipayment" component={MultiPayment} />
     </Stack.Navigator>
   );
 };
+
 export default function MainScreen() {
   return (
     <NavigationContainer independent={true}>
@@ -239,10 +325,7 @@ export default function MainScreen() {
   );
 }
 
-
-
 const styles = StyleSheet.create({
-  // Existing styles
   iconContainer: {
     alignItems: "center",
     justifyContent: "center",
@@ -270,8 +353,6 @@ const styles = StyleSheet.create({
   labelFocused: {
     color: "white",
   },
-
-  // Styles for dropdown and tab bar
   tabBar: {
     flexDirection: "row",
     backgroundColor: Colors.brand,
@@ -284,12 +365,11 @@ const styles = StyleSheet.create({
   },
   modalOverlay: {
     flex: 1,
-    // backgroundColor: 'rgba(0, 0, 0, 0.5)',
   },
   dropdownContainer: {
     position: "absolute",
     backgroundColor: "white",
-    borderRadius: 8,
+    borderRadius: 6,
     elevation: 5,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: -2 },

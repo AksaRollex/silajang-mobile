@@ -3,7 +3,8 @@ import { View, StyleSheet, Text } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
-import { QueryClient, useMutation } from "@tanstack/react-query";
+import { useMutation } from "@tanstack/react-query";
+import { useQueryClient } from '@tanstack/react-query';
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
@@ -40,15 +41,17 @@ const Keamanan = () => {
     setPasswordVisible3(!isPasswordVisible3);
   };
 
+  const queryClient = useQueryClient();
+
   const updateKeamanan = useMutation(
-    data => axios.post(`${API_URL}/user/security`, data),
+    data => axios.post(`${API_URL}user/security`, data),
     {
       onSuccess: () => {
         Toast.show({
           type: "success",
           text1: "Password berhasil diperbarui",
         });
-        QueryClient.invalidateQueries("/auth");
+        queryClient.invalidateQueries("/auth");
         navigation.navigate("IndexProfile");
       },
       onError: error => {
