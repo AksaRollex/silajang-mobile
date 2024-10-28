@@ -1,176 +1,80 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import axios from "@/src/libs/axios";
 import {
   View,
-  Text,
   ScrollView,
   StyleSheet,
-  TextInput,
-  Image,
-  Modal,
-  TouchableOpacity,
 } from "react-native";
 import { Colors, Button } from "react-native-ui-lib";
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
-import SignatureScreen from "react-native-signature-canvas";
-import { Searchbar } from "react-native-paper";
 import { List } from "react-native-paper";
-import Pengujian from "./Pengujian";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import { TextFooter } from "../components/TextFooter";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
-  const [search, setSearch] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pembayaranData, setPembayaranData] = useState([]);
 
-  // SEARCH BAR
-  const [searchQuery, setSearchQuery] = React.useState("");
-  // PREVIOUS
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-  // NEXT
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  const Pengujian = () => {
+    navigation.navigate("Pengujian");
   };
 
-  useEffect(() => {
-    axios
-      .get("/pembayaran/pengujian")
-      .then(response => {
-        console.log("Response Data:", response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  const filteredCards = pembayaranData.filter(cardItem => {
-    const matchesSearch = cardItem.lokasi
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesYear = selectedYear
-      ? cardItem.tanggal.startsWith(selectedYear)
-      : true;
-    const matchesMonth = selectedMonth
-      ? cardItem.tanggal.split("-")[1] === selectedMonth
-      : true;
-    return matchesSearch && matchesYear && matchesMonth;
-  });
-
-  const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-  const paginatedCards = filteredCards.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
-  const ButtonDetail = () => {
-    navigation.navigate("Detail");
-  };
-  const PengambilanSampel = () => {
-    navigation.navigate("PengambilanSampel");
+  const NonPengujian = () => {
+    navigation.navigate("NonPengujian");
   };
 
-const Pengujian = () => {
-  navigation.navigate("Pengujian");
-};
-
-const NonPengujian = () => {
-  navigation.navigate("NonPengujian");
-};
-
-const Global = () => {
-  navigation.navigate("Global");
-};
+  const Global = () => {
+    navigation.navigate("Global");
+  };
 
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-          <List.Item
+        <List.Item
           title="Pembayaran Dengan Pengujian"
-          left={props => <FontAwesome5Icon {...props} name="wallet" size={22} />}
+          left={props => (
+            <FontAwesome5Icon {...props} name="wallet" size={22} />
+          )}
           right={props => <List.Icon {...props} icon="chevron-right" />}
-          className='bg-[#ffffff] border-black p-2'
+          className="bg-[#ffffff] border-black p-2"
           onPress={Pengujian}
-          />
-          
-          <List.Item
-            title="Pembayaran Non Pengujian"
-            left={props => <FontAwesome5Icon {...props} name="credit-card" size={22}/>}
-            right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2'
-            onPress={NonPengujian}
-            />
-
-            <List.Item
-            title="Pembayaran Global"
-            left={props => <FontAwesome6Icon {...props} name="building-columns" size={22}/>}
-            right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2'
-            onPress={Global}
-            />
-
-          {/* ))} */}
-        {/* <View style={styles.paginationContainer}>
-          <TouchableOpacity
-            onPress={handlePreviousPage}
-            disabled={currentPage === 1}>
-            <Text
-              style={[
-                styles.paginationButton,
-                currentPage === 1 && styles.disabledButton,
-              ]}>
-              Previous
-            </Text>
-          </TouchableOpacity>
-          <Text style={styles.paginationText}>
-            Halaman {currentPage} Dari {totalPages}
-          </Text>
-          <TouchableOpacity
-            onPress={handleNextPage}
-            disabled={currentPage === totalPages}>
-            <Text
-              style={[
-                styles.paginationButton,
-                currentPage === totalPages && styles.disabledButton,
-              ]}>
-              Next
-            </Text>
-          </TouchableOpacity>
-        </View> */}
-      <TextFooter/>
+        />
+        <List.Item
+          title="Pembayaran Non Pengujian"
+          left={props => (
+            <FontAwesome5Icon {...props} name="credit-card" size={22} />
+          )}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          className="bg-[#ffffff] border-black p-2"
+          onPress={NonPengujian}
+        />
+        <List.Item
+          title="Pembayaran Global"
+          left={props => (
+            <FontAwesome6Icon {...props} name="building-columns" size={22} />
+          )}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          className="bg-[#ffffff] border-black p-2"
+          onPress={Global}
+        />
+        <TextFooter />
       </ScrollView>
-      {/* <View
-          style={[
-            styles.paginationNumber,
-            { width: 30, height: 30, backgroundColor: "#6b7fde" },
-          ]}>
-          <Text style={{ fontSize: 15, color: "white" }}>1</Text>
-        </View> */}
     </View>
   );
 };
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center",
     backgroundColor: "#ececec",
-    justifyContent: "flex-start", // Ensure content starts from the top
+    justifyContent: "flex-start", 
   },
   headerContainer: {
     width: "100%",
     paddingVertical: 10,
-    backgroundColor: Colors.brand, // Ganti dengan warna yang sesuai
+    backgroundColor: Colors.brand, 
     alignItems: "center",
     justifyContent: "center",
-    flexDirection: "row", // Menyusun elemen secara horizontal
+    flexDirection: "row",
     elevation: 4,
   },
   logo: {
@@ -179,9 +83,9 @@ const styles = StyleSheet.create({
     marginTop: 8,
   },
   search: {
-    flexDirection: "row", // Mengatur elemen dalam satu baris
-    alignItems: "center", // Mengatur elemen agar rata secara vertikal
-    justifyContent: "space-between", // Mengatur spasi antara elemen jika diperlukan
+    flexDirection: "row", 
+    alignItems: "center", 
+    justifyContent: "space-between", 
     paddingHorizontal: 10,
     paddingVertical: 5,
     backgroundColor: "white",
@@ -190,13 +94,13 @@ const styles = StyleSheet.create({
     width: "85%",
   },
   searchbar: {
-    flex: 1, // Searchbar akan menempati ruang yang tersisa
+    flex: 1, 
     backgroundColor: "white",
     borderRadius: 10,
-    marginRight: 10, // Memberikan jarak antara Searchbar dan Button
+    marginRight: 10, 
   },
   buttonSearch: {
-    backgroundColor: "#0D47A1", // Contoh warna
+    backgroundColor: "#0D47A1",
     padding: 10,
     borderRadius: 10,
   },
@@ -208,15 +112,13 @@ const styles = StyleSheet.create({
     fontSize: 22,
     color: "white",
     fontWeight: "bold",
-    marginLeft: 10, // Beri jarak antara logo dan teks
-    alignSelf: "center", // Vertically align the text to the center
+    marginLeft: 10,
+    alignSelf: "center",
   },
 
   scrollViewContent: {
-    flexGrow: 1, // Ensures that ScrollView content is scrollable
-    // marginHorizontal: 20,
-    // marginVertical: 10,
-    paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
+    flexGrow: 1, 
+    paddingBottom: 100, 
   },
   judul: {
     fontSize: 17,
@@ -263,7 +165,7 @@ const styles = StyleSheet.create({
   paginationContainer: {
     flexDirection: "row",
     justifyContent: "center",
-    alignItems: "center", // Menengahkan secara vertikal
+    alignItems: "center", 
     marginTop: 20,
     marginBottom: 40,
   },
@@ -275,24 +177,24 @@ const styles = StyleSheet.create({
     width: 100,
     backgroundColor: "#6b7fde",
     borderRadius: 10,
-    marginHorizontal: 10, // Memberikan jarak antar tombol
-    textAlign: "center", // Menengahkan teks pada tombol
+    marginHorizontal: 10, 
+    textAlign: "center", 
   },
   paginationText: {
     fontSize: 16,
     color: "black",
     fontWeight: "bold",
-    marginHorizontal: 10, // Memberikan jarak dengan tombol
+    marginHorizontal: 10,
   },
 
   ButtonDetail: {
     paddingHorizontal: 14,
     borderRadius: 5,
     marginVertical: 5,
-    backgroundColor: "#4682B4", // Warna untuk tombol Detail
+    backgroundColor: "#4682B4",
     justifyContent: "center",
     alignItems: "center",
-    flexDirection: "row", // Menyusun elemen secara horizontal
+    flexDirection: "row", 
   },
   TextButton: {
     color: "white",
@@ -317,7 +219,7 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-    tintColor: "white", // Warna gambar diselaraskan dengan teks
+    tintColor: "white",
   },
   disabledButton: {
     color: "#ccc",
@@ -327,7 +229,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     borderRadius: 5,
-    marginBottom : 80,
+    marginBottom: 80,
   },
 });
 
