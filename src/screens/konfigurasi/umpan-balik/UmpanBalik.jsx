@@ -189,7 +189,6 @@ const UmpanBalik = () => {
   return (
     <ScrollView className="flex-1 bg-gray-50">
       <View className="p-4">
-        {/* Horizontal Menu */}
         <View className="flex-row justify-center">
           <View className="mt-3 ml-[-10] mr-2"> 
             <HorizontalScrollMenu

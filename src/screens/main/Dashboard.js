@@ -362,7 +362,7 @@ const Dashboard = () => {
                 </TouchableOpacity>
               )}
 
-              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt','koordinator-teknis'].includes(user.role.name) && (
                 <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
                   onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
                   <View className="flex-row items-center">
@@ -419,7 +419,6 @@ const Dashboard = () => {
               </TouchableOpacity>
 
 
-              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
                   <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
                   {chartData ? (
@@ -441,7 +440,7 @@ const Dashboard = () => {
                     <ActivityIndicator size="large" color="#312e81" />
                   )}
                 </View>
-              )}
+        
 
 
               <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
