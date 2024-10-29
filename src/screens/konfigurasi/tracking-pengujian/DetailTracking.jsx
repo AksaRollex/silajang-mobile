@@ -52,7 +52,7 @@ const DetailTracking = ({ route, navigation }) => {
         ? 'bg-green-100 ' 
         : 'bg-yellow-100 '
     }`}>
-      <Text className={`text-xs font-medium ${
+      <Text className={`text-xs font-poppins-semibold ${
         isPositive 
           ? 'text-green-500'
           : 'text-yellow-500'

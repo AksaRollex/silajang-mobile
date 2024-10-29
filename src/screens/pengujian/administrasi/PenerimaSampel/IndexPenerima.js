@@ -218,18 +218,18 @@ const PenerimaSampel = ({ navigation }) => {
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
         <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-extrabold mb-2">{item.permohonan.user.nama}</Text>
-            <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
+            <Text className="text-[18px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
+            <Text className="text-[18px] font-poppins-semibold mb-2">{item.kode}</Text>
             <Text className="text-[15px] mb-2">
-              Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text>
+              Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
             </Text>
             <Text className="text-[15px] mb-2">
-              Diterima pada: <Text className="font-bold">{item.tanggal_diterima}</Text>
+              Diterima pada: <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
             </Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-bold text-right">
+              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right">
                 {item.text_status}
               </Text>
             </View>
@@ -272,7 +272,7 @@ const PenerimaSampel = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Penerima Sampel</Text>
+                <Text className="text-[20px] font-poppins-semibold">Penerima Sampel</Text>
               </View>
             </View>
 
@@ -339,8 +339,8 @@ const PenerimaSampel = ({ navigation }) => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text className="text-lg font-bold">Revisi Data</Text>
-            <Text className="font-bold text-lg">
+            <Text className="text-lg font-poppins-semibold">Revisi Data</Text>
+            <Text className="font-poppins-semibold text-lg">
               {selectedItem ? selectedItem.kode : ""}
             </Text>
             <TextInput
@@ -391,7 +391,7 @@ const PenerimaSampel = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview PDF</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview PDF</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -406,7 +406,7 @@ const PenerimaSampel = ({ navigation }) => {
             />
               <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setOpenModal(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

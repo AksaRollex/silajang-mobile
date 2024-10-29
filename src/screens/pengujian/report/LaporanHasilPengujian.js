@@ -213,25 +213,25 @@ const LaporanHasilPengujian = ({ navigation }) => {
         return (
             <View className="my-2 bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
                 <View className="flex justify-between">
-                        <Text className="text-[18px] font-extrabold mb-1">{item.kode}</Text>
-                        <Text className="text-[15px] font-bold mb-2">{item.permohonan.user.nama}</Text>
-                        <Text className="text-[14px] font-bold mb-2">{item.lokasi}</Text>
-                        <Text className="text-[12px] font-bold mb-2">
+                        <Text className="text-[18px] font-poppins-semibold mb-1">{item.kode}</Text>
+                        <Text className="text-[15px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
+                        <Text className="text-[14px] font-poppins-semibold mb-2">{item.lokasi}</Text>
+                        <Text className="text-[12px] font-poppins-semibold mb-2">
                             Tanggal Selesai : <Text className="font-normal">{item.tanggal_selesai}</Text>
                         </Text>
                 </View>
                 <View className="flex-row justify-between">
                     <View className="flex-1 mr-4">
-                        <Text className="text-[12px] font-bold mb-2">
+                        <Text className="text-[12px] font-poppins-semibold mb-2">
                             Tanggal TTE : <Text className="font-normal">{item.tanggal_tte}</Text>
                         </Text>
-                        <Text className="text-[12px] font-bold mb-2">
+                        <Text className="text-[12px] font-poppins-semibold mb-2">
                             Status TTE : <Text className="font-normal">{item.status_tte}</Text>
                         </Text>
                     </View>
                     <View className="flex-col items-end justify-between">
                         <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
-                            <Text className="text-[12px] text-indigo-600 font-bold text-right" numberOfLines={2} ellipsizeMode="tail">
+                            <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
                                 {item.text_status}
                             </Text>
                         </View>
@@ -304,7 +304,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         <View className="flex-row items-center space-x-2 mb-4">
                             <BackButton action={() => navigation.goBack()} size={26} />
                             <View className="absolute left-0 right-2 items-center">
-                                <Text className="text-[20px] font-bold">Laporan Hasil Pengujian</Text>
+                                <Text className="text-[20px] font-poppins-semibold">Laporan Hasil Pengujian</Text>
                             </View>
                         </View>
 
@@ -394,7 +394,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 <View className="flex-1 justify-center items-center bg-black bg-black/50">
                     <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
                         <View className="flex-row justify-between items-center p-4">
-                            <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
                             <TouchableOpacity onPress={handleDownloadPDF} className="p-2 rounded flex-row items-center">
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
@@ -406,7 +406,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         />
                         <View className="flex-row justify-between m-4">
                             <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                                <Text className="text-white font-bold text-center">Tutup</Text>
+                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

@@ -160,26 +160,26 @@ const PengambilSampel = ({ navigation }) => {
 
           {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-extrabold mb-1">
+                <Text className="text-[18px] font-poppins-semibold mb-1">
                   {item.kode}
                 </Text>
-                <Text className="text-[18px] font-extrabold mb-2">
+                <Text className="text-[18px] font-poppins-semibold mb-2">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-extrabold mb-3">
+              <Text className="text-[18px] font-poppins-semibold text-black mb-3">
                 {item.permohonan.industri}
               </Text>
             )}
 
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold mb-2 text-black">{item.lokasi}</Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
 
           </View>
           <View className="absolute right-1 flex-col items-center">
-          <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
+          <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
               ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500' 
                 : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500' 
                 : 'bg-indigo-100 text-indigo-500'}`}>
@@ -231,20 +231,22 @@ const PengambilSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className=" p-3">
+      <View className=" p-4">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
 
-            <View className="flex-row items-center space-x-2">
+            <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
+                <Text className="text-[20px] text-black font-poppins-semibold">Pengambil Sampel</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
+              <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
+                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
+
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}
@@ -312,7 +314,7 @@ const PengambilSampel = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -327,7 +329,7 @@ const PengambilSampel = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

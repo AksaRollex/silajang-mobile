@@ -263,20 +263,20 @@ const VerifikasiLhu = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-extrabold mb-1">{item.kode}</Text>
-                <Text className="text-[15px] font-bold mb-2">{item.permohonan.user.nama}</Text>
+                <Text className="text-[18px] font-poppins-semibold mb-1">{item.kode}</Text>
+                <Text className="text-[15px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
               </>
             ) : (
-              <Text className="text-[15px] font-bold mb-2">{item.permohonan.user.nama}</Text>
+              <Text className="text-[15px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
             )}
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] font-bold mb-2">
+            <Text className="text-[14px] font-poppins-semibold mb-2">
               PERATURAN : <Text className="font-normal">{item.peraturan?.nama}</Text>
             </Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
             <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-bold text-right" numberOfLines={2} ellipsizeMode="tail">
+              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
                 {item.text_status}
               </Text>
             </View>
@@ -314,7 +314,7 @@ const VerifikasiLhu = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Verifikasi LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold">Verifikasi LHU</Text>
               </View>
             </View>
 
@@ -378,7 +378,7 @@ const VerifikasiLhu = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -393,7 +393,7 @@ const VerifikasiLhu = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -408,7 +408,7 @@ const VerifikasiLhu = ({ navigation }) => {
     >
       <View className="flex-1 justify-center items-center bg-black/50">
         <View className="bg-white rounded-lg w-[80%] p-4">
-          <Text className="text-lg font-bold text-black mb-4">
+          <Text className="text-lg font-poppins-semibold text-black mb-4">
             {confirmAction === 'verify' 
               ? 'Konfirmasi Verifikasi LHU'
               : 'Konfirmasi Tolak Verifikasi'}

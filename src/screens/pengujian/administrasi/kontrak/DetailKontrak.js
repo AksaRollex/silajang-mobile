@@ -155,20 +155,20 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="arrow-left" size={20} color="white" />
                             </TouchableOpacity>
                             <View>
-                                <Text className="font-bold text-[23px] text-black ml-[20px] mt-[5px]">Detail Kontrak</Text>
+                                <Text className="font-poppins-semibold text-[23px] text-black ml-[20px] mt-[5px]">Detail Kontrak</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Informasi Pemohon</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Informasi Pemohon</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <View className="bg-[#e8fff3] p-[10px] rounded-[10px] mr-[10px]">
                                 <Feather name="user" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Customer</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.nama}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.nama}</Text>
                             </View>
                         </View>
 
@@ -178,7 +178,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Instansi</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.detail.instansi}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.instansi}</Text>
                             </View>
                         </View>
 
@@ -188,7 +188,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Alamat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.detail.alamat}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.alamat}</Text>
                             </View>
                         </View>
 
@@ -198,20 +198,20 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">No. Telepon/WhatsApp</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.phone}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.phone}</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Detail Permohonan</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Detail Permohonan</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <View className="bg-[#e8fff3] p-[10px] rounded-[10px] mr-[10px]">
                                 <FontAwesome name="building-o" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Industri</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.industri}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.industri}</Text>
                             </View>
                         </View>
 
@@ -221,7 +221,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Alamat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.alamat}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.alamat}</Text>
                             </View>
                         </View>
 
@@ -231,7 +231,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Jenis Kegiatan Industri</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kegiatan}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kegiatan}</Text>
                             </View>
                         </View>
 
@@ -241,7 +241,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Jenis Pembayaran</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.pembayaran}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.pembayaran}</Text>
                             </View>
                         </View>
 
@@ -251,13 +251,13 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.tanggal}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.tanggal}</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md mt-[10px] mb-[100px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Detail Kontrak</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Detail Kontrak</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <TouchableOpacity 
                                 className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]" 
@@ -267,7 +267,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </TouchableOpacity>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Dokumen Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">Klik icon untuk download</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">Klik icon untuk download</Text>
                             </View>
                         </View>
 
@@ -277,7 +277,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Masa Kontrak</Text>
-                                <Text className="text-[16px] font-bold text-black">{formattedBulan}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{formattedBulan}</Text>
                             </View>
                         </View>
 
@@ -287,7 +287,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Perihal</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.perihal}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.perihal}</Text>
                             </View>
                         </View>
 
@@ -297,7 +297,7 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Nomor Surat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.nomor_surat}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.nomor_surat}</Text>
                             </View>
                         </View>
 
@@ -307,11 +307,11 @@ export default function DetailKontrak({ route, navigation }) {
                             </View>
                             <View className="flex-1">
                                 <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.tanggal}</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.tanggal}</Text>
                             </View>
                         </View>
 
-                        <Text className="text-[16px] font-bold text-black">Kesimpulan Permohonan</Text>
+                        <Text className="text-[16px] font-poppins-semibold text-black">Kesimpulan Permohonan</Text>
 
                         <View className="flex-row justify-between my-[10px]">
                             <View className="flex-row items-center">

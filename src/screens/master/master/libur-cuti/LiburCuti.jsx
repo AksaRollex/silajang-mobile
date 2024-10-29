@@ -41,7 +41,7 @@ const LiburCuti = ({ navigation }) => {
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-3">
-          <Text className="text-[18px] font-extrabold">{item.tanggal}</Text>
+          <Text className="text-[18px] font-poppins-semibold">{item.tanggal}</Text>
           <Text className="text-12 font-semibold">{item.keterangan}</Text>
         </View>
         <MenuView 

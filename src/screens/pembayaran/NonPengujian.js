@@ -45,7 +45,7 @@ const Pengujian = () => {
                 <View className="flex-row items-center space-x-2">
                   <BackButton action={() => navigation.goBack()} size={26} />
                   <View className="absolute left-0 right-2 items-center">
-                    <Text className="text-[20px] font-bold">Pembayaran Khusus Non Pengujian</Text>
+                    <Text className="text-[20px] font-poppins-semibold">Pembayaran Khusus Non Pengujian</Text>
                   </View>
                 </View>
               </View>

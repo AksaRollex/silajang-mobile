@@ -109,7 +109,7 @@ const TrackingPengujian = ({ navigation }) => {
             <Text className="text-[17px] font-poppins-bold">{item.kode}</Text>
             <View className={` py-1 rounded-full  ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'
               }`}>
-              <Text className={`text-[12px] font-bold  text-right ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'
+              <Text className={`text-[12px] font-poppins-semibold  text-right ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'
                 }`} numberOfLines={2}>
                 {mapStatusPengujian(item.status)}
               </Text>
