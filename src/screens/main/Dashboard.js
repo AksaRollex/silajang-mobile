@@ -10,6 +10,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextFooter } from "../components/TextFooter";
 import { Dimensions } from "react-native";
 import Paginate from "@/src/screens/components/Paginate";
@@ -363,7 +364,7 @@ const Dashboard = () => {
                 </TouchableOpacity>
               )}
 
-              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+              {['admin', 'kepala-upt','koordinator-teknis'].includes(user.role.name) && (
                 <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#f2416e]"
                   onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
                   <View className="flex-row items-center">
@@ -394,7 +395,7 @@ const Dashboard = () => {
               )}
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
+                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
                   <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
                   <Text className="text-3xl  font-poppins-semibold mx-3 text-[#0090a6]" >
@@ -407,10 +408,10 @@ const Dashboard = () => {
               </TouchableOpacity>
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
+                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
-                  <IonIcons name="clipboard" size={30} color={"#0090a6"} />
-                  <Text className="text-3xl  font-poppins-semibold mx-3 text-[#0090a6]" >
+                  <MaterialCommunityIcons name="clipboard-text" size={30} color={"#0090a6"} />
+                  <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
                     {dashboard.jumlah}
                   </Text>
                 </View>
@@ -420,7 +421,6 @@ const Dashboard = () => {
               </TouchableOpacity>
 
 
-              {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
                   <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
                   {chartData ? (
@@ -443,7 +443,7 @@ const Dashboard = () => {
                     <ActivityIndicator size="large" color="#312e81" />
                   )}
                 </View>
-              )}
+        
 
 
               <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">

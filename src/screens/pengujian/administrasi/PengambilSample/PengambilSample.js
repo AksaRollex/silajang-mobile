@@ -168,14 +168,14 @@ const PengambilSampel = ({ navigation }) => {
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-poppins-semibold mb-3">
+              <Text className="text-[18px] font-poppins-semibold text-black mb-3">
                 {item.permohonan.industri}
               </Text>
             )}
 
-            <Text className="text-[14px] font-poppins-semibold mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] font-poppins-regular mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] font-poppins-regular mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold mb-2 text-black">{item.lokasi}</Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
 
           </View>
           <View className="absolute right-1 flex-col items-center">
@@ -231,21 +231,22 @@ const PengambilSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className=" p-3">
+      <View className=" p-4">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
 
-            <View className="flex-row items-center space-x-2">
+            <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold">Pengambil Sampel</Text>
+                <Text className="text-[20px] text-black font-poppins-semibold">Pengambil Sampel</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] font-poppins-semibold mr-2">
+              <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
-                  className="font-poppins-semibold"
+                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
+
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}
