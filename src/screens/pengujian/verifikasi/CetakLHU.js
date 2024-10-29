@@ -20,12 +20,13 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APP_URL } from "@env";
+// import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { API_URL } from "@env";
+import { APP_URL } from "@env";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -41,10 +42,7 @@ const cetakOptions = [
   { id: 1, name: "Sudah Dicetak" },
 ];
 
-export default function CetakLHU({ navigation, route }) {
-  // console.log(route);
-  // const { uuid } = route.params;
-  // console.log(uuid)
+const HasilUjis = ({ navigation, route }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
@@ -434,3 +432,5 @@ export default function CetakLHU({ navigation, route }) {
     </View>
   );
 }
+
+export default HasilUjis
