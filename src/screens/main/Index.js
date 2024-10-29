@@ -488,7 +488,7 @@ const DrawerContent = (props) => {
       ],
     }] : []),
     
-    ...(['admin', 'pengambil-sample', 'analis', 'koordinator-administrasi', 'koordinator-teknis', 'kepala-upt'].includes(user?.role?.name) ? [{
+    ...(['admin','koordinator-administrasi', 'koordinator-teknis', 'kepala-upt'].includes(user?.role?.name) ? [{
       name: "Konfigurasi",
       fontAwesome: "wrench", 
       subItems: [

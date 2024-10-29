@@ -10,6 +10,7 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextFooter } from "../components/TextFooter";
 import { Dimensions } from "react-native";
 import Paginate from "@/src/screens/components/Paginate";
@@ -393,7 +394,7 @@ const Dashboard = () => {
               )}
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
+                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
                   <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
                   <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
@@ -406,9 +407,9 @@ const Dashboard = () => {
               </TouchableOpacity>
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
+                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
-                  <IonIcons name="clipboard" size={30} color={"#0090a6"} />
+                  <MaterialCommunityIcons name="clipboard-text" size={30} color={"#0090a6"} />
                   <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
                     {dashboard.jumlah}
                   </Text>

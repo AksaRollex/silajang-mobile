@@ -5,7 +5,7 @@ import AccordionItem from "../components/AccordionItem";
 import { TextFooter } from "../components/TextFooter";
 import { useUser } from "@/src/services";
 
-export default function Pengujian() {
+export default function Konfigurasi() {
   const navigation = useNavigation();
   const { data: user } = useUser();
 
@@ -16,12 +16,6 @@ export default function Pengujian() {
     },
     'kepala-upt': {
       items: [ 'tracking-pengujian']
-    },
-    'pengambil-sample': {
-      items: ['tracking-pengujian']
-    },
-    analis: {
-      items: ['tracking-pengujian']
     },
     'koordinator-administrasi': {
       items: [ 'tracking-pengujian']

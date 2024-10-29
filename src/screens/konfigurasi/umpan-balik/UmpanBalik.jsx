@@ -1,18 +1,28 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { 
   View, 
-  Text, 
-  ScrollView, 
+  Text,
   Alert,
   ActivityIndicator,
-  Dimensions 
+  Dimensions,
+  SafeAreaView,
+  ScrollView,
+  TouchableOpacity,
+  Modal,
+  TextInput,
+  KeyboardAvoidingView,
+  Platform,
 } from 'react-native';
+import Toast from 'react-native-toast-message';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
+import Paginate from '@/src/screens/components/Paginate';
 
 const Options = [
   { id: 0, name: "Umpan Balik Chart" },
@@ -44,10 +54,17 @@ const UmpanBalik = () => {
   
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-  const [page] = useState(1);
-  const [itemsPerPage] = useState(5);
 
-  // Generate years function
+  const [modalVisible, setModalVisible] = useState(false);
+  const [formData, setFormData] = useState({
+    uuid: '',
+    kode: '',
+    keterangan: ''
+  });
+  const [loading, setLoading] = useState(false);
+  
+
+ 
   const generateYears = () => {
     let years = [];
     for (let i = currentYear; i >= 2022; i--) {
@@ -56,7 +73,7 @@ const UmpanBalik = () => {
     return years;
   };
 
-  // React Query for summary data
+  
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery(
     ['umpanBalikSummary', selectedYear, selectedMonth],
     async () => {
@@ -68,30 +85,10 @@ const UmpanBalik = () => {
       return response.data;
     },
     {
+      enabled: selectedMenu === 0,
       onError: (error) => {
         console.error('Error fetching summary data:', error);
         Alert.alert('Error', 'Gagal mengambil data summary');
-      }
-    }
-  );
-
-  // React Query for table data
-  const { data: tableData, isLoading: isTableLoading } = useQuery(
-    ['umpanBalikTable', page, itemsPerPage],
-    async () => {
-      const params = {
-        page: page,
-        per_page: itemsPerPage
-      };
-
-      const response = await axios.get('/konfigurasi/umpan-balik/keterangan', { params });
-      return response.data;
-    },
-    {
-      enabled: selectedMenu === 1,
-      onError: (error) => {
-        console.error('Error fetching table data:', error);
-        Alert.alert('Error', 'Gagal mengambil data tabel');
       }
     }
   );
@@ -106,22 +103,120 @@ const UmpanBalik = () => {
     queryClient.invalidateQueries(['umpanBalikSummary']);
   };
 
+
+  const handleSaveForm = async () => {
+    setLoading(true);
+    try {
+      if (!formData.keterangan || formData.keterangan.trim() === '') {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Keterangan tidak boleh kosong',
+          position: 'bottom',
+          visibilityTime: 2000,
+        });
+        setLoading(false);
+        return;
+      }
+  
+      const params = new URLSearchParams();
+      params.append('kode', formData.kode);
+      params.append('keterangan', formData.keterangan.trim());
+  
+      const response = await axios.post(
+        `/konfigurasi/umpan-balik/keterangan/${formData.uuid}/update`,
+        params.toString(),
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded'
+          }
+        }
+      );
+  
+      if (response.data.success) {
+        // Invalidate and refetch queries
+        await queryClient.invalidateQueries(['umpanBalikSummary']);
+        
+        // Reset form data
+        setFormData({
+          uuid: '',
+          kode: '',
+          keterangan: ''
+        });
+        
+        // Close modal first
+        setModalVisible(false);
+
+        // Refresh paginate component
+        if (paginateRef.current) {
+          paginateRef.current.refresh();
+        }
+
+        // Show success toast after modal is closed
+        setTimeout(() => {
+          Toast.show({
+            type: 'success',
+            text1: 'Sukses',
+            text2: 'Data berhasil disimpan',
+            position: 'bottom',
+            visibilityTime: 2000,
+          });
+        }, 100);
+      }
+    } catch (error) {
+      console.error('Save Error:', error.response?.data);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.',
+        position: 'bottom',
+        visibilityTime: 3000,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
   const renderStats = (data) => {
     if (!data?.data) return null;
     
     return (
-      <View className="flex-row justify-between mt-4">
-        <View className="bg-white p-4 rounded-lg flex-1 mr-2">
-          <Text className="text-gray-600 mb-1">IKM Unit Pelayanan</Text>
-          <Text className="text-2xl font-bold text-blue-800">
-            {data.ikm?.toFixed(2)}
-          </Text>
+      <View className="flex-row justify-between mt-4 mx-2 gap-4">
+        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm" 
+          style={{
+            borderLeftWidth: 4,
+            borderLeftColor: '#2596be',
+          }}>
+          <View className="p-4">
+            <View className="mb-3">
+              <FontAwesome5Icon name="medal" size={24} color="#2596be" />
+            </View>
+            <Text className="text-[40px] font-bold text-[#2596be]">
+              {data.ikm?.toFixed(2)}
+            </Text>
+            <Text className="text-gray-400 text-base mt-1">
+              IKM Unit Pelayanan
+            </Text>
+          </View>
         </View>
-        <View className="bg-white p-4 rounded-lg flex-1 ml-2">
-          <Text className="text-gray-600 mb-1">Jumlah Responden</Text>
-          <Text className="text-2xl font-bold text-blue-800">
-            {data.data?.jumlah}
-          </Text>
+  
+        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm"
+          style={{
+            borderLeftWidth: 4,
+            borderLeftColor: '#2596be',
+          }}>
+          <View className="p-4">
+            <View className="mb-3">
+              <MaterialCommunityIcons name="clipboard-text" size={24} color="#2596be" />
+            </View>
+            <Text className="text-[40px] font-bold text-[#2596be]">
+              {data.data?.jumlah}
+            </Text>
+            <Text className="text-gray-400 text-base mt-1">
+              Jumlah Responden
+            </Text>
+          </View>
         </View>
       </View>
     );
@@ -172,53 +267,85 @@ const UmpanBalik = () => {
       </View>
     );
   };
-
-  const renderTable = (data) => {
-    return (
-      <View className="mt-4">
-        {data.map((item, index) => (
-          <View key={item.uuid} className="bg-white p-4 rounded-lg mb-2">
-            <Text className="font-bold">{item.kode.toUpperCase()}</Text>
-            <Text className="text-gray-600">{item.keterangan}</Text>
-          </View>
-        ))}
+  const renderPaginateItem = ({ item }) => (
+    <View className="bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-5 mb-4" style={{ elevation: 4 }}>
+      <View className="flex-row justify-between">
+        <View className="flex-1 pr-4">
+          <Text className="text-[18px] font-extrabold mb-5">{item.kode}</Text>
+          <Text className="text-[14px] mb-3">{item.keterangan}</Text>
+        </View>
+        <TouchableOpacity
+          onPress={() => {
+            setFormData({ uuid: item.uuid, kode: item.kode, keterangan: item.keterangan });
+            setModalVisible(true);
+          }}
+          className="h-8 w-8 bg-blue-600 rounded-full items-center justify-center mt-5"
+        >
+          <MaterialIcons name="edit" size={16} color="white" />
+        </TouchableOpacity>
       </View>
-    );
-  };
+    </View>
+  );
 
-  return (
-    <ScrollView className="flex-1 bg-gray-50">
-      <View className="p-4">
-        <View className="flex-row justify-center">
-          <View className="mt-3 ml-[-10] mr-2"> 
-            <HorizontalScrollMenu
-              items={Options}
-              selected={selectedMenu}
-              onPress={item => setSelectedMenu(item.id)}
-              itemWidth={170}
-              itemRender={(item, index) => (
-                <View style={{
-                  backgroundColor: selectedMenu === item.id ? '#312e81' : 'white',
-                  borderRadius: 20,
-                  padding: 8,
-                  marginRight: 10,
-                  width: 170,
-                  alignItems: 'center',
-                }}>
-                  <Text style={{
-                    color: selectedMenu === item.id ? 'white' : '#312e81',
-                    fontSize: 14,
-                  }}>
-                    {item.name}
-                  </Text>
-                </View>
-              )}
+  const renderModal = () => (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={modalVisible}
+      onRequestClose={() => setModalVisible(false)}
+    >
+      <KeyboardAvoidingView
+        behavior={Platform.OS === "ios" ? "padding" : "height"}
+        className="flex-1"
+      >
+        <View
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          className="flex-1 justify-center items-center">
+          <View className="bg-white rounded-lg w-[90%] p-6">
+            <View className="flex-row justify-between items-center mb-6">
+              <Text className="text-lg font-bold">Edit Keterangan Umpan Balik</Text>
+              <TouchableOpacity onPress={() => setModalVisible(false)}>
+                <MaterialIcons name="close" size={24} color="black" />
+              </TouchableOpacity>
+            </View>
+            <TextInput
+              className="border border-gray-300 rounded-lg p-3 bg-gray-100 mb-4"
+              value={formData.kode}
+              editable={false}
             />
+            <TextInput
+              className="border border-gray-300 rounded-lg p-3 mb-6"
+              value={formData.keterangan}
+              onChangeText={(text) => setFormData((prev) => ({ ...prev, keterangan: text }))}
+              multiline
+            />
+            <View className="flex-row justify-end gap-3">
+              <TouchableOpacity onPress={() => setModalVisible(false)} className="px-4 py-2 bg-gray-400 rounded-lg">
+                <Text className="text-white">Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity 
+                onPress={handleSaveForm} 
+                className="px-4 py-2 bg-[#312e81] rounded-lg" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text className="text-white">Simpan</Text>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
+      </KeyboardAvoidingView>
+    </Modal>
+  );
 
-        {/* Filter Section */}
-        <View className="flex-row justify-end space-x-3 mt-4">
+
+  const renderChartContent = () => {
+    return (
+      <ScrollView className="flex-1">
+        <View className="flex-row justify-end space-x-3 mt-4 mb-5">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -254,33 +381,84 @@ const UmpanBalik = () => {
           </MenuView>
         </View>
 
-        {/* Content Section */}
-        {selectedMenu === 0 ? (
-          <>
-            {isSummaryLoading ? (
-              <View className="flex items-center justify-center p-4">
-                <ActivityIndicator size="large" color="#312e81" />
-              </View>
-            ) : (
-              <>
-                {renderStats(summaryData)}
-                {renderChart(summaryData)}
-              </>
-            )}
-          </>
+        {isSummaryLoading ? (
+          <View className="flex items-center justify-center p-4">
+            <ActivityIndicator size="large" color="#312e81" />
+          </View>
         ) : (
           <>
-            {isTableLoading ? (
-              <View className="flex items-center justify-center p-4">
-                <ActivityIndicator size="large" color="#312e81" />
-              </View>
-            ) : (
-              renderTable(tableData?.data || [])
-            )}
+            {renderStats(summaryData)}
+            {renderChart(summaryData)}
           </>
         )}
+      </ScrollView>
+    );
+  };
+
+  const renderContent = () => {
+    if (selectedMenu === 0) {
+      return renderChartContent();
+    }
+
+    return (
+      <View className="flex-1 mt-2">
+        <Paginate
+          ref={paginateRef}
+          url="/konfigurasi/umpan-balik/keterangan"
+          renderItem={renderPaginateItem}
+          className=""
+          ListEmptyComponent={() => (
+            <View className="flex-1 items-center justify-center p-4">
+              <Text className="text-gray-500">Tidak ada data</Text>
+            </View>
+          )}
+          refreshing={false}
+          onRefresh={() => {
+            if (paginateRef.current) {
+              paginateRef.current.refresh();
+            }
+          }}
+        />
       </View>
-    </ScrollView>
+    );
+  };
+
+  return (
+    <SafeAreaView className="flex-1 bg-[#ececec]">
+      <View className="flex-1">
+        <View className="flex-row justify-center">
+          <View className="mt-3 ml-[-10] mr-2"> 
+          <HorizontalScrollMenu
+              items={Options}
+              selected={selectedMenu}
+              onPress={(item) => setSelectedMenu(item.id)}
+              itemWidth={170}
+                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                  activeBackgroundColor={"#312e81"}
+                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+              itemRender={(item) => (
+                <View
+                  style={{
+                    borderColor: '#312e81',
+                  }}>
+                  <Text
+                    style={{
+                      color: 'white',
+                      fontSize: 14,
+                    }}>
+                    {item.name}
+                  </Text>
+                </View>
+              )}
+            />
+          </View>
+        </View>
+
+        {renderContent()}
+        {renderModal()}
+      </View>
+      <Toast/>
+    </SafeAreaView>
   );
 };
 
