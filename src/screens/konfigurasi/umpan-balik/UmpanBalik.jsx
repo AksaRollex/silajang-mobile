@@ -11,9 +11,8 @@ import {
   Modal,
   TextInput,
   KeyboardAvoidingView,
-  Platform,
+  Platform
 } from 'react-native';
-import Toast from 'react-native-toast-message';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -62,7 +61,6 @@ const UmpanBalik = () => {
     keterangan: ''
   });
   const [loading, setLoading] = useState(false);
-  
 
  
   const generateYears = () => {
@@ -103,19 +101,12 @@ const UmpanBalik = () => {
     queryClient.invalidateQueries(['umpanBalikSummary']);
   };
 
-
   const handleSaveForm = async () => {
     setLoading(true);
     try {
+
       if (!formData.keterangan || formData.keterangan.trim() === '') {
-        Toast.show({
-          type: 'error',
-          text1: 'Error',
-          text2: 'Keterangan tidak boleh kosong',
-          position: 'bottom',
-          visibilityTime: 2000,
-        });
-        setLoading(false);
+        Alert.alert('Error', 'Keterangan tidak boleh kosong');
         return;
       }
   
@@ -134,49 +125,28 @@ const UmpanBalik = () => {
       );
   
       if (response.data.success) {
-        // Invalidate and refetch queries
-        await queryClient.invalidateQueries(['umpanBalikSummary']);
+        setModalVisible(false);
+        if (paginateRef.current) {
+          paginateRef.current.refresh();
+        }
+        Alert.alert('Sukses', 'Data berhasil disimpan');
         
-        // Reset form data
         setFormData({
           uuid: '',
           kode: '',
           keterangan: ''
         });
-        
-        // Close modal first
-        setModalVisible(false);
-
-        // Refresh paginate component
-        if (paginateRef.current) {
-          paginateRef.current.refresh();
-        }
-
-        // Show success toast after modal is closed
-        setTimeout(() => {
-          Toast.show({
-            type: 'success',
-            text1: 'Sukses',
-            text2: 'Data berhasil disimpan',
-            position: 'bottom',
-            visibilityTime: 2000,
-          });
-        }, 100);
       }
     } catch (error) {
       console.error('Save Error:', error.response?.data);
-      Toast.show({
-        type: 'error',
-        text1: 'Error',
-        text2: error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.',
-        position: 'bottom',
-        visibilityTime: 3000,
-      });
+      Alert.alert(
+        'Error',
+        error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.'
+      );
     } finally {
       setLoading(false);
     }
   };
-
 
   const renderStats = (data) => {
     if (!data?.data) return null;
@@ -299,8 +269,8 @@ const UmpanBalik = () => {
         className="flex-1"
       >
         <View
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-          className="flex-1 justify-center items-center">
+        style= {{  backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
+        className="flex-1 justify-center items-center">
           <View className="bg-white rounded-lg w-[90%] p-6">
             <View className="flex-row justify-between items-center mb-6">
               <Text className="text-lg font-bold">Edit Keterangan Umpan Balik</Text>
@@ -323,16 +293,8 @@ const UmpanBalik = () => {
               <TouchableOpacity onPress={() => setModalVisible(false)} className="px-4 py-2 bg-gray-400 rounded-lg">
                 <Text className="text-white">Batal</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={handleSaveForm} 
-                className="px-4 py-2 bg-[#312e81] rounded-lg" 
-                disabled={loading}
-              >
-                {loading ? (
-                  <ActivityIndicator size="small" color="#ffffff" />
-                ) : (
-                  <Text className="text-white">Simpan</Text>
-                )}
+              <TouchableOpacity onPress={handleSaveForm} className="px-4 py-2 bg-[#312e81] rounded-lg" disabled={loading}>
+                {loading ? <ActivityIndicator size="small" color="#ffffff" /> : <Text className="text-white">Simpan</Text>}
               </TouchableOpacity>
             </View>
           </View>
@@ -457,7 +419,7 @@ const UmpanBalik = () => {
         {renderContent()}
         {renderModal()}
       </View>
-      <Toast/>
+      
     </SafeAreaView>
   );
 };
