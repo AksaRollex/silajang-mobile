@@ -25,8 +25,8 @@ const Pengujian = () => {
         }}>
         <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
-            <Text className="text-[18px] font-extrabold mb-1">{item.kode}</Text>
-            <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.industri}</Text>
+            <Text className="text-[18px] font-poppins-semibold mb-1">{item.kode}</Text>
+            <Text className="text-[18px] font-poppins-semibold mb-3">{item.permohonan.industri}</Text>
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
             <Text className="text-[14px] mb-2">{item.harga}</Text>
             <Text className="text-[14px] mb-2">{item.harga}</Text>
@@ -49,7 +49,7 @@ const Pengujian = () => {
                 <View className="flex-row items-center space-x-2">
                   <BackButton action={() => navigation.goBack()} size={26} />
                   <View className="absolute left-0 right-2 items-center">
-                    <Text className="text-[20px] font-bold">Menunggu Pembayaran</Text>
+                    <Text className="text-[20px] font-poppins-semibold">Menunggu Pembayaran</Text>
                   </View>
                 </View>
               </View>

@@ -179,27 +179,28 @@ const Dashboard = () => {
 
 
   const YearSelector = () => (
-    <View className="w-full ml-72 mt-1 mb-4">
+    <View className="w-full ml-80 mt-1 mb-4 ">
       <MenuView
+        className=" font-poppins-semibold"
         title="Pilih Tahun"
         onPressAction={handleYearChange}
         actions={generateYears().map(option => ({
           id: option.id.toString(),
           title: option.title,
         }))}>
-        <View style={{ marginRight: 10 }}>
+        <View style={{ marginRight: 20 }}>
           <View style={{
             flexDirection: "row",
             alignItems: "center",
             backgroundColor: "white",
             padding: 8,
             borderRadius: 8,
-            width: 120,
+            width: 105,
             borderColor: "#d1d5db",
             borderWidth: 1
           }}>
-            <Text style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14, }}>
-              {` Tahun: ${selectedYear}`}
+            <Text className=" font-poppins-semibold" style={{ color: "black", flex: 1, textAlign: "center", fontSize: 14, }}>
+              {` ${selectedYear}`}
             </Text>
             <MaterialIcons name="arrow-drop-down" size={24} color="black" />
           </View>
@@ -308,11 +309,11 @@ const Dashboard = () => {
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
                   <View className="flex-row items-center">
                     <MaterialIcons name="people-alt" size={34} color={"#828cff"} />
-                    <Text className="text-[35px] font-extrabold mx-3 text-[#828cff]">
+                    <Text className="text-[35px]  font-poppins-semibold mx-3 text-[#828cff]">
                       {dashboard.customers}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Customers
                   </Text>
                 </View>
@@ -322,11 +323,11 @@ const Dashboard = () => {
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#5a3dff]">
                   <View className="flex-row items-center">
                     <FontAwesome5 name="file-contract" size={30} color={"#5a3dff"} />
-                    <Text className="text-[35px] font-extrabold mx-3 text-[#5a3dff]">
+                    <Text className="text-[35px]  font-poppins-semibold mx-3 text-[#5a3dff]">
                       {dashboard.allSampels}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Total Permohonan
                   </Text>
                 </View>
@@ -337,11 +338,11 @@ const Dashboard = () => {
                   onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}>
                   <View className="flex-row items-center">
                     <FontAwesome5 name="check-circle" size={30} color={"#ffc300"} />
-                    <Text className="text-[35px] font-extrabold mx-3 text-[#ffc300]">
+                    <Text className="text-[35px]  font-poppins-semibold mx-3 text-[#ffc300]">
                       {dashboard.newSampels}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Persetujuan Permohonan
                   </Text>
                 </TouchableOpacity>
@@ -352,11 +353,11 @@ const Dashboard = () => {
                   onPress={() => navigation.navigate('Pengujian', { screen: 'Analis' })}>
                   <View className="flex-row items-center">
                     <Fontisto name="laboratory" size={30} color={"#f2416e"} />
-                    <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
+                    <Text className="text-[35px]  font-poppins-semibold mx-3 text-[#f2416e]">
                       {dashboard.undoneSampels}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Sampel Belum Dianalisa
                   </Text>
                 </TouchableOpacity>
@@ -367,11 +368,11 @@ const Dashboard = () => {
                   onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}>
                   <View className="flex-row items-center">
                     <IonIcons name="document-text" size={30} color={"#f2416e"} />
-                    <Text className="text-[35px] font-extrabold mx-3 text-[#f2416e]">
+                    <Text className="text-[35px]  font-poppins-semibold mx-3 text-[#f2416e]">
                       {dashboard.unverifSampels}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Dokumen Belum Diverifikasi
                   </Text>
                 </TouchableOpacity>
@@ -382,11 +383,11 @@ const Dashboard = () => {
                   onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}>
                   <View>
                     <FontAwesome5 name="coins" size={30} color={"#0fd194"} />
-                    <Text className="text-[18px] font-extrabold text-[#0fd194]" >
+                    <Text className="text-[18px]  font-poppins-semibold text-[#0fd194]" >
                       {rupiah(dashboard.revenue)}
                     </Text>
                   </View>
-                  <Text className="text-[16px] font-medium text-black text-left">
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
                     Pendapatan
                   </Text>
                 </TouchableOpacity>
@@ -396,11 +397,11 @@ const Dashboard = () => {
                 onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
                 <View className="flex flex-row">
                   <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
-                  <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
+                  <Text className="text-3xl  font-poppins-semibold mx-3 text-[#0090a6]" >
                     {dashboard.total?.toFixed(2)}
                   </Text>
                 </View>
-                <Text className="text-[16px] font-medium text-black text-left">
+                <Text className="text-[16px] font-poppins-semibold text-black text-left">
                   IKM Unit Pelayanan
                 </Text>
               </TouchableOpacity>
@@ -409,11 +410,11 @@ const Dashboard = () => {
                 onPress={() => navigation.navigate('Konfigurasi', { screen: "umpan-balik" })}>
                 <View className="flex flex-row">
                   <IonIcons name="clipboard" size={30} color={"#0090a6"} />
-                  <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
+                  <Text className="text-3xl  font-poppins-semibold mx-3 text-[#0090a6]" >
                     {dashboard.jumlah}
                   </Text>
                 </View>
-                <Text className="text-[16px] font-medium text-black text-left">
+                <Text className="text-[16px] font-poppins-semibold text-black text-left">
                   Jumlah Responden
                 </Text>
               </TouchableOpacity>
@@ -421,9 +422,10 @@ const Dashboard = () => {
 
               {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                 <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
-                  <Text className="text-lg font-bold p-3">Grafik Tren Permohonan</Text>
+                  <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
                   {chartData ? (
                     <LineChart
+                      className="font-poppins-semibold"
                       data={chartData}
                       width={screenWidth - 40}
                       height={340}
@@ -445,7 +447,7 @@ const Dashboard = () => {
 
 
               <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
-                <Text className="text-lg font-bold p-3">
+                <Text className="text-lg font-poppins-semibold text-black p-3">
                   {chartPeraturans.data.length > 1
                     ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
                     : "Peraturan Paling Banyak Digunakan"}
@@ -453,7 +455,7 @@ const Dashboard = () => {
 
                 <View className="ml-16">
                   <PieChart
-                    className="ml-96"
+                    className="ml-96 font-poppins-semibold"
                     data={chartPeraturans.data}
                     width={screenWidth}
                     height={220}
@@ -470,14 +472,13 @@ const Dashboard = () => {
                   />
                 </View>
 
-                <View style={styles.legendContainer} className="break-words">
+                <View className="mt-2 ml-4">
                   {chartPeraturans.data.map((item, index) => (
-                    <View key={index} style={styles.legendItem}>
-                      <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                      <Text style={styles.legendText}>
-                        <Text className="text-[12px] font-extrabold">{item.percentage}%</Text> - {item.name}
+                    <View key={index} className="flex-row items-center mb-1">
+                      <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                      <Text className="font-poppins-semibold break-words max-w-[92%]">
+                        <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
                       </Text>
-
                     </View>
                   ))}
                 </View>
@@ -486,8 +487,9 @@ const Dashboard = () => {
 
 
 
-              <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mb-16 mt-4">
-                <Text className="text-lg font-bold p-3 truncate">
+
+              <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4">
+                <Text className="text-lg text-black font-poppins-semibold p-3 truncate">
                   {chartParameters.data.length > 1
                     ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
                     : "Parameter Paling Banyak Digunakan"}
@@ -509,19 +511,17 @@ const Dashboard = () => {
                     backgroundColor={"transparent"}
                     paddingLeft={"15"}
                     hasLegend={false}
-                  // avoidFalseZeros={true}
                   />
 
 
                 </View>
-                <View style={styles.legendContainer} className="break-words">
+                <View className="mt-2 ml-4">
                   {chartParameters.data.map((item, index) => (
-                    <View key={index} style={styles.legendItem} >
-                      <View style={[styles.legendColor, { backgroundColor: item.color }]} />
-                      <Text style={styles.legendText}>
-                        <Text className="text-[12px] font-extrabold ml-4">{item.percentage}%</Text> - {item.name}
+                    <View key={index} className="flex-row items-center mb-1">
+                      <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                      <Text className="font-poppins-semibold break-words max-w-[92%]">
+                        <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
                       </Text>
-
                     </View>
                   ))}
                 </View>

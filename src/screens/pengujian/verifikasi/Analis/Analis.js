@@ -143,14 +143,14 @@ const Analis = ({ navigation }) => {
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
 
-            <Text className="text-[18px] font-extrabold mb-5">{item.kode}</Text>
+            <Text className="text-[18px] font-poppins-semibold mb-5">{item.kode}</Text>
             <Text className="text-[14px] mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-3">Diterima pada: <Text className="font-bold ">{item.tanggal_diterima}</Text></Text>
+            <Text className="text-[14px] mb-3">Diterima pada: <Text className="font-poppins-semibold ">{item.tanggal_diterima}</Text></Text>
           </View>
           <View className="flex-shrink-0 items-end">
           <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
             <Text 
-              className="text-[12px] text-indigo-600 font-bold text-right"
+              className="text-[12px] text-indigo-600 font-poppins-semibold text-right"
               numberOfLines={2}
               ellipsizeMode="tail"
             >
@@ -207,7 +207,7 @@ const Analis = ({ navigation }) => {
               <View className="flex-row items-center space-x-2 mb-4">
                 <BackButton action={() => navigation.goBack()} size={26} />
                 <View className="absolute left-0 right-2 items-center">
-                  <Text className="text-[20px] font-bold ">Analis</Text>
+                  <Text className="text-[20px] font-poppins-semibold ">Analis</Text>
                 </View>
               </View>
 
@@ -282,7 +282,7 @@ const Analis = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -297,7 +297,7 @@ const Analis = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

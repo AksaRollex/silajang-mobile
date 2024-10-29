@@ -702,10 +702,10 @@ export default function DetailPersetujuan({ route, navigation }) {
                   </Text>
                 </View>
                 <View className="flex-row justify-between mb-1">
-                  <Text className="text-base ml-14 font-bold text-black">
+                  <Text className="text-base ml-14 font-poppins-semibold text-black">
                     Nama
                   </Text>
-                  <Text className="text-base font-bold text-black">Harga</Text>
+                  <Text className="text-base font-poppins-semibold text-black">Harga</Text>
                 </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
@@ -713,7 +713,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                       key={index}
                       className="flex-row justify-between items-center py-2">
                       <View className="flex-row items-center">
-                        <Text className="text-sm text-black ml-14 font-bold">
+                        <Text className="text-sm text-black ml-14 font-poppins-semibold">
                           {item.nama}
                         </Text>
                         <TouchableOpacity
@@ -726,7 +726,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                           />
                         </TouchableOpacity>
                       </View>
-                      <Text className="text-sm text-black font-bold">
+                      <Text className="text-sm text-black font-poppins-semibold">
                         {rupiah(item.harga)}
                       </Text>
                       <View
