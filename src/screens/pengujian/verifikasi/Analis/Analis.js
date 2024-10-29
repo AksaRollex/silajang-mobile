@@ -143,9 +143,9 @@ const Analis = ({ navigation }) => {
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
 
-            <Text className="text-[18px] font-poppins-semibold mb-5">{item.kode}</Text>
-            <Text className="text-[14px] mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-3">Diterima pada: <Text className="font-poppins-semibold ">{item.tanggal_diterima}</Text></Text>
+            <Text className="text-[18px] font-poppins-semibold text-black mb-3">{item.kode}</Text>
+            <Text className="text-[15px] font-poppins-semibold text-black mb-2">{item.lokasi}</Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-1">Diterima pada: <Text className="font-poppins-semibold ">{item.tanggal_diterima}</Text></Text>
           </View>
           <View className="flex-shrink-0 items-end">
           <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
@@ -207,13 +207,14 @@ const Analis = ({ navigation }) => {
               <View className="flex-row items-center space-x-2 mb-4">
                 <BackButton action={() => navigation.goBack()} size={26} />
                 <View className="absolute left-0 right-2 items-center">
-                  <Text className="text-[20px] font-poppins-semibold ">Analis</Text>
+                  <Text className="text-[20px] font-poppins-semibold text-black">Analis</Text>
                 </View>
               </View>
 
               <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10] mr-2"> 
                 <HorizontalScrollMenu
+                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                   items={analisOptions}
                   selected={selectedAnalis}
                   onPress={item => setSelectedAnalis(item.id)}

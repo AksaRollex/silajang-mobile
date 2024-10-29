@@ -246,7 +246,6 @@ const PengambilSampel = ({ navigation }) => {
               <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
                     textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
-
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}

@@ -199,14 +199,14 @@ export default function CetakLHU({ navigation, route }) {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-poppins-semibold mb-2">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[18px] font-poppins-semibold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] mb-2">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            <Text className="text-[14px] text-black font-poppins-semibold mb-1">
               Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
             </Text>
-            <Text className="text-[15px] mb-2">
+            <Text className="text-[14px] text-black font-poppins-semibold  mb-2">
               Tanggal Diterima:{" "}
               <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
             </Text>
@@ -281,13 +281,14 @@ export default function CetakLHU({ navigation, route }) {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold">Cetak LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Cetak LHU</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10] mr-2">
                   <HorizontalScrollMenu
+                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                     items={cetakOptions}
                     selected={selectedCetak}
                     onPress={item => setSelectedCetak(item.id)}
