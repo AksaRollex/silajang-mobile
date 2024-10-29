@@ -160,10 +160,10 @@ const PengambilSampel = ({ navigation }) => {
 
           {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-1">
+                <Text className="text-[18px] text-black font-poppins-semibold mb-1">
                   {item.kode}
                 </Text>
-                <Text className="text-[18px] font-poppins-semibold mb-2">
+                <Text className="text-[18px] text-black font-poppins-semibold mb-2">
                   {item.permohonan.user.nama}
                 </Text>
               </>

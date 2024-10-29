@@ -263,14 +263,14 @@ const VerifikasiLhu = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-1">{item.kode}</Text>
-                <Text className="text-[15px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
+                <Text className="text-[18px] text-black font-poppins-semibold mb-1">{item.kode}</Text>
+                <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
               </>
             ) : (
-              <Text className="text-[15px] font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
+              <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
             )}
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] font-poppins-semibold mb-2">
+            <Text className="text-[14px] text-black font-poppins-semibold mb-2">{item.lokasi}</Text>
+            <Text className="text-[14px] text-black font-poppins-semibold mb-2">
               PERATURAN : <Text className="font-normal">{item.peraturan?.nama}</Text>
             </Text>
           </View>
@@ -314,13 +314,14 @@ const VerifikasiLhu = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold">Verifikasi LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Verifikasi LHU</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10] mr-2"> 
                 <HorizontalScrollMenu
+                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                   items={VerifikasiOptions}
                   selected={selectedVerifikasi}
                   onPress={item => setSelectedVerifikasi(item.id)}

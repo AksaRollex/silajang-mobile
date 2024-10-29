@@ -170,8 +170,8 @@ const Kortek = ({ navigation }) => {
             <Text className="text-[15px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[14px] text-black mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] text-black mb-3">
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">{item.lokasi}</Text>
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">
               Peraturan:{" "}
               <Text className="font-poppins-semibold ">{item.peraturan?.nama}</Text>
             </Text>

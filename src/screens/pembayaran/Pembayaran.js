@@ -94,7 +94,7 @@ const Global = () => {
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
           <List.Item
-          title="Pembayaran Dengan Pengujian"
+          title={<Text className="font-poppins-semibold">Pembayaran</Text>}
           left={props => <FontAwesome5Icon {...props} name="wallet" size={22} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           className='bg-[#ffffff] border-black p-2'
@@ -102,7 +102,7 @@ const Global = () => {
           />
           
           <List.Item
-            title="Pembayaran Non Pengujian"
+            title={<Text className="font-poppins-semibold">Pembayaran Non Pengujian</Text>}
             left={props => <FontAwesome5Icon {...props} name="credit-card" size={22}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
             className='bg-[#ffffff] border-black p-2'
@@ -110,7 +110,7 @@ const Global = () => {
             />
 
             <List.Item
-            title="Pembayaran Global"
+            title={<Text className="font-poppins-semibold">Pembayaran Global</Text>}
             left={props => <FontAwesome6Icon {...props} name="building-columns" size={22}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
             className='bg-[#ffffff] border-black p-2'
