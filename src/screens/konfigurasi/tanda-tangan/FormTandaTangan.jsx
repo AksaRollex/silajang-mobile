@@ -88,7 +88,7 @@ export default memo(function TandaTanganForm({ route, navigation }) {
             <View className="bg-white rounded m-3">
                 <View className="flex-row justify-between mx-3 mt-4">
                     <BackButton action={() => navigation.goBack()} size={26} />
-                    <Text className="text-xl font-bold">Edit Tanda Tangan</Text>
+                    <Text className="text-xl font-poppins-semibold">Edit Tanda Tangan</Text>
                 </View>
                 <View className="p-5 flex-col space-y-4">
                     <View className="mb-4">

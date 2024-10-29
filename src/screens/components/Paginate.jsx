@@ -110,7 +110,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
         name="search"
         render={({ field: { onChange, value } }) => (
           <TextInput
-            className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3"
+            className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 font-poppins-regular"
             value={value}
             onChangeText={onChange}
             placeholder="Cari..."

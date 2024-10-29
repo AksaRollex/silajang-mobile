@@ -520,7 +520,7 @@ export default function Detail({ route, navigation }) {
               <TouchableOpacity>
                 <Text
                   onPress={handleCurrentLocation}
-                  className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
+                  className="bg-blue-500 text-center text-white text-sm font-poppins-semibold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
               </TouchableOpacity>
             </View>
 
@@ -835,12 +835,12 @@ export default function Detail({ route, navigation }) {
 
               <View className="w-full mt-5" >
                 <TouchableOpacity onPress={handleSubmitData}>
-                  <Text className="bg-blue-500 text-center text-white text-base font-bold py-3" style={{ borderRadius: 8 }}>Simpan & Upload</Text>
+                  <Text className="bg-blue-500 text-center text-white text-base font-poppins-semibold py-3" style={{ borderRadius: 8 }}>Simpan & Upload</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
                   <Text
-                    className={`text-center text-white text-base font-bold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
+                    className={`text-center text-white text-base font-poppins-semibold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
                     style={{ borderRadius: 8 }}
                   >
                     {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}

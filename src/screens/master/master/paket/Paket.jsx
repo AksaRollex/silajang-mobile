@@ -53,7 +53,7 @@ const Paket = ({ navigation }) => {
          }}>
           <View className="flex-row justify-between items-center">
             <View className="flex-col space-y-3">
-            <Text className="text-[18px] font-extrabold">{item.nama}</Text>
+            <Text className="text-[18px] font-poppins-semibold">{item.nama}</Text>
             <Text className="text-12 font-semibold">{rupiah(item.harga)}</Text>
             </View>
             <MenuView 

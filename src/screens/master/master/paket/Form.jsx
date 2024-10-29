@@ -79,7 +79,7 @@ export default memo(function form({ route, navigation }) {
             <View className="bg-white rounded m-3">
                 <View className="flex-row justify-between mx-3 mt-4">
                     <BackButton action={() => navigation.goBack()} size={26} />
-                    <Text className="text-xl font-bold">
+                    <Text className="text-xl font-poppins-semibold">
                         {data ? "Edit Paket" : "Tambah Paket"}
                     </Text>
                 </View>
