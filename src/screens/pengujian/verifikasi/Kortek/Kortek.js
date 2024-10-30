@@ -166,12 +166,12 @@ const Kortek = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[16px] font-poppins-semibold mb-5">{item.kode}</Text>
-            <Text className="text-[15px] font-poppins-semibold mb-5">
+            <Text className="text-[16px] text-black font-poppins-semibold mb-3">{item.kode}</Text>
+            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[14px] mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-3">
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">{item.lokasi}</Text>
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">
               Peraturan:{" "}
               <Text className="font-poppins-semibold ">{item.peraturan?.nama}</Text>
             </Text>
@@ -236,10 +236,10 @@ const Kortek = ({ navigation }) => {
       <View className=" p-3">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
-            <View className="flex-row items-center space-x-2">
+            <View className="flex-row items-center space-x-2 mb-5">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold">
+                <Text className="text-[20px] font-poppins-semibold text-black">
                   Koordinator Teknis
                 </Text>
               </View>
@@ -248,6 +248,7 @@ const Kortek = ({ navigation }) => {
             <View className="flex-row justify-center">
               <View className="mt-4 ml-[-20] mr-2">
                 <HorizontalScrollMenu
+                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
                   items={kortekOptions}
                   selected={selectedKortek}
                   onPress={item => setSelectedKortek(item.id)}

@@ -256,21 +256,21 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data.kode}</Text>
+                  <Text className="text-lg font-poppins-semibold" style={styles.kode}>{data.kode}</Text>
                 </View>
               </View>
             </View>
 
             {/* Card Pertama */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Informasi Pemohon</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Customer</Text>
-                  <Text style={styles.value}>{data.permohonan.user.nama}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Customer</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data.permohonan.user.nama}</Text>
                 </View>
               </View>
 
@@ -279,8 +279,8 @@ export default function Detail({ route, navigation }) {
                   <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Instansi</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>Instansi</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan.user.detail.instansi}
                   </Text>
                 </View>
@@ -291,8 +291,8 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="map-search-outline" size={29} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Alamat</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>Alamat</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan.user.detail.alamat}
                   </Text>
                 </View>
@@ -303,8 +303,8 @@ export default function Detail({ route, navigation }) {
                   <Feather name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>No. Telepon/WhatsApp</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>No. Telepon/WhatsApp</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan.user.phone}
                   </Text>
                 </View>
@@ -314,7 +314,7 @@ export default function Detail({ route, navigation }) {
 
             {/* Card Kedua */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Detail Uji</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather
@@ -324,8 +324,8 @@ export default function Detail({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Lokasi/Titik Uji</Text>
-                  <Text style={styles.value}>{data.lokasi}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Lokasi/Titik Uji</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data.lokasi}</Text>
                 </View>
               </View>
 
@@ -334,8 +334,8 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Nama Industri</Text>
-                  <Text style={styles.value}>{data.permohonan.industri}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Nama Industri</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data.permohonan.industri}</Text>
                 </View>
               </View>
 
@@ -344,8 +344,8 @@ export default function Detail({ route, navigation }) {
                   <FontAwesome name="building-o" size={31} color="#50cc96" style={{ marginHorizontal: 3 }} />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Alamat Industri</Text>
-                  <Text style={styles.value}>{data.permohonan.alamat}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Alamat Industri</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data.permohonan.alamat}</Text>
                 </View>
               </View>
 
@@ -354,8 +354,8 @@ export default function Detail({ route, navigation }) {
                   <Foundation name="clipboard-pencil" size={32} color="#50cc96" style={{ marginLeft: 5 }} />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Kegiatan Industri</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>Jenis Kegiatan Industri</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan.kegiatan}
                   </Text>
                 </View>
@@ -365,8 +365,8 @@ export default function Detail({ route, navigation }) {
                   <AntDesign name="filter" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Sampel</Text>
-                  <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Jenis Sampel</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -382,14 +382,14 @@ export default function Detail({ route, navigation }) {
                   <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View> */}
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Wadah</Text>
-                  <Text style={styles.value}>{jenisWadahValues}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Jenis Wadah</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{jenisWadahValues}</Text>
                 </View>
               </View>
             </View>
 
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Detail Pengambilan</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Detail Pengambilan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome5Icon
@@ -399,8 +399,8 @@ export default function Detail({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jasa Pengambilan</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>Jasa Pengambilan</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan?.jasa_pengambilan?.wilayah} {""}
                     ({rupiah(data.permohonan?.jasa_pengambilan?.harga || 0)})
                   </Text>
@@ -416,8 +416,8 @@ export default function Detail({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Radius Pengambilan</Text>
-                  <Text style={styles.value}>
+                  <Text className="font-poppins-regular" style={styles.label}>Radius Pengambilan</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>
                     {data.permohonan?.radius_pengambilan?.radius}m
                     {data.permohonan?.radius_pengambilan?.harga !== undefined &&
                       data.permohonan?.radius_pengambilan?.harga !== null &&
@@ -439,8 +439,8 @@ export default function Detail({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Petugas</Text>
-                  <Text style={styles.value}>{data?.pengambil?.nama || ''}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Petugas</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data?.pengambil?.nama || ''}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -451,8 +451,8 @@ export default function Detail({ route, navigation }) {
                     color="#50cc96"></AntDesign>
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Tanggal/Jam</Text>
-                  <Text style={styles.value}>{data?.tanggal_pengambilan_indo}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Tanggal/Jam</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data?.tanggal_pengambilan_indo}</Text>
                 </View>
               </View>
               <View style={styles.infoItem}>
@@ -460,21 +460,21 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Metode</Text>
-                  <Text style={styles.value}>{data?.acuan_metode?.nama || ''}</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Metode</Text>
+                  <Text className="font-poppins-semibold" style={styles.value}>{data?.acuan_metode?.nama || ''}</Text>
                 </View>
               </View>
             </View>
 
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Detail Lokasi</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Detail Lokasi</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
 
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>South</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>South</Text>
                   <Controller
                     control={control}
                     name="south"
@@ -486,7 +486,7 @@ export default function Detail({ route, navigation }) {
                           autosave(data);
                         }}
                         editable={true}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                       />
                     )}
                   />
@@ -498,7 +498,7 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="compass-outline" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>East</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>East</Text>
                   <Controller
                     control={control}
                     name="east"
@@ -510,7 +510,7 @@ export default function Detail({ route, navigation }) {
                           autosave(data);
                         }}
                         editable={true}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                       />
                     )}
                   />
@@ -526,14 +526,16 @@ export default function Detail({ route, navigation }) {
 
 
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Hasil Pengukuran Lapangan</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Hasil Pengukuran Lapangan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Suhu Air (t°C)</Text>
-                  <Controller control={control} name="lapangan.suhu_air"
+                  <Text className="font-poppins-regular" style={styles.label}>Suhu Air (t°C)</Text>
+                  <Controller
+                    className="font-poppins-semibold"
+                    control={control} name="lapangan.suhu_air"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
                         value={value}
@@ -541,7 +543,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -554,7 +556,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>pH</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>pH</Text>
                   <Controller control={control} name="lapangan.ph"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -563,7 +565,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -576,7 +578,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>DHL (µS/cm)</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>DHL (µS/cm)</Text>
                   <Controller control={control} name="lapangan.dhl"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -585,7 +587,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -598,7 +600,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Salinitas (‰)</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Salinitas (‰)</Text>
                   <Controller control={control} name="lapangan.salinitas"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -607,7 +609,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -620,7 +622,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>DO (mg/L)</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>DO (mg/L)</Text>
                   <Controller control={control} name="lapangan.do"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -629,7 +631,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -642,7 +644,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Kekeruhan</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Kekeruhan</Text>
                   <Controller control={control} name="lapangan.kekeruhan"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -651,7 +653,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -664,7 +666,7 @@ export default function Detail({ route, navigation }) {
                   <MaterialCommunityIcons name="clipboard-check-outline" size={28} color="#50cc96"></MaterialCommunityIcons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Klorin Bebas</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Klorin Bebas</Text>
                   <Controller control={control} name="lapangan.klorin_bebas"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -673,7 +675,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -683,13 +685,13 @@ export default function Detail({ route, navigation }) {
             </View>
 
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Kondisi Lingkungan</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Kondisi Lingkungan</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer} className="mt-4">
                   <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Suhu Udara (t°C)</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Suhu Udara (t°C)</Text>
                   <Controller control={control} name="lapangan.suhu_udara"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -698,7 +700,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -711,7 +713,7 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Cuaca</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Cuaca</Text>
                   <Controller control={control} name="lapangan.cuaca"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -720,7 +722,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -733,7 +735,7 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Arah Angin</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Arah Angin</Text>
                   <Controller control={control} name="lapangan.arah_angin"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -742,7 +744,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -755,7 +757,7 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Kelembapan (%RH)</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Kelembapan (%RH)</Text>
                   <Controller control={control} name="lapangan.kelembapan"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -764,7 +766,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -777,7 +779,7 @@ export default function Detail({ route, navigation }) {
                   <Ionicons name="leaf-outline" size={28} color="#50cc96"></Ionicons>
                 </View>
                 <View style={styles.textContainer} className="">
-                  <Text style={styles.label}>Kecepatan Angin</Text>
+                  <Text className="font-poppins-regular" style={styles.label}>Kecepatan Angin</Text>
                   <Controller control={control} name="lapangan.kecepatan_angin"
                     render={({ field: { onChange, value } }) => (
                       <TextInput
@@ -786,7 +788,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosave(data);
                         }}
-                        className="h-10 bg-slate-50"
+                        className="h-10 bg-slate-50 font-poppins-semibold"
                         enableErrors
                       />
                     )}
@@ -796,7 +798,7 @@ export default function Detail({ route, navigation }) {
             </View>
 
             <View style={styles.lokasiContainer}>
-              <Text style={styles.title}>Foto Lapangan/Lokasi</Text>
+              <Text className="font-poppins-semibold" style={styles.title}>Foto Lapangan/Lokasi</Text>
               <View style={styles.infoItem}>
                 <Controller
                   control={control}
@@ -820,7 +822,7 @@ export default function Detail({ route, navigation }) {
                             </View>
                           ))}
                           <TouchableOpacity className=" w-20 py-2 flex justify-center mt-4 bg-blue-500" onPress={handleChoosePhoto} style={{ borderRadius: 4, marginStart: "38.7%" }}>
-                            <Text className="text-white text-sm font-semibold text-center">Tambah</Text>
+                            <Text className="text-white text-xs font-poppins-semibold text-center">Tambah</Text>
                           </TouchableOpacity>
                         </View>
                       ) : (
@@ -923,11 +925,10 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   kode: {
-    fontWeight: "bold",
     fontSize: 23,
     color: "black",
     marginLeft: 20,
-    marginTop: 5,
+    marginTop: 11,
   },
   scrollViewContainer: {
     flexDirection: "row",
@@ -959,7 +960,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
     marginBottom: 10,
     color: Colors.black,
   },
@@ -987,7 +987,6 @@ const styles = StyleSheet.create({
   },
   value: {
     fontSize: 16,
-    fontWeight: "bold",
     color: Colors.black,
   },
   mt: {

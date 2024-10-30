@@ -20,12 +20,13 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APP_URL } from "@env";
+// import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { API_URL } from "@env";
+import { APP_URL } from "@env";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -41,10 +42,7 @@ const cetakOptions = [
   { id: 1, name: "Sudah Dicetak" },
 ];
 
-export default function CetakLHU({ navigation, route }) {
-  // console.log(route);
-  // const { uuid } = route.params;
-  // console.log(uuid)
+const HasilUjis = ({ navigation, route }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
@@ -199,14 +197,14 @@ export default function CetakLHU({ navigation, route }) {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-poppins-semibold mb-2">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[18px] font-poppins-semibold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] mb-2">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            <Text className="text-[14px] text-black font-poppins-semibold mb-1">
               Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
             </Text>
-            <Text className="text-[15px] mb-2">
+            <Text className="text-[14px] text-black font-poppins-semibold  mb-2">
               Tanggal Diterima:{" "}
               <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
             </Text>
@@ -281,13 +279,14 @@ export default function CetakLHU({ navigation, route }) {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold">Cetak LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Cetak LHU</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10] mr-2">
                   <HorizontalScrollMenu
+                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                     items={cetakOptions}
                     selected={selectedCetak}
                     onPress={item => setSelectedCetak(item.id)}
@@ -434,3 +433,5 @@ export default function CetakLHU({ navigation, route }) {
     </View>
   );
 }
+
+export default HasilUjis

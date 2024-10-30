@@ -26,7 +26,7 @@ import DetailPengambilSample from "./administrasi/PengambilSample/DetailPengambi
 
 
 import Analis from "./verifikasi/Analis/Analis"
-import HasilUji from "./verifikasi/Analis/HasilUji"
+import DetailAnalis from "./verifikasi/Analis/DetailAnalis"
 import Kortek from "./verifikasi/Kortek/Kortek"
 import HasilUjis from "./verifikasi/Kortek/HasilUjis"
 import CetakLHU from "./verifikasi/CetakLHU"
@@ -131,8 +131,8 @@ export default function MainScreen() {
         component={Analis}
       />
       <Stack.Screen
-        name="HasilUji"
-        component={HasilUji}
+        name="DetailAnalis"
+        component={DetailAnalis}
       />
       <Stack.Screen
         name="Kortek"

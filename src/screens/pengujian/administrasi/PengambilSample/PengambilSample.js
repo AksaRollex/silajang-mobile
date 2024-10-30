@@ -160,10 +160,10 @@ const PengambilSampel = ({ navigation }) => {
 
           {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-1">
+                <Text className="text-[18px] text-black font-poppins-semibold mb-1">
                   {item.kode}
                 </Text>
-                <Text className="text-[18px] font-poppins-semibold mb-2">
+                <Text className="text-[18px] text-black font-poppins-semibold mb-2">
                   {item.permohonan.user.nama}
                 </Text>
               </>
@@ -246,7 +246,6 @@ const PengambilSampel = ({ navigation }) => {
               <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
                     textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
-
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}

@@ -19,14 +19,14 @@ export default function Pengujian() {
   const roleAccess = {
     admin: {
       sections: ['administrasi', 'verifikasi', 'report'],
-      items: ['kontrak', 'persetujuan', 'pengambil-sampel', 'penerima-sampel', 
-              'analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
-              'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+      items: ['kontrak', 'persetujuan', 'pengambil-sampel', 'penerima-sampel',
+        'analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
     },
     'kepala-upt': {
       sections: ['verifikasi', 'report'],
-      items: ['analis','koordinator-teknis',
-           'laporan-hasil', 'kendali-mutu','registrasi-sampel', 'rekap-data', 'rekap-parameter']
+      items: ['analis', 'koordinator-teknis',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
     },
     'pengambil-sample': {
       sections: ['administrasi',],
@@ -37,28 +37,25 @@ export default function Pengujian() {
       items: ['analis']
     },
     'koordinator-administrasi': {
-      sections: ['administrasi','verifikasi', 'report'],
+      sections: ['administrasi', 'verifikasi', 'report'],
       items: ['persetujuan', 'penerima-sampel',
-              'analis', 'cetak-lhu', 
-              'laporan-hasil', 'registrasi-sampel', 'rekap-parameter']
+        'analis', 'cetak-lhu',
+        'laporan-hasil', 'registrasi-sampel', 'rekap-parameter']
     },
     'koordinator-teknis': {
       sections: ['verifikasi', 'report'],
       items: ['analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
-              'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
     },
   };
-
   const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
-
   const hasAccess = (section) => {
-    return userRoles.some(role => 
+    return userRoles.some(role =>
       roleAccess[role]?.sections?.includes(section)
     );
   };
-
   const hasItemAccess = (item) => {
-    return userRoles.some(role => 
+    return userRoles.some(role =>
       roleAccess[role]?.items?.includes(item)
     );
   };
@@ -106,7 +103,7 @@ export default function Pengujian() {
             <Text style={styles.buttonText}>Tracking Pengujian</Text>
           </TouchableOpacity>
         </View>
-        <TextFooter/>
+        <TextFooter />
       </View>
     );
   }
@@ -121,35 +118,35 @@ export default function Pengujian() {
             className='bg-[#ffffff]'
           >
             {hasItemAccess('kontrak') && (
-              <List.Item 
+              <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Kontrak")}   
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("Kontrak")}
               />
             )}
             {hasItemAccess('persetujuan') && (
-              <List.Item 
+              <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("Persetujuan")}   
+                onPress={() => navigation.navigate("Persetujuan")}
               />
             )}
             {hasItemAccess('pengambil-sampel') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Pengambil Sample</Text>}
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("PengambilSample")}    
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("PengambilSample")}
               />
             )}
             {hasItemAccess('penerima-sampel') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Penerima Sample</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("IndexPenerima")}  
+                onPress={() => navigation.navigate("IndexPenerima")}
               />
             )}
           </List.Accordion>
@@ -162,35 +159,35 @@ export default function Pengujian() {
             className='bg-[#ffffff]'
           >
             {hasItemAccess('analis') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Analis</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Analis")}    
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("Analis")}
               />
             )}
             {hasItemAccess('koordinator-teknis') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Kortek")}
               />
             )}
             {hasItemAccess('cetak-lhu') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("CetakLHU")}    
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("CetakLHU")}
               />
             )}
             {hasItemAccess('verifikasi-lhu') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Verfikasi LHU</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("VerifikasiLhu")} 
+                onPress={() => navigation.navigate("VerifikasiLhu")}
               />
             )}
           </List.Accordion>
@@ -203,44 +200,44 @@ export default function Pengujian() {
             className='bg-[#ffffff]'
           >
             {hasItemAccess('laporan-hasil') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("LaporanHasilPengujian")} 
+                onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
             )}
             {hasItemAccess('kendali-mutu') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
               />
             )}
             {hasItemAccess('registrasi-sampel') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Registrasi Sample</Text>}  
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                className='px-5 bg-[#f8f8f8]'
               />
             )}
             {hasItemAccess('rekap-data') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
               />
             )}
             {hasItemAccess('rekap-parameter') && (
-              <List.Item 
-                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>} 
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                className='px-5 bg-[#f8f8f8]'
               />
             )}
           </List.Accordion>
         )}
-        <TextFooter/>
+        <TextFooter />
       </ScrollView>
     </View>
   );
@@ -272,7 +269,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 22,
     color: "white",
-    fontFamily: "Poppins-SemiBold",
+    fontWeight: "bold",
     marginLeft: 10,
     alignSelf: "center",
   },
