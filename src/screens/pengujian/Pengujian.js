@@ -116,13 +116,13 @@ export default function Pengujian() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {hasAccess('administrasi') && (
           <List.Accordion
-            title="Administrasi"
+            title={<Text className="font-poppins-semibold">Administrasi</Text>}
             left={props => <FontAwesome6 {...props} name="computer" size={22} />}
             className='bg-[#ffffff]'
           >
             {hasItemAccess('kontrak') && (
               <List.Item 
-                title="Kontrak"
+                title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("Kontrak")}   
@@ -130,7 +130,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('persetujuan') && (
               <List.Item 
-                title="Persetujuan" 
+                title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Persetujuan")}   
@@ -138,7 +138,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('pengambil-sampel') && (
               <List.Item 
-                title="Pengambil Sampel" 
+                title={<Text className="font-poppins-medium text-[15px]">Pengambil Sample</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("PengambilSample")}    
@@ -146,7 +146,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('penerima-sampel') && (
               <List.Item 
-                title="Penerima Sampel" 
+                title={<Text className="font-poppins-medium text-[15px]">Penerima Sample</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("IndexPenerima")}  
@@ -157,13 +157,13 @@ export default function Pengujian() {
 
         {hasAccess('verifikasi') && (
           <List.Accordion
-            title="Verifikasi"
+            title={<Text className="font-poppins-semibold">Verifikasi</Text>}
             left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
             className='bg-[#ffffff]'
           >
             {hasItemAccess('analis') && (
               <List.Item 
-                title="Analis"
+                title={<Text className="font-poppins-medium text-[15px]">Analis</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("Analis")}    
@@ -171,7 +171,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('koordinator-teknis') && (
               <List.Item 
-                title="Koordinator Teknis" 
+                title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Kortek")}
@@ -179,7 +179,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('cetak-lhu') && (
               <List.Item 
-                title="Cetak LHU" 
+                title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
                 onPress={() => navigation.navigate("CetakLHU")}    
@@ -187,7 +187,7 @@ export default function Pengujian() {
             )}
             {hasItemAccess('verifikasi-lhu') && (
               <List.Item 
-                title="Verifikasi LHU" 
+                title={<Text className="font-poppins-medium text-[15px]">Verfikasi LHU</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("VerifikasiLhu")} 
@@ -198,13 +198,13 @@ export default function Pengujian() {
 
         {hasAccess('report') && (
           <List.Accordion
-            title="Report"
+            title={<Text className="font-poppins-semibold">Report</Text>}
             left={props => <Ionicons {...props} name="document-text" size={22} />}
             className='bg-[#ffffff]'
           >
             {hasItemAccess('laporan-hasil') && (
               <List.Item 
-                title="Laporan Hasil Pengujian"
+                title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")} 
@@ -212,28 +212,28 @@ export default function Pengujian() {
             )}
             {hasItemAccess('kendali-mutu') && (
               <List.Item 
-                title="Kendali Mutu" 
+                title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
               />
             )}
             {hasItemAccess('registrasi-sampel') && (
               <List.Item 
-                title="Registrasi Sampel" 
+                title={<Text className="font-poppins-medium text-[15px]">Registrasi Sample</Text>}  
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
               />
             )}
             {hasItemAccess('rekap-data') && (
               <List.Item 
-                title="Rekap Data" 
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
               />
             )}
             {hasItemAccess('rekap-parameter') && (
               <List.Item 
-                title="Rekap Parameter" 
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>} 
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]' 
               />
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
   headerText: {
     fontSize: 22,
     color: "white",
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     marginLeft: 10,
     alignSelf: "center",
   },

@@ -64,7 +64,7 @@ export default function Konfigurasi() {
             key={item.id}
             title={item.title}
             right={props => <MaterialIcons {...props} name='arrow-forward-ios' size={12} color={Colors.grey} />}
-            className='bg-white border-b-2 border-[#ececec] font-poppins-semibold'
+            className='bg-white border-b-2 border-[#ececec]'
             onPress={() => navigation.navigate(item.route)}
           />
         )

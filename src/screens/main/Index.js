@@ -109,7 +109,7 @@ const TabNavigator = () => {
               ]}
             >
               <Entypo name="home" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]}>
+              <Text style={[styles.label, focused && styles.labelFocused]} className="text-white font-poppins-semibold">
                 Beranda
               </Text>
             </View>
@@ -131,7 +131,7 @@ const TabNavigator = () => {
                 ]}
               >
                 <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}>
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
                   Pengujian
                 </Text>
               </View>
@@ -164,7 +164,7 @@ const TabNavigator = () => {
                 ]}
               >
                 <Entypo name="wallet" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}>
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
                   Pembayaran
                 </Text>
               </View>
@@ -229,7 +229,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text className={`flex-1 font-poppins-regular ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text className={`flex-1 font-poppins-medium ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -304,7 +304,7 @@ const DrawerContent = (props) => {
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
             <IonIcons name="log-out" size={25} color="#f2416e" />
-            <Text className="font-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
+            <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
               Logout
             </Text>
           </View>
@@ -472,7 +472,7 @@ const DrawerContent = (props) => {
   );
 
   const customDrawerItems = [
-    { name: "Home", screen: "Home", fontAwesome6: "house" },
+    { name: "Home", screen: "Home", fontAwesome6: "house",},
     
     ...(user?.role?.name !== 'admin' ? [
       { name: "Profile", screen: "Profile", fontAwesome6: "user-large" }
