@@ -180,7 +180,7 @@ const Dashboard = () => {
 
 
   const YearSelector = () => (
-    <View className="w-full ml-80 mt-1 mb-4 ">
+    <View className="w-full ml-80 mt-2 mb-4 ">
       <MenuView
         className=" font-poppins-semibold"
         title="Pilih Tahun"
