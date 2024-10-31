@@ -175,7 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   title: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 20,
   },
   item: {
@@ -186,6 +186,7 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
+    fontFamily: "Poppins-Medium",
   },
   checkAllButton: {
     alignSelf: "center",
@@ -196,7 +197,7 @@ const styles = StyleSheet.create({
   },
   checkAllText: {
     color: "#312e81",
-    fontWeight: "bold",
+    fontFamily : "Poppins-SemiBold",
   },
 });
 

@@ -77,11 +77,11 @@ const HasilUjis = ({ route, navigation }) => {
     }
   };
 
-  const handleParameterUpdate = async (paramId, updatedData) => {
+  const handleParameterUpdate = async (paramUuid, updatedData) => {
     try {
       // Memperbarui data lokal
       const updatedParameters = formData.parameters.map(param => {
-        if (param.id === paramId) {
+        if (param.uuid === paramUuid) {
           return {
             ...param,
             pivot: {
@@ -100,9 +100,9 @@ const HasilUjis = ({ route, navigation }) => {
       }));
   
       // Mengirim permintaan API untuk memperbarui data
-      const response = await axios.put(`${API_URL}/verifikasi/koordinator-teknis/${uuid}/fill-parameter`, {
+      const response = await axios.post(`${API_URL}/verifikasi/koordinator-teknis/${uuid}/fill-parameter`, {
         parameters: updatedParameters.map(param => ({
-          id: param.id,
+          uuid: param.uuid,
           ...param.pivot, // Kirim hanya data yang ada di pivot
         })),
       });
@@ -189,7 +189,7 @@ const HasilUjis = ({ route, navigation }) => {
 
               {/* Parameter Cards */}
               {formData.parameters.map(param => (
-                <View key={param.id} style={styles.parameterCard}>
+                <View key={param.uuid} style={styles.parameterCard}>
                   {/* Parameter Header */}
                   <View style={styles.parameterHeader}>
                     <View style={styles.parameterTitleContainer}>
@@ -223,7 +223,7 @@ const HasilUjis = ({ route, navigation }) => {
                           style={styles.input}
                           value={param.pivot.satuan}
                           onChangeText={text =>
-                            handleParameterUpdate(param.id, { satuan: text })
+                            handleParameterUpdate(param.uuid, { satuan: text })
                           }
                           placeholder="Satuan"
                         />
@@ -234,7 +234,7 @@ const HasilUjis = ({ route, navigation }) => {
                           style={styles.input}
                           value={param.pivot.baku_mutu}
                           onChangeText={text =>
-                            handleParameterUpdate(param.id, { baku_mutu: text })
+                            handleParameterUpdate(param.uuid, { baku_mutu: text })
                           }
                           placeholder="Baku Mutu"
                         />
@@ -246,7 +246,7 @@ const HasilUjis = ({ route, navigation }) => {
                           style={styles.inputMdl}
                           value={param.pivot.mdl}
                           onChangeText={text =>
-                            handleParameterUpdate(param.id, { mdl: text })
+                            handleParameterUpdate(param.uuid, { mdl: text })
                           }
                           placeholder="MDL"
                         />
@@ -259,7 +259,7 @@ const HasilUjis = ({ route, navigation }) => {
                           style={styles.input}
                           value={param.pivot.hasil_uji}
                           onChangeText={text =>
-                            handleParameterUpdate(param.id, { hasil_uji: text })
+                            handleParameterUpdate(param.uuid, { hasil_uji: text })
                           }
                           placeholder="MDL"
                         />
@@ -272,7 +272,7 @@ const HasilUjis = ({ route, navigation }) => {
                           style={styles.input}
                           value={param.pivot.hasil_uji_pembulatan}
                           onChangeText={text =>
-                            handleParameterUpdate(param.id, {
+                            handleParameterUpdate(param.uuid, {
                               hasil_uji_pembulatan: text,
                             })
                           }
@@ -287,7 +287,7 @@ const HasilUjis = ({ route, navigation }) => {
                         style={styles.input}
                         value={param.pivot.keterangan}
                         onChangeText={text =>
-                          handleParameterUpdate(param.id, { keterangan: text })
+                          handleParameterUpdate(param.uuid, { keterangan: text })
                         }
                         placeholder="Keterangan"
                       />
@@ -303,7 +303,7 @@ const HasilUjis = ({ route, navigation }) => {
                               styles.failButtonActive,
                           ]}
                           onPress={() =>
-                            handleParameterUpdate(param.id, {
+                            handleParameterUpdate(param.uuid, {
                               keterangan_hasil: "Tidak Memenuhi",
                             })
                           }>
@@ -317,7 +317,7 @@ const HasilUjis = ({ route, navigation }) => {
                               styles.passButtonActive,
                           ]}
                           onPress={() =>
-                            handleParameterUpdate(param.id, {
+                            handleParameterUpdate(param.uuid, {
                               keterangan_hasil: "Memenuhi",
                             })
                           }>
@@ -343,9 +343,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     padding: 15,
-    width: "100%",
+    width: "92%",
     elevation: 3,
     marginVertical: 10,
+    // display: "flex",
+    // justifyContent: "center",
+    // alignItems: "center",
+    marginLeft: 16,
   },
   kode: {
     fontWeight: "bold",
@@ -356,7 +360,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginBottom: 65,
+    marginBottom: 55,
   },
   header: {
     flexDirection: "row",
@@ -423,8 +427,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 8,
     marginHorizontal: 16,
-    // marginBottom: 46,
-    marginTop: 10,
+    marginBottom: 13,
     elevation: 3,
   },
   parameterHeader: {

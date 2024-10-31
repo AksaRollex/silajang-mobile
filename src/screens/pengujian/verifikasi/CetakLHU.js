@@ -20,12 +20,13 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APP_URL } from "@env";
+// import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { API_URL } from "@env";
+import { APP_URL } from "@env";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -41,10 +42,7 @@ const cetakOptions = [
   { id: 1, name: "Sudah Dicetak" },
 ];
 
-export default function CetakLHU({ navigation, route }) {
-  // console.log(route);
-  // const { uuid } = route.params;
-  // console.log(uuid)
+const HasilUjis = ({ navigation, route }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
@@ -199,21 +197,21 @@ export default function CetakLHU({ navigation, route }) {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-extrabold mb-2">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] mb-2">
-              Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text>
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            <Text className="text-[14px] text-black font-poppins-semibold mb-1">
+              Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
             </Text>
-            <Text className="text-[15px] mb-2">
+            <Text className="text-[14px] text-black font-poppins-semibold  mb-2">
               Tanggal Diterima:{" "}
-              <Text className="font-bold">{item.tanggal_diterima}</Text>
+              <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
             </Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-bold text-right">
+              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right">
                 {item.text_status}
               </Text>
             </View>
@@ -281,13 +279,14 @@ export default function CetakLHU({ navigation, route }) {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Cetak LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Cetak LHU</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10] mr-2">
                   <HorizontalScrollMenu
+                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                     items={cetakOptions}
                     selected={selectedCetak}
                     onPress={item => setSelectedCetak(item.id)}
@@ -342,7 +341,7 @@ export default function CetakLHU({ navigation, route }) {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity
                 onPress={() => {
                   handleDownloadPDF();
@@ -361,7 +360,7 @@ export default function CetakLHU({ navigation, route }) {
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -379,7 +378,7 @@ export default function CetakLHU({ navigation, route }) {
         <View className="flex-1 justify-center items-center bg-black/50">
           <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
             <View className="flex-row justify-between items-center mb-4">
-              <Text className="text-lg font-bold text-black">Upload File</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Upload File</Text>
               <TouchableOpacity
                 onPress={() => {
                   setUploadModalVisible(false);
@@ -395,7 +394,7 @@ export default function CetakLHU({ navigation, route }) {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 mr-2">
                       <Text className="text-sm mb-1">Selected File:</Text>
-                      <Text className="text-sm font-bold">
+                      <Text className="text-sm font-poppins-semibold">
                         {selectedFile.name}
                       </Text>
                     </View>
@@ -410,7 +409,7 @@ export default function CetakLHU({ navigation, route }) {
                   <TouchableOpacity
                     onPress={handleUploadPDF}
                     className="bg-indigo-600 px-4 py-2 rounded">
-                    <Text className="text-white font-bold">Upload</Text>
+                    <Text className="text-white font-poppins-semibold">Upload</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -423,7 +422,7 @@ export default function CetakLHU({ navigation, route }) {
                   <TouchableOpacity
                     onPress={handleFilePicker}
                     className="bg-indigo-600 px-4 py-2 rounded">
-                    <Text className="text-white font-bold">Pilih File</Text>
+                    <Text className="text-white font-poppins-semibold">Pilih File</Text>
                   </TouchableOpacity>
                 </View>
               </View>
@@ -434,3 +433,5 @@ export default function CetakLHU({ navigation, route }) {
     </View>
   );
 }
+
+export default HasilUjis

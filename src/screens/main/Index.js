@@ -58,7 +58,43 @@ const Header = () => {
   );
 };
 
+
 const TabNavigator = () => {
+  const { data: user } = useUser();
+  const userRole = user?.role?.name;
+
+  // Define which roles can access which tabs
+  const tabPermissions = {
+    Dashboard: [
+      'admin',
+      'pengambil-sample',
+      'analis',
+      'koordinator-administrasi',
+      'koordinator-teknis',
+      'kepala-upt',
+    ],
+    Pengujian: [
+      'admin',
+      'pengambil-sample',
+      'analis',
+      'koordinator-administrasi',
+      'koordinator-teknis',
+      'kepala-upt',
+    ], 
+    Pembayaran: [
+      'admin',
+      'koordinator-administrasi',
+      'koordinator-teknis',
+      'kepala-upt',
+    ], 
+  };
+
+  
+  const hasPermission = (tabName) => {
+    if (!tabPermissions[tabName] || !userRole) return false;
+    return tabPermissions[tabName].includes(userRole);
+  };
+
   return (
     <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
@@ -73,67 +109,73 @@ const TabNavigator = () => {
               ]}
             >
               <Entypo name="home" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]}>
+              <Text style={[styles.label, focused && styles.labelFocused]} className="text-white font-poppins-semibold">
                 Beranda
               </Text>
             </View>
           ),
         }}
       />
-      <Tab.Screen
-        name="Pengujian"
-        component={IndexPengujian}
-        options={{
-          // unmountOnBlur: true,
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.iconContainerFocused,
-              ]}
-            >
-              <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]}>
-                Pengujian
-              </Text>
-            </View>
-          ),
-        }}
-        listeners={({ navigation }) => ({
-          tabPress: (e) => {
-            if (navigation.isFocused()) {
-              e.preventDefault();
-              navigation.reset({
-                index: 0, 
-                routes: [{ name: 'Pengujian' }], 
-              });
-            }
-          },
-        })}
-      />
-      <Tab.Screen
-        name="Pembayaran"
-        component={IndexPembayaran}
-        options={{
-          tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.iconContainerFocused,
-              ]}
-            >
-              <Entypo name="wallet" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]}>
-                Pembayaran
-              </Text>
-            </View>
-          ),
-        }}
-      />
-      
+
+      {/* Pengujian tab - only visible to testing-related roles */}
+      {hasPermission('Pengujian') && (
+        <Tab.Screen
+          name="Pengujian"
+          component={IndexPengujian}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}
+              >
+                <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
+                  Pengujian
+                </Text>
+              </View>
+            ),
+          }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              if (navigation.isFocused()) {
+                e.preventDefault();
+                navigation.reset({
+                  index: 0, 
+                  routes: [{ name: 'Pengujian' }], 
+                });
+              }
+            },
+          })}
+        />
+      )}
+
+      {hasPermission('Pembayaran') && (
+        <Tab.Screen
+          name="Pembayaran"
+          component={IndexPembayaran}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                style={[
+                  styles.iconContainer,
+                  focused && styles.iconContainerFocused,
+                ]}
+              >
+                <Entypo name="wallet" size={25} color={"#fff"} />
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
+                  Pembayaran
+                </Text>
+              </View>
+            ),
+          }}
+        />
+      )}
     </Tab.Navigator>
   );
 };
+
 
 const ProfileDetail = () => {
   const { data: user } = useUser();
@@ -187,7 +229,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text className={`flex-1 font-poppins-regular ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text className={`flex-1 font-poppins-medium ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -262,7 +304,7 @@ const DrawerContent = (props) => {
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
             <IonIcons name="log-out" size={25} color="#f2416e" />
-            <Text className="font-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
+            <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
               Logout
             </Text>
           </View>
@@ -430,24 +472,29 @@ const DrawerContent = (props) => {
   );
 
   const customDrawerItems = [
-    { name: "Home", screen: "Home", fontAwesome6: "house" },
-    ...(user?.role?.name !== 'admin' ? [{ name: "Profile", screen: "Profile", fontAwesome6: "user-large" }] : []),
-    {
+    { name: "Home", screen: "Home", fontAwesome6: "house",},
+    
+    ...(user?.role?.name !== 'admin' ? [
+      { name: "Profile", screen: "Profile", fontAwesome6: "user-large" }
+    ] : []),
+    
+    ...(user?.role?.name === 'admin' ? [{
       name: "Master",
       fontAwesome6: "gear",
       subItems: [
-          { name: 'Master', screen: 'Master', params: {screen: 'MasterIndex'} },
-          { name: 'User', screen: 'User' },
-          { name: 'Wilayah', screen: 'Wilayah' },
+        { name: 'Master', screen: 'Master', params: {screen: 'MasterIndex'} },
+        { name: 'User', screen: 'User' },
+        { name: 'Wilayah', screen: 'Wilayah' },
       ],
-    },
-    {
+    }] : []),
+    
+    ...(['admin','koordinator-administrasi', 'koordinator-teknis', 'kepala-upt'].includes(user?.role?.name) ? [{
       name: "Konfigurasi",
-      fontAwesome: "wrench",
+      fontAwesome: "wrench", 
       subItems: [
         { name: "Pengujian", screen: "PengujianKonfig", params: {screen: 'KonfigurasiIndex'} },
       ],
-    },
+    }] : []),
   ];
 
   return (

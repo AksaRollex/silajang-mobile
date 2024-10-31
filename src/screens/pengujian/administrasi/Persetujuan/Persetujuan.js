@@ -146,25 +146,25 @@ const Persetujuan = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-extrabold mb-1">
+                <Text className="text-[18px] font-poppins-semibold mb-1 text-black">
                   {item.kode}
                 </Text>
-                <Text className="text-[15px] font-bold mb-2">
+                <Text className="text-[15px] font-poppins-semibold mb-2 text-black">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-extrabold mb-3">
+              <Text className="text-[18px] font-poppins-semibold mb-3 text-black">
                 {item.permohonan.industri}
               </Text>
             )}
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">{item.lokasi}</Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
             {!isConfirmed && (
-              <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
+              <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
               ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
                   : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500'
                     : 'bg-indigo-100 text-indigo-500'}`}>
@@ -219,7 +219,7 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold ">Persetujuan</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Persetujuan</Text>
               </View>
             </View>
 
@@ -233,6 +233,7 @@ const Persetujuan = ({ navigation }) => {
                 scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                 activeBackgroundColor={"#312e81"}
                 buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                textStyle={{ fontSize: 12, fontFamily: "Poppins-SemiBold" }}
               />
             </View>
 
@@ -288,7 +289,7 @@ const Persetujuan = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -303,7 +304,7 @@ const Persetujuan = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

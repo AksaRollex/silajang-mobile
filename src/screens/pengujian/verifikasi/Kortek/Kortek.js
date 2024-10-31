@@ -166,20 +166,20 @@ const Kortek = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[16px] font-extrabold mb-5">{item.kode}</Text>
-            <Text className="text-[15px] font-extrabold mb-5">
+            <Text className="text-[16px] text-black font-poppins-semibold mb-3">{item.kode}</Text>
+            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[14px] mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-3">
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">{item.lokasi}</Text>
+            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">
               Peraturan:{" "}
-              <Text className="font-bold ">{item.peraturan?.nama}</Text>
+              <Text className="font-poppins-semibold ">{item.peraturan?.nama}</Text>
             </Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
               <Text
-                className="text-[12px] text-indigo-600 font-bold text-right"
+                className="text-[12px] text-indigo-600 font-poppins-semibold text-right"
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {item.text_status}
@@ -236,10 +236,10 @@ const Kortek = ({ navigation }) => {
       <View className=" p-3">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
-            <View className="flex-row items-center space-x-2">
+            <View className="flex-row items-center space-x-2 mb-5">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">
+                <Text className="text-[20px] font-poppins-semibold text-black">
                   Koordinator Teknis
                 </Text>
               </View>
@@ -248,6 +248,7 @@ const Kortek = ({ navigation }) => {
             <View className="flex-row justify-center">
               <View className="mt-4 ml-[-20] mr-2">
                 <HorizontalScrollMenu
+                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
                   items={kortekOptions}
                   selected={selectedKortek}
                   onPress={item => setSelectedKortek(item.id)}
@@ -325,7 +326,7 @@ const Kortek = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity
                 onPress={() => {
                   handleDownloadPDF();
@@ -344,7 +345,7 @@ const Kortek = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

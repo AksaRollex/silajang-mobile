@@ -22,13 +22,13 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 const CertificateBadge = ({ value }) => {
     return value ? (
         <View className="bg-blue-50 rounded-md p-2 max-w-[150px] mb-2">
-            <Text className="text-blue-700 text-[12px] font-bold text-right" numberOfLines={2} ellipsizeMode="tail">
+            <Text className="text-blue-700 text-[12px] font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
                 {`Salinan ke-${value}`}
             </Text>
         </View>
     ) : (
         <View className="bg-yellow-50 rounded-md p-2 max-w-[150px] mb-2">
-            <Text className="text-yellow-700 text-[12px] font-bold text-right">
+            <Text className="text-yellow-700 text-[12px] font-poppins-semibold text-right">
                 Belum Dicetak
             </Text>
         </View>
@@ -39,7 +39,7 @@ const StatusTTEBadge = ({ status }) => {
     if (status === 1) {
         return (
             <View className="bg-green-50 rounded-md p-2">
-                <Text className="text-green-700 text-[12px] font-bold">
+                <Text className="text-green-700 text-[12px] font-poppins-semibold">
                     Berhasil
                 </Text>
             </View>
@@ -48,7 +48,7 @@ const StatusTTEBadge = ({ status }) => {
     if (status === 0) {
         return (
             <View className="bg-red-50 rounded-md p-2">
-                <Text className="text-red-700 text-[12px] font-bold">
+                <Text className="text-red-700 text-[12px] font-poppins-semibold">
                     Gagal
                 </Text>
             </View>
@@ -117,7 +117,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
             <View className="flex-1 justify-center items-center bg-black/50">
                 <View className="bg-white rounded-lg w-[90%] p-4">
                     <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-lg font-bold">Ajukan TTE LHU ({type})</Text>
+                        <Text className="text-lg font-poppins-semibold">Ajukan TTE LHU ({type})</Text>
                         <TouchableOpacity onPress={onClose}>
                             <AntDesign name="close" size={24} color="black" />
                         </TouchableOpacity>
@@ -127,7 +127,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                         <Text className="text-sm font-bold mb-2">Tanda Tangan *</Text>
                         {isLoading ? (
                             <View className="border border-gray-300 rounded-md p-3">
-                                <Text className="text-gray-500">Loading TTD options...</Text>
+                                <Text className="text-black">Loading TTD options...</Text>
                             </View>
                         ) : (
                             <MenuView
@@ -146,7 +146,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                             >
                                 <View className="border border-gray-300 rounded-md p-3">
                                     <View className="flex-row justify-between items-center">
-                                        <Text className="text-gray-800">
+                                        <Text className="text-black">
                                             {ttds.find(t => t.id.toString() === formData.tanda_tangan_id)?.text || 'Pilih TTD'}
                                         </Text>
                                         <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -255,12 +255,10 @@ const LaporanHasilPengujian = ({ navigation }) => {
         }
     });
 
-    useEffect(() => {
+      useEffect(() => {
+        // Set bulan saat ini sebagai nilai default
         const currentMonthId = new Date().getMonth() + 1;
-        const currentMonth = months.find(month => month.id === currentMonthId);
-        if (currentMonth) {
-            setSelectedMonth(currentMonth.title);
-        }
+        setSelectedMonth(currentMonthId); // Langsung set number, bukan title
     }, []);
 
     const PreviewVerifikasi = async (item) => {
@@ -443,32 +441,32 @@ const LaporanHasilPengujian = ({ navigation }) => {
             }}>
                 <View className="border-b border-gray-100 pb-3 mb-3">
                     <View className="flex-row justify-between items-center mb-2">
-                        <Text className="text-[18px] font-extrabold text-gray-800">{item.kode}</Text>
+                        <Text className="text-[18px] font-poppins-semibold text-black">{item.kode}</Text>
                         <CertificateBadge value={item.sertifikat}/>
                     </View>
-                    <Text className="text-[15px] font-bold text-gray-700 mb-1">{item.permohonan.user.nama}</Text>
-                    <Text className="text-[14px] text-gray-600">{item.lokasi}</Text>
+                    <Text className="text-[15px] font-poppins-semibold text-black mb-1">{item.permohonan.user.nama}</Text>
+                    <Text className="text-[14px] font-poppins-semibold text-black">{item.lokasi}</Text>
                 </View>
     
                 <View className="flex-row justify-between mb-4">
                     <View className="flex-1">
                         <View className="mb-2">
-                            <Text className="text-[12px] text-gray-500 mb-1">Tanggal Selesai</Text>
-                            <Text className="text-[13px] font-medium text-gray-700">{item.tanggal_selesai}</Text>
+                            <Text className="text-[12px] font-poppins-semibold text-black mb-1">Tanggal Selesai</Text>
+                            <Text className="text-[13px] font-poppins-regular text-black">{item.tanggal_selesai}</Text>
                         </View>
                         <View className="mb-2">
-                            <Text className="text-[12px] text-gray-500 mb-1">Tanggal TTE</Text>
-                            <Text className="text-[13px] font-medium text-gray-700">{item.tanggal_tte || '-'}</Text>
+                            <Text className="text-[12px] font-poppins-semibold text-black mb-1">Tanggal TTE</Text>
+                            <Text className="text-[13px] font-poppins-regular text-black">{item.tanggal_tte || '-'}</Text>
                         </View>
                         <View className="flex-row items-center">
-                            <Text className="text-[12px] text-gray-500 mr-2">Status TTE:</Text>
+                            <Text className="text-[12px] font-poppins-semibold text-black mr-2">Status TTE:</Text>
                             <StatusTTEBadge status={item.status_tte} />
                         </View>
                     </View>
     
                     <View className="flex-col items-end justify-between">
                         <View className="bg-slate-50 rounded-md px-3 py-2 mb-3">
-                            <Text className="text-[12px] text-indigo-600 font-bold text-right" 
+                            <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" 
                                   numberOfLines={2} 
                                   ellipsizeMode="tail">
                                 {item.text_status}
@@ -489,7 +487,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     >
                         <View className="flex-row items-center p-2 bg-green-500 rounded-md mr-2">
                             <FontAwesome name="file-text-o" size={16} color="#fff" />
-                            <Text className="ml-2 text-white text-[13px] font-medium">TTE</Text>
+                            <Text className="ml-2 text-white text-[13px] font-poppins-semibold">TTE</Text>
                         </View>
                     </MenuView>
     
@@ -499,16 +497,16 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             className="flex-row items-center p-2 bg-purple-100 rounded-md"
                         >
                             <FontAwesome name="eye" size={16} color="purple" />
-                            <Text className="ml-2 text-purple text-[13px] font-medium">Preview LHU</Text>
+                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold">Preview LHU</Text>
                         </TouchableOpacity>
                     )}
     
                     {item.status < 11 && (
                         <TouchableOpacity 
                             onPress={handleRollback}
-                            className="flex-row items-center p-2 bg-yellow-100 rounded-md"
+                            className="ml-2 flex-row items-center p-2 bg-yellow-100 rounded-md font-poppins-semibold"
                         >
-                            <AntDesign name="sync" size={16} color="yellow" />
+                            <AntDesign name="sync" size={16} color="orange" />
                         </TouchableOpacity>
                     )}
                 </View>
@@ -525,7 +523,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         <View className="flex-row items-center space-x-2 mb-4">
                             <BackButton action={() => navigation.goBack()} size={26} />
                             <View className="absolute left-0 right-2 items-center">
-                                <Text className="text-[20px] font-bold">Laporan Hasil Pengujian</Text>
+                                <Text className="text-[20px] font-poppins-semibold text-black">Laporan Hasil Pengujian</Text>
                             </View>
                         </View>
 
@@ -553,7 +551,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                                         borderColor: "#d1d5db",
                                         borderWidth: 1
                                         }}>
-                                        <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
+                                        <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
                                         {`Tahun: ${selectedYear}`}
                                         </Text>
                                         <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -562,42 +560,36 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             </MenuView>
 
                             <MenuView
-                                title="Pilih Bulan"
-                                actions={months.map(month => ({
-                                    id: month.id.toString(),
-                                    title: month.title,
-                                }))}
-                                onPressAction={({ nativeEvent }) => {
-                                    const selectedOption = months.find(month => month.id.toString() === nativeEvent.event);
-
-                                    if (selectedOption) {
-                                        console.log('Selected Month:', selectedOption.title);
-                                        setSelectedMonth(selectedOption.id);
-                                    } else {
-                                        console.log('Option not found');
-                                    }
-                                }}
-                                shouldOpenOnLongPress={false}
-                            >
-                                <View>
-                                    <View
-                                        style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        backgroundColor: "white",
-                                        padding: 12,
-                                        borderRadius: 8,
-                                        width: 185,
-                                        borderColor: "#d1d5db",
-                                        borderWidth: 1
-                                        }}>
-                                        <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
-                                        {`Bulan: ${months.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
-                                        </Text>
-                                        <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-                                    </View>
-                                </View>
-                            </MenuView>
+                    title="Pilih Bulan"
+                    actions={months.map(month => ({
+                        id: month.id.toString(),
+                        title: month.title,
+                    }))}
+                    onPressAction={({ nativeEvent }) => {
+                        const monthId = parseInt(nativeEvent.event); // Parse string ke number
+                        setSelectedMonth(monthId);
+                    }}
+                    shouldOpenOnLongPress={false}
+                >
+                    <View>
+                        <View
+                            style={{
+                            flexDirection: "row",
+                            alignItems: "center",
+                            backgroundColor: "white",
+                            padding: 12,
+                            borderRadius: 8,
+                            width: 185,
+                            borderColor: "#d1d5db",
+                            borderWidth: 1
+                            }}>
+                            <Text style={{ color: "black", flex: 1, textAlign: "center" , fontFamily: "Poppins-SemiBold"}}>
+                                {`Bulan: ${months.find(m => m.id === selectedMonth)?.title || 'Pilih'}`}
+                            </Text>
+                            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                        </View>
+                    </View>
+                </MenuView>
                         </View>
                     </View>
                 </View>
@@ -627,7 +619,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 <View className="flex-1 justify-center items-center bg-black bg-black/50">
                     <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
                         <View className="flex-row justify-between items-center p-4">
-                            <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
                             <TouchableOpacity onPress={handleDownloadPDF} className="p-2 rounded flex-row items-center">
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
@@ -639,7 +631,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         />
                         <View className="flex-row justify-between m-4">
                             <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                                <Text className="text-white font-bold text-center">Tutup</Text>
+                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
                             </TouchableOpacity>
                         </View>
                     </View>

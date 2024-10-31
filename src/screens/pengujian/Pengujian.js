@@ -16,6 +16,54 @@ export default function Pengujian() {
   const [activeComponent, setActiveComponent] = useState(null);
   const { data: user } = useUser();
 
+  const roleAccess = {
+    admin: {
+      sections: ['administrasi', 'verifikasi', 'report'],
+      items: ['kontrak', 'persetujuan', 'pengambil-sampel', 'penerima-sampel',
+        'analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+    'kepala-upt': {
+      sections: ['verifikasi', 'report'],
+      items: ['analis', 'koordinator-teknis',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+    'pengambil-sample': {
+      sections: ['administrasi',],
+      items: ['pengambil-sampel']
+    },
+    analis: {
+      sections: ['verifikasi',],
+      items: ['analis']
+    },
+    'koordinator-administrasi': {
+      sections: ['administrasi', 'verifikasi', 'report'],
+      items: ['persetujuan', 'penerima-sampel',
+        'analis', 'cetak-lhu',
+        'laporan-hasil', 'registrasi-sampel', 'rekap-parameter']
+    },
+    'koordinator-teknis': {
+      sections: ['verifikasi', 'report'],
+      items: ['analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+  };
+  const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
+  const hasAccess = (section) => {
+    return userRoles.some(role =>
+      roleAccess[role]?.sections?.includes(section)
+    );
+  };
+  const hasItemAccess = (item) => {
+    return userRoles.some(role =>
+      roleAccess[role]?.items?.includes(item)
+    );
+  };
+
+  // Check if user is only a customer
+  const isCustomerOnly = () => {
+    return userRoles.length === 1 && userRoles[0] === 'customer';
+  };
   let RenderedComponent;
   switch (activeComponent) {
     case "Permohonan":
@@ -29,138 +77,169 @@ export default function Pengujian() {
       break;
   }
 
-  return (
-      user.role.name === 'customer' ? (
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.headerContainer}>
-              <Image
-                source={require("@/assets/images/logo.png")}
-                style={styles.logo}
-              />
-              <Text style={styles.headerText}>SI - LAJANG</Text>
-            </View>
-            {/* Render the active component here */}
-            <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-          </ScrollView>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setActiveComponent("Permohonan")}>
-              <Text style={styles.buttonText}>Permohonan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setActiveComponent("Tracking Pengujian")}>
-              <Text style={styles.buttonText}>Tracking Pengujian</Text>
-            </TouchableOpacity>
+  // Customer view
+  if (user?.role?.name?.toLowerCase() === 'customer') {
+    return (
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <Image
+              source={require("@/assets/images/logo.png")}
+              style={styles.logo}
+            />
+            <Text style={styles.headerText}>SI - LAJANG</Text>
           </View>
-        <TextFooter/>
-
+          <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
+        </ScrollView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("Permohonan")}>
+            <Text style={styles.buttonText}>Permohonan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("Tracking Pengujian")}>
+            <Text style={styles.buttonText}>Tracking Pengujian</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <View className="bg-[#ececec] flex-1 flex-start">
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <List.Accordion
-              title="Administrasi"
-              left={props => <FontAwesome6 {...props} name="computer" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Kontrak"
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Kontrak")}   
-              />
-              <List.Item 
-                title="Persetujuan" 
+        <TextFooter />
+      </View>
+    );
+  }
+
+  return (
+    <View className="bg-[#ececec] flex-1 flex-start">
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {hasAccess('administrasi') && (
+          <List.Accordion
+            title={<Text className="font-poppins-semibold">Administrasi</Text>}
+            left={props => <FontAwesome6 {...props} name="computer" size={22} />}
+            className='bg-[#ffffff]'
+          >
+            {hasItemAccess('kontrak') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("Persetujuan")}   
+                onPress={() => navigation.navigate("Kontrak")}
               />
-              <List.Item 
-                title="Pengambil Sampel" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("PengambilSample")}    
-              />
-              <List.Item 
-                title="Penerima Sampel" 
+            )}
+            {hasItemAccess('persetujuan') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("IndexPenerima")}  
+                onPress={() => navigation.navigate("Persetujuan")}
               />
-            
-            </List.Accordion>
-
-            <List.Accordion
-              title="Verifikasi"
-              left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Analis"
+            )}
+            {hasItemAccess('pengambil-sampel') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Analis")}    
-
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("PengambilSample")}
               />
-              <List.Item 
-                title="Koordinator Teknis" 
+            )}
+            {hasItemAccess('penerima-sampel') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("IndexPenerima")}
+              />
+            )}
+          </List.Accordion>
+        )}
+
+        {hasAccess('verifikasi') && (
+          <List.Accordion
+            title={<Text className="font-poppins-semibold">Verifikasi</Text>}
+            left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
+            className='bg-[#ffffff]'
+          >
+            {hasItemAccess('analis') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("Analis")}
+              />
+            )}
+            {hasItemAccess('koordinator-teknis') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
                 onPress={() => navigation.navigate("Kortek")}
               />
-                <List.Item 
-                title="Cetak LHU" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("CetakLHU")}    
-              />
-              <List.Item 
-                title="Verifikasi LHU" 
+            )}
+            {hasItemAccess('cetak-lhu') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("VerifikasiLhu")} 
+                onPress={() => navigation.navigate("CetakLHU")}
               />
-            </List.Accordion>
+            )}
+            {hasItemAccess('verifikasi-lhu') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("VerifikasiLhu")}
+              />
+            )}
+          </List.Accordion>
+        )}
 
-            <List.Accordion
-              title="Report"
-              left={props => <Ionicons {...props} name="document-text" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Laporan Hasil Pengujian"
+        {hasAccess('report') && (
+          <List.Accordion
+            title={<Text className="font-poppins-semibold">Report</Text>}
+            left={props => <Ionicons {...props} name="document-text" size={22} />}
+            className='bg-[#ffffff]'
+          >
+            {hasItemAccess('laporan-hasil') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("LaporanHasilPengujian")} 
+                onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
-              <List.Item 
-                title="Kendali Mutu" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
-              />
-              <List.Item 
-                title="Registrasi Sampel" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-              />
-              <List.Item 
-                title="Rekap Data" 
+            )}
+            {hasItemAccess('kendali-mutu') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
               />
-              <List.Item 
-                title="Rekap Parameter" 
+            )}
+            {hasItemAccess('registrasi-sampel') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                className='px-5 bg-[#f8f8f8]'
               />
-            </List.Accordion>
-            <TextFooter/>
-          </ScrollView>
-        </View>
-      )
+            )}
+            {hasItemAccess('rekap-data') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]'
+              />
+            )}
+            {hasItemAccess('rekap-parameter') && (
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                className='px-5 bg-[#f8f8f8]'
+              />
+            )}
+          </List.Accordion>
+        )}
+        <TextFooter />
+      </ScrollView>
+    </View>
   );
 }
 

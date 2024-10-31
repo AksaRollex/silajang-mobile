@@ -41,11 +41,11 @@ const TandaTangan = ({ navigation }) => {
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-3">
-        <Text className="text-[15px] font-poppins-bold">{item.bagian}</Text>
-        <Text className="text-sm font-poppins-bold">Nama : {item.user?.nama}</Text>
-        <Text className="text-sm font-poppins-semibold">NIP : {item.user?.nip}</Text>
-        <Text className="text-sm font-poppins-semibold">NIK : {item.user?.nik}</Text>
-        <Text className="text-sm font-poppins-semibold">Jabatan : {item.user?.role?.full_name}</Text>
+        <Text className="text-[15px] font-poppins-semibold text-black">{item.bagian}</Text>
+        <Text className="text-sm font-poppins-semibold text-black">Nama : {item.user?.nama}</Text>
+        <Text className="text-sm font-poppins-medium text-black">NIP : {item.user?.nip}</Text>
+        <Text className="text-sm font-poppins-medium text-black">NIK : {item.user?.nik}</Text>
+        <Text className="text-sm font-poppins-medium text-black">Jabatan : {item.user?.role?.full_name}</Text>
         </View>
         <MenuView
           title="Menu Title"

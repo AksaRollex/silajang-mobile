@@ -40,7 +40,7 @@ const KodeRetribusi = ({ navigation }) => {
       style={{  elevation: 4, }}>
         <View className="flex-row justify-between items-center">
           <View className="flex-col space-y-3">
-            <Text className="text-[18px] font-extrabold">{item.kode}</Text>
+            <Text className="text-[18px] font-poppins-semibold">{item.kode}</Text>
             <Text className="text-12 font-semibold">{item.nama}</Text>
           </View>
           <MenuView
