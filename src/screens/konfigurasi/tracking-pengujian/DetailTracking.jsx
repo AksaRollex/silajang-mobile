@@ -52,7 +52,7 @@ const DetailTracking = ({ route, navigation }) => {
         ? 'bg-green-100 ' 
         : 'bg-yellow-100 '
     }`}>
-      <Text className={`text-xs font-poppins-semibold ${
+      <Text className={`text-xs font-poppins ${
         isPositive 
           ? 'text-green-500'
           : 'text-yellow-500'
@@ -63,7 +63,7 @@ const DetailTracking = ({ route, navigation }) => {
   );
 
   return (
-    <ScrollView className="flex-1" style={{ backgroundColor:  Colors.grey80 }} >
+    <ScrollView className="flex-1" style={{ backgroundColor: Colors.grey80 }} >
       <View className="flex-1"> 
         <View className="mx-2 my-3 rounded-xl bg-white elevation">
           <View className="flex-row items-center p-4">
@@ -73,7 +73,7 @@ const DetailTracking = ({ route, navigation }) => {
             >
               <AntDesign name="arrowleft" size={20} color="white" />
             </TouchableOpacity>
-            <Text className="flex-1 text-lg font-semibold text-black">
+            <Text className="flex-1 text-lg font-poppins-semibold text-black">
               ({selected?.kode}) {selected?.lokasi}
             </Text>
           </View>
@@ -95,10 +95,10 @@ const DetailTracking = ({ route, navigation }) => {
               </View>
   
               <View className="flex-1">
-                <Text className="text-xs text-gray-400 mb-1 font-semibold">
+                <Text className="text-xs text-gray-400 mb-1 font-poppins">
                   {moment(tracking.created_at).format('DD MMMM YYYY, HH:mm')}
                 </Text>
-                <Text className="text-base font-semibold text-black mb-2">
+                <Text className="text-base font-poppins-semibold text-black mb-2">
                   {mapStatusPengujian(tracking.status)}
                 </Text>
   
@@ -108,10 +108,10 @@ const DetailTracking = ({ route, navigation }) => {
                       .filter(param => param.is_dapat_diuji)
                       .map(param => (
                         <View key={param.id} className="flex-row justify-between items-center mb-2 pr-2">
-                          <Text className="flex-1 text-xs text-black mr-2 font-semibold">
+                          <Text className="flex-1 text-xs text-black mr-2 font-poppins-regular">
                             { ' • '+ param.nama} {param.keterangan ? `(${param.keterangan})` : ''}
                           </Text>
-                          {renderBadge( param.pivot?.acc_analis)}
+                          {renderBadge(param.pivot?.acc_analis)}
                         </View>
                       ))}
                   </View>
@@ -120,15 +120,15 @@ const DetailTracking = ({ route, navigation }) => {
                 {tracking.status === 7 && (
                   <View className="mt-2 bg-gray-50 p-3 rounded-lg">
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">• Cetak LHU</Text>
+                      <Text className="text-xs text-gray-700 font-poppins-regular">• Cetak LHU</Text>
                       {renderBadge(selected.sertifikat)}
                     </View>
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">• Verifikasi LHU</Text>
+                      <Text className="text-xs text-gray-700 font-poppins-regular">• Verifikasi LHU</Text>
                       {renderBadge(selected.verifikasi_lhu)}
                     </View>
                     <View className="flex-row justify-between items-center mb-2">
-                      <Text className="text-xs text-gray-700">• Tanda Tangan TTE</Text>
+                      <Text className="text-xs text-gray-700 font-poppins-regular">• Tanda Tangan TTE</Text>
                       {renderBadge(selected.status_tte)}
                     </View>
                   </View>

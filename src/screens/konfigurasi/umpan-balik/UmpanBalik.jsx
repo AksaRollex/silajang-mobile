@@ -22,6 +22,11 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import Paginate from '@/src/screens/components/Paginate';
+import Toast from "react-native-toast-message";
+
+import RNFS from 'react-native-fs';
+import { APP_URL } from "@env";
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const Options = [
   { id: 0, name: "Umpan Balik Chart" },
@@ -55,6 +60,9 @@ const UmpanBalik = () => {
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
 
   const [modalVisible, setModalVisible] = useState(false);
+
+  const [downloadModalVisible, setDownloadModalVisible] = useState(false);
+
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',
@@ -90,6 +98,7 @@ const UmpanBalik = () => {
       }
     }
   );
+  
 
   const handleYearChange = (event) => {
     setSelectedYear(event.nativeEvent.event);
@@ -103,10 +112,11 @@ const UmpanBalik = () => {
 
   const handleSaveForm = async () => {
     setLoading(true);
+    
     try {
-
       if (!formData.keterangan || formData.keterangan.trim() === '') {
         Alert.alert('Error', 'Keterangan tidak boleh kosong');
+        setLoading(false);
         return;
       }
   
@@ -124,35 +134,144 @@ const UmpanBalik = () => {
         }
       );
   
-      if (response.data.success) {
-        setModalVisible(false);
-        if (paginateRef.current) {
-          paginateRef.current.refresh();
-        }
-        Alert.alert('Sukses', 'Data berhasil disimpan');
-        
+      if (response.data.status == 'success') {
+        // Reset form data first
         setFormData({
           uuid: '',
           kode: '',
           keterangan: ''
         });
+        
+        // Refresh data
+        if (paginateRef.current) {
+          paginateRef.current.refetch();
+        }
+        
+        setLoading(false);
+        setModalVisible(false);
+
+        Toast.show({
+          type: 'success',
+          text1: 'Sukses',
+          text2: 'Data berhasil disimpan',
+        })
       }
     } catch (error) {
-      console.error('Save Error:', error.response?.data);
-      Alert.alert(
-        'Error',
-        error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.'
-      );
-    } finally {
       setLoading(false);
+      setModalVisible(false);
+      console.error('Save Error:', error.response.data.message);
+      // Alert.alert(
+      //   'Error',
+      //   error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.'
+      // );
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.response?.data?.message || 'Gagal menyimpan data. Silakan coba lagi.',
+      })
     }
+  };
+
+    const downloadTemplate = async () => {
+    try {
+      const localFile = `${RNFS.DownloadDirectoryPath}/Template Import Umpan Balik.xlsx`;
+      const authToken = await AsyncStorage.getItem('@auth_token');
+
+      const options = {
+        fromUrl: `${APP_URL}/konfigurasi/umpan-balik/template`,
+        toFile: localFile,
+        headers: {
+          'Authorization': `Bearer ${authToken}`
+        }
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        const fileExists = await RNFS.exists(localFile);
+        if (fileExists) {
+          Toast.show({
+            type: 'success',
+            text1: 'Sukses',
+            text2: 'File berhasil diunduh',
+          });
+        } else {
+          throw new Error('Failed to download template');
+        }
+      } else {
+        throw new Error(`Failed to download template ${response.statusCode}`);
+      }
+    } catch (error) {
+      console.error('Download Error:', error);
+
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Gagal mengunduh template. Silakan coba lagi.',
+      });
+    } finally {
+      setDownloadModalVisible(false);
+    }
+  }
+
+  const renderDownloadConfirmationModal = () => (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={downloadModalVisible}
+      onRequestClose={() => setDownloadModalVisible(false)}
+    >
+      <View
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        className="flex-1 justify-center items-center"
+      >
+        <View className="bg-white rounded-lg w-[90%] p-6">
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-lg font-poppins-medium text-black">Konfirmasi Download</Text>
+            <TouchableOpacity onPress={() => setDownloadModalVisible(false)}>
+              <MaterialIcons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          
+          <View className="mb-6">
+            <Text className="text-base font-poppins-regular text-black text-center">
+              Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+            </Text>
+          </View>
+
+          <View className="flex-row justify-center gap-3">
+            <TouchableOpacity 
+              onPress={() => setDownloadModalVisible(false)} 
+              className="px-6 py-2 bg-gray-400 rounded-lg"
+            >
+              <Text className="text-white font-poppins-medium">Batal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={downloadTemplate}
+              className="px-6 py-2 bg-green-500 rounded-lg"
+            >
+              <Text className="text-white font-poppins-medium">Download</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const closeModal = () => {
+    setFormData({
+      uuid: '',
+      kode: '',
+      keterangan: ''
+    });
+    setModalVisible(false);
   };
 
   const renderStats = (data) => {
     if (!data?.data) return null;
     
     return (
-      <View className="flex-row justify-between mt-4 mx-2 gap-4">
+      <View className="flex-row justify-between mt-4 mx-2 gap-3">
         <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm" 
           style={{
             borderLeftWidth: 4,
@@ -237,21 +356,47 @@ const UmpanBalik = () => {
       </View>
     );
   };
+  const renderCardTemplate = () => (
+    <TouchableOpacity 
+      onPress={() => setDownloadModalVisible(true)}
+      style={{
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 2 },
+        borderRadius: 24,
+        overflow: 'hidden'
+      }}
+    >
+      <View className="bg-green-500 rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
+        <Text className="text-white text-sm font-poppins-medium text-center">
+          Download Template Import
+        </Text>
+    
+        <MaterialCommunityIcons 
+          name="file-excel-outline" 
+          size={20} 
+          color="white" 
+        />
+      </View>
+    </TouchableOpacity>
+  );
+
   const renderPaginateItem = ({ item }) => (
     <View className="bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-5 mb-4" style={{ elevation: 4 }}>
       <View className="flex-row justify-between">
         <View className="flex-1 pr-4">
-          <Text className="text-[18px] font-extrabold mb-5">{item.kode}</Text>
-          <Text className="text-[14px] mb-3">{item.keterangan}</Text>
+          <Text className="text-[18px] font-poppins-semibold mb-5 text-black" style={{ textTransform: 'uppercase' }}>{item.kode}</Text>
+          <Text className="text-[14px] mb-3 font-poppins-medium text-black">{item.keterangan}</Text>
         </View>
         <TouchableOpacity
           onPress={() => {
             setFormData({ uuid: item.uuid, kode: item.kode, keterangan: item.keterangan });
             setModalVisible(true);
           }}
-          className="h-8 w-8 bg-blue-600 rounded-full items-center justify-center mt-5"
+          className="h-7 w-7 bg-[#f8f8f8] rounded-md items-center justify-center mt-5"
         >
-          <MaterialIcons name="edit" size={16} color="white" />
+          <MaterialCommunityIcons name="pencil-box-outline" size={25} color="#312e81" />
         </TouchableOpacity>
       </View>
     </View>
@@ -262,39 +407,48 @@ const UmpanBalik = () => {
       animationType="fade"
       transparent
       visible={modalVisible}
-      onRequestClose={() => setModalVisible(false)}
+      onRequestClose={closeModal}
     >
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "height"}
         className="flex-1"
       >
         <View
-        style= {{  backgroundColor: 'rgba(0, 0, 0, 0.5)'}}
-        className="flex-1 justify-center items-center">
+          style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+          className="flex-1 justify-center items-center"
+        >
           <View className="bg-white rounded-lg w-[90%] p-6">
             <View className="flex-row justify-between items-center mb-6">
-              <Text className="text-lg font-bold">Edit Keterangan Umpan Balik</Text>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
+              <Text className="text-lg font-poppins-semibold text-black">Edit Keterangan Umpan Balik</Text>
+              <TouchableOpacity onPress={closeModal}>
                 <MaterialIcons name="close" size={24} color="black" />
               </TouchableOpacity>
             </View>
             <TextInput
-              className="border border-gray-300 rounded-lg p-3 bg-gray-100 mb-4"
+              className="border border-gray-300 rounded-lg p-3 bg-gray-100 mb-4 font-poppins-bold text-gray-500"
               value={formData.kode}
               editable={false}
             />
             <TextInput
-              className="border border-gray-300 rounded-lg p-3 mb-6"
+              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular"
               value={formData.keterangan}
               onChangeText={(text) => setFormData((prev) => ({ ...prev, keterangan: text }))}
               multiline
             />
             <View className="flex-row justify-end gap-3">
-              <TouchableOpacity onPress={() => setModalVisible(false)} className="px-4 py-2 bg-gray-400 rounded-lg">
-                <Text className="text-white">Batal</Text>
+              <TouchableOpacity onPress={closeModal} className="px-4 py-2 bg-gray-400 rounded-lg">
+                <Text className="text-white font-poppins-medium">Batal</Text>
               </TouchableOpacity>
-              <TouchableOpacity onPress={handleSaveForm} className="px-4 py-2 bg-[#312e81] rounded-lg" disabled={loading}>
-                {loading ? <ActivityIndicator size="small" color="#ffffff" /> : <Text className="text-white">Simpan</Text>}
+              <TouchableOpacity 
+                onPress={handleSaveForm} 
+                className="px-4 py-2 bg-[#312e81] rounded-lg" 
+                disabled={loading}
+              >
+                {loading ? (
+                  <ActivityIndicator size="small" color="#ffffff" />
+                ) : (
+                  <Text className="text-white font-poppins-medium">Simpan</Text>
+                )}
               </TouchableOpacity>
             </View>
           </View>
@@ -317,7 +471,7 @@ const UmpanBalik = () => {
             }))}>
             <View style={{ marginEnd: 8 }}>
               <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
-                <Text className="flex-1 text-center text-black">
+                <Text className="flex-1 text-center text-black font-poppins-medium">
                   {`Tahun: ${selectedYear}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -334,10 +488,10 @@ const UmpanBalik = () => {
             }))}>
             <View>
               <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
-                <Text className="flex-1 text-center text-black">
+                <Text className="flex-1 text-center text-black font-poppins-medium">
                   {`Bulan: ${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                 </Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                <MaterialIcons name="arrow-drop-down" size={24} color="black"/>
               </View>
             </View>
           </MenuView>
@@ -364,6 +518,7 @@ const UmpanBalik = () => {
 
     return (
       <View className="flex-1 mt-2">
+        {renderCardTemplate()}
         <Paginate
           ref={paginateRef}
           url="/konfigurasi/umpan-balik/keterangan"
@@ -391,6 +546,7 @@ const UmpanBalik = () => {
         <View className="flex-row justify-center">
           <View className="mt-3 ml-[-10] mr-2"> 
           <HorizontalScrollMenu
+              textStyle={{ fontFamily: 'Poppins-Medium', fontSize: 12 }}
               items={Options}
               selected={selectedMenu}
               onPress={(item) => setSelectedMenu(item.id)}
@@ -406,7 +562,7 @@ const UmpanBalik = () => {
                   <Text
                     style={{
                       color: 'white',
-                      fontSize: 14,
+                      fontSize: 12,
                     }}>
                     {item.name}
                   </Text>
@@ -418,6 +574,7 @@ const UmpanBalik = () => {
 
         {renderContent()}
         {renderModal()}
+        {renderDownloadConfirmationModal()}
       </View>
       
     </SafeAreaView>
