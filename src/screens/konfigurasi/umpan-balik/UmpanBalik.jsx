@@ -1,18 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { 
-  View, 
-  Text,
-  Alert,
-  ActivityIndicator,
-  Dimensions,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -34,44 +21,25 @@ const Options = [
   { id: 1, name: "Umpan Balik Paginate" },
 ];
 
-const monthOptions = [
-  { id: 1, title: "Januari" },
-  { id: 2, title: "Februari" },
-  { id: 3, title: "Maret" },
-  { id: 4, title: "April" },
-  { id: 5, title: "Mei" },
-  { id: 6, title: "Juni" },
-  { id: 7, title: "Juli" },
-  { id: 8, title: "Agustus" },
-  { id: 9, title: "September" },
-  { id: 10, title: "Oktober" },
-  { id: 11, title: "November" },
-  { id: 12, title: "Desember" },
-];
-
 const UmpanBalik = ({ navigation }) => {
+  const [UmpanBalik, setUmpanBalik] = useState(null);
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [selectedMenu, setSelectedMenu] = useState(0);
-  
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-
+  const [chartData, setChartData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',
     keterangan: ''
   });
-  const [loading, setLoading] = useState(false);
 
- 
   const generateYears = () => {
     let years = [];
     for (let i = currentYear; i >= 2022; i--) {
@@ -80,32 +48,49 @@ const UmpanBalik = ({ navigation }) => {
     return years;
   };
 
-  
+  const monthOptions = [
+    { id: 1, title: "Januari" },
+    { id: 2, title: "Februari" },
+    { id: 3, title: "Maret" },
+    { id: 4, title: "April" },
+    { id: 5, title: "Mei" },
+    { id: 6, title: "Juni" },
+    { id: 7, title: "Juli" },
+    { id: 8, title: "Agustus" },
+    { id: 9, title: "September" },
+    { id: 10, title: "Oktober" },
+    { id: 11, title: "November" },
+    { id: 12, title: "Desember" },
+  ];
+
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery(
     ['umpanBalikSummary', selectedYear, selectedMonth],
     async () => {
-      const formData = new FormData();
-      formData.append('tahun', selectedYear);
-      formData.append('bulan', parseInt(selectedMonth));
-
-      const response = await axios.post('/konfigurasi/umpan-balik/summary', formData);
-      return response.data;
+      try {
+        const formData = new FormData();
+        formData.append('tahun', selectedYear);
+        formData.append('bulan', parseInt(selectedMonth));
+  
+        const response = await axios.post('/konfigurasi/umpan-balik/summary', formData);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching summary data:', error);
+        Alert.alert('Error', 'Gagal mengambil data summary');
+        throw error;
+      }
     },
     {
       enabled: selectedMenu === 0,
-      onError: (error) => {
-        console.error('Error fetching summary data:', error);
-        Alert.alert('Error', 'Gagal mengambil data summary');
-      }
+      refetchOnWindowFocus: false,
+      refetchOnMount: true
     }
   );
   
-
   const handleYearChange = (event) => {
     setSelectedYear(event.nativeEvent.event);
     queryClient.invalidateQueries(['umpanBalikSummary']);
   };
-
+  
   const handleMonthChange = (event) => {
     setSelectedMonth(event.nativeEvent.event);
     queryClient.invalidateQueries(['umpanBalikSummary']);
@@ -314,7 +299,6 @@ const UmpanBalik = ({ navigation }) => {
 
   const renderChart = (data) => {
     if (!data?.data) return null;
-
     const chartData = {
       labels: ['U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7', 'U8', 'U9'],
       datasets: [{

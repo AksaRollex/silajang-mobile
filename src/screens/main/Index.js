@@ -11,6 +11,7 @@ import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, Touchabl
 import Toast from "react-native-toast-message";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -303,7 +304,7 @@ const DrawerContent = (props) => {
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
-            <IonIcons name="log-out" size={25} color="#f2416e" />
+            <IonIcons name="log-out-outline" size={30} color="#f2416e" />
             <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
               Logout
             </Text>
@@ -353,7 +354,7 @@ const DrawerContent = (props) => {
                   <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="bg-red-100"
+                  className="bg-[#f2416e33]"
                   onPress={confirmLogout}
                   style={{
                     paddingVertical: 10,
@@ -361,7 +362,7 @@ const DrawerContent = (props) => {
                     borderRadius: 5,
                   }}
                 >
-                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                  <Text className="text-[#f2416e] font-poppins-medium">Ya, Logout</Text>
                 </TouchableOpacity>
               </View>
             </View>
