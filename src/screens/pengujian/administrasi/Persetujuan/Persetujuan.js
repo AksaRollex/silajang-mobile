@@ -146,21 +146,21 @@ const Persetujuan = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-1">
+                <Text className="text-[18px] font-poppins-semibold mb-1 text-black">
                   {item.kode}
                 </Text>
-                <Text className="text-[15px] font-poppins-semibold mb-2">
+                <Text className="text-[15px] font-poppins-semibold mb-2 text-black">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-poppins-semibold mb-3">
+              <Text className="text-[18px] font-poppins-semibold mb-3 text-black">
                 {item.permohonan.industri}
               </Text>
             )}
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">{item.lokasi}</Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
             {!isConfirmed && (
@@ -219,7 +219,7 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold ">Persetujuan</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Persetujuan</Text>
               </View>
             </View>
 
@@ -233,6 +233,7 @@ const Persetujuan = ({ navigation }) => {
                 scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                 activeBackgroundColor={"#312e81"}
                 buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                textStyle={{ fontSize: 12, fontFamily: "Poppins-SemiBold" }}
               />
             </View>
 

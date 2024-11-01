@@ -167,7 +167,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Feather name="user" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Customer</Text>
+                                <Text className="text-[14px] font-poppins text-[#666666] font-poppins-regular">Customer</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.user.nama}</Text>
                             </View>
                         </View>
@@ -177,7 +177,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="bank-outline" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Instansi</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Instansi</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.instansi}</Text>
                             </View>
                         </View>
@@ -187,7 +187,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="map-search-outline" size={26} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Alamat</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Alamat</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.alamat}</Text>
                             </View>
                         </View>
@@ -197,7 +197,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Feather name="phone" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">No. Telepon/WhatsApp</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">No. Telepon/WhatsApp</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.user.phone}</Text>
                             </View>
                         </View>
@@ -210,7 +210,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <FontAwesome name="building-o" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Industri</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Industri</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.industri}</Text>
                             </View>
                         </View>
@@ -220,7 +220,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="map-search-outline" size={26} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Alamat</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Alamat</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.alamat}</Text>
                             </View>
                         </View>
@@ -230,7 +230,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Foundation name="clipboard-pencil" size={36} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Jenis Kegiatan Industri</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Jenis Kegiatan Industri</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.kegiatan}</Text>
                             </View>
                         </View>
@@ -240,7 +240,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="credit-card" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Jenis Pembayaran</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Jenis Pembayaran</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.pembayaran}</Text>
                             </View>
                         </View>
@@ -250,7 +250,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="date-range" size={29} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Tanggal Permohonan</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.tanggal}</Text>
                             </View>
                         </View>
@@ -266,7 +266,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Octicons name="download" size={32} color="black" />
                             </TouchableOpacity>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Dokumen Permohonan</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Dokumen Permohonan</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">Klik icon untuk download</Text>
                             </View>
                         </View>
@@ -276,7 +276,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="clock-time-three-outline" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Masa Kontrak</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Masa Kontrak</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{formattedBulan}</Text>
                             </View>
                         </View>
@@ -286,7 +286,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Foundation name="clipboard-pencil" size={36} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Perihal</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Perihal</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.perihal}</Text>
                             </View>
                         </View>
@@ -296,7 +296,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Nomor Surat</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Nomor Surat</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.nomor_surat}</Text>
                             </View>
                         </View>
@@ -306,7 +306,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="date-range" size={29} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Tanggal Permohonan</Text>
                                 <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.tanggal}</Text>
                             </View>
                         </View>
@@ -320,7 +320,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 0 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(0)}
                             />
-                            <Text className="text-[16px] text-black">Menunggu</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Menunggu</Text>
                             </View>
                             <View className="flex-row items-center">
                             <RadioButton
@@ -328,7 +328,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 1 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(1)}
                             />
-                            <Text className="text-[16px] text-black">Diterima</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Diterima</Text>
                             </View>
                             <View className="flex-row items-center">
                             <RadioButton
@@ -336,13 +336,13 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 2 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(2)}
                             />
-                            <Text className="text-[16px] text-black">Ditolak</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Ditolak</Text>
                             </View>
                         </View>
                     </View>
                 </>
             ) : (
-                <Text>Loading...</Text>
+                <Text className="font-poppins-medium">Loading...</Text>
             )}
             </View>
         </ScrollView>

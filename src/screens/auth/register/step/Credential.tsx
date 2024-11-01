@@ -53,13 +53,14 @@ export default memo(function Credential() {
   return (
     <View>
       <View marginB-20>
-        <Text marginB-5>Nama</Text>
+        <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>Nama</Text>
         <Controller
           control={control}
           name="nama"
           rules={{ required: "Nama tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
               placeholder={"Nama"}
               enableErrors
               fieldStyle={{
@@ -84,13 +85,14 @@ export default memo(function Credential() {
         )}
       </View>
       <View marginB-20>
-        <Text marginB-5>Email</Text>
+        <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>Email</Text>
         <Controller
           control={control}
           name="email"
           rules={{ required: "Email tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
               placeholder={"Email"}
               enableErrors
               fieldStyle={{
@@ -115,13 +117,14 @@ export default memo(function Credential() {
         )}
       </View>
       <View marginB-20>
-        <Text marginB-5>No. Telepon</Text>
+        <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>No. Telepon</Text>
         <Controller
           control={control}
           name="phone"
           rules={{ required: "No. Telepon tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
               keyboardType="phone-pad"
               placeholder={"No. Telepon"}
               enableErrors
@@ -147,8 +150,9 @@ export default memo(function Credential() {
         )}
       </View>
       <Button
+        labelStyle={{ fontFamily: "Poppins-Regular" }}
         label="Selanjutnya"
-        backgroundColor={Colors.brand}
+        backgroundColor={'#312e81'}
         paddingV-12
         borderRadius={5}
         onPress={handleSubmit(getEmailOtp)}

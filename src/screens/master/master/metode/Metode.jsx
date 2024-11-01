@@ -6,6 +6,7 @@ import React, { useRef } from "react";
 import { Text, View } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import BackButton from "@/src/screens/components/BackButton";
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -40,7 +41,7 @@ const Metode = ({ navigation }) => {
           elevation: 4,
         }}>
         <View className="flex-row justify-between items-center">
-          <Text className="text-[18px] font-poppins-semibold">{item.nama}</Text>
+          <Text className="text-[18px] font-poppins-semibold text-black">{item.nama}</Text>
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
@@ -67,22 +68,29 @@ const Metode = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Metode</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/master/acuan-metode"
         payload={{}}
-        renderItem={renderItem}  
+        renderItem={renderItem}
       />
       <Icon
         name="plus"
         size={28}
         color="#fff"
-        style={{ position: "absolute", bottom: 20, right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+        className="absolute bottom-5 right-5 bg-[#312e81] p-2 rounded-full"
         onPress={() => navigation.navigate("FormMetode")}
       />
       <DeleteConfirmationModal />
     </View>
-  );
+  );  
 };
 
 export default Metode;
+

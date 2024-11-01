@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from 'moment';
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
+import BackButton from "../../components/BackButton";
 
 const TrackingPengujian = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -106,7 +107,7 @@ const TrackingPengujian = ({ navigation }) => {
       <View className="flex-row items-center ">
         <View className="" style={{ width: "90%" }}>
           <View className="flex-col justify-between items-start mb-2">
-            <Text className="text-[17px] font-poppins-bold">{item.kode}</Text>
+            <Text className="text-[17px] font-poppins-bold text-black">{item.kode}</Text>
             <View className={` py-1 rounded-full  ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'
               }`}>
               <Text className={`text-[12px] font-poppins-semibold  text-right ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'
@@ -118,8 +119,8 @@ const TrackingPengujian = ({ navigation }) => {
 
           <View className="flex-col space-y-2">
             <View>
-              <Text className="text-[12px] font-poppins-bold text-gray-700">Pelanggan:</Text>
-              <Text className="text-[12px] font-poppins-semibold"
+              <Text className="text-[12px] font-poppins-bold text-black">Pelanggan:</Text>
+              <Text className="text-[12px] font-poppins-semibold text-black"
                 numberOfLines={2}
                 style={{ flexWrap: 'wrap' }}>
                 {item.permohonan?.user?.nama}
@@ -127,24 +128,24 @@ const TrackingPengujian = ({ navigation }) => {
             </View>
 
             <View>
-              <Text className="text-[12px] font-poppins-bold text-gray-700">Titik Uji/Lokasi:</Text>
-              <Text className="text-[12px] font-poppins-semibold"
+              <Text className="text-[12px] font-poppins-bold text-black">Titik Uji/Lokasi:</Text>
+              <Text className="text-[12px] font-poppins-semibold text-black"
                 numberOfLines={2}>
                 {item.lokasi}
               </Text>
             </View>
 
             <View className="space-y-1">
-              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+              <Text className="text-[11px] font-poppins-semibold text-black">
                 Tanggal Dibuat: {item.tanggal || '-'}
               </Text>
-              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+              <Text className="text-[11px] font-poppins-semibold text-black">
                 Tanggal Diterima: {item.tanggal_diterima || '-'}
               </Text>
-              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+              <Text className="text-[11px] font-poppins-semibold text-black">
                 Tanggal Selesai: {item.tanggal_selesai || '-'}
               </Text>
-              <Text className="text-[11px] font-poppins-semibold text-gray-600">
+              <Text className="text-[11px] font-poppins-semibold text-black">
                 Tanggal Pengesahan LHU: {item.tracking_status_7 || '-'}
               </Text>
             </View>
@@ -188,6 +189,12 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <View className="flex-1 bg-gray-100">
+      <View className="flex-row items-center justify-center mt-4 mb-1">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Tracking Pengujian</Text>
+      </View>
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-end space-x-3">
           <MenuView
@@ -209,7 +216,7 @@ const TrackingPengujian = ({ navigation }) => {
                   borderColor: "#d1d5db",
                   borderWidth: 1
                 }}>
-                <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
+                <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
                   {`Tahun: ${selectedYear}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -222,7 +229,7 @@ const TrackingPengujian = ({ navigation }) => {
             onPressAction={handleMonthChange}
             actions={monthOptions.map(option => ({
               id: option.id.toString(),
-              title: option.title,
+              title: option.title, 
             }))}>
             <View>
               <View
@@ -234,9 +241,9 @@ const TrackingPengujian = ({ navigation }) => {
                   borderRadius: 8,
                   width: 185,
                   borderColor: "#d1d5db",
-                  borderWidth: 1
+                  borderWidth: 1,
                 }}>
-                <Text style={{ color: "black", flex: 1, textAlign: "center" }}>
+                <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
                   {`Bulan: ${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />

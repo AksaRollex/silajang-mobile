@@ -32,13 +32,13 @@ const LogTte = ({ navigation }) => {
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-3">
-          <Text className="text-[17px] font-poppins-bold">{item.titik_permohonan.kode}</Text>
-          <Text className="text-sm font-poppins-semibold">NIK : {item.nik}</Text>
-          <Text className="text-sm font-poppins-regular">Status : {item.status}</Text>
-          <Text className="text-sm font-poppins-regular">Message : {item.message}</Text>
-          <Text className="text-sm font-poppins-regular">Ip Address : {item.ip_address}</Text>
-          <Text className="text-sm font-poppins-regular">User Agent : {item.user_agent}</Text>
-          <Text className="text-sm font-poppins-regular">Waktu : {item.tanggal_indo}</Text>
+          <Text className="text-[17px] font-poppins-bold text-black">{item.titik_permohonan.kode}</Text>
+          <Text className="text-sm font-poppins-semibold text-black">NIK : {item.nik}</Text>
+          <Text className="text-sm font-poppins-medium text-black">Status : {item.status}</Text>
+          <Text className="text-sm font-poppins-medium text-black">Message : {item.message}</Text>
+          <Text className="text-sm font-poppins-medium text-black">Ip Address : {item.ip_address}</Text>
+          <Text className="text-sm font-poppins-medium text-black">User Agent : {item.user_agent}</Text>
+          <Text className="text-sm font-poppins-medium text-black">Waktu : {item.tanggal_indo}</Text>
         </View>
       </View>
     </View>
@@ -46,6 +46,12 @@ const LogTte = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Log TTE</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/konfigurasi/log-tte"

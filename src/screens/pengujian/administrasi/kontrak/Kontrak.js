@@ -41,9 +41,9 @@ const Kontrak = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between items-center p-4 relative">
             <View className="flex-shrink mr-20">
-                <Text className="text-[18px] font-poppins-semibold mb-3">{item.industri}</Text>
-                <Text className="text-[14px] mb-2">Alamat: <Text className="font-poppins-semibold">{item.alamat}</Text></Text>
-                <Text className="text-[14px] mb-2">Tanggal: <Text className="font-poppins-semibold">{item.tanggal}</Text></Text>
+                <Text className="text-[18px] font-poppins-semibold mb-3 text-black">{item.industri}</Text>
+                <Text className="text-[13px] font-poppins-semibold text-black mb-2">Alamat: <Text className="font-poppins-semibold">{item.alamat}</Text></Text>
+                <Text className="text-[13px] font-poppins-semibold text-black mb-2">Tanggal: <Text className="font-poppins-semibold">{item.tanggal}</Text></Text>
             </View>
             <View className="absolute right-1 flex-col items-center">
               <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
@@ -89,7 +89,7 @@ const Kontrak = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-0 items-center">
-                <Text className="text-[20px] font-poppins-semibold">Kontrak</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Kontrak</Text>
               </View>
             </View>
 
@@ -103,6 +103,7 @@ const Kontrak = ({ navigation }) => {
                     itemWidth={170}
                     scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                     activeBackgroundColor={"#312e81"}
+                    textStyle={{ fontFamily : "Poppins-SemiBold", fontSize: 12}}
                     buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: 'white' }}
                   />
                 </View>

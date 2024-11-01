@@ -92,13 +92,14 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                 </View>
                 <View className="p-5 flex-col space-y-4">
                     <View className="mb-4">
-                        <Text className="text-lg font-semibold text-gray-800 mb-2">Dokumen</Text>
+                        <Text className="text-lg font-poppins-medium text-black mb-2">Dokumen</Text>
                         <Controller
                             control={control}
                             name="bagian"
                             rules={{ required: "Bagian Dokumen harus diisi" }}
                             render={({ field: { onChange } }) => (
                                 <TextField
+                                
                                     value={formData.bagian}
                                     onChangeText={(text) => {
                                         setFormData(prev => ({ ...prev, bagian: text }));
@@ -106,7 +107,7 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                                     }}
                                     className="py-3 px-5 rounded bg-gray-100 border-[1px] border-gray-300"
                                     editable={false}
-                                    style={{ color: '#666' }}
+                                    style={{ color: '#666', fontFamily: 'Poppins-Regular' }}
                                 />
                             )}
                         />
@@ -117,7 +118,7 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-lg font-semibold text-gray-800 mb-2">Nama</Text>
+                        <Text className="text-lg font-poppins-semibold text-black mb-2">Nama</Text>
                         <Controller
                             control={control}
                             name="user_id"
@@ -131,14 +132,22 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                                             onChange(value);
                                         }}
                                         enabled={!isLoadingDinas}
-                                        style={{ backgroundColor: 'white' }}
+                                        style={{ 
+                                            backgroundColor: 'white',
+                                            fontFamily: 'Poppins-Regular',
+                                        }}
                                     >
-                                        <Picker.Item label="Pilih Penanda Tangan" value="" />
+                                        <Picker.Item 
+                                            label="Pilih Penanda Tangan" 
+                                            value="" 
+                                            style={{ fontFamily: 'Poppins-Regular' }}
+                                        />
                                         {dinasInternalData?.map(item => (
                                             <Picker.Item
                                                 key={item.id}
                                                 label={item.nama}
                                                 value={item.id}
+                                                style={{ fontFamily: 'Poppins-Regular' }}
                                             />
                                         ))}
                                     </Picker>

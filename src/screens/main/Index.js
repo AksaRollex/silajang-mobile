@@ -109,7 +109,7 @@ const TabNavigator = () => {
               ]}
             >
               <Entypo name="home" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]}>
+              <Text style={[styles.label, focused && styles.labelFocused]} className="text-white font-poppins-semibold">
                 Beranda
               </Text>
             </View>
@@ -131,7 +131,7 @@ const TabNavigator = () => {
                 ]}
               >
                 <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}>
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
                   Pengujian
                 </Text>
               </View>
@@ -164,7 +164,7 @@ const TabNavigator = () => {
                 ]}
               >
                 <Entypo name="wallet" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}>
+                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
                   Pembayaran
                 </Text>
               </View>
@@ -229,7 +229,7 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
       style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text className={`flex-1 font-poppins-regular ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text className={`flex-1 font-poppins-medium ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -304,7 +304,7 @@ const DrawerContent = (props) => {
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
             <IonIcons name="log-out" size={25} color="#f2416e" />
-            <Text className="font-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
+            <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
               Logout
             </Text>
           </View>
@@ -329,7 +329,7 @@ const DrawerContent = (props) => {
               borderRadius: 10,
               alignItems: 'center',
             }}>
-              <Text style={{ fontSize: 18, fontWeight: 'bold', marginBottom: 15 }}>Konfirmasi Logout</Text>
+              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
 
               <View style={{
                 width: '100%',
@@ -338,7 +338,7 @@ const DrawerContent = (props) => {
                 marginBottom: 15,
               }} />
 
-              <Text style={{ fontSize: 16, marginBottom: 25 }}>Apakah Anda yakin ingin keluar?</Text>
+              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
               <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
@@ -350,18 +350,18 @@ const DrawerContent = (props) => {
                     marginRight: 10,
                   }}
                 >
-                  <Text style={{ color: 'black' }}>Batal</Text>
+                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
+                  className="bg-red-100"
                   onPress={confirmLogout}
                   style={{
                     paddingVertical: 10,
                     paddingHorizontal: 20,
-                    backgroundColor: '#f2416e',
                     borderRadius: 5,
                   }}
                 >
-                  <Text style={{ color: 'white' }}>Ya, Logout</Text>
+                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -472,7 +472,7 @@ const DrawerContent = (props) => {
   );
 
   const customDrawerItems = [
-    { name: "Home", screen: "Home", fontAwesome6: "house" },
+    { name: "Home", screen: "Home", fontAwesome6: "house",},
     
     ...(user?.role?.name !== 'admin' ? [
       { name: "Profile", screen: "Profile", fontAwesome6: "user-large" }

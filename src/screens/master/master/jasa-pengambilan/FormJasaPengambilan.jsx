@@ -72,13 +72,14 @@ export default memo(function FormJasaPengambilan({ route, navigation }) {
                         <Text className="text-base font-poppins-semibold">{ data ? 'Edit Jasa Pengambilan' : 'Tambah Jasa Pengambilan'}</Text>
                 </View>
                 <View className="p-5">
-                    <Text className="mb-3 text-lg font-semibold">Wilayah</Text>
+                    <Text className="mb-3 text-lg font-poppins-semibold">Wilayah</Text>
                     <Controller
                         control={control}
                         name="wilayah"
                         rules={{ required: 'Wilayah is required' }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Wilayah"
                                 enableErrors
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
@@ -92,13 +93,14 @@ export default memo(function FormJasaPengambilan({ route, navigation }) {
                             {errors.wilayah.message}
                         </Text>
                     )}
-                    <Text className="mb-3 text-lg font-semibold">Harga</Text>
+                    <Text className="mb-3 text-lg font-poppins-semibold">Harga</Text>
                     <Controller
                         control={control}
                         name="harga"
                         rules={{ required: 'Harga is required' }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Harga"
                                 enableErrors
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
@@ -113,6 +115,7 @@ export default memo(function FormJasaPengambilan({ route, navigation }) {
                         </Text>
                     )}
                     <Button
+                        labelStyle={{ fontFamily: "Poppins-Medium" }}
                         label="Simpan"
                         loading={isLoading}
                         onPress={handleSubmit(onSubmit)}

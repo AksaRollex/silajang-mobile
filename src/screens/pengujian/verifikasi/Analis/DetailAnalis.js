@@ -232,7 +232,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   kode: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 23,
     color: Colors.black,
     marginLeft: 20,
@@ -251,13 +251,14 @@ const styles = StyleSheet.create({
   },
   parameterTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
     color: Colors.black,
   },
   parameterType: {
     fontSize: 12,
     color: Colors.grey40,
     marginTop: 2,
+    fontFamily: "Poppins-SemiBold",
   },
   parameterContent: {
     paddingTop: 12,
@@ -276,11 +277,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.grey40,
     marginBottom: 4,
+    fontFamily: "Poppins-SemiBold",
   },
   value: {
     fontSize: 16,
     fontWeight: "500",
     color: Colors.black,
+    fontFamily: "Poppins-Regular",
   },
   input: {
     backgroundColor: "#f0f0f0",
@@ -288,5 +291,6 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: Colors.black,
+    fontFamily: "Poppins-Regular",
   },
 });
