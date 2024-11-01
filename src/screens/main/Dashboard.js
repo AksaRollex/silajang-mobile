@@ -445,7 +445,6 @@ const Dashboard = () => {
                 </View>
         
 
-
               <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
                 <Text className="text-lg font-poppins-semibold text-black p-3">
                   {chartPeraturans.data.length > 1
@@ -483,9 +482,6 @@ const Dashboard = () => {
                   ))}
                 </View>
               </View>
-
-
-
 
 
               <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4">
