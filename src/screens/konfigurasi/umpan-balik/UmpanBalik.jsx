@@ -257,40 +257,45 @@ const UmpanBalik = () => {
     if (!data?.data) return null;
     
     return (
-      <View className="flex-row justify-between mt-4 mx-2 gap-4">
+      <View className="mx-4">
         <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm" 
           style={{
             borderLeftWidth: 4,
             borderLeftColor: '#2596be',
           }}>
-          <View className="p-4">
-            <View className="mb-3">
-              <FontAwesome5Icon name="medal" size={24} color="#2596be" />
-            </View>
-            <Text className="text-[40px] font-bold text-[#2596be]">
-              {data.ikm?.toFixed(2)}
-            </Text>
-            <Text className="text-gray-400 text-base mt-1">
-              IKM Unit Pelayanan
-            </Text>
+            <View className="flex-row justify-content-center items-center">
+              <View className=" ml-5 ">
+                <FontAwesome5Icon name="medal" size={30} color="#2596be" />
+              </View>
+              <View className="p-4 ml-4">
+                <Text className="text-[40px] font-bold text-[#2596be]">
+                  {data.ikm?.toFixed(2)}
+                </Text>
+                <Text className="text-gray-400 text-base mt-1">
+                  IKM Unit Pelayanan
+                </Text>
+              </View>
           </View>
         </View>
   
-        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm"
+        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm mt-2"
           style={{
-            borderLeftWidth: 4,
+            borderLeftWidth: 5,
             borderLeftColor: '#2596be',
           }}>
-          <View className="p-4">
-            <View className="mb-3">
-              <MaterialCommunityIcons name="clipboard-text" size={24} color="#2596be" />
+
+          <View className="flex-row justify-content-center items-center">
+            <View className="ml-5">
+              <MaterialCommunityIcons name="clipboard-text" size={30} color="#2596be" />
             </View>
-            <Text className="text-[40px] font-bold text-[#2596be]">
-              {data.data?.jumlah}
-            </Text>
-            <Text className="text-gray-400 text-base mt-1">
-              Jumlah Responden
-            </Text>
+            <View className="p-4 ml-4">
+              <Text className="text-[40px] font-bold text-[#2596be]">
+                {data.data?.jumlah}
+              </Text>
+              <Text className="text-gray-400 text-base mt-1">
+                Jumlah Responden
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -317,11 +322,12 @@ const UmpanBalik = () => {
     };
 
     return (
-      <View className="mt-4 bg-white p-4 rounded-lg">
+      <View className="mt-4 bg-white  rounded-lg" style={{ marginEnd: 17, marginLeft: 17, }}>
         <LineChart
+          className="mt-8"
           data={chartData}
-          width={Dimensions.get('window').width - 40}
-          height={220}
+          width={Dimensions.get('window').width - 60}
+          height={250}
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
@@ -446,7 +452,7 @@ const UmpanBalik = () => {
   const renderChartContent = () => {
     return (
       <ScrollView className="flex-1">
-        <View className="flex-row justify-end space-x-3 mt-4 mb-5">
+        <View className="flex-row justify-end space-x-2 mt-8 mb-4">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -454,10 +460,10 @@ const UmpanBalik = () => {
               id: option.id.toString(),
               title: option.title,
             }))}>
-            <View style={{ marginEnd: 8 }}>
-              <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
+            <View>
+              <View className="flex-row items-center bg-white px-2 py-2 rounded-lg border border-gray-300 w-[100px]">
                 <Text className="flex-1 text-center text-black font-poppins-medium">
-                  {`Tahun: ${selectedYear}`}
+                  {`${selectedYear}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
               </View>
@@ -472,9 +478,9 @@ const UmpanBalik = () => {
               title: option.title,
             }))}>
             <View>
-              <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
+              <View className="flex-row items-center bg-white px-2 py-2 mr-4 rounded-lg border border-gray-300 w-[150px]">
                 <Text className="flex-1 text-center text-black font-poppins-medium">
-                  {`Bulan: ${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
+                  {`${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black"/>
               </View>
@@ -541,7 +547,7 @@ const UmpanBalik = () => {
               items={Options}
               selected={selectedMenu}
               onPress={(item) => setSelectedMenu(item.id)}
-              itemWidth={170}
+              itemWidth={190}
                   scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                   activeBackgroundColor={"#312e81"}
                   buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
