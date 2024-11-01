@@ -11,7 +11,7 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
 import BackButton from '../../components/BackButton';
-
+import { TextFooter } from '../../components/TextFooter';
 import RNFS from 'react-native-fs';
 import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -21,7 +21,7 @@ const Options = [
   { id: 1, name: "Umpan Balik Paginate" },
 ];
 
-const UmpanBalik = () => {
+const UmpanBalik = ({navigation}) => {
   const [UmpanBalik, setUmpanBalik] = useState(null);
   const queryClient = useQueryClient();
   const paginateRef = useRef();
@@ -322,6 +322,7 @@ const UmpanBalik = () => {
     };
 
     return (
+      <View>
       <View className="mt-4 bg-white  rounded-lg" style={{ marginEnd: 17, marginLeft: 17, }}>
         <LineChart
           className="mt-8"
@@ -345,6 +346,8 @@ const UmpanBalik = () => {
           }}
         />
       </View>
+      {/* <TextFooter className="mb-20"/> */}
+      </View>
     );
   };
   const renderCardTemplate = () => (
@@ -359,7 +362,7 @@ const UmpanBalik = () => {
         overflow: 'hidden'
       }}
     >
-      <View className="bg-green-500 rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
+      <View className="bg-[#217346]  rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
         <Text className="text-white text-sm font-poppins-medium text-center">
           Download Template Import
         </Text>
@@ -572,9 +575,11 @@ const UmpanBalik = () => {
         {renderContent()}
         {renderModal()}
         {renderDownloadConfirmationModal()}
+        
       </View>
       
     </SafeAreaView>
+
   );
 };
 
