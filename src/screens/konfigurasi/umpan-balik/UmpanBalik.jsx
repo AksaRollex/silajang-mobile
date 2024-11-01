@@ -20,21 +20,6 @@ const Options = [
   { id: 1, name: "Umpan Balik Paginate" },
 ];
 
-const monthOptions = [
-  { id: 1, title: "Januari" },
-  { id: 2, title: "Februari" },
-  { id: 3, title: "Maret" },
-  { id: 4, title: "April" },
-  { id: 5, title: "Mei" },
-  { id: 6, title: "Juni" },
-  { id: 7, title: "Juli" },
-  { id: 8, title: "Agustus" },
-  { id: 9, title: "September" },
-  { id: 10, title: "Oktober" },
-  { id: 11, title: "November" },
-  { id: 12, title: "Desember" },
-];
-
 const UmpanBalik = () => {
   const [UmpanBalik, setUmpanBalik] = useState(null);
   const queryClient = useQueryClient();
@@ -47,12 +32,12 @@ const UmpanBalik = () => {
   const [chartData, setChartData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',
     keterangan: ''
   });
-  const [loading, setLoading] = useState(false);
 
   const generateYears = () => {
     let years = [];
@@ -61,6 +46,21 @@ const UmpanBalik = () => {
     }
     return years;
   };
+
+  const monthOptions = [
+    { id: 1, title: "Januari" },
+    { id: 2, title: "Februari" },
+    { id: 3, title: "Maret" },
+    { id: 4, title: "April" },
+    { id: 5, title: "Mei" },
+    { id: 6, title: "Juni" },
+    { id: 7, title: "Juli" },
+    { id: 8, title: "Agustus" },
+    { id: 9, title: "September" },
+    { id: 10, title: "Oktober" },
+    { id: 11, title: "November" },
+    { id: 12, title: "Desember" },
+  ];
 
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery(
     ['umpanBalikSummary', selectedYear, selectedMonth],
