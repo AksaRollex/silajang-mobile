@@ -268,6 +268,11 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
         onEndReachedThreshold={0.5}
         ListFooterComponent={ListFooter}
         removeClippedSubviews={false}
+        ListEmptyComponent={() => (
+          <View className="flex-1 items-center justify-center"> 
+            <Text className="text-gray-500 font-poppins-regular">Data Tidak Tersedia</Text>
+          </View>
+          )}
       />
     </View>
   );

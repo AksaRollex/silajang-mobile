@@ -29,8 +29,8 @@ export default memo (function Parameter({ route, navigation }) {
     <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
         <View>
-          <Text className="text-lg font-poppins-medium">{item.nama}</Text>
-          <Text className="text-lg font-poppins-medium">{item.harga}</Text>
+          <Text className="text-base font-poppins-medium text-black">{item.nama}</Text>
+          <Text className="text-base font-poppins-medium text-black">{item.harga}</Text>
         </View>
         <TouchableOpacity className="bg-blue-600 rounded-md p-2">
           <FontAwesome6Icon name="plus" size={18} color={"#fff"} />

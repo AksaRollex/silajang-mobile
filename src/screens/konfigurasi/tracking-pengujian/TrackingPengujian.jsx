@@ -11,6 +11,7 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from 'moment';
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
+import BackButton from "../../components/BackButton";
 
 const TrackingPengujian = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -188,6 +189,12 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <View className="flex-1 bg-gray-100">
+      <View className="flex-row items-center justify-center mt-4 mb-1">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Tracking Pengujian</Text>
+      </View>
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-end space-x-3">
           <MenuView
@@ -222,7 +229,7 @@ const TrackingPengujian = ({ navigation }) => {
             onPressAction={handleMonthChange}
             actions={monthOptions.map(option => ({
               id: option.id.toString(),
-              title: option.title,
+              title: option.title, 
             }))}>
             <View>
               <View

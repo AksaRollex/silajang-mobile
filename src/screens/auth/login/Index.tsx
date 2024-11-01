@@ -44,10 +44,10 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               style={{ width: 60, height: 80, marginTop: 8 }}
             />
             <View style={{ flexShrink: 1}}>
-              <Text h1 color={Colors.brand} style={{ fontSize: 30, fontWeight: "bold", color: "#1e1b4b"}}>
+              <Text h1 color={Colors.brand} style={{ fontSize: 30, color: "#1e1b4b"}} className="font-poppins-semibold">
                 SELAMAT DATANG
               </Text>
-              <Text>Sistem Informasi Laboratorium Lingkungan Jombang</Text>
+              <Text className="font-poppins-regular">Sistem Informasi Laboratorium Lingkungan Jombang</Text>
             </View>
           </View>
 
@@ -70,7 +70,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   color={activeTab === 1 ? Colors.brand : Colors.dark}
                   style={{
                     textAlign: "center",
-                    fontWeight: activeTab === 1 ? "bold" : "normal",
+                    fontFamily: activeTab === 1 ? "Poppins-SemiBold" : "Poppins-Regular",
                   }}>
                   EMAIL
                 </Text>
@@ -88,7 +88,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   color={activeTab === 2 ? Colors.brand : Colors.dark}
                   style={{
                     textAlign: "center",
-                    fontWeight: activeTab === 2 ? "bold" : "normal",
+                    fontFamily: activeTab === 1 ? "Poppins-Regular" : "Poppins-SemiBold",
                   }}>
                   NO. TELEPON
                 </Text>
@@ -104,15 +104,17 @@ export default memo(function Login({ navigation }): React.JSX.Element {
           </If>
 
           <Button
+            labelStyle={{ fontFamily: "Poppins-Regular" }}
             size="small"
             label="Daftar Akun Baru"
             paddingV-12
             iconOnRight
             iconSource={Assets.getAssetByPath("icons.chevronRight")}
             iconStyle={{ width: 20, height: 28 }}
-            color={Colors.brand}
+            color={'#312e81'}
             hyperlink
-            onPress={() => navigation.navigate("register")}></Button>
+            onPress={() => navigation.navigate("register")}
+            ></Button>
         </View>
       </ParallaxScroll>
     </ScrollView>

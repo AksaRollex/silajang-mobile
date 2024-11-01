@@ -46,6 +46,12 @@ const LogTte = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Log TTE</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/konfigurasi/log-tte"

@@ -55,13 +55,14 @@ export default memo(function WithEmail() {
   return (
     <View width={"100%"} paddingV-20 paddingH-10>
       <View marginB-20>
-        <Text marginB-5>Email</Text>
+        <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>Email</Text>
         <Controller
           control={control}
           name="identifier"
           rules={{ required: "Email tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
             <TextField
+            style={{ fontFamily: "Poppins-Regular" }}
               placeholder={"Email"}
               enableErrors
               fieldStyle={{
@@ -87,14 +88,15 @@ export default memo(function WithEmail() {
         
       </View>
       <View marginB-20>
-        <Text marginB-5>Password</Text>
+        <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>Password</Text>
         <Controller
           control={control}
           name="password"
           rules={{ required: "Password tidak boleh kosong" }}
           render={({ field: { onChange, value } }) => (
-            <View>
+            <View> 
               <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                 placeholder={"Password"}
                 secureTextEntry={!isPasswordVisible}
                 enableErrors
@@ -136,8 +138,9 @@ export default memo(function WithEmail() {
         )}
       </View>
       <Button
+        labelStyle={{ fontFamily: "Poppins-Medium" }}
         label="Login"
-        backgroundColor={Colors.brand}
+        backgroundColor={'#312e81'}
         paddingV-12
         borderRadius={5}
         onPress={handleSubmit(login)}

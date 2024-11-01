@@ -7,6 +7,7 @@ import Paginate from '@/src/screens/components/Paginate'
 import Icon from 'react-native-vector-icons/AntDesign'
 import Entypo from 'react-native-vector-icons/Entypo'
 import { rupiah } from '@/src/libs/utils'
+import BackButton from '@/src/screens/components/BackButton'
 
 
 const RadiusPengambilan = ({ navigation }) => {
@@ -45,9 +46,9 @@ const RadiusPengambilan = ({ navigation }) => {
          }}>
           <View className="flex-row justify-between items-center">
             <View className="flex-col space-y-3">
-              <Text className="text-[18px] font-poppins-semibold">{item.radius} meter</Text>
-              <Text className="text-12 font-semibold">{item.nama}</Text>
-              <Text className="text-12 font-semibolld">{rupiah(item.harga)}</Text>
+              <Text className="text-[18px] font-poppins-semibold text-black">{item.radius} meter</Text>
+              <Text className="text-12 font-poppins-medium text-black">{item.nama}</Text>
+              <Text className="text-12 font-poppins-medium text-black">{rupiah(item.harga)}</Text>
             </View>
           <MenuView
             title="Menu Title"
@@ -74,6 +75,12 @@ const RadiusPengambilan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Radius Pengambilan</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/master/radius-pengambilan"

@@ -6,6 +6,7 @@ import { MenuView } from '@react-native-menu/menu'
 import  Icon  from 'react-native-vector-icons/AntDesign'
 import Paginate from '@/src/screens/components/Paginate'
 import Entypo from 'react-native-vector-icons/Entypo'
+import BackButton from '@/src/screens/components/BackButton'
 
 const JenisWadah = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -42,8 +43,8 @@ const renderJenisWadah = ({ item }) => (
   }}>
     <View className="flex-row justify-between items-center">
       <View className="flex-col space-y-2">
-        <Text className="text-base font-poppins-semibold">{item.nama}</Text>
-        <Text className="text-base font-poppins-semibold">{item.keterangan}</Text>
+        <Text className="text-base font-poppins-semibold text-black">{item.nama}</Text>
+        <Text className="text-base font-poppins-medium text-black">{item.keterangan}</Text>
       </View>
       <MenuView
       title="Menu Title"
@@ -67,6 +68,12 @@ const renderJenisWadah = ({ item }) => (
 
 return (
   <View className="bg-[#ececec] w-full h-full">
+    <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Jenis Wadah</Text>
+      </View>
     <Paginate
       ref={paginateRef}
       url="/master/jenis-wadah"
