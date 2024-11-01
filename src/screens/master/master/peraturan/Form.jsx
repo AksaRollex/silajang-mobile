@@ -141,6 +141,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "nama is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Nama Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -160,6 +161,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "Tentang is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Tentang Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -179,6 +181,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "nomor is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Nomor Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -202,7 +205,6 @@ export default memo(function Form({ route, navigation }) {
             <Text className="text-white text-base font-poppins-medium">Upload PDF</Text>
             <Icon name="upload" size={20} color="white" />
           </TouchableOpacity>
-
 
           <Button
             label="Simpan"

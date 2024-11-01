@@ -6,6 +6,7 @@ import { MenuView } from '@react-native-menu/menu'
 import { useQueryClient } from '@tanstack/react-query'
 import Icon from "react-native-vector-icons/AntDesign"
 import Entypo from "react-native-vector-icons/Entypo"
+import BackButton from '@/src/screens/components/BackButton'
 
 const Pengawetan = ({ navigation }) => {
   const queryClient = useQueryClient()
@@ -35,7 +36,7 @@ const Pengawetan = ({ navigation }) => {
   const renderItem = ({ item }) => (
     <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
-        <Text className="text-md font-poppins-semibold">{item.nama}</Text>
+        <Text className="text-md font-poppins-semibold text-black">{item.nama}</Text>
         <MenuView
           title='Menu Title'
           actions={dropdownOptions.map(option => ({
@@ -58,6 +59,12 @@ const Pengawetan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Pengawetan</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/master/pengawetan"

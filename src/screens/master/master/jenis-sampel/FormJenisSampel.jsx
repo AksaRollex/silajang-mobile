@@ -72,13 +72,14 @@ export default memo(function FormJenisSampel({ route, navigation }) {
           <Text className="text-base font-poppins-semibold">{data ? 'Edit Jenis Sampel' : 'Tambah Jenis Sampel'}</Text>
         </View>
         <View className="p-5">
-          <Text className="mb-3 text-lg font-semibold">Nama</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold text-black">Nama</Text>
           <Controller 
             control={control}
             name="nama"
             rules={{ required: 'Nama is required' }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Nama Jenis Sampel"
                 enableErrors
                 className="py-3 px-5 rounded border-[1px] border-gray-700"
@@ -92,13 +93,14 @@ export default memo(function FormJenisSampel({ route, navigation }) {
               {errors.nama.message}
             </Text>
           )}
-          <Text className="mb-3 text-lg font-semibold">Kode</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold text-black">Kode</Text>
           <Controller 
             control={control}
             name="kode"
             rules={{ required: 'Kode is required' }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Kode Jenis Sampel"
                 enableErrors
                 className="py-3 px-5 rounded border-[1px] border-gray-700"
@@ -113,6 +115,7 @@ export default memo(function FormJenisSampel({ route, navigation }) {
             </Text>
           )}
           <Button
+            labelStyle={{ fontFamily: "Poppins-Medium" }}
             label="Simpan" 
             loading={isLoading} 
             onPress={handleSubmit(onSubmit)}

@@ -74,7 +74,7 @@ export default memo(function form({ route, navigation }) {
                         </Text>
                 </View>
                 <View className="p-5 flex-col space-y-4">
-                    <Text className="text-lg mb-2 font-semibold">Kode</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Kode</Text>
                     <Controller
                         control={control}
                         name="kode"
@@ -84,7 +84,7 @@ export default memo(function form({ route, navigation }) {
                                 placeholder="Masukkan Kode"
                                 value={value}
                                 onChangeText={onChange}
-                                className="py-3 px-5 rounded border-[1px] border-gray-700"
+                                className="py-3 px-5 rounded border-[1px] border-gray-700 font-poppins-regular"
                                 enabledErrors
                                 />
                         )}
@@ -92,17 +92,18 @@ export default memo(function form({ route, navigation }) {
                     {errors.kode && (
                         <Text className="text-red-500">{errors.kode.message}</Text>
                     )}
-                     <Text className="text-lg mb-2 font-semibold">nama</Text>
+                     <Text className="text-lg mb-2 font-poppins-semibold">Nama</Text>
                     <Controller
                         control={control}
                         name="nama"
                         rules={{ required: "nama harus diisi" }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan nama"
                                 value={value}
                                 onChangeText={onChange}
-                                className="py-3 px-5 rounded border-[1px] border-gray-700"
+                                className="py-3 px-5 rounded border-[1px] border-gray-700 "
                                 enabledErrors
                                 />
                         )}
@@ -111,6 +112,7 @@ export default memo(function form({ route, navigation }) {
                         <Text className="text-red-500">{errors.nama.message}</Text>
                     )}
                     <Button
+                        labelStyle={{ fontFamily: "Poppins-Medium" }}
                         label="Simpan"
                         loading={isLoading}
                         onPress={handleSubmit(onSubmit)}

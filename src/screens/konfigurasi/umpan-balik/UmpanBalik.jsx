@@ -23,6 +23,7 @@ import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
+import BackButton from '../../components/BackButton';
 
 import RNFS from 'react-native-fs';
 import { APP_URL } from "@env";
@@ -48,7 +49,7 @@ const monthOptions = [
   { id: 12, title: "Desember" },
 ];
 
-const UmpanBalik = () => {
+const UmpanBalik = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [selectedMenu, setSelectedMenu] = useState(0);
@@ -271,7 +272,7 @@ const UmpanBalik = () => {
     if (!data?.data) return null;
     
     return (
-      <View className="flex-row justify-between mt-4 mx-2 gap-3">
+      <View className="flex-row justify-between mt-4 mx-2 gap-4">
         <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm" 
           style={{
             borderLeftWidth: 4,
@@ -542,6 +543,12 @@ const UmpanBalik = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-[#ececec]">
+      <View className="flex-row items-center justify-center mt-4 mb-2">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Umpan Balik</Text>
+      </View>
       <View className="flex-1">
         <View className="flex-row justify-center">
           <View className="mt-3 ml-[-10] mr-2"> 

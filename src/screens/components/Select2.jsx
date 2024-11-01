@@ -33,6 +33,7 @@ const styles = StyleSheet.create({
 
 const pickerSelectStyles = StyleSheet.create({
   inputIOS: {
+    fontFamily: 'Poppins-Regular',
     fontSize: 16,
     paddingVertical: 12,
     paddingHorizontal: 10,
@@ -44,6 +45,7 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
   inputAndroid: {
+    fontFamily: 'Poppins-Regular',
     fontSize: 16,
     paddingHorizontal: 10,
     paddingVertical: 8,
@@ -55,5 +57,6 @@ const pickerSelectStyles = StyleSheet.create({
     backgroundColor: '#fff',
   },
 });
+
 
 export default Select2;
