@@ -497,7 +497,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             className="flex-row items-center p-2 bg-purple-100 rounded-md"
                         >
                             <FontAwesome name="eye" size={16} color="purple" />
-                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold">Preview LHU</Text>
+                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold"> view LHU</Text>
                         </TouchableOpacity>
                     )}
     
