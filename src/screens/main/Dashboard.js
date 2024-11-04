@@ -189,14 +189,14 @@ const Dashboard = () => {
           id: option.id.toString(),
           title: option.title,
         }))}>
-        <View style={{ marginRight: 20 }}>
+        <View style={{ marginRight: 18 }}>
           <View style={{
             flexDirection: "row",
             alignItems: "center",
             backgroundColor: "white",
             padding: 8,
             borderRadius: 8,
-            width: 105,
+            width: 98,
             borderColor: "#d1d5db",
             borderWidth: 1
           }}>
