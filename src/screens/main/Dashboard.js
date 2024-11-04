@@ -180,7 +180,7 @@ const Dashboard = () => {
 
 
   const YearSelector = () => (
-    <View className="w-full ml-80 mt-1 mb-4 ">
+    <View className="w-full ml-80 mt-2 mb-4 ">
       <MenuView
         className=" font-poppins-semibold"
         title="Pilih Tahun"
@@ -395,7 +395,7 @@ const Dashboard = () => {
               )}
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
+                onPress={() => navigation.navigate('Konfigurasi', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
                   <FontAwesome5 name="medal" size={30} color={"#0090a6"} />
                   <Text className="text-3xl  font-poppins-semibold mx-3 text-[#0090a6]" >
@@ -408,7 +408,7 @@ const Dashboard = () => {
               </TouchableOpacity>
 
               <TouchableOpacity className="w-48 h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#0090a6]"
-                onPress={() => navigation.navigate('UmpanBalik', { screen: "UmpanBalik" })}>
+                onPress={() => navigation.navigate('Konfigurasi', { screen: "UmpanBalik" })}>
                 <View className="flex flex-row">
                   <MaterialCommunityIcons name="clipboard-text" size={30} color={"#0090a6"} />
                   <Text className="text-3xl font-extrabold mx-3 text-[#0090a6]" >
@@ -444,7 +444,6 @@ const Dashboard = () => {
                   )}
                 </View>
         
-
 
               <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
                 <Text className="text-lg font-poppins-semibold text-black p-3">
@@ -483,9 +482,6 @@ const Dashboard = () => {
                   ))}
                 </View>
               </View>
-
-
-
 
 
               <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4">

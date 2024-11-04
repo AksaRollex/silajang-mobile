@@ -52,9 +52,9 @@ const Peraturan = ({ navigation }) => {
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-3">
-          <Text className="text-[15px] font-poppins-bold">{item.nama}</Text>
-          <Text className="text-base font-poppins-semibold">{item.nomor}</Text>
-          <Text className="text-base font-poppins-regular">{item.tentang}</Text>
+          <Text className="text-[15px] font-poppins-bold text-black">{item.nama}</Text>
+          <Text className="text-base font-poppins-semibold text-black">{item.nomor}</Text>
+          <Text className="text-base font-poppins-regular text-black">{item.tentang}</Text>
         </View>
         <MenuView
           title="Menu Title"
@@ -80,7 +80,12 @@ const Peraturan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <BackButton action={() => navigation.goBack()} size={26} className="mx-3 mt-2" />
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Peraturan</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/master/peraturan"
@@ -90,7 +95,7 @@ const Peraturan = ({ navigation }) => {
         name="plus"
         size={28}
         color="#fff"
-        style={{ position: "absolute", bottom: 20, right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
+        className="absolute bottom-5 right-5 bg-[#312e81] p-2 rounded-full"
         onPress={() => navigation.navigate("FormPeraturan")}
       />
       <DeleteConfirmationModal />

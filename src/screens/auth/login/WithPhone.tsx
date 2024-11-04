@@ -70,13 +70,14 @@ export default memo(function WithPhone() {
     <View width={"100%"} paddingV-20 paddingH-10>
       <If isTrue={statusOtp !== "success"}>
         <View marginB-20>
-          <Text marginB-5>No. Telepon</Text>
+          <Text marginB-5 style={{ fontFamily: "Poppins-Regular" }}>No. Telepon</Text>
           <Controller
             control={control}
             name="identifier"
             rules={{ required: "No. Telepon tidak boleh kosong" }}
             render={({ field: { onChange, value } }) => (
               <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                 keyboardType="phone-pad"
                 placeholder={"No. Telepon"}
                 enableErrors
@@ -102,6 +103,7 @@ export default memo(function WithPhone() {
           )}
         </View>
         <Button
+          labelStyle={{ fontFamily: "Poppins-Medium" }}
           label="Dapatkan OTP"
           backgroundColor={Colors.brand}
           paddingV-12
@@ -143,7 +145,7 @@ export default memo(function WithPhone() {
         </View>
         <Button
           label="Login"
-          backgroundColor={Colors.brand}
+          backgroundColor={'#312e81'}
           paddingV-12
           marginB-10
           borderRadius={5}

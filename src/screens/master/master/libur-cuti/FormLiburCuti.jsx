@@ -96,7 +96,7 @@ export default memo(function form({ route, navigation }) {
                     </Text>
                 </View>
                 <View className="p-5 flex-col space-y-4">
-                    <Text className="text-lg mb-2 font-semibold">Tanggal</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Tanggal</Text>
                     <Controller
                         control={control}
                         name="tanggal"
@@ -107,10 +107,11 @@ export default memo(function form({ route, navigation }) {
                                     onPress={() => setShowDatePicker(true)}
                                     className="py-3 px-5 rounded border-[1px] border-gray-700"
                                 >
-                                    <Text>{value ? formatDate(value) : "Pilih Tanggal"}</Text>
+                                    <Text className="font-poppins-regular">{value ? formatDate(value) : "Pilih Tanggal"}</Text>
                                 </Pressable>
                                 {showDatePicker && (
                                     <DateTimePicker
+                                        
                                         value={value || new Date()}
                                         mode="date"
                                         display={Platform.OS === 'ios' ? 'spinner' : 'default'}
@@ -128,13 +129,14 @@ export default memo(function form({ route, navigation }) {
                     {errors.tanggal && (
                         <Text className="text-red-500">{errors.tanggal.message}</Text>
                     )}
-                    <Text className="text-lg mb-2 font-semibold">Keterangan</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Keterangan</Text>
                     <Controller
                         control={control}
                         name="keterangan"
                         rules={{ required: "Keterangan harus diisi" }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Keterangan"
                                 value={value}
                                 onChangeText={onChange}
@@ -147,6 +149,7 @@ export default memo(function form({ route, navigation }) {
                         <Text className="text-red-500">{errors.keterangan.message}</Text>
                     )}
                     <Button
+                        labelStyle={{ fontFamily: "Poppins-Medium" }}
                         label="Simpan"
                         loading={isLoading}
                         onPress={handleSubmit(onSubmit)}

@@ -1,18 +1,5 @@
 import React, { useState, useRef } from 'react';
-import { 
-  View, 
-  Text,
-  Alert,
-  ActivityIndicator,
-  Dimensions,
-  SafeAreaView,
-  ScrollView,
-  TouchableOpacity,
-  Modal,
-  TextInput,
-  KeyboardAvoidingView,
-  Platform
-} from 'react-native';
+import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -23,7 +10,8 @@ import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
-
+import BackButton from '../../components/BackButton';
+import { TextFooter } from '../../components/TextFooter';
 import RNFS from 'react-native-fs';
 import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -33,44 +21,25 @@ const Options = [
   { id: 1, name: "Umpan Balik Paginate" },
 ];
 
-const monthOptions = [
-  { id: 1, title: "Januari" },
-  { id: 2, title: "Februari" },
-  { id: 3, title: "Maret" },
-  { id: 4, title: "April" },
-  { id: 5, title: "Mei" },
-  { id: 6, title: "Juni" },
-  { id: 7, title: "Juli" },
-  { id: 8, title: "Agustus" },
-  { id: 9, title: "September" },
-  { id: 10, title: "Oktober" },
-  { id: 11, title: "November" },
-  { id: 12, title: "Desember" },
-];
-
-const UmpanBalik = () => {
+const UmpanBalik = ({navigation}) => {
+  const [UmpanBalik, setUmpanBalik] = useState(null);
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [selectedMenu, setSelectedMenu] = useState(0);
-  
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
-  
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-
+  const [chartData, setChartData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
-
+  const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',
     keterangan: ''
   });
-  const [loading, setLoading] = useState(false);
 
- 
   const generateYears = () => {
     let years = [];
     for (let i = currentYear; i >= 2022; i--) {
@@ -79,32 +48,49 @@ const UmpanBalik = () => {
     return years;
   };
 
-  
+  const monthOptions = [
+    { id: 1, title: "Januari" },
+    { id: 2, title: "Februari" },
+    { id: 3, title: "Maret" },
+    { id: 4, title: "April" },
+    { id: 5, title: "Mei" },
+    { id: 6, title: "Juni" },
+    { id: 7, title: "Juli" },
+    { id: 8, title: "Agustus" },
+    { id: 9, title: "September" },
+    { id: 10, title: "Oktober" },
+    { id: 11, title: "November" },
+    { id: 12, title: "Desember" },
+  ];
+
   const { data: summaryData, isLoading: isSummaryLoading } = useQuery(
     ['umpanBalikSummary', selectedYear, selectedMonth],
     async () => {
-      const formData = new FormData();
-      formData.append('tahun', selectedYear);
-      formData.append('bulan', parseInt(selectedMonth));
-
-      const response = await axios.post('/konfigurasi/umpan-balik/summary', formData);
-      return response.data;
+      try {
+        const formData = new FormData();
+        formData.append('tahun', selectedYear);
+        formData.append('bulan', parseInt(selectedMonth));
+  
+        const response = await axios.post('/konfigurasi/umpan-balik/summary', formData);
+        return response.data;
+      } catch (error) {
+        console.error('Error fetching summary data:', error);
+        Alert.alert('Error', 'Gagal mengambil data summary');
+        throw error;
+      }
     },
     {
       enabled: selectedMenu === 0,
-      onError: (error) => {
-        console.error('Error fetching summary data:', error);
-        Alert.alert('Error', 'Gagal mengambil data summary');
-      }
+      refetchOnWindowFocus: false,
+      refetchOnMount: true
     }
   );
   
-
   const handleYearChange = (event) => {
     setSelectedYear(event.nativeEvent.event);
     queryClient.invalidateQueries(['umpanBalikSummary']);
   };
-
+  
   const handleMonthChange = (event) => {
     setSelectedMonth(event.nativeEvent.event);
     queryClient.invalidateQueries(['umpanBalikSummary']);
@@ -271,40 +257,45 @@ const UmpanBalik = () => {
     if (!data?.data) return null;
     
     return (
-      <View className="flex-row justify-between mt-4 mx-2 gap-3">
+      <View className="mx-4">
         <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm" 
           style={{
             borderLeftWidth: 4,
             borderLeftColor: '#2596be',
           }}>
-          <View className="p-4">
-            <View className="mb-3">
-              <FontAwesome5Icon name="medal" size={24} color="#2596be" />
-            </View>
-            <Text className="text-[40px] font-bold text-[#2596be]">
-              {data.ikm?.toFixed(2)}
-            </Text>
-            <Text className="text-gray-400 text-base mt-1">
-              IKM Unit Pelayanan
-            </Text>
+            <View className="flex-row justify-content-center items-center">
+              <View className=" ml-5 ">
+                <FontAwesome5Icon name="medal" size={30} color="#2596be" />
+              </View>
+              <View className="p-4 ml-4">
+                <Text className="text-[40px] font-bold text-[#2596be]">
+                  {data.ikm?.toFixed(2)}
+                </Text>
+                <Text className="text-gray-400 text-base mt-1">
+                  IKM Unit Pelayanan
+                </Text>
+              </View>
           </View>
         </View>
   
-        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm"
+        <View className="bg-white rounded-lg flex-1 overflow-hidden shadow-sm mt-2"
           style={{
-            borderLeftWidth: 4,
+            borderLeftWidth: 5,
             borderLeftColor: '#2596be',
           }}>
-          <View className="p-4">
-            <View className="mb-3">
-              <MaterialCommunityIcons name="clipboard-text" size={24} color="#2596be" />
+
+          <View className="flex-row justify-content-center items-center">
+            <View className="ml-5">
+              <MaterialCommunityIcons name="clipboard-text" size={30} color="#2596be" />
             </View>
-            <Text className="text-[40px] font-bold text-[#2596be]">
-              {data.data?.jumlah}
-            </Text>
-            <Text className="text-gray-400 text-base mt-1">
-              Jumlah Responden
-            </Text>
+            <View className="p-4 ml-4">
+              <Text className="text-[40px] font-bold text-[#2596be]">
+                {data.data?.jumlah}
+              </Text>
+              <Text className="text-gray-400 text-base mt-1">
+                Jumlah Responden
+              </Text>
+            </View>
           </View>
         </View>
       </View>
@@ -313,7 +304,6 @@ const UmpanBalik = () => {
 
   const renderChart = (data) => {
     if (!data?.data) return null;
-
     const chartData = {
       labels: ['U1', 'U2', 'U3', 'U4', 'U5', 'U6', 'U7', 'U8', 'U9'],
       datasets: [{
@@ -332,11 +322,13 @@ const UmpanBalik = () => {
     };
 
     return (
-      <View className="mt-4 bg-white p-4 rounded-lg">
+      <View>
+      <View className="mt-4 bg-white  rounded-lg" style={{ marginEnd: 17, marginLeft: 17, }}>
         <LineChart
+          className="mt-8"
           data={chartData}
-          width={Dimensions.get('window').width - 40}
-          height={220}
+          width={Dimensions.get('window').width - 60}
+          height={250}
           chartConfig={{
             backgroundColor: '#ffffff',
             backgroundGradientFrom: '#ffffff',
@@ -354,6 +346,8 @@ const UmpanBalik = () => {
           }}
         />
       </View>
+      {/* <TextFooter className="mb-20"/> */}
+      </View>
     );
   };
   const renderCardTemplate = () => (
@@ -368,7 +362,7 @@ const UmpanBalik = () => {
         overflow: 'hidden'
       }}
     >
-      <View className="bg-green-500 rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
+      <View className="bg-[#217346]  rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
         <Text className="text-white text-sm font-poppins-medium text-center">
           Download Template Import
         </Text>
@@ -461,7 +455,7 @@ const UmpanBalik = () => {
   const renderChartContent = () => {
     return (
       <ScrollView className="flex-1">
-        <View className="flex-row justify-end space-x-3 mt-4 mb-5">
+        <View className="flex-row justify-end space-x-2 mt-8 mb-4">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -469,10 +463,10 @@ const UmpanBalik = () => {
               id: option.id.toString(),
               title: option.title,
             }))}>
-            <View style={{ marginEnd: 8 }}>
-              <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
+            <View>
+              <View className="flex-row items-center bg-white px-2 py-2 rounded-lg border border-gray-300 w-[100px]">
                 <Text className="flex-1 text-center text-black font-poppins-medium">
-                  {`Tahun: ${selectedYear}`}
+                  {`${selectedYear}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
               </View>
@@ -487,9 +481,9 @@ const UmpanBalik = () => {
               title: option.title,
             }))}>
             <View>
-              <View className="flex-row items-center bg-white px-3 py-2 rounded-lg border border-gray-300 w-[185px]">
+              <View className="flex-row items-center bg-white px-2 py-2 mr-4 rounded-lg border border-gray-300 w-[150px]">
                 <Text className="flex-1 text-center text-black font-poppins-medium">
-                  {`Bulan: ${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
+                  {`${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                 </Text>
                 <MaterialIcons name="arrow-drop-down" size={24} color="black"/>
               </View>
@@ -542,6 +536,12 @@ const UmpanBalik = () => {
 
   return (
     <SafeAreaView className="flex-1 bg-[#ececec]">
+      <View className="flex-row items-center justify-center mt-4 mb-2">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Umpan Balik</Text>
+      </View>
       <View className="flex-1">
         <View className="flex-row justify-center">
           <View className="mt-3 ml-[-10] mr-2"> 
@@ -550,7 +550,7 @@ const UmpanBalik = () => {
               items={Options}
               selected={selectedMenu}
               onPress={(item) => setSelectedMenu(item.id)}
-              itemWidth={170}
+              itemWidth={190}
                   scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
                   activeBackgroundColor={"#312e81"}
                   buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
@@ -575,9 +575,11 @@ const UmpanBalik = () => {
         {renderContent()}
         {renderModal()}
         {renderDownloadConfirmationModal()}
+        
       </View>
       
     </SafeAreaView>
+
   );
 };
 

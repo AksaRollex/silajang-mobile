@@ -7,6 +7,7 @@ import { Text, View } from "react-native";
 import { rupiah } from '@/src/libs/utils';
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import BackButton from '@/src/screens/components/BackButton';
 
 const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
@@ -40,13 +41,13 @@ const Parameter = ({ navigation }) => {
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-4">
           <View className="flex-col justify-between">
-            <Text className="text-lg font-poppins-bold">{item.nama}</Text>
-            <Text className="text-md font-poppins-semibold">{item.metode}</Text>
+            <Text className="text-lg font-poppins-bold text-black">{item.nama}</Text>
+            <Text className="text-md font-poppins-semibold text-black">{item.metode}</Text>
           </View>
           <View className="flex-col ">
-            <Text className="text-md font-poppins-medium">{item.satuan}</Text>
-            <Text className="text-lg font-poppins-semibold">{rupiah(item.harga)}</Text>
-            <Text className="text-md font-poppins-medium">{item.mdl}</Text>
+            <Text className="text-md font-poppins-medium text-black">{item.satuan}</Text>
+            <Text className="text-lg font-poppins-semibold text-black">{rupiah(item.harga)}</Text>
+            <Text className="text-md font-poppins-medium text-black" >{item.mdl}</Text>
           </View>
         </View>
         <MenuView title="Menu"
@@ -64,8 +65,8 @@ const Parameter = ({ navigation }) => {
         shouldOpenOnLongPress={false}>
         <View className="flex-col gap-4 items-end">
         <Text className={`text-sm font-poppins-regular p-1 rounded-md ${item.is_akreditasi ? 'bg-green-400' : 'bg-yellow-100'} 
-                ${item.is_akreditasi ? 'text-white' : 'text-yellow-400'}`}> {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'} </Text>
-          <Entypo name="dots-three-vertical" size={12} color="#312e81" />
+                ${item.is_akreditasi ? 'text-white' : 'text-yellow-400'} ${item.is_akreditasi ? 'mt-[-10px]' : ''}`}> {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'} </Text>
+          <Entypo name="dots-three-vertical" size={17} color="#312e81" style={{ marginTop: -30 }}/>
         </View>
         </MenuView>
       </View>
@@ -74,6 +75,12 @@ const Parameter = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
+      <View className="flex-row items-center justify-center mt-4">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">Parameter</Text>
+      </View>
       <Paginate
         ref={paginateRef}
         url="/master/parameter"

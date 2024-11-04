@@ -93,12 +93,13 @@ const styles = StyleSheet.create({
   modalTitle: {
     marginBottom: 15,
     textAlign: 'center',
-    fontWeight: 'bold',
     fontSize: 18,
+    fontFamily: 'Poppins-Medium',
   },
   modalText: {
     marginBottom: 15,
     textAlign: 'center',
+    fontFamily: 'Poppins-Regular',
   },
   buttonContainer: {
     flexDirection: 'row',
@@ -123,7 +124,7 @@ const styles = StyleSheet.create({
   },
   textStyle: {
     color: 'white',
-    fontWeight: 'bold',
     textAlign: 'center',
+    fontFamily: 'Poppins-Medium',
   },
 });
