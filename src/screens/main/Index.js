@@ -179,21 +179,22 @@ const TabNavigator = () => {
 const ProfileDetail = () => {
   const { data: user } = useUser();
   return (
-    <View className="relative mb-5" style={{  }}>
+    <View className="relative mb-4">
       {/* Background Image Container */}
-      <View className="relative h-[160px] overflow-hidden">
+      <View className="relative h-[130px] m-1 rounded-lg overflow-hidden">
+        {/* Background Image */}
         <Image
           source={require("@/assets/images/background.png")}
           className="w-full h-full absolute top-0 left-0"
-          style={{ resizeMode: 'cover',  }}
+          style={{ resizeMode: 'cover' }}
         />
         
         {/* Profile Content - Positioned over the background */}
-        <View className="absolute p-2 mt-11">
+        <View className="absolute inset-0 p-6 mt-4">
           <View className="flex flex-row items-center gap-2">
             <Image 
               source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
-              className="w-12 h-12 rounded-full"
+              className="w-12 h-12 rounded-full border-2 border-white"
             />
             <View className="flex gap-y-0">
               <Text className="text-[17px] font-poppins-semibold text-white drop-shadow-lg">
@@ -323,7 +324,7 @@ const DrawerContent = (props) => {
       <View style={{ paddingHorizontal: 13, paddingBottom: 20 }}>
         <View style={{
           height: 1,
-          backgroundColor: '#d1d5db',
+          backgroundColor: '#d1d5db', 
           marginBottom: 10, 
         }}
         />
