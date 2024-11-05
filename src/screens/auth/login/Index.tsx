@@ -13,7 +13,6 @@ import WithEmail from "./WithEmail";
 import WithPhone from "./WithPhone";
 import { If } from "@/src/libs/component";
 import { ScrollView } from "react-native";
-
 import ParallaxScroll from "@monterosa/react-native-parallax-scroll";
 
 export default memo(function Login({ navigation }): React.JSX.Element {
@@ -43,8 +42,8 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               source={require("@/assets/images/logo.png")}
               style={{ width: 60, height: 80, marginTop: 8 }}
             />
-            <View style={{ flexShrink: 1}}>
-              <Text h1 color={Colors.brand} style={{ fontSize: 30, color: "#1e1b4b"}} className="font-poppins-semibold">
+            <View style={{ flexShrink: 1 }}>
+              <Text h1 color={Colors.brand} style={{ fontSize: 30, color: "#1e1b4b" }} className="font-poppins-semibold">
                 SELAMAT DATANG
               </Text>
               <Text className="font-poppins-regular">Sistem Informasi Laboratorium Lingkungan Jombang</Text>
@@ -114,7 +113,13 @@ export default memo(function Login({ navigation }): React.JSX.Element {
             color={'#312e81'}
             hyperlink
             onPress={() => navigation.navigate("register")}
-            ></Button>
+          ></Button>
+            <View style={{ alignItems: 'center'}}>
+            <Image
+              source={require("@/assets/images/bse.png")}
+              style={{ width: 140, height: 70 }}
+            />
+          </View>
         </View>
       </ParallaxScroll>
     </ScrollView>

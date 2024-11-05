@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { MenuView } from "@react-native-menu/menu";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import BackButton from "@/src/screens/components/BackButton";
 
 const Kelurahan = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -25,7 +26,7 @@ const Kelurahan = ({ navigation }) => {
         {
             id: 'Edit',
             title: 'Edit',
-            action: item => navigation.navigate("FormKelurahan", {uuid: item.uuid}),
+            action: item => navigation.navigate("FormKelurahan", { uuid: item.uuid }),
         },
         {
             id: "Hapus",
@@ -36,16 +37,16 @@ const Kelurahan = ({ navigation }) => {
 
     const renderItem = ({ item }) => {
         return (
-            <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" 
-            style={{ 
-                elevation: 4, 
-            }}>
+            <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+                style={{
+                    elevation: 4,
+                }}>
                 <View className="flex-row justify-between items-center">
                     <View className="flex-col space-y-2">
-                        <Text className="text-[20px] font-poppins-bold">{item.nama}</Text>
-                        <Text className="text-[15px] font-poppins-regular">{item.kecamatan.nama} - { item.kecamatan.kab_kota.nama } </Text>
+                        <Text className="text-[18px] font-poppins-semibold text-black">{item.nama}</Text>
+                        <Text className="text-[13px] font-poppins-medium text-black">{item.kecamatan.nama} - {item.kecamatan.kab_kota.nama} </Text>
                     </View>
-                    <MenuView 
+                    <MenuView
                         title="Menu"
                         actions={dropdownOptions.map(option => ({
                             ...option,
@@ -59,7 +60,7 @@ const Kelurahan = ({ navigation }) => {
                         }}
                         shouldOpenOnLongPress={false}>
                         <View>
-                            <Entypo name="dots-three-vertical" size={18} color="#312e81"/>
+                            <Entypo name="dots-three-vertical" size={18} color="#312e81" />
                         </View>
                     </MenuView>
                 </View>
@@ -69,11 +70,17 @@ const Kelurahan = ({ navigation }) => {
 
     return (
         <View className="bg-[#ececec] w-full h-full">
+            <View className="flex-row items-center justify-center mt-4">
+                <View className="absolute left-4">
+                    <BackButton action={() => navigation.goBack()} size={26} />
+                </View>
+                <Text className="text-[20px] font-poppins-semibold text-black">Kelurahan</Text>
+            </View>
             <Paginate
                 ref={paginateRef}
                 url="/master/kelurahan"
                 renderItem={renderItem}
-                payload={{  }}
+                payload={{}}
             />
             <Icon
                 name="plus"

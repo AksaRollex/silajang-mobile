@@ -1,5 +1,5 @@
 import { memo, useState } from "react";
-import { Button, Colors, Text, TextField, View } from "react-native-ui-lib";
+import { Button, Colors, Text, TextField, View, Image } from "react-native-ui-lib";
 
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
