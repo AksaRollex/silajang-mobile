@@ -72,6 +72,7 @@
     "react-native-ui-lib": "^7.23.1",
     "react-native-vector-icons": "^10.1.0",
     "react-native-webview": "^13.12.2",
+    "victory-native": "^37.3.1",
     "yup": "^1.4.0",
     "zustand": "^4.5.2"
   },

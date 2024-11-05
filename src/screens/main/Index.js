@@ -509,19 +509,31 @@ const DrawerContent = (props) => {
   );
 };
 
-const Admin = () =>  (
-    <NavigationContainer independent={true}>
-      <Drawer.Navigator
-        drawerContent={(props) => <DrawerContent {...props} />}
-        screenOptions={{
-          headerRight: () => <Header />,
-          headerTitle: () => <Text></Text>,
-          headerStyle: { backgroundColor: "#312e81" },
-          headerTintColor: "white",
-          drawerActiveBackgroundColor: "#312e81",
-          drawerActiveTintColor: "#fff"
-        }}
-      >
+const Admin = () => (
+  <NavigationContainer independent={true}>
+    <Drawer.Navigator
+      drawerContent={(props) => <DrawerContent {...props} />}
+      screenOptions={({ navigation }) => ({
+        headerRight: () => <Header />,
+        headerTitle: () => <Text></Text>,
+        headerStyle: { backgroundColor: "#312e81" },
+        headerTintColor: "white",
+        drawerActiveBackgroundColor: "#312e81",
+        drawerActiveTintColor: "#fff",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.toggleDrawer()}
+            className="ml-2"
+          >
+            <Image 
+              source={require("@/assets/images/menus.png")}
+              className="w-8 h-4"
+              style={{ tintColor: 'white' }}
+            />
+          </TouchableOpacity>
+        ),
+      })}
+    >
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
         {/* <Drawer.Screen name="MasterIndex" component={MasterNavigator} /> */}
