@@ -42,7 +42,7 @@ const screenOptions = {
     elevation: 0,
     height: 60,
     backgroundColor: "#312e81",
-    borderTopWidth: 0, // Hilangkan border top untuk membuat tampilan lebih clean
+    borderTopWidth: 0, 
   },
 };
 
