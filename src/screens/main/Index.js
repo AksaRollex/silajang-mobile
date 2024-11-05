@@ -24,6 +24,7 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
+import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -41,7 +42,7 @@ const screenOptions = {
     left: 0,
     elevation: 0,
     height: 60,
-    backgroundColor: "#312e81",
+    backgroundColor: "#ffffff",
     borderTopWidth: 0, 
   },
 };
@@ -95,20 +96,18 @@ const TabNavigator = () => {
   };
 
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator
+      screenOptions={screenOptions}
+    >
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
-        options={{  
+        options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              style={[
-                styles.iconContainer,
-                focused && styles.iconContainerFocused,
-              ]}
-            >
-              <Entypo name="home" size={25} color={"#fff"} />
-              <Text style={[styles.label, focused && styles.labelFocused]} className="text-white font-poppins-semibold">
+            <View className="items-center">
+              {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+              <Entypo name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
+              <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
                 Beranda
               </Text>
             </View>
@@ -116,21 +115,20 @@ const TabNavigator = () => {
         }}
       />
 
-      {/* Pengujian tab - only visible to testing-related roles */}
       {hasPermission('Pengujian') && (
         <Tab.Screen
           name="Pengujian"
           component={IndexPengujian}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}
-              >
-                <MaterialCommunityIcons name="text-box-check" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
+              <View className="items-center">
+                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+                <MaterialCommunityIcons
+                  name="text-box-check"
+                  size={25}
+                  color={focused ? '#312e81' : '#a1a1aa'}
+                />
+                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
                   Pengujian
                 </Text>
               </View>
@@ -141,8 +139,8 @@ const TabNavigator = () => {
               if (navigation.isFocused()) {
                 e.preventDefault();
                 navigation.reset({
-                  index: 0, 
-                  routes: [{ name: 'Pengujian' }], 
+                  index: 0,
+                  routes: [{ name: 'Pengujian' }],
                 });
               }
             },
@@ -156,14 +154,10 @@ const TabNavigator = () => {
           component={IndexPembayaran}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View
-                style={[
-                  styles.iconContainer,
-                  focused && styles.iconContainerFocused,
-                ]}
-              >
-                <Entypo name="wallet" size={25} color={"#fff"} />
-                <Text style={[styles.label, focused && styles.labelFocused]}  className="text-white font-poppins-semibold">
+              <View className="items-center">
+                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+                <Entypo name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
+                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
                   Pembayaran
                 </Text>
               </View>

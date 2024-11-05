@@ -227,6 +227,7 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 className='px-5 bg-[#f8f8f8]'
+                onPress={() => navigation.navigate("RekapData")}
               />
             )}
             {hasItemAccess('rekap-parameter') && (
