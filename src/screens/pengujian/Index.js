@@ -33,6 +33,7 @@ import CetakLHU from "./verifikasi/CetakLHU"
 import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
 import LaporanHasilPengujian from "./report/LaporanHasilPengujian"
 import RegistrasiSampel from "./report/RegistrasiSampel"
+import RekapData from "./report/RekapData"
 import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
@@ -158,6 +159,11 @@ export default function MainScreen() {
         name="RegistrasiSampel"
         component={RegistrasiSampel}
       />
-    </Stack.Navigator>
+
+      <Stack.Screen
+        name="RekapData"
+        component={RekapData}
+      />
+   </Stack.Navigator>
   );
 }
