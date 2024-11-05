@@ -1,3 +1,5 @@
+// index main
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
@@ -23,6 +25,16 @@ import PermohonanScreen from "../pengujian/permohonan/Permohonan";
 import TrackingPengujianScreen from "../pengujian/trackingPengujian/TrackingPengujian";
 import PengujianPembayaran from "../pembayaran/pengujian/Pengujian";
 import MultiPayment from "../pembayaran/multipayment/Multipayment";
+import TitikUji from "../pengujian/permohonan/titikUji/TitikUji";
+import FormTitikUji from "../pengujian/permohonan/titikUji/Form";
+import Parameter from "../pengujian/permohonan/parameter/Parameter";
+import TrackingList from "../pengujian/trackingPengujian/Detail";
+import EditPermohonan from "../pengujian/permohonan/FormEdit";
+import TambahPermohonan from "../pengujian/permohonan/FormTambah";
+import Pembayaran from "../pembayaran/Pembayaran";
+import PengujianDetail from "../pembayaran/pengujian/Detail";
+import MultipaymentDetail from "../pembayaran/multipayment/Detail";
+import PengujianScreen from "../pengujian/Pengujian";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -97,8 +109,7 @@ const CustomTabBar = props => {
           x: pageX,
           width: width,
         });
-        setPengujianDropdownVisible(true);
-        setPembayaranDropdownVisible(false);
+        navigation.navigate("Pengujian")
       });
     }
   };
@@ -110,8 +121,7 @@ const CustomTabBar = props => {
           x: pageX,
           width: width,
         });
-        setPembayaranDropdownVisible(true);
-        setPengujianDropdownVisible(false);
+        navigation.navigate("Pembayaran")
       });
     }
   };
@@ -147,7 +157,7 @@ const CustomTabBar = props => {
                 navigation.navigate("Permohonan");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Permohonan</Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Permohonan</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -155,7 +165,7 @@ const CustomTabBar = props => {
                 navigation.navigate("TrackingPengujian");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Tracking Pengujian</Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Tracking Pengujian</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -183,7 +193,7 @@ const CustomTabBar = props => {
                 navigation.navigate("PengujianPembayaran");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Pengujian</Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Pengujian</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -191,7 +201,7 @@ const CustomTabBar = props => {
                 navigation.navigate("Multipayment");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Multi Payment</Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Multi Payment</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -237,7 +247,7 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/home.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Beranda
                   </Text>
                 </View>
@@ -252,7 +262,7 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/approval.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pengujian
                   </Text>
                 </View>
@@ -267,7 +277,7 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/wallet.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pembayaran
                   </Text>
                 </View>
@@ -307,9 +317,19 @@ const TabNavigator = () => {
         )}
       </Stack.Screen>
       <Stack.Screen name="Permohonan" component={PermohonanScreen} />
+      <Stack.Screen name="Pengujian" component={PengujianScreen}/>
       <Stack.Screen name="TrackingPengujian" component={TrackingPengujianScreen} />
       <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
       <Stack.Screen name="Multipayment" component={MultiPayment} />
+      <Stack.Screen name="TitikUji" component={TitikUji}/>
+      <Stack.Screen name="FormTitikUji" component={FormTitikUji}/>
+      <Stack.Screen name="Parameter" component={Parameter}/>
+      <Stack.Screen name="TrackingList" component={TrackingList}/>
+      <Stack.Screen name="EditPermohonan" component={EditPermohonan}/>
+      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan}/>
+      <Stack.Screen name="Pembayaran" component={Pembayaran}/>
+      <Stack.Screen name="PengujianDetail" component={PengujianDetail}/>
+      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail}/>
     </Stack.Navigator>
   );
 };

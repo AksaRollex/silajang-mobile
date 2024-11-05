@@ -1,3 +1,5 @@
+// form titik uji
+
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/Back";
 import Select2 from "@/src/screens/components/Select2";
@@ -173,8 +175,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     },
   );
 
-  console.log(data);
-
   const [selectedPayment, setSelectedPayment] = useState(null);
   const [paymentTypeError, setPaymentTypeError] = useState(null);
 
@@ -284,9 +284,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           ]);
 
         const formattedSampelData = sampelResponse.data.data.map(item => ({
-          value: item.id,
-          label: item.nama,
+         title: item.nama,
+         value: item.id,
         }));
+        setSampelData(formattedSampelData);
 
         const formattedJenisWadah = wadahResponse.data.data.map(item => ({
           id: item.id,
@@ -295,10 +296,11 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
         const formattedAcuanMetode = acuanMetodeResponse.data.data.map(
           item => ({
+            title: item.nama,
             value: item.id,
-            label: item.nama,
           }),
         );
+        setMetode(formattedAcuanMetode);
 
         setSampelData(formattedSampelData);
         setJenisWadah(formattedJenisWadah);
@@ -439,7 +441,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Nama Lokasi / Titik Uji
                     </Text>
                     <TextField
@@ -457,18 +459,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold text-black">
+                    <Text className="font-poppins-semibold text-black">
                       Jenis Sampel
                     </Text>
 
                     <Select2
-                      onChangeValue={value => {
+                    data={sampelData}
+                      onSelect={(value) => {
                         onChange(value);
                         setSelectedSampel(value);
                       }}
-                      value={value}
-                      items={sampelData}
-                      placeholder={{ label: "Pilih Jenis Sampel" }}
+                      defaultValue={data?.jenis_sampel_id}
+                      placeholder="Pilih Jenis Sampel"
                     />
                   </View>
                 )}
@@ -478,13 +480,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 mt-2 text-black">
                       Jenis Wadah
                     </Text>
 
-                    <View className="border border-stone-300 bg-[#fff]">
                       <MultiSelect
                         hideTags
+                        styleItemsContainer={{ backgroundColor: "#fff" }}
                         items={jenisWadah}
                         uniqueKey="id"
                         onSelectedItemsChange={items => {
@@ -492,7 +494,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           setSelectedJenisWadah(items);
                         }}
                         selectedItems={value || []}
-                        selectText="  Pilih Jenis Wadah"
+                        selectText="Pilih Jenis Wadah"
                         searchInputPlaceholderText="Cari Jenis Wadah..."
                         onChangeInput={text => console.log(text)}
                         altFontFamily="sans-serif"
@@ -506,7 +508,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         submitButtonColor='#311B74'
                         submitButtonText="Submit"
                       />
-                    </View>
                   </View>
                 )}
               />
@@ -516,7 +517,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Keterangan
                     </Text>
                     <View className="border border-stone-300 bg-[#fff]">
@@ -540,7 +541,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <View>
-                        <Text className="font-sans font-bold mb-2 text-black">
+                        <Text className="font-poppins-semibold mb-2 text-black">
                           Nama Pengirim
                         </Text>
 
@@ -600,17 +601,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     control={control}
                     render={({ field: { onChange, value } }) => (
                       <View>
-                        <Text className="font-sans font-bold text-black mt-2">
+                        <Text className="font-poppins-semibold text-black mt-2">
                           Metode
                         </Text>
 
                         <Select2
-                          onChangeValue={value => {
+                        data={metode}
+                          onSelect={(value) => {
                             onChange(value);
                             setSelectedMetode(value);
                           }}
-                          value={value}
-                          items={metode}
+                          defaultValue={data?.acuan_metode_id}
+                          placeholder="Pilih Metode"
                           // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans"
                           // open={openMetode}
                           // value={value}
@@ -635,7 +637,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black text-start">
+                          <Text className="font-poppins-semibold mb-2 text-black text-start">
                             South
                           </Text>
                           <TextField
@@ -653,7 +655,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black ">
+                          <Text className="font-poppins-semibold mb-2 text-black ">
                             East
                           </Text>
                           <TextField
@@ -687,7 +689,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Suhu Air
                           </Text>
                           <TextField
@@ -704,7 +706,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             pH
                           </Text>
                           <TextField
@@ -720,7 +722,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             DHL
                           </Text>
                           <TextField
@@ -736,7 +738,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Salinitas
                           </Text>
 
@@ -753,7 +755,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             DO
                           </Text>
 
@@ -771,7 +773,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Kekeruhan
                           </Text>
 
@@ -789,7 +791,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Klorin Babas
                           </Text>
 
@@ -807,7 +809,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Suhu Udara
                           </Text>
 
@@ -825,7 +827,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Cuaca
                           </Text>
 
@@ -843,7 +845,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Arah Angin
                           </Text>
 
@@ -861,7 +863,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Kelembapan
                           </Text>
 
@@ -879,7 +881,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       control={control}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
-                          <Text className="font-sans font-bold mb-2 text-black">
+                          <Text className="font-poppins-semibold mb-2 text-black">
                             Kecepatan Angin
                           </Text>
 
