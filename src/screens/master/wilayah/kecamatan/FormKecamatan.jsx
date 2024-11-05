@@ -107,7 +107,7 @@ export default memo(function form({ route, navigation }) {
           </Text>
         </View>
         <View className="p-5">
-          <Text className="mb-3 text-lg font-semibold">Nama</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold text-black">Nama</Text>
           <Controller
             control={control}
             name="nama"
@@ -116,7 +116,7 @@ export default memo(function form({ route, navigation }) {
               <TextField
                 placeholder="Masukkan Nama Kota/Kabupaten"
                 enableErrors
-                className="py-3 px-5 rounded border-[1px] border-gray-700"
+                className="py-3 px-5 rounded border-[1px] border-gray-700 font-poppins-regular"
                 onChangeText={onChange}
                 value={value}
               />
@@ -126,7 +126,7 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.nama.message}</Text>
           )}
 
-          <Text className="mb-3 text-lg font-semibold">Kota/Kabupaten</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold">Kota/Kabupaten</Text>
           <Controller
             control={control}
             name="kab_kota_id"
@@ -138,7 +138,7 @@ export default memo(function form({ route, navigation }) {
                 }}
                 value={value}
                 items={formattedKabKota}
-                placeholder={{ label: "pilih kota/kabupaten", value: null }}
+                placeholder={{ label: "Pilih Kota/Kabupaten", value: null }}
               />
             )}
           />
@@ -146,6 +146,7 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.kab_kota_id.message}</Text>
           )}
           <Button
+            labelStyle={{ fontFamily: "Poppins-Medium" }}
             label="Simpan"
             loading={isLoading}
             onPress={handleSubmit(onSubmit)}

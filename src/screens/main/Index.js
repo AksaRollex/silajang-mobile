@@ -89,7 +89,6 @@ const TabNavigator = () => {
     ], 
   };
 
-  
   const hasPermission = (tabName) => {
     if (!tabPermissions[tabName] || !userRole) return false;
     return tabPermissions[tabName].includes(userRole);
@@ -180,18 +179,36 @@ const TabNavigator = () => {
 const ProfileDetail = () => {
   const { data: user } = useUser();
   return (
-    <View className="text-black p-3 border-b-[1px] m-2">
-      <View className="flex gap-2">
-        <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
-          className="w-12 h-12 rounded-full" />
-        <View className="flex gao-y-0">
-          <Text className="text-[17px] font-poppins-semibold" >{user.nama}</Text>
-          <Text className="text-sm font-poppins-semibold" >{user.email}</Text>
+    <View className="relative mb-5" style={{  }}>
+      {/* Background Image Container */}
+      <View className="relative h-[160px] overflow-hidden">
+        <Image
+          source={require("@/assets/images/background.png")}
+          className="w-full h-full absolute top-0 left-0"
+          style={{ resizeMode: 'cover',  }}
+        />
+        
+        {/* Profile Content - Positioned over the background */}
+        <View className="absolute p-2 mt-11">
+          <View className="flex flex-row items-center gap-2">
+            <Image 
+              source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+              className="w-12 h-12 rounded-full"
+            />
+            <View className="flex gap-y-0">
+              <Text className="text-[17px] font-poppins-semibold text-white drop-shadow-lg">
+                {user.nama}
+              </Text>
+              <Text className="text-sm font-poppins-semibold text-white/90 drop-shadow-lg">
+                {user.email}
+              </Text>
+            </View>
+          </View>
         </View>
       </View>
     </View>
-  )
-}
+  );
+};
 
 const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome, fontAwesome6, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
@@ -199,37 +216,53 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
   useEffect(() => {
     Animated.timing(animatedHeight, {
       toValue: isExpanded ? 1 : 0,
-      duration: 300,
+      duration: 350,
       useNativeDriver: false,
     }).start();
   }, [isExpanded, animatedHeight]);
 
   const renderIcon = useMemo(() => {
     if(ionIcon){
-      return <IonIcons name={ionIcon} size={21} color={isActive ? '#fff' : '#000'} />
+      return <IonIcons name={ionIcon} size={21} color={isActive ? '#312e81' : '#6b7280'} />
     }
     if(fontAwesome){
-      return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#fff' : '#000'} />
+      return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#312e81' : '#6b7280'} />
     }
     if(fontAwesome6){
-      return <FontAwesome6Icon name={fontAwesome6} size={19} color={isActive ? '#fff' : '#000'} />
+      return <FontAwesome6Icon name={fontAwesome6} size={19} color={isActive ? '#312e81' : '#6b7280'} />
     }
     if(depth === 0 && hasSubItems && setIcon){
-      return <IonIcons name={setIcon} size={21} color={isActive ? '#fff' : '#000'} />
+      return <IonIcons name={setIcon} size={21} color={isActive ? '#312e81' : '#6b7280'} />
     }
-    return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
+    return <Icon name="fiber-manual-record" size={8} color={isActive ? '#312e81' : '#6b7280'} />
   }, [ionIcon, fontAwesome, depth, hasSubItems, isActive, setIcon]);
 
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex flex-row space-x-3 items-center py-4 ${isActive ? 'bg-indigo-900' : ''
-        }`}
-      style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
+      className={`flex flex-row space-x-3 items-center py-3 mx-2 my-1 rounded-lg ${
+        isActive 
+          ? 'bg-indigo-100' // Light blue background when active
+          : 'bg-transparent'
+      }`}
+      style={{ 
+        paddingLeft: depth > 0 ? 5 + depth * 15 : 12, 
+        paddingRight: depth > 0 ? 5 + depth * 15 : 12,
+      }}
     >
       {renderIcon}
-      <Text className={`flex-1 font-poppins-medium ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
+      <Text 
+        className={`flex-1 font-poppins-medium ${
+          isSub ? 'text-[15px]' : 'text-[16px]'
+        } ${
+          isActive 
+            ? 'text-[#312e81]' // Dark blue text when active
+            : 'text-gray-500' // Gray text when inactive
+        }`}
+      >
+        {label}
+      </Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -290,8 +323,8 @@ const DrawerContent = (props) => {
       <View style={{ paddingHorizontal: 13, paddingBottom: 20 }}>
         <View style={{
           height: 1,
-          backgroundColor: 'black', // Warna garis
-          marginBottom: 10, // Jarak antara garis dan button
+          backgroundColor: '#d1d5db',
+          marginBottom: 10, 
         }}
         />
         <TouchableHighlight
@@ -508,23 +541,35 @@ const DrawerContent = (props) => {
   );
 };
 
-const Admin = () =>  (
-    <NavigationContainer independent={true}>
-      <Drawer.Navigator
-        drawerContent={(props) => <DrawerContent {...props} />}
-        screenOptions={{
-          headerRight: () => <Header />,
-          headerTitle: () => <Text></Text>,
-          headerStyle: { backgroundColor: "#312e81" },
-          headerTintColor: "white",
-          drawerActiveBackgroundColor: "#312e81",
-          drawerActiveTintColor: "#fff"
-        }}
-      >
+const Admin = () => (
+  <NavigationContainer independent={true}>
+    <Drawer.Navigator
+      drawerContent={(props) => <DrawerContent {...props} />}
+      screenOptions={({ navigation }) => ({
+        headerRight: () => <Header />,
+        headerTitle: () => <Text></Text>,
+        headerStyle: { backgroundColor: "#312e81" },
+        headerTintColor: "white",
+        drawerActiveBackgroundColor: "#312e81",
+        drawerActiveTintColor: "#fff",
+        headerLeft: () => (
+          <TouchableOpacity 
+            onPress={() => navigation.toggleDrawer()}
+            className="ml-4"
+          >
+            <Image 
+              source={require("@/assets/images/menus.png")}
+              className="w-8 h-4"
+              style={{ tintColor: 'white' }}
+            />
+          </TouchableOpacity>
+        ),
+      })}
+    >
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
         {/* <Drawer.Screen name="MasterIndex" component={MasterNavigator} /> */}
-        <Drawer.Screen name="Master" component={MasterNavigator} />
+        <Drawer.Screen  name="Master" component={MasterNavigator} />
         <Drawer.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
         <Drawer.Screen name="User" component={IndexUser} />
         <Drawer.Screen name="Wilayah" component={IndexWilayah} />

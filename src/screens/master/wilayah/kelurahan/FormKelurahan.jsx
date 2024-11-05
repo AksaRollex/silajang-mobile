@@ -142,7 +142,7 @@ export default memo(function form({ route, navigation }) {
               <TextField 
                 placeholder="Masukkan Nama Kelurahan"
                 enableErrors
-                className="py-3 px-5 rounded border-[1px] border-gray-700"
+                className="py-3 px-5 rounded border-[1px] border-gray-700 font-poppins-regular"
                 onChangeText={onChange}
                 value={value}
               />
@@ -152,7 +152,7 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.nama.message}</Text>
           )}
 
-          <Text className="mb-3 text-lg font-poppins-semibold">Kota/Kabupaten</Text>
+          <Text className="mb-2 text-lg font-poppins-semibold">Kota/Kabupaten</Text>
           <Controller
             control={control}
             name="kab_kota_id"
@@ -177,7 +177,7 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.kab_kota_id.message}</Text>
           )}
 
-          <Text className="mb-3 text-lg font-poppins-semibold">Kecamatan</Text>
+          <Text className="mb-2 text-lg font-poppins-semibold">Kecamatan</Text>
           <Controller 
             control={control}
             name="kecamatan_id"
@@ -196,10 +196,11 @@ export default memo(function form({ route, navigation }) {
           )}
 
           <Button 
+            labelStyle={{ fontFamily: "Poppins-Medium" }}
             label={isLoading ? "Loading..." : "Simpan"}
             onPress={handleSubmit(handleSubmitForm)}
             disabled={isLoading}
-            className="mt-4 bg-blue-600 p-3 rounded"
+            className="mt-4 bg-[#312e81] p-3 rounded"
           />
         </View>
       </View>

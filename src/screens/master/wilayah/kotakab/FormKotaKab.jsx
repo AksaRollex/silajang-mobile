@@ -72,7 +72,7 @@ export default memo(function form({ route, navigation}){
                     <Text className="text-xl font-poppins-semibold">{ data ? "Edit Kota/Kabupaten" : "Tambah Kota/kabupaten" }</Text>
                 </View>
                 <View className="p-5">
-                    <Text className="mb-3 text-lg font-semibold">Nama</Text>
+                    <Text className="mb-3 text-lg font-poppins-semibold">Nama</Text>
                     <Controller 
                         control={control}
                         name="nama"
@@ -81,7 +81,7 @@ export default memo(function form({ route, navigation}){
                             <TextField
                                 placeholder="Masukkan Nama Kota/Kabupaten"
                                 enableErrors
-                                className="py-3 px-5 rounded border-[1px] border-gray-700"
+                                className="py-3 px-5 rounded border-[1px] border-gray-700 font-poppins-regular"
                                 onChangeText={onChange}
                                 value={value}  
                             />
@@ -93,6 +93,7 @@ export default memo(function form({ route, navigation}){
                         </Text>
                     )}
                     <Button 
+                        labelStyle={{ fontFamily: "Poppins-Regular" }}
                         label="Simpan"
                         loading={isLoading}
                         onPress={handleSubmit(onSubmit)}
