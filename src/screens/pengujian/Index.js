@@ -31,7 +31,8 @@ import Kortek from "./verifikasi/Kortek/Kortek"
 import HasilUjis from "./verifikasi/Kortek/HasilUjis"
 import CetakLHU from "./verifikasi/CetakLHU"
 import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
-import LaporanHasilPengujian from "./report/LaporanHasilPengujian/"
+import LaporanHasilPengujian from "./report/LaporanHasilPengujian"
+import RegistrasiSampel from "./report/RegistrasiSampel"
 import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
@@ -151,6 +152,11 @@ export default function MainScreen() {
       <Stack.Screen
         name="LaporanHasilPengujian"
         component={LaporanHasilPengujian}
+      />
+
+      <Stack.Screen
+        name="RegistrasiSampel"
+        component={RegistrasiSampel}
       />
     </Stack.Navigator>
   );
