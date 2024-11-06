@@ -138,7 +138,7 @@ const TabNavigator = () => {
                 Beranda
               </Text>
             </View>
-          ),a
+          ),
         }}
       />
   
