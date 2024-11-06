@@ -245,12 +245,7 @@ const Dashboard = () => {
       showsVerticalScrollIndicator={false}
     >
     <View className="relative">
-      <View className="bg-indigo-900 h-40"
-          style={{
-            borderBottomLeftRadius: 8,
-            borderBottomRightRadius: 8,
-          }}
-        >
+      <View className="bg-indigo-900 h-40">
       </View>
 
       <MainCard />
