@@ -133,7 +133,7 @@ export default function Pengujian() {
                   right={props => (
                     <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
                   )}
-                  className="px-5 bg-[#f8f8f8] ml-3 mr-3"
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("Kontrak")}
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -150,7 +150,7 @@ export default function Pengujian() {
                   <Ionicons name="checkmark-done" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Persetujuan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -166,7 +166,7 @@ export default function Pengujian() {
                   <Ionicons name="people" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("PengambilSample")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -182,7 +182,7 @@ export default function Pengujian() {
                   <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
               />
             )}
@@ -207,7 +207,7 @@ export default function Pengujian() {
                   <Ionicons name="analytics" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Analis")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -223,7 +223,7 @@ export default function Pengujian() {
                   <Ionicons name="settings" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -239,7 +239,7 @@ export default function Pengujian() {
                   <Ionicons name="print" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("CetakLHU")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -255,7 +255,7 @@ export default function Pengujian() {
                   <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("VerifikasiLhu")}
               />
             )}
@@ -280,7 +280,7 @@ export default function Pengujian() {
                   <Ionicons name="newspaper" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -296,7 +296,7 @@ export default function Pengujian() {
                   <Ionicons name="create" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -311,7 +311,7 @@ export default function Pengujian() {
                   <Ionicons name="list" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("RegistrasiSampel")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -327,7 +327,7 @@ export default function Pengujian() {
                   <Ionicons name="reader" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("RekapData")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -343,7 +343,7 @@ export default function Pengujian() {
                   <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
                 </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
               />
             )}
           </>

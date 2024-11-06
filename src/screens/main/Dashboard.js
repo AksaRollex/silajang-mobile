@@ -178,85 +178,130 @@ const Dashboard = () => {
         })
   }, []);
 
-  const YearSelector = () => {
+  const MainCard = () => {
     const { data: user } = useUser();
     return (
-      <View className="relative -mb-5 items-center z-10">
-        <View
-          className="bg-white rounded-lg px-4 py-3 w-[90%] flex-row justify-between items-center shadow"
+      <View className="absolute left-0 right-0 px-4" style={{ top: '37%' }}>
+        <View className="bg-white rounded-lg shadow-lg" 
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 6,
             elevation: 8,
-          }}
-        >
-          <View className="flex-row items-center">
-            <FontAwesome6 name="circle-user" size={24} color={'black'} style={{ marginRight: 8 }} />
-            <Text
-              className="text-indigo-900 font-poppins-medium"
-              style={{ maxWidth: 170 }}
-              numberOfLines={1}
-              ellipsizeMode="tail"
-            >
-              Hi, {user.nama}
-            </Text>
+          }}>
+          <View className="p-4 border-b border-gray-100">
+            <View className="flex flex-row justify-between items-center">
+              <View className="flex flex-row items-center space-x-3">
+                <IonIcons name="person-circle" size={30} color="black" />
+                <View>
+                  <Text className="text-lg text-black font-poppins-semibold">{user.nama}</Text>
+                  <Text className="text-sm font-poppins-semibold text-gray-500">{user.email}</Text>
+                </View>
+              </View>
+            </View>
           </View>
 
-          <View className="h-10 w-[1px] bg-gray-300 mx-4" />
-
-          {/* Right Section: Year Picker with Icon */}
-          <View className="flex-row items-center">
-            <MaterialIcons name="calendar-today" size={24} color="#555" style={{ marginRight: 8 }} />
-            <MenuView
-              title="Pilih Tahun"
-              onPressAction={handleYearChange}
-              actions={generateYears().map(option => ({
-                id: option.id.toString(),
-                title: option.title,
-              }))}
-            >
-              <View className="flex-row items-center justify-center py-2 px-3">
-                <Text className="text-indigo-900 font-poppins-medium">
-                  Tahun {selectedYear}
-                </Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="#312e81" />
+          <View className="p-5">
+            <View className="flex flex-row justify-between">
+              <View className="items-center">
+                <View className="bg-sky-400 w-12 h-12 rounded-lg items-center justify-center mb-2">
+                  <MaterialIcons name="public" size={24} color="white" />
+                </View>
+                <Text className="text-xs text-gray-700">Master</Text>
               </View>
-            </MenuView>
+              
+              <View className="items-center"> 
+                <View className="bg-emerald-500 w-12 h-12 rounded-lg items-center justify-center mb-2">
+                  <MaterialIcons name="attach-money" size={24} color="white" />
+                </View>
+                <Text className="text-xs text-gray-700">Konfigurasi</Text>
+              </View>
+              
+              <View className="items-center">
+                <View className="bg-blue-700 w-12 h-12 rounded-lg items-center justify-center mb-2">
+                  <MaterialIcons name="add-circle-outline" size={24} color="white" />
+                </View>
+                <Text className="text-xs text-gray-700">Tambahan</Text>
+              </View>
+              
+              <View className="items-center">
+                <View className="bg-blue-500 w-12 h-12 rounded-lg items-center justify-center mb-2">
+                  <MaterialIcons name="payment" size={24} color="white" />
+                </View>
+                <Text className="text-xs text-gray-700">Becak</Text>
+              </View>
+            </View>
           </View>
         </View>
       </View>
     );
   };
 
-
   return (
     <SafeAreaView className="flex-1 bg-slate-100">
-      <ScrollView
-        className="flex-col"
-        showsVerticalScrollIndicator={false}
-        stickyHeaderIndices={[]}>
-
-        <View className="bg-indigo-900 min-h-[120px] pt-5 shadow-lg z-10">
-          <View className="px-4 pt-6">
-            <Text className="text-2xl font-bold text-white mb-1"></Text>
-          </View>
-          <YearSelector />
-        </View>
-
-        <View className="mx-4 mt-8 bg-white rounded-lg shadow-lg p-10"
+      <ScrollView 
+      className="flex-1"
+      showsVerticalScrollIndicator={false}
+    >
+    <View className="relative">
+      <View className="bg-indigo-900 h-40"
           style={{
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 4 },
-            shadowOpacity: 0.3,
-            shadowRadius: 6,
-            elevation: 8,
+            borderBottomLeftRadius: 8,
+            borderBottomRightRadius: 8,
           }}
         >
-          <Text className="text-xl font-poppins-semibold text-indigo-900">
-            Card master & konfigurasi
-          </Text>
+      </View>
+
+      <MainCard />
+    </View>
+
+   
+        <View className="items-center mt-28"> 
+          <View
+            className="bg-white rounded-lg px-4 py-3 w-[90%] flex-row justify-between items-center shadow"
+            style={{
+              shadowColor: '#000',
+              shadowOffset: { width: 0, height: 4 },
+              shadowOpacity: 0.3,
+              shadowRadius: 6,
+              elevation: 8,
+            }}
+          >
+           
+            <View className="flex-row items-center">
+              <FontAwesome6 name="circle-user" size={24} color={'black'} style={{ marginRight: 8 }} />
+              <Text
+                className="text-indigo-900 font-poppins-medium"
+                style={{ maxWidth: 170 }}
+                numberOfLines={1}
+                ellipsizeMode="tail"
+              >
+                Hi, {user.nama}
+              </Text>
+            </View>
+
+            <View className="h-10 w-[1px] bg-gray-300 mx-4" />
+
+            <View className="flex-row items-center">
+              <MaterialIcons name="calendar-today" size={24} color="#555" style={{ marginRight: 8 }} />
+              <MenuView
+                title="Pilih Tahun"
+                onPressAction={handleYearChange}
+                actions={generateYears().map(option => ({
+                  id: option.id.toString(),
+                  title: option.title,
+                }))}
+              >
+                <View className="flex-row items-center justify-center py-2 px-3">
+                  <Text className="text-indigo-900 font-poppins-medium">
+                    Tahun {selectedYear}
+                  </Text>
+                  <MaterialIcons name="arrow-drop-down" size={24} color="#312e81" />
+                </View>
+              </MenuView>
+            </View>
+          </View>
         </View>
 
         <View style={styles.contentContainer}>
@@ -319,7 +364,7 @@ const Dashboard = () => {
                 </>
               ) : (
                 <>
-                  <View className="mt-4">
+                  <View className="mt-1">
                     <View className="px-4 mb-2">
                       <Text className="text-xl font-poppins-semibold text-black">
                         Data Dashboard
@@ -486,7 +531,9 @@ const Dashboard = () => {
                   </View>
 
 
-                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                     style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
+                  >
                     <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
                     {chartData ? (
                       <LineChart
@@ -510,7 +557,9 @@ const Dashboard = () => {
                   </View>
 
 
-                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4">
+                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                     style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
+                  >
                     <Text className="text-lg font-poppins-semibold text-black p-3">
                       {chartPeraturans.data.length > 1
                         ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
@@ -549,7 +598,9 @@ const Dashboard = () => {
                   </View>
 
 
-                  <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4">
+                  <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4"
+                     style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
+                  >
                     <Text className="text-lg text-black font-poppins-semibold p-3 truncate">
                       {chartParameters.data.length > 1
                         ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
