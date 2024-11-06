@@ -11,6 +11,7 @@ import { Animated, Easing, Modal, StyleSheet, Text, TouchableHighlight, Touchabl
 import Toast from "react-native-toast-message";
 import { Image } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -24,7 +25,6 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
-import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
 const { Navigator, Screen } = createNativeStackNavigator();
 
@@ -40,13 +40,16 @@ const screenOptions = {
     bottom: 0,
     right: 0,
     left: 0,
-    elevation: 0,
+    elevation: 5, // Tambahkan sedikit elevation untuk shadow pada Android
     height: 60,
     backgroundColor: "#ffffff",
-    borderTopWidth: 0, 
+    borderTopWidth: 0,
+    shadowColor: "#000", // Shadow untuk iOS
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
   },
 };
-
 const Header = () => {
   return (
     <View className="flex flex-row gap-2 items-center mx-4">
@@ -90,45 +93,94 @@ const TabNavigator = () => {
     ], 
   };
 
+  
   const hasPermission = (tabName) => {
     if (!tabPermissions[tabName] || !userRole) return false;
     return tabPermissions[tabName].includes(userRole);
   };
 
   return (
-    <Tab.Navigator
-      screenOptions={screenOptions}
-    >
+    <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View className="items-center">
-              {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+            <View
+              className="items-center"
+              style={{
+                shadowColor: focused ? "#4338ca" : "transparent",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: focused ? 0.5 : 0,
+                shadowRadius: 6,
+                elevation: focused ? 10 : 0, // Shadow pada Android
+              }}
+            >
+              {focused && (
+                <View
+                  style={{
+                    width: 96, // 24 * 4 untuk lebarnya (sesuai dengan w-24 di Tailwind)
+                    height: 4, // Tinggi border
+                    backgroundColor: "#312e81",
+                    borderBottomLeftRadius: 999,
+                    borderBottomRightRadius: 999, 
+                    position: "absolute",
+                    top: -9, // Posisikan border sedikit di atas ikon
+                  }}
+                />
+              )}
               <Entypo name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-              <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+              <Text
+                className={`text-xs ${
+                  focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                }`}
+              >
                 Beranda
               </Text>
             </View>
-          ),
+          ),a
         }}
       />
-
+  
       {hasPermission('Pengujian') && (
         <Tab.Screen
           name="Pengujian"
           component={IndexPengujian}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View className="items-center">
-                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+              <View
+                className="items-center"
+                style={{
+                  shadowColor: focused ? "#4338ca" : "transparent",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: focused ? 0.5 : 0,
+                  shadowRadius: 6,
+                  elevation: focused ? 10 : 0,
+                }}
+              >
+                {focused && (
+                  <View
+                    style={{
+                      width: 96,
+                      height: 4,
+                      backgroundColor: "#312e81",
+                      borderBottomLeftRadius: 999,
+                      borderBottomRightRadius: 999,
+                      position: "absolute",
+                      top: -9,
+                    }}
+                  />
+                )}
                 <MaterialCommunityIcons
                   name="text-box-check"
                   size={25}
-                  color={focused ? '#312e81' : '#a1a1aa'}
+                  color={focused ? '#4338ca' : '#a1a1aa'}
                 />
-                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+                <Text
+                  className={`text-xs ${
+                    focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                  }`}
+                >
                   Pengujian
                 </Text>
               </View>
@@ -147,17 +199,42 @@ const TabNavigator = () => {
           })}
         />
       )}
-
+  
       {hasPermission('Pembayaran') && (
         <Tab.Screen
           name="Pembayaran"
           component={IndexPembayaran}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View className="items-center">
-                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+              <View
+                className="items-center"
+                style={{
+                  shadowColor: focused ? "#4338ca" : "transparent",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: focused ? 0.5 : 0,
+                  shadowRadius: 6,
+                  elevation: focused ? 10 : 0,
+                }}
+              >
+                {focused && (
+                  <View
+                    style={{
+                      width: 96,
+                      height: 4,
+                      backgroundColor: "#312e81",
+                      borderBottomLeftRadius: 999,
+                      borderBottomRightRadius: 999,
+                      position: "absolute",
+                      top: -9,
+                    }}
+                  />
+                )}
                 <Entypo name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+                <Text
+                  className={`text-xs ${
+                    focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                  }`}
+                >
                   Pembayaran
                 </Text>
               </View>
@@ -167,42 +244,25 @@ const TabNavigator = () => {
       )}
     </Tab.Navigator>
   );
+  
 };
 
 
 const ProfileDetail = () => {
   const { data: user } = useUser();
   return (
-    <View className="relative mb-5" style={{  }}>
-      {/* Background Image Container */}
-      <View className="relative h-[160px] overflow-hidden">
-        <Image
-          source={require("@/assets/images/background.png")}
-          className="w-full h-full absolute top-0 left-0"
-          style={{ resizeMode: 'cover',  }}
-        />
-        
-        {/* Profile Content - Positioned over the background */}
-        <View className="absolute p-2 mt-11">
-          <View className="flex flex-row items-center gap-2">
-            <Image 
-              source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
-              className="w-12 h-12 rounded-full"
-            />
-            <View className="flex gap-y-0">
-              <Text className="text-[17px] font-poppins-semibold text-white drop-shadow-lg">
-                {user.nama}
-              </Text>
-              <Text className="text-sm font-poppins-semibold text-white/90 drop-shadow-lg">
-                {user.email}
-              </Text>
-            </View>
-          </View>
+    <View className="text-black p-3 border-b-[1px] m-2">
+      <View className="flex gap-2">
+        <Image source={{ uri:"https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+          className="w-12 h-12 rounded-full" />
+        <View className="flex gao-y-0">
+          <Text className="text-[17px] font-poppins-semibold" >{user.nama}</Text>
+          <Text className="text-sm font-poppins-semibold" >{user.email}</Text>
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome, fontAwesome6, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
@@ -210,53 +270,37 @@ const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubI
   useEffect(() => {
     Animated.timing(animatedHeight, {
       toValue: isExpanded ? 1 : 0,
-      duration: 350,
+      duration: 300,
       useNativeDriver: false,
     }).start();
   }, [isExpanded, animatedHeight]);
 
   const renderIcon = useMemo(() => {
     if(ionIcon){
-      return <IonIcons name={ionIcon} size={21} color={isActive ? '#312e81' : '#6b7280'} />
+      return <IonIcons name={ionIcon} size={21} color={isActive ? '#fff' : '#000'} />
     }
     if(fontAwesome){
-      return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#312e81' : '#6b7280'} />
+      return <FontAwesome5Icon name={fontAwesome} size={21} color={isActive ? '#fff' : '#000'} />
     }
     if(fontAwesome6){
-      return <FontAwesome6Icon name={fontAwesome6} size={19} color={isActive ? '#312e81' : '#6b7280'} />
+      return <FontAwesome6Icon name={fontAwesome6} size={19} color={isActive ? '#fff' : '#000'} />
     }
     if(depth === 0 && hasSubItems && setIcon){
-      return <IonIcons name={setIcon} size={21} color={isActive ? '#312e81' : '#6b7280'} />
+      return <IonIcons name={setIcon} size={21} color={isActive ? '#fff' : '#000'} />
     }
-    return <Icon name="fiber-manual-record" size={8} color={isActive ? '#312e81' : '#6b7280'} />
+    return <Icon name="fiber-manual-record" size={8} color={isActive ? '#fff' : '#000'} />
   }, [ionIcon, fontAwesome, depth, hasSubItems, isActive, setIcon]);
 
 
   return (
     <TouchableOpacity
       onPress={onPress}
-      className={`flex flex-row space-x-3 items-center py-3 mx-2 my-1 rounded-lg ${
-        isActive 
-          ? 'bg-indigo-100' // Light blue background when active
-          : 'bg-transparent'
-      }`}
-      style={{ 
-        paddingLeft: depth > 0 ? 5 + depth * 15 : 12, 
-        paddingRight: depth > 0 ? 5 + depth * 15 : 12,
-      }}
+      className={`flex flex-row space-x-3 items-center py-4 ${isActive ? 'bg-indigo-900' : ''
+        }`}
+      style={{ paddingLeft: depth > 0 ? 5 + depth * 15 : 12, paddingRight: depth > 0 ? 5 + depth * 15 : 12, }}
     >
       {renderIcon}
-      <Text 
-        className={`flex-1 font-poppins-medium ${
-          isSub ? 'text-[15px]' : 'text-[16px]'
-        } ${
-          isActive 
-            ? 'text-[#312e81]' // Dark blue text when active
-            : 'text-gray-500' // Gray text when inactive
-        }`}
-      >
-        {label}
-      </Text>
+      <Text className={`flex-1 font-poppins-medium ${isSub ? 'text-[15px]' : 'text-[17px]'} ${isActive ? 'text-white' : 'text-indigo-900'}`}>{label}</Text>
       {hasSubItems && (
         <Animated.View style={{
           transform: [{
@@ -317,8 +361,8 @@ const DrawerContent = (props) => {
       <View style={{ paddingHorizontal: 13, paddingBottom: 20 }}>
         <View style={{
           height: 1,
-          backgroundColor: '#d1d5db',
-          marginBottom: 10, 
+          backgroundColor: 'black', // Warna garis
+          marginBottom: 10, // Jarak antara garis dan button
         }}
         />
         <TouchableHighlight
@@ -330,7 +374,7 @@ const DrawerContent = (props) => {
           }}
         >
           <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
-            <IonIcons name="log-out" size={25} color="#f2416e" />
+            <IonIcons name="log-out-outline" size={30} color="#f2416e" />
             <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
               Logout
             </Text>
@@ -380,7 +424,7 @@ const DrawerContent = (props) => {
                   <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
                 </TouchableOpacity>
                 <TouchableOpacity
-                  className="bg-red-100"
+                  className="bg-[#f2416e33]"
                   onPress={confirmLogout}
                   style={{
                     paddingVertical: 10,
@@ -388,7 +432,7 @@ const DrawerContent = (props) => {
                     borderRadius: 5,
                   }}
                 >
-                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                  <Text className="text-[#f2416e] font-poppins-medium">Ya, Logout</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -549,7 +593,7 @@ const Admin = () => (
         headerLeft: () => (
           <TouchableOpacity 
             onPress={() => navigation.toggleDrawer()}
-            className="ml-4"
+            className="ml-2"
           >
             <Image 
               source={require("@/assets/images/menus.png")}
@@ -563,7 +607,7 @@ const Admin = () => (
         <Drawer.Screen name="Home" component={TabNavigator} />
         <Drawer.Screen name="Profile" component={Profile} />
         {/* <Drawer.Screen name="MasterIndex" component={MasterNavigator} /> */}
-        <Drawer.Screen  name="Master" component={MasterNavigator} />
+        <Drawer.Screen name="Master" component={MasterNavigator} />
         <Drawer.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
         <Drawer.Screen name="User" component={IndexUser} />
         <Drawer.Screen name="Wilayah" component={IndexWilayah} />
