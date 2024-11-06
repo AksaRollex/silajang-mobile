@@ -121,21 +121,23 @@ export default function Pengujian() {
             {hasItemAccess('kontrak') && (
               <View>
 
-              <List.Item
-                
-                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
-                left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
-                )}
-                right={props => (
-                  <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
-                )}
-                className="px-5 bg-[#f8f8f8] ml-3 mr-3"
-                onPress={() => navigation.navigate("Kontrak")}
-              />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-            </View>
+                <List.Item
+                  
+                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                  title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
+                  left={() => (
+                    <View className="bg-blue-600 rounded-full">
+                      <Ionicons name="document-text" size={17} color={'white'} style={{padding: 5}}/>
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                  )}
+                  className="px-5 bg-[#f8f8f8] ml-3 mr-3"
+                  onPress={() => navigation.navigate("Kontrak")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
               
             )}
             {hasItemAccess('persetujuan') && (
@@ -144,7 +146,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-green-600 rounded-full">
+                  <Ionicons name="checkmark-done" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Persetujuan")}
@@ -158,7 +162,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-indigo-600 rounded-full">
+                  <Ionicons name="people" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("PengambilSample")}
@@ -172,7 +178,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-cyan-600 rounded-full">
+                  <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
@@ -195,7 +203,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-yellow-400 rounded-full">
+                  <Ionicons name="analytics" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Analis")}
@@ -209,7 +219,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-red-600 rounded-full">
+                  <Ionicons name="settings" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
@@ -223,7 +235,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-sky-600 rounded-full">
+                  <Ionicons name="print" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("CetakLHU")}
@@ -237,7 +251,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-amber-600 rounded-full">
+                  <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("VerifikasiLhu")}
@@ -260,7 +276,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-rose-600 rounded-full">
+                  <Ionicons name="newspaper" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")}
@@ -274,7 +292,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-lime-600 rounded-full">
+                  <Ionicons name="create" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
               />
@@ -287,7 +307,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-teal-600 rounded-full">
+                  <Ionicons name="list" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("RegistrasiSampel")}
@@ -301,7 +323,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-fuchsia-500 rounded-full">
+                  <Ionicons name="reader" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("RekapData")}
@@ -315,7 +339,9 @@ export default function Pengujian() {
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-emerald-500 rounded-full">
+                  <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
               />
