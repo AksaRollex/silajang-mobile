@@ -93,27 +93,35 @@ const Global = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
+
+      <View className=" p-4 flex flex-row items-center mt-2">
+        {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
+        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
+      </View>
+
           <List.Item
-          title={<Text className="font-poppins-semibold">Pembayaran</Text>}
-          left={props => <FontAwesome5Icon {...props} name="wallet" size={22} />}
+          style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+          title={<Text className="font-poppins-medium text-[15px]">Pembayaran</Text>}
+          left={props => <FontAwesome5Icon {...props} name="wallet" size={18} />}
           right={props => <List.Icon {...props} icon="chevron-right" />}
-          className='bg-[#ffffff] border-black p-2'
+          className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
           onPress={Pengujian}
           />
           
           <List.Item
-            title={<Text className="font-poppins-semibold">Pembayaran Non Pengujian</Text>}
-            left={props => <FontAwesome5Icon {...props} name="credit-card" size={22}/>}
+            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Non Pengujian</Text>}
+            left={props => <FontAwesome5Icon {...props} name="credit-card" size={18}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2'
+            className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
             onPress={NonPengujian}
             />
 
             <List.Item
-            title={<Text className="font-poppins-semibold">Pembayaran Global</Text>}
-            left={props => <FontAwesome6Icon {...props} name="building-columns" size={22}/>}
+            style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Global</Text>}
+            left={props => <FontAwesome6Icon {...props} name="building-columns" size={18}/>}
             right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2'
+            className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
             onPress={Global}
             />
 
