@@ -30,8 +30,8 @@ const Users = ({ navigation }) => {
       });
 
     const dropdownOptions = [
-        { id: "Parameter", title: "parameter", action: item => navigation.navigate("Parameter", { uuid: item.uuid })},
-        { id: "Edit", title: "edit", action: item => navigation.navigate("editUser", { uuid: item.uuid })},
+        { id: "Parameter", title: "Parameter", action: item => navigation.navigate("Parameter", { uuid: item.uuid })},
+        { id: "Edit", title: "Edit", action: item => navigation.navigate("editUser", { uuid: item.uuid })},
         { id: "Delete", title: "Delete", action: item => deleteMetode(`/master/user/${item.uuid}`)},
     ]
 

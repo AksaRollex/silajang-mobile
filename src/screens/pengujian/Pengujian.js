@@ -112,132 +112,215 @@ export default function Pengujian() {
     <View className="bg-[#ececec] flex-1 flex-start">
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {hasAccess('administrasi') && (
-          <List.Accordion
-            title={<Text className="font-poppins-semibold">Administrasi</Text>}
-            left={props => <FontAwesome6 {...props} name="computer" size={22} />}
-            className='bg-[#ffffff]'
-          >
+          <>
+            <View className=" mt-2 p-4 flex flex-row items-center ">
+              {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
+              <Text className="font-poppins-semibold text-black text-lg ml-2">Administrasi</Text>
+            </View>
+            
             {hasItemAccess('kontrak') && (
+              <View>
+
               <List.Item
+                
+                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                right={props => (
+                  <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                )}
+                className="px-5 bg-[#f8f8f8] ml-3 mr-3"
                 onPress={() => navigation.navigate("Kontrak")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+            </View>
+              
             )}
             {hasItemAccess('persetujuan') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Persetujuan")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('pengambil-sampel') && (
+            <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("PengambilSample")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('penerima-sampel') && (
               <List.Item
+                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
               />
             )}
-          </List.Accordion>
+          </>
         )}
-
+  
         {hasAccess('verifikasi') && (
-          <List.Accordion
-            title={<Text className="font-poppins-semibold">Verifikasi</Text>}
-            left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
-            className='bg-[#ffffff]'
-          >
+          <>
+            <View className=" p-4 flex flex-row items-center mt-1">
+              {/* <Ionicons name="shield-checkmark" size={22} style={{ color: "black" }} /> */}
+              <Text className="font-poppins-semibold ml-2 text-black text-lg">Verifikasi</Text>
+            </View>
+            
             {hasItemAccess('analis') && (
+              <View>
               <List.Item
+              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Analis")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('koordinator-teknis') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('cetak-lhu') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("CetakLHU")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('verifikasi-lhu') && (
               <List.Item
+              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("VerifikasiLhu")}
               />
             )}
-          </List.Accordion>
+          </>
         )}
-
+  
         {hasAccess('report') && (
-          <List.Accordion
-            title={<Text className="font-poppins-semibold">Report</Text>}
-            left={props => <Ionicons {...props} name="document-text" size={22} />}
-            className='bg-[#ffffff]'
-          >
+          <>
+            <View className=" p-4 flex flex-row items-center mt-1">
+              {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
+              <Text className="font-poppins-semibold ml-2 text-black text-lg">Report</Text>
+            </View>
+            
             {hasItemAccess('laporan-hasil') && (
+              <View>
               <List.Item
+              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('kendali-mutu') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('registrasi-sampel') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("RegistrasiSampel")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('rekap-data') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("RekapData")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('rekap-parameter') && (
               <List.Item
+              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                )}
+                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
               />
             )}
-          </List.Accordion>
+          </>
         )}
         <TextFooter />
       </ScrollView>

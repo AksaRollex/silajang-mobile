@@ -96,39 +96,87 @@ const TabNavigator = () => {
   };
 
   return (
-    <Tab.Navigator
-      screenOptions={screenOptions}
-    >
+    <Tab.Navigator screenOptions={screenOptions}>
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View className="items-center">
-              {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+            <View
+              className="items-center"
+              style={{
+                shadowColor: focused ? "#4338ca" : "transparent",
+                shadowOffset: { width: 0, height: 4 },
+                shadowOpacity: focused ? 0.5 : 0,
+                shadowRadius: 6,
+                elevation: focused ? 10 : 0, // Shadow pada Android
+              }}
+            >
+              {focused && (
+                <View
+                  style={{
+                    width: 96, // 24 * 4 untuk lebarnya (sesuai dengan w-24 di Tailwind)
+                    height: 4, // Tinggi border
+                    backgroundColor: "#312e81",
+                    borderBottomLeftRadius: 999,
+                    borderBottomRightRadius: 999, 
+                    position: "absolute",
+                    top: -9, // Posisikan border sedikit di atas ikon
+                  }}
+                />
+              )}
               <Entypo name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-              <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+              <Text
+                className={`text-xs ${
+                  focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                }`}
+              >
                 Beranda
               </Text>
             </View>
           ),
         }}
       />
-
+  
       {hasPermission('Pengujian') && (
         <Tab.Screen
           name="Pengujian"
           component={IndexPengujian}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View className="items-center">
-                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+              <View
+                className="items-center"
+                style={{
+                  shadowColor: focused ? "#4338ca" : "transparent",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: focused ? 0.5 : 0,
+                  shadowRadius: 6,
+                  elevation: focused ? 10 : 0,
+                }}
+              >
+                {focused && (
+                  <View
+                    style={{
+                      width: 96,
+                      height: 4,
+                      backgroundColor: "#312e81",
+                      borderBottomLeftRadius: 999,
+                      borderBottomRightRadius: 999,
+                      position: "absolute",
+                      top: -9,
+                    }}
+                  />
+                )}
                 <MaterialCommunityIcons
                   name="text-box-check"
                   size={25}
-                  color={focused ? '#312e81' : '#a1a1aa'}
+                  color={focused ? '#4338ca' : '#a1a1aa'}
                 />
-                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+                <Text
+                  className={`text-xs ${
+                    focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                  }`}
+                >
                   Pengujian
                 </Text>
               </View>
@@ -147,17 +195,42 @@ const TabNavigator = () => {
           })}
         />
       )}
-
+  
       {hasPermission('Pembayaran') && (
         <Tab.Screen
           name="Pembayaran"
           component={IndexPembayaran}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View className="items-center">
-                {focused && <View className="w-24 h-1 bg-[#312e81] mb-1 rounded-full"/>}
+              <View
+                className="items-center"
+                style={{
+                  shadowColor: focused ? "#4338ca" : "transparent",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: focused ? 0.5 : 0,
+                  shadowRadius: 6,
+                  elevation: focused ? 10 : 0,
+                }}
+              >
+                {focused && (
+                  <View
+                    style={{
+                      width: 96,
+                      height: 4,
+                      backgroundColor: "#312e81",
+                      borderBottomLeftRadius: 999,
+                      borderBottomRightRadius: 999,
+                      position: "absolute",
+                      top: -9,
+                    }}
+                  />
+                )}
                 <Entypo name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-                <Text className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'}`}>
+                <Text
+                  className={`text-xs ${
+                    focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                  }`}
+                >
                   Pembayaran
                 </Text>
               </View>
