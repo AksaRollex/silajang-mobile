@@ -178,57 +178,6 @@ const Dashboard = () => {
         })
   }, []);
 
-  const customDrawerItems = [
-    { name: "Home", screen: "Home", icon: "home"},
-    
-    ...(user?.role?.name !== 'admin' ? [
-      { name: "Profile", screen: "Profile", icon: "user" }
-    ] : []),
-    
-    ...(user?.role?.name === 'admin' ? [{
-      name: "Master",
-      icon: "cog",
-    }] : []),
-    
-    ...(['admin','koordinator-administrasi', 'koordinator-teknis', 'kepala-upt'].includes(user?.role?.name) ? [{
-      name: "Konfigurasi",
-      icon: "wrench", 
-    }] : []),
-  ];
-
-  // Flatten menu items to include subItems
-  const getAllMenuItems = () => {
-    const items = [];
-    const drawerItems = customDrawerItems.filter(item => 
-      item.name === "Master" || item.name === "Konfigurasi"
-    );
-    
-    drawerItems.forEach(item => {
-      if (item.subItems) {
-        items.push(...item.subItems.map(subItem => ({
-          ...subItem,
-          parentIcon: item.icon,
-        })));
-      } else {
-        items.push({
-          ...item,
-          parentIcon: item.icon,
-        });
-      }
-    });
-    return items;
-  };
-
-  const handlePress = (item) => {
-    // Implementasi navigasi sesuai kebutuhan
-    console.log('Navigating to:', item.screen, item.params);
-  };
-
-  // Tambahkan pengecekan jika user belum ada
-  if (!user || !user.role) {
-    return null;
-  }
-
   const YearSelector = () => {
     const { data: user } = useUser();
     return (
@@ -296,26 +245,10 @@ const Dashboard = () => {
           <YearSelector />
         </View>
 
-        <View className="mx-4 mt-8 bg-white rounded-lg shadow-lg p-6">
-          <View className="flex-row flex-wrap gap-4">
-            {getAllMenuItems().map((item, index) => (
-              <TouchableOpacity
-                key={index}
-                onPress={() => handlePress(item)}
-                className="w-16 h-16 bg-indigo-50 rounded items-center justify-center"
-              >
-                <FontAwesome5 
-                  name={item.parentIcon} 
-                  size={24} 
-                  color="#312e81"
-                  solid // Tambahkan ini jika ingin menggunakan versi solid icons
-                />
-                <Text className="text-xs text-indigo-900 mt-1 text-center">
-                  {item.name}
-                </Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+        <View className="mx-4 mt-8 bg-white rounded-lg shadow-lg p-10">
+          <Text className="text-xl font-poppins-semibold text-indigo-900">
+            Card master & konfigurasi
+          </Text>
         </View>
 
         <View style={styles.contentContainer}>
@@ -379,30 +312,21 @@ const Dashboard = () => {
               ) : (
                 <>
                   <View className="mt-4">
-                    <View className="px-4 mb-2">
-                      <Text className="text-xl font-poppins-semibold text-black">
-                        Data Dashboard
-                      </Text>
-                    </View>
-
                     <ScrollView
                       horizontal
                       showsHorizontalScrollIndicator={false}
                       className="pl-4"
-                      contentContainerStyle={{ paddingBottom: 8 }}
                     >
                       {['admin', 'kepala-upt'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow bg-white border-l-[6px] border-[#828cff]"
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
-                        >
+                        <View className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]">
                           <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
-                            <MaterialIcons name="people-alt" size={24} color="white" style={{ width: 24, height: 24 }} />
+                            <MaterialIcons name="people-alt" size={24} color="#828cff" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-2xl font-poppins-semibold text-[#828cff]">
                               {dashboard.customers}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Customers
                             </Text>
                           </View>
@@ -410,16 +334,15 @@ const Dashboard = () => {
                       )}
 
                       {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}>
+                        <View className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]">
                           <View className="bg-[#5a3dff] bg-opacity-10 p-3 rounded-full">
-                            <FontAwesome5 name="file-contract" size={20} color="white" style={{ width: 20, height: 20, left: 3 }} />
+                            <FontAwesome5 name="file-contract" size={20} color="#5a3dff" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-2xl font-poppins-semibold text-[#5a3dff]">
                               {dashboard.allSampels}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Total Permohonan
                             </Text>
                           </View>
@@ -428,18 +351,17 @@ const Dashboard = () => {
 
                       {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                         <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#ffc300]"
+                          className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#ffc300]"
                           onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                         >
                           <View className="bg-[#ffc300] bg-opacity-10 p-3 rounded-full">
-                            <FontAwesome5 name="check-circle" size={20} color="white" style={{ width: 20, height: 20 }} />
+                            <FontAwesome5 name="check-circle" size={20} color="#ffc300" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-2xl font-poppins-semibold text-[#ffc300]">
                               {dashboard.newSampels}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Persetujuan Permohonan
                             </Text>
                           </View>
@@ -448,18 +370,17 @@ const Dashboard = () => {
 
                       {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                         <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
+                          className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
                           onPress={() => navigation.navigate('Pengujian', { screen: 'Analis' })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                         >
                           <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
-                            <Fontisto name="laboratory" size={20} color="white" style={{ width: 20, height: 20 }} />
+                            <Fontisto name="laboratory" size={20} color="#f2416e" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
                               {dashboard.undoneSampels}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Sampel Belum Dianalisa
                             </Text>
                           </View>
@@ -468,18 +389,17 @@ const Dashboard = () => {
 
                       {['admin', 'kepala-upt', 'koordinator-teknis'].includes(user.role.name) && (
                         <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
+                          className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
                           onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                         >
                           <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="document-text" size={20} color="white" style={{ width: 20, height: 20 }} />
+                            <IonIcons name="document-text" size={20} color="#f2416e" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
                               {dashboard.unverifSampels}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Dokumen Belum Diverifikasi
                             </Text>
                           </View>
@@ -488,18 +408,17 @@ const Dashboard = () => {
 
                       {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
                         <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0fd194]"
+                          className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0fd194]"
                           onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                         >
                           <View className="bg-[#0fd194] bg-opacity-10 p-3 rounded-full">
-                            <FontAwesome5 name="coins" size={20} color="white" style={{ width: 20, height: 20 }} />
+                            <FontAwesome5 name="coins" size={20} color="#0fd194" />
                           </View>
                           <View className="ml-4 flex-1">
                             <Text className="text-lg font-poppins-semibold text-[#0fd194]">
                               {rupiah(dashboard.revenue)}
                             </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
+                            <Text className="text-sm font-poppins-medium text-gray-600">
                               Pendapatan
                             </Text>
                           </View>
@@ -507,36 +426,34 @@ const Dashboard = () => {
                       )}
 
                       <TouchableOpacity
-                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
+                        className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
                         onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                       >
                         <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                          <FontAwesome5 name="medal" size={20} color="white" style={{ width: 20, height: 20 }} />
+                          <FontAwesome5 name="medal" size={20} color="#0090a6" />
                         </View>
                         <View className="ml-4 flex-1">
                           <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
                             {dashboard.total?.toFixed(2)}
                           </Text>
-                          <Text className="text-sm font-poppins-medium text-black">
+                          <Text className="text-sm font-poppins-medium text-gray-600">
                             IKM Unit Pelayanan
                           </Text>
                         </View>
                       </TouchableOpacity>
 
                       <TouchableOpacity
-                        className="w-80 h-36 mr-8 rounded-lg p-4  flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
+                        className="w-72 h-24 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
                         onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3,  }}
                       >
                         <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                          <MaterialCommunityIcons name="clipboard-text" size={20} color="white" style={{ width: 20, height: 20 }} />
+                          <MaterialCommunityIcons name="clipboard-text" size={20} color="#0090a6" />
                         </View>
                         <View className="ml-4 flex-1">
                           <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
                             {dashboard.jumlah}
                           </Text>
-                          <Text className="text-sm font-poppins-medium text-black">
+                          <Text className="text-sm font-poppins-medium text-gray-600">
                             Jumlah Responden
                           </Text>
                         </View>
@@ -672,7 +589,7 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     flexWrap: "wrap",
     justifyContent: "space-around",
-    paddingVertical: 35,
+    paddingVertical: 30,
     paddingTop: 35,
     zIndex: 0,
   },
