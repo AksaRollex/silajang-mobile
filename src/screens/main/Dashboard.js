@@ -604,7 +604,7 @@ const Dashboard = () => {
                       className="absolute"
                         style={{
                           marginLeft: 72,
-                          marginTop: 62,
+                          marginTop: 59,
                           position: "absolute",
                           width:100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                           height: 100,
