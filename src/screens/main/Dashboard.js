@@ -203,35 +203,23 @@ const Dashboard = () => {
           </View>
 
           <View className="p-5">
-            <View className="flex flex-row justify-between">
+            <View className="flex flex-row justify-center gap-16">
               <View className="items-center">
                 <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
                   onPress={() => navigation.navigate("IndexMaster")}
                 >
                   <IonIcons name="cube" size={26} color="#312e81" />
                 </TouchableOpacity>
-                <Text className="text-xs text-gray-700">Master</Text>
+                <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
               </View>
-
+              <View className="h-18 w-[2px] bg-gray-100" />
               <View className="items-center">
-                <View className="bg-emerald-500 w-12 h-12 rounded-lg items-center justify-center mb-2">
-                  <MaterialIcons name="attach-money" size={24} color="white" />
-                </View>
-                <Text className="text-xs text-gray-700">Konfigurasi</Text>
-              </View>
-
-              <View className="items-center">
-                <View className="bg-blue-700 w-12 h-12 rounded-lg items-center justify-center mb-2">
-                  <MaterialIcons name="add-circle-outline" size={24} color="white" />
-                </View>
-                <Text className="text-xs text-gray-700">Tambahan</Text>
-              </View>
-
-              <View className="items-center">
-                <View className="bg-blue-500 w-12 h-12 rounded-lg items-center justify-center mb-2">
-                  <MaterialIcons name="payment" size={24} color="white" />
-                </View>
-                <Text className="text-xs text-gray-700">Becak</Text>
+                <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                  onPress={() => navigation.navigate("IndexMaster")}
+                  >
+                  <IonIcons name="options" size={24} color="#312e81" />
+                </TouchableOpacity>
+                <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
               </View>
             </View>
           </View>

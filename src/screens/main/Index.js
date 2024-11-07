@@ -126,7 +126,7 @@ const TabNavigator = () => {
                   }}
                 />
               )}
-              <Entypo name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
+              <IonIcons name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
               <Text
                 className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
                   }`}
@@ -167,8 +167,8 @@ const TabNavigator = () => {
                     }}
                   />
                 )}
-                <MaterialCommunityIcons
-                  name="text-box-check"
+                <IonIcons
+                  name="document-text"
                   size={25}
                   color={focused ? '#4338ca' : '#a1a1aa'}
                 />
@@ -224,7 +224,7 @@ const TabNavigator = () => {
                     }}
                   />
                 )}
-                <Entypo name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
+                <IonIcons name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
                 <Text
                   className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
                     }`}
