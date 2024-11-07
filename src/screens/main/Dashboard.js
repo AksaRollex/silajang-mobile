@@ -215,7 +215,7 @@ const Dashboard = () => {
               <View className="h-18 w-[2px] bg-gray-100" />
               <View className="items-center">
                 <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexMaster")}
+                  onPress={() => navigation.navigate("IndexKonfigurasi")}
                   >
                   <IonIcons name="options" size={24} color="#312e81" />
                 </TouchableOpacity>

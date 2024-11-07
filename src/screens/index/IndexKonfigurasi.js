@@ -3,6 +3,7 @@ import React, { useState } from "react";
 import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import { List } from 'react-native-paper';
+import BackButton from "../components/BackButton";
 import { useNavigation } from '@react-navigation/native';
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -18,7 +19,16 @@ export default function IndexKonfigurasi() {
   const roleAccess = {
     admin: {
       sections: ['konfigurasi'],
-      items: ['kota_dan_kabupaten','kecamatan','kelurahan']
+      items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian']
+    },
+    'kepala-upt': {
+      items: ['tracking-pengujian']
+    },
+    'koordinator-administrasi': {
+      items: ['tracking-pengujian']
+    },
+    'koordinator-teknis': {
+      items: ['tracking-pengujian']
     },
   };
   const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
@@ -35,7 +45,7 @@ export default function IndexKonfigurasi() {
 
   // Check if user is only a customer
   const isCustomerOnly = () => {
-    return userRoles.length === 1 && userRoles[0] === 'customer';   
+    return userRoles.length === 1 && userRoles[0] === 'customer';
   };
   let RenderedComponent;
   switch (activeComponent) {
@@ -84,62 +94,100 @@ export default function IndexKonfigurasi() {
   return (
     <View className="bg-[#ececec] flex-1 flex-start">
       <ScrollView contentContainerStyle={styles.contentContainer}>
-        {hasAccess('master') && (
+        {hasAccess('konfigurasi') && (
           <>
+
+            <View className="flex-row items-center space-x-2 mt-5 bg-white p-2 ml-3 mr-3 rounded-xl py-2.5">
+              <BackButton action={() => navigation.goBack()} size={26} className="ml-2" />
+
+              <View className="w-px h-full bg-gray-200 " />
+
+              <View className="flex-1 items-center mr-11">
+                <Text className="text-[18px] text-black font-poppins-semibold">
+                  Menu Konfigurasi
+                </Text>
+              </View>
+            </View>
+
+
             <View className=" mt-2 p-4 flex flex-row items-center ">
               {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
               <Text className="font-poppins-semibold text-black text-lg ml-2">Konfigurasi</Text>
             </View>
-            
-            {hasItemAccess('metode') && (
+
+            {hasItemAccess('log-tte') && (
               <View>
 
-              <List.Item
-                
-                style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Kota dan Kabupaten</Text>}
-                left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
-                )}
-                right={props => (
-                  <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
-                )}
-                className="px-5 bg-[#f8f8f8] ml-3 mr-3"
-                onPress={() => navigation.navigate("Kontrak")}
-              />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-            </View>
-              
+                <List.Item
+
+                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                  title={<Text className="font-poppins-medium text-[15px]">Log TTE</Text>}
+                  left={() => (
+                    <View className="bg-blue-600 rounded-full">
+                      <Ionicons name="document-text" size={17} color={'white'} style={{ padding: 5 }} />
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                  )}
+                  className="px-5 bg-[#f8f8f8] ml-3 mr-3"
+                  onPress={() => navigation.navigate("LogTte")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+
             )}
-            {hasItemAccess('peraturan') && (
+            {hasItemAccess('tanda-tangan') && (
               <View>
-              <List.Item
-                title={<Text className="font-poppins-medium text-[15px]">Kecamatan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
-                )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("Persetujuan")}
-              />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                <List.Item
+                  title={<Text className="font-poppins-medium text-[15px]">Tanda Tangan</Text>}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  left={() => (
+                    <View className="bg-orange-600 rounded-full">
+                      <Ionicons name="create" size={17} color={'white'} style={{ padding: 5 }} />
+                    </View>
+                  )}
+                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  onPress={() => navigation.navigate("TandaTangan")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
             )}
-            {hasItemAccess('parameter') && (
-            <View>
-              <List.Item
-                title={<Text className="font-poppins-medium text-[15px]">Kelurahan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
-                )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("PengambilSample")}
-              />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+            {hasItemAccess('umpan-balik') && (
+              <View>
+                <List.Item
+                  title={<Text className="font-poppins-medium text-[15px]">Umpan Balik</Text>}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  left={() => (
+                    <View className="bg-green-600 rounded-full">
+                      <Ionicons name="chatbubble-ellipses" size={17} color={'white'} style={{ padding: 5 }} />
+                    </View>
+                  )}
+                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  onPress={() => navigation.navigate("UmpanBalik")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
             )}
-            
+
+            {hasItemAccess('tracking-pengujian') && (
+              <View>
+                <List.Item
+                  title={<Text className="font-poppins-medium text-[15px]">Tracking Pengujian</Text>}
+                  style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  left={() => (
+                    <View className="bg-purple-600 rounded-full">
+                      <Ionicons name="analytics" size={17} color={'white'} style={{ padding: 5 }} />
+                    </View>
+                  )}
+                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  onPress={() => navigation.navigate("TrackingPenhujian")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+
           </>
         )}
         <TextFooter />

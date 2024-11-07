@@ -25,6 +25,7 @@ import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
 import IndexMaster from "../index/IndexMaster";
+import IndexKonfigurasi from "../index/IndexKonfigurasi";
 import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
 const { Navigator, Screen } = createNativeStackNavigator();
@@ -635,6 +636,7 @@ const Admin = () => (
       <Drawer.Screen name="User" component={IndexUser} />
       <Drawer.Screen name="Wilayah" component={IndexWilayah} />
       <Drawer.Screen name="IndexMaster" component={IndexMaster} />
+      <Drawer.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
     </Drawer.Navigator>
 
   </NavigationContainer>
