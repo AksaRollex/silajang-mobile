@@ -600,6 +600,18 @@ const Dashboard = () => {
                         paddingLeft={"15"}
                         hasLegend={false}
                       />
+                      <View
+                      className="absolute"
+                        style={{
+                          marginLeft: 72,
+                          marginTop: 62,
+                          position: "absolute",
+                          width:100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                          height: 100,
+                          backgroundColor: "white",
+                          borderRadius: 50, // Ini membuatnya menjadi lingkaran
+                        }}
+                      />
                     </View>
 
                     <View className="mt-2 ml-4">
@@ -646,7 +658,18 @@ const Dashboard = () => {
                         paddingLeft={"15"}
                         hasLegend={false}
                       />
-
+                      <View
+                      className="absolute"
+                        style={{
+                          marginLeft: 45,
+                          marginTop: 75,
+                          position: "absolute",
+                          width:150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                          height: 150,
+                          backgroundColor: "white",
+                          borderRadius: 100, // Ini membuatnya menjadi lingkaran
+                        }}
+                      />
 
                     </View>
                     <View className="mt-2 ml-4">
