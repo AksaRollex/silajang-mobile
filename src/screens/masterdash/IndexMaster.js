@@ -10,6 +10,8 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { TextFooter } from "../components/TextFooter";
 import Permohonan from "../pengujian/Permohonan";
 import TrackingPengujian from "../pengujian/TrackingPengujian";
+import BackButton from "../components/BackButton";
+
 
 export default function IndexMaster() {
   const navigation = useNavigation();
@@ -113,6 +115,19 @@ export default function IndexMaster() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {hasAccess('master') && (
           <>
+
+            <View className="flex-row items-center space-x-2 mt-5 bg-white p-2 ml-3 mr-3 rounded-xl py-2.5">
+              <BackButton action={() => navigation.goBack()} size={26} className="ml-2" />
+
+              <View className="w-px h-full bg-gray-200 " />
+
+              <View className="flex-1 items-center mr-11">
+                <Text className="text-[18px] text-black font-poppins-semibold">
+                  Menu Konfigurasi
+                </Text>
+              </View>
+            </View>
+
             <View className=" mt-2 p-4 flex flex-row items-center ">
               {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
               <Text className="font-poppins-semibold text-black text-lg ml-2">Master</Text>
@@ -134,7 +149,7 @@ export default function IndexMaster() {
                   <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
                 )}
                 className="px-5 bg-[#f8f8f8] ml-3 mr-3"
-                onPress={() => navigation.navigate("Kontrak")}
+                onPress={() => navigation.navigate("Metode")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
             </View>
@@ -151,7 +166,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("Persetujuan")}
+                onPress={() => navigation.navigate("Peraturan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -167,7 +182,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("PengambilSample")}
+                onPress={() => navigation.navigate("Parameter")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -182,7 +197,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("Paket")}
                 
               />
               
@@ -198,7 +213,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("Pengawetan")}
                 
               />
               
@@ -213,7 +228,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("JenisSampel")}
                 
               />
               
@@ -228,7 +243,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("JenisWadah")}
                 
               />
               
@@ -243,7 +258,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("JasaPengambilan")}
                 
               />
               
@@ -258,7 +273,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("RadiusPengambilan")}
                 
               />
               
@@ -273,7 +288,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("LiburCuti")}
                 
               />
               
@@ -289,7 +304,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
+                onPress={() => navigation.navigate("KodeRetribusi")}
               />
             )}
           </>
@@ -314,7 +329,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("Analis")}
+                onPress={() => navigation.navigate("Jabatan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -331,7 +346,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("Kortek")}
+                onPress={() => navigation.navigate("Users")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -358,7 +373,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("LaporanHasilPengujian")}
+                onPress={() => navigation.navigate("KotaKab")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -374,6 +389,8 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                onPress={() => navigation.navigate("Kecamatan")}
+
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
@@ -390,7 +407,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
-                onPress={() => navigation.navigate("RegistrasiSampel")}
+                onPress={() => navigation.navigate("Kelurahan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
