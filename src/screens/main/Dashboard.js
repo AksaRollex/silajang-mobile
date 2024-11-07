@@ -261,7 +261,6 @@ const Dashboard = () => {
           <MainCard />
         </View>
 
-
         <View className="items-center mt-28">
           {/* card picker tahun */}
           <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
@@ -389,9 +388,11 @@ const Dashboard = () => {
                       contentContainerStyle={{ paddingBottom: 8 }}
                     >
                       {['admin', 'kepala-upt'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow bg-white border-l-[6px] border-[#828cff]"
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
+                         <TouchableOpacity
+                         className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
+                         onPress={() => navigation.navigate('IndexMaster', { screen: "Users" })}
+                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                       >
                           <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
                             <IonIcons name="people" size={24} color="white" style={{ width: 24, height: 24 }} />
                           </View>
@@ -403,7 +404,7 @@ const Dashboard = () => {
                               Customers
                             </Text>
                           </View>
-                        </View>
+                          </TouchableOpacity>
                       )}
 
                       {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (

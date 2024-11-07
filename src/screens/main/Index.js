@@ -615,18 +615,9 @@ const Admin = () => (
         headerTintColor: "white",
         drawerActiveBackgroundColor: "#312e81",
         drawerActiveTintColor: "#fff",
-        // headerLeft: () => (
-        //   <TouchableOpacity
-        //     onPress={() => navigation.toggleDrawer()}
-        //     className="ml-4"
-        //   >
-        //     <Image
-        //       source={require("@/assets/images/menus.png")}
-        //       className="w-8 h-4"
-        //       style={{ tintColor: 'white' }}
-        //     />
-        //   </TouchableOpacity>
-        // ),
+        headerLeft: () => null,
+        gestureEnabled: false,
+
       })}
     >
       <Drawer.Screen name="Home" component={TabNavigator} />
