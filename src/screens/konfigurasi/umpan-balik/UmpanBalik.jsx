@@ -4,6 +4,7 @@ import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import IonIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
@@ -299,7 +300,7 @@ const handleMonthChange = (event) => {
           }}>
             <View className="flex-row justify-content-center items-center">
               <View className=" ml-5 ">
-                <FontAwesome5Icon name="medal" size={30} color="#0090a6" />
+                <IonIcons name="ribbon" size={30} color="#0090a6" />
               </View>
               <View className="p-4 ml-4">
                 <Text className="text-[20px] font-poppins-bold text-[#0090a6]">
