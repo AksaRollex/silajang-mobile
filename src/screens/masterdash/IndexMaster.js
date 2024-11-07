@@ -123,7 +123,7 @@ export default function IndexMaster() {
 
               <View className="flex-1 items-center mr-11">
                 <Text className="text-[18px] text-black font-poppins-semibold">
-                  Menu Konfigurasi
+                  Menu Master
                 </Text>
               </View>
             </View>
