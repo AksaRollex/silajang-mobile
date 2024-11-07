@@ -7,6 +7,8 @@ import {
   Image,
   ActivityIndicator,
   RefreshControl,
+  Platform,
+  Dimensions,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import axios from "@/src/libs/axios";
@@ -21,6 +23,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
+const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 
@@ -68,6 +71,62 @@ const Dashboard = () => {
     fetchUserData();
   }, [fetchUserData]);
 
+  const YearSelector = ({ value, onValueChange, items }) => (
+    <View style={styles.yearSelectorContainer}>
+      <View style={styles.yearLabel}>
+        <Icon name="calendar" size={20} color="#6B7280" />
+        <Text style={styles.yearText}>Tahun</Text>
+      </View>
+      <View style={styles.pickerContainer}>
+        <RNPickerSelect
+          onValueChange={onValueChange}
+          items={items}
+          value={value}
+          style={pickerSelectStyles}
+          useNativeAndroidPickerStyle={false}
+          Icon={() => (
+            <MaterialIcons
+              name="keyboard-arrow-down"
+              size={25}
+              color="#6B7280"
+              style={{ marginTop: 10, marginRight: 12 }}
+            />
+          )}
+          placeholder={{
+            label: "Pilih Tahun",
+            value: null,
+            color: "#9CA3AF",
+          }}
+        />
+      </View>
+    </View>
+  );
+
+  const pickerSelectStyles = StyleSheet.create({
+    inputIOS: {
+      fontSize: 17,
+      paddingVertical: 8,
+      paddingHorizontal: 20,
+      borderWidth: 1,
+      borderColor: "#E5E7EB",
+      borderRadius: 8,
+      color: "#4B5563",
+      fontFamily: "Poppins-SemiBold",
+      textAlign: "center",
+    },
+    inputAndroid: {
+      fontSize: 17,
+      paddingHorizontal: 20,
+      paddingVertical: 8,
+      borderWidth: 1,
+      borderColor: "#E5E7EB",
+      borderRadius: 8,
+      color: "#4B5563",
+      fontFamily: "Poppins-SemiBold",
+      textAlign: "center",
+    },
+  });
+
   return (
     <View style={styles.container}>
       <Header
@@ -75,95 +134,80 @@ const Dashboard = () => {
           navigation.navigate("Profile");
         }}
       />
-      <View className="p-4 flex items-end">
-        <View>
-          <RNPickerSelect
-            onValueChange={handleYearChange}
-            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
-            value={tahun}
-            style={{
-              inputIOS: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-              inputAndroid: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-            }}
-            Icon={() => {
-              return (
-                <MaterialIcons
-                  style={{ marginTop: 16, marginRight: 12 }}
-                  name="keyboard-arrow-down"
-                  size={24}
-                  color="black"
-                />
-              );
-            }}
-          />
-        </View>
-      </View>
+
+      <YearSelector
+        value={tahun}
+        onValueChange={handleYearChange}
+        items={tahuns.map(item => ({ label: item.text, value: item.id }))}
+      />
+
       {user.has_tagihan && (
-        <View className="p-2">
-          <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-            <Text className="text-black mb-0">
-              Tidak dapat membuat Permohonan Baru
-            </Text>
-            <Text className="text-black text-xs">
-              Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-            </Text>
+        <View style={styles.warningContainer}>
+          <View style={styles.warningContent}>
+            <FontAwesome6Icon
+              name="triangle-exclamation"
+              size={20}
+              color="#D97706"
+            />
+            <View style={styles.warningTextContainer}>
+              <Text style={styles.warningTitle}>
+                Tidak dapat membuat Permohonan Baru
+              </Text>
+              <Text style={styles.warningSubtitle}>
+                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+              </Text>
+            </View>
           </View>
         </View>
       )}
+
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}
         showsVerticalScrollIndicator={false}>
-        <View style={styles.gridContainer} className="px-2">
+        <View style={styles.dashboardContainer}>
           {dashboard ? (
             <>
               <DashboardCard
                 style={styles.cardNew}
                 number={dashboard.permohonanBaru}
                 text="Permohonan Baru"
-                numberStyle={styles.card1}
-                icon={"user-group"}
-                iconColor={"#FFA500"}
+                icon="file-circle-plus"
+                iconColor="#6366F1"
+                gradientColors={["#EEF2FF", "#C7D2FE"]}
               />
               <DashboardCard
                 style={styles.cardProcess}
                 number={dashboard.permohonanDiproses}
-                text="Permohonan Proses"
-                numberStyle={styles.card2}
-                icon={"leaf"}
-                iconColor={"#6b7fde"}
+                text="Sedang Diproses"
+                icon="leaf"
+                iconColor="#EC4899"
+                gradientColors={["#FCE7F3", "#FBCFE8"]}
               />
               <DashboardCard
                 style={styles.cardCompleted}
                 number={dashboard.permohonanSelesai}
-                text="Permohonan Selesai"
-                numberStyle={styles.card3}
-                icon={"circle-check"}
-                iconColor={"#008000"}
+                text="Telah Selesai"
+                icon="clipboard-check"
+                iconColor="#10B981"
+                gradientColors={["#ECFDF5", "#A7F3D0"]}
               />
               <DashboardCard
                 style={styles.cardTotal}
+                className="mb-2"
                 number={dashboard.permohonanTotal}
                 text="Total Permohonan"
-                numberStyle={styles.card4}
-                icon={"wallet"}
-                iconColor={"#321e81"}
+                icon="chart-pie"
+                iconColor="#8B5CF6"
+                gradientColors={["#EDE9FE", "#DDD6FE"]}
               />
             </>
           ) : (
-            <View className="flex-1 justify-center items-center">
-              <ActivityIndicator size={"large"} color={"#312e81"} />
+            <View style={styles.loadingContainer}>
+              <ActivityIndicator size="large" color="#6366F1" />
             </View>
           )}
         </View>
-        <FooterText />
+        {/* <FooterText /> */}
       </ScrollView>
     </View>
   );
@@ -173,234 +217,206 @@ const DashboardCard = ({
   style,
   number,
   text,
-  imageSource,
-  numberStyle,
   icon,
   iconColor,
+  gradientColors,
 }) => (
-  <View style={[styles.cardContainer, style]}>
-    <View style={styles.row}>
-      <FontAwesome6Icon name={icon} size={32} color={iconColor} />
-      <Text style={[styles.cardNumber, numberStyle]} className="text-end">
-        {number}
-      </Text>
+  <View style={[styles.card, style]}>
+    <View
+      style={[styles.cardBackground, { backgroundColor: gradientColors[0] }]}>
+      <View
+        style={[styles.cardAccent, { backgroundColor: gradientColors[1] }]}
+      />
     </View>
-    <Text style={[styles.cardInfoValue, styles.cardTextColor]}>{text}</Text>
+    <View style={styles.cardContent}>
+      <View className="flex space-y-10">
+        <View style={styles.iconContainer}>
+          <FontAwesome6Icon name={icon} size={25} color={iconColor} />
+        </View>
+        <Text style={styles.cardText} className="font-poppins-semibold">
+          {text}
+        </Text>
+      </View>
+      <View style={styles.numberContainer}>
+        <Text style={[styles.cardNumber, { color: iconColor }]}>{number}</Text>
+      </View>
+    </View>
   </View>
 );
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ececec",
+    backgroundColor: "#F9FAFB",
   },
-  headerContainer: {
-    width: "100%",
-    paddingVertical: 10,
-    backgroundColor: Colors.brand,
+  yearPickerContainer: {
+    flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    flexDirection: "row",
-    elevation: 4,
-  },
-  logo: {
-    width: 40,
-    height: 40,
-    marginTop: 8,
-  },
-  logoFiles: {
-    width: 55,
-    height: 55,
-  },
-  logoProcess: {
-    width: 55,
-    height: 55,
-  },
-  logoChecked: {
-    width: 55,
-    height: 55,
-  },
-  logoSelectAll: {
-    width: 55,
-    height: 55,
-  },
-  badge: {
-    alignSelf: "flex-start",
-    paddingVertical: 4,
-    paddingHorizontal: 8,
-    borderRadius: 4,
-    marginBottom: 8,
-  },
-  headerText: {
-    fontSize: 22,
-    color: "white",
-    fontWeight: "bold",
-    marginLeft: 10,
-    alignSelf: "center",
-  },
-  searchFilterContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
     paddingHorizontal: 20,
-    paddingVertical: 10,
-    backgroundColor: "white",
+    paddingVertical: 15,
+    backgroundColor: "#FFFFFF",
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
   },
-  picker: {
-    paddingHorizontal: rem(3.55),
-    borderWidth: 3,
-    color: "black",
-    backgroundColor: "white",
+  yearLabel: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#374151",
+    marginRight: 12,
   },
-  scrollViewContainer: {
-    // padding: 10,
+  pickerWrapper: {
+    flex: 1,
+    maxWidth: 150,
   },
-  gridContainer: {
+  pickerStyle: {
+    backgroundColor: "#F3F4F6",
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    borderRadius: 8,
+    color: "#374151",
+    fontSize: 16,
+  },
+  pickerIcon: {
+    position: "absolute",
+    right: 12,
+    top: "50%",
+    marginTop: -12,
+  },
+  warningContainer: {
+    padding: 16,
+  },
+  warningContent: {
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "#FEF3C7",
+    padding: 16,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: "#FCD34D",
+  },
+  warningTextContainer: {
+    marginLeft: 12,
+    flex: 1,
+  },
+  warningTitle: {
+    fontSize: 15,
+    fontWeight: "600",
+    color: "#92400E",
+  },
+  warningSubtitle: {
+    fontSize: 13,
+    color: "#92400E",
+    opacity: 0.8,
+  },
+  dashboardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
+    padding: 12,
+    gap: 20,
+  },
+  card: {
+    width: (windowWidth - 36) / 1,
+    height: 150,
+    borderRadius: 16,
+    overflow: "hidden",
+    backgroundColor: "#FFFFFF",
+    elevation: 2,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+  },
+  cardBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+  },
+  cardAccent: {
+    position: "absolute",
+    top: -100,
+    right: -100,
+    width: 220,
+    height: 220,
+    borderRadius: 200,
+    opacity: 0.4,
+  },
+  cardContent: {
+    flex: 1,
+    padding: 16,
     justifyContent: "space-between",
-    marginBottom: 20,
   },
-  cardContainer: {
-    width: "48%",
-    height: 160,
-    borderRadius: 7,
-    padding: 20,
-    flexDirection: "column",
+  upperContent: {
+    alignItems: "flex-start",
+    gap: 12,
   },
-  row: {
-    flexDirection: "row",
+  iconContainer: {
+    width: 45,
+    height: 45,
+    borderRadius: 30,
+    backgroundColor: "#FFFFFF",
+    justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 3 },
+    shadowOpacity: 0.07,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  cardNew: {
-    backgroundColor: "#f8f8f8",
-    shadowColor: "#ffffff",
-    borderTopColor: "#ffffff",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 10,
-    borderColor: "#FFA500",
-    borderTopWidth: 6,
-  },
-  cardProcess: {
-    backgroundColor: "white",
-    shadowColor: "white",
-    borderTopColor: "white",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 10,
-    borderColor: "#6b7fde",
-    borderTopWidth: 6,
-  },
-  cardCompleted: {
-    backgroundColor: "white",
-    shadowColor: "white",
-    borderTopColor: "white",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 10,
-    borderColor: "#008000",
-    borderTopWidth: 6,
-  },
-  cardTotal: {
-    backgroundColor: "white",
-    shadowColor: "white",
-    borderTopColor: "white",
-    shadowOffset: {
-      width: 0,
-      height: 6,
-    },
-    shadowOpacity: 0.4,
-    shadowRadius: 10,
-    elevation: 10,
-    borderColor: "#312e81",
-    borderTopWidth: 6,
+  numberContainer: {
+    position: "absolute",
+    right: 24,
+    top: 25,
+    paddingHorizontal: 1,
+    alignItems: "flex-end",
   },
   cardNumber: {
-    fontSize: 55,
-    letterSpacing: 4,
-    marginHorizontal: 20,
+    fontSize: 33,
+    fontFamily: "Poppins-SemiBold",
   },
-  cardTextColor: {
-    color: "black",
+  cardText: {
+    fontSize: 20,
+    color: "#4B5563",
+    fontWeight: "500",
   },
-  cardInfoValue: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "black",
-    textAlign: "left",
+  loadingContainer: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    padding: 20,
   },
-  card1: {
-    color: "#FFA500",
+  scrollViewContainer: {
+    flexGrow: 1,
   },
-  card2: {
-    color: "#6b7fde",
-  },
-  card3: {
-    color: "#008000",
-  },
-  card4: {
-    color: "#312e81",
-  },
-  chartContainer: {
-    marginVertical: 20,
-  },
-  chartHeader: {
+  yearSelectorContainer: {
+    margin: 16,
+    backgroundColor: "#FFFFFF",
+    borderRadius: 12,
+    padding: 12,
     flexDirection: "row",
     alignItems: "center",
-    justifyContent: "center",
-    paddingHorizontal: 12,
-    paddingVertical: 10,
-    borderRadius: 5,
-    backgroundColor: "rgba(100,100,100,0.2)",
+    justifyContent: "space-between",
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.05,
+    shadowRadius: 3,
+    elevation: 2,
   },
-  chartHeaderText: {
-    fontSize: 16,
-    fontWeight: "bold",
-    color: "black",
-    marginLeft: 8,
-  },
-  chartStyle: {
-    marginTop: 8,
-    marginBottom: 40,
-    borderRadius: 10,
-  },
-  logoFiles: {
-    width: 24,
-    height: 24,
-  },
-  logoProcess: {
-    width: 24,
-    height: 24,
-  },
-  logoChecked: {
-    width: 24,
-    height: 24,
-  },
-  logoSelectAll: {
-    width: 24,
-    height: 24,
-  },
-  footer: {
-    padding: 10,
-    justifyContent: "flex-end",
+  yearLabel: {
+    flexDirection: "row",
     alignItems: "center",
+    gap: 8,
   },
-  footerText: {
-    fontSize: 12,
-    textAlign: "center",
-    color: "gray",
+  yearText: {
+    fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+    color: "#6B7280",
+    marginTop: 5,
+  },
+  pickerContainer: {
+    flex: 1,
+    maxWidth: 150,
   },
 });
 

@@ -1,3 +1,5 @@
+// index main
+
 import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
@@ -36,6 +38,7 @@ import Akun from "../profile/tabs/Akun";
 import Perusahaan from "../profile/tabs/Perusahaan";
 import Keamanan from "../profile/tabs/Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import PengujianScreen from "../pengujian/Pengujian";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -116,8 +119,7 @@ const CustomTabBar = props => {
           x: pageX,
           width: width,
         });
-        setPengujianDropdownVisible(true);
-        setPembayaranDropdownVisible(false);
+        navigation.navigate("Pengujian")
       });
     }
   };
@@ -129,8 +131,7 @@ const CustomTabBar = props => {
           x: pageX,
           width: width,
         });
-        setPembayaranDropdownVisible(true);
-        setPengujianDropdownVisible(false);
+        navigation.navigate("Pembayaran")
       });
     }
   };
@@ -166,11 +167,7 @@ const CustomTabBar = props => {
                 navigation.navigate("Permohonan");
                 closeAllDropdowns();
               }}>
-              <Text
-                style={styles.dropdownText}
-                className="font-poppins-semibold">
-                Permohonan
-              </Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Permohonan</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -178,11 +175,7 @@ const CustomTabBar = props => {
                 navigation.navigate("TrackingPengujian");
                 closeAllDropdowns();
               }}>
-              <Text
-                style={styles.dropdownText}
-                className="font-poppins-semibold">
-                Tracking Pengujian
-              </Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Tracking Pengujian</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -210,11 +203,7 @@ const CustomTabBar = props => {
                 navigation.navigate("PengujianPembayaran");
                 closeAllDropdowns();
               }}>
-              <Text
-                style={styles.dropdownText}
-                className="font-poppins-semibold">
-                Pengujian
-              </Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Pengujian</Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -222,11 +211,7 @@ const CustomTabBar = props => {
                 navigation.navigate("Multipayment");
                 closeAllDropdowns();
               }}>
-              <Text
-                style={styles.dropdownText}
-                className="font-poppins-semibold">
-                Multi Payment
-              </Text>
+              <Text style={styles.dropdownText} className="font-poppins-semibold">Multi Payment</Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -273,9 +258,7 @@ const CustomTabBar = props => {
                     size={25}
                     color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}
-                    className="font-poppins-semibold">
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Beranda
                   </Text>
                 </View>
@@ -290,9 +273,7 @@ const CustomTabBar = props => {
                     size={25}
                     color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}
-                    className="font-poppins-semibold">
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pengujian
                   </Text>
                 </View>
@@ -308,9 +289,7 @@ const CustomTabBar = props => {
                     size={25}
                     color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}
-                    className="font-poppins-semibold">
+                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pembayaran
                   </Text>
                 </View>
@@ -403,39 +382,19 @@ const TabNavigator = () => {
         )}
       </Stack.Screen>
       <Stack.Screen name="Permohonan" component={PermohonanScreen} />
-      <Stack.Screen
-        name="TrackingPengujian"
-        component={TrackingPengujianScreen}
-      />
-      <Stack.Screen
-        name="PengujianPembayaran"
-        component={PengujianPembayaran}
-      />
+      <Stack.Screen name="Pengujian" component={PengujianScreen}/>
+      <Stack.Screen name="TrackingPengujian" component={TrackingPengujianScreen} />
+      <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
       <Stack.Screen name="Multipayment" component={MultiPayment} />
-      <Stack.Screen name="TitikUji" component={TitikUji} />
-      <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
-      <Stack.Screen name="Parameter" component={Parameter} />
-      <Stack.Screen name="TrackingList" component={TrackingList} />
-      <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
-      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
-      <Stack.Screen name="Pembayaran" component={Pembayaran} />
-      <Stack.Screen name="PengujianDetail" component={PengujianDetail} />
-      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail} />
-      <Stack.Screen
-        name="Akun"
-        component={Akun}
-        options={{ tabBarStyle: { display: "none" } }}
-      />
-      <Stack.Screen
-        name="Perusahaan"
-        component={Perusahaan}
-        options={{ tabBarStyle: { display: "none" } }}
-      />
-      <Stack.Screen
-        name="Keamanan"
-        component={Keamanan}
-        options={{ tabBarStyle: { display: "none" } }}
-      />
+      <Stack.Screen name="TitikUji" component={TitikUji}/>
+      <Stack.Screen name="FormTitikUji" component={FormTitikUji}/>
+      <Stack.Screen name="Parameter" component={Parameter}/>
+      <Stack.Screen name="TrackingList" component={TrackingList}/>
+      <Stack.Screen name="EditPermohonan" component={EditPermohonan}/>
+      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan}/>
+      <Stack.Screen name="Pembayaran" component={Pembayaran}/>
+      <Stack.Screen name="PengujianDetail" component={PengujianDetail}/>
+      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail}/>
     </Stack.Navigator>
   );
 };

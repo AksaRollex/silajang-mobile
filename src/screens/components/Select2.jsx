@@ -9,7 +9,6 @@ const Select2 = ({ onSelect, data, value, placeholder, defaultValue }) => {
   // Effect untuk menangani defaultValue
   useEffect(() => {
     if (defaultValue && data.length > 0) {
-      // Cari item yang sesuai dengan defaultValue
       const defaultItem = data.find(item => item.value === defaultValue);
       if (defaultItem) {
         setSelectedValue(defaultItem);
@@ -27,7 +26,7 @@ const Select2 = ({ onSelect, data, value, placeholder, defaultValue }) => {
             onSelect(selectedItem.value);
           }
         }}
-        defaultValue={selectedValue} // Gunakan selectedValue dari state
+        defaultValue={selectedValue} 
         renderButton={(selectedItem, isOpened) => {
           return (
             <View style={styles.dropdownButtonStyle}>
@@ -86,11 +85,11 @@ const styles = StyleSheet.create({
   dropdownButtonTxtStyle: {
     flex: 1,
     fontSize: 16,
-    color: 'black', // Warna teks hitam
+    color: 'black', 
   },
   dropdownButtonArrowStyle: {
     fontSize: 18,
-    color: 'black', // Warna teks hitam
+    color: 'black', 
   },
   dropdownMenuStyle: {
     backgroundColor: '#FFFFFF',
