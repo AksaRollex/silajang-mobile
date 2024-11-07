@@ -10,6 +10,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import { TextFooter } from "../components/TextFooter";
 import Permohonan from "../pengujian/Permohonan";
 import TrackingPengujian from "../pengujian/TrackingPengujian";
+
 export default function IndexMaster() {
   const navigation = useNavigation();
   const [activeComponent, setActiveComponent] = useState(null);
@@ -125,7 +126,9 @@ export default function IndexMaster() {
                 style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Metode</Text>}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                  <View className="bg-blue-600 rounded-full">
+                    <Ionicons name="flask" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 right={props => (
                   <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
@@ -143,7 +146,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Peraturan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-emerald-500 rounded-full">
+                    <Ionicons name="document-text" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Persetujuan")}
@@ -157,7 +162,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Parameter</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-purple-500 rounded-full">
+                    <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("PengambilSample")}
@@ -167,87 +174,109 @@ export default function IndexMaster() {
             )}
             {hasItemAccess('paket') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Paket</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-orange-500 rounded-full">
+                    <Ionicons name="cube" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
+
             )}
             {hasItemAccess('pengawetan') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Pengawetan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-pink-500 rounded-full">
+                    <Ionicons name="water" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('jenis-sampel') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-teal-500 rounded-full">
+                    <Ionicons name="beaker" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('jenis-wadah') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Wadah</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-indigo-500 rounded-full">
+                    <Ionicons name="bag-handle" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('jasa-pengambilan') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Jasa Pengambilan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-rose-500 rounded-full">
+                    <Ionicons name="car" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('radius-pengambilan') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Radius Pengambilan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-cyan-600 rounded-full">
+                    <Ionicons name="location" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('libur-cuti') && (
               <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Lbur Cuti</Text>}
+                title={<Text className="font-poppins-medium text-[15px]">Libur Cuti</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-violet-500 rounded-full">
+                    <Ionicons name="calendar" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
+                
               />
+              
             )}
             {hasItemAccess('kode-retribusi') && (
               <List.Item
@@ -255,7 +284,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Kode Retribusi</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-amber-500 rounded-full">
+                    <Ionicons name="barcode" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("IndexPenerima")}
@@ -278,7 +309,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Jabatan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-sky-500 rounded-full">
+                    <Ionicons name="briefcase" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Analis")}
@@ -289,10 +322,13 @@ export default function IndexMaster() {
             {hasItemAccess('user') && (
               <View>
               <List.Item
+                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">User</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-blue-600 rounded-full">
+                    <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
@@ -317,7 +353,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Kota dan kabupaten</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-red-500 rounded-full">
+                    <Ionicons name="business" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")}
@@ -331,7 +369,9 @@ export default function IndexMaster() {
                 title={<Text className="font-poppins-medium text-[15px]">Kecamatan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-lime-400 rounded-full">
+                    <Ionicons name="map" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
               />
@@ -341,10 +381,13 @@ export default function IndexMaster() {
             {hasItemAccess('kelurahan') && (
               <View>
               <List.Item
+                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kelurahan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
                 left={() => (
-                  <FontAwesome6 name="computer" size={18} style={{ color: "black", }} />
+                   <View className="bg-yellow-400 rounded-full">
+                    <Ionicons name="home" size={17} color={'white'} style={{padding: 5}}/>
+                  </View>
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("RegistrasiSampel")}
