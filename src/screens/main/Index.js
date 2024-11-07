@@ -24,7 +24,7 @@ import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
 import Profile from "./Profile";
-import IndexMaster from "../index/IndexMaster";
+import IndexMaster from "../masterdash/index/index";
 import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
 const { Navigator, Screen } = createNativeStackNavigator();
