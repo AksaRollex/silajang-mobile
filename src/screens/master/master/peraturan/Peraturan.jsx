@@ -53,8 +53,8 @@ const Peraturan = ({ navigation }) => {
       <View className="flex-row justify-between items-center">
         <View className="flex-col space-y-3">
           <Text className="text-[15px] font-poppins-bold text-black">{item.nama}</Text>
-          <Text className="text-base font-poppins-semibold text-black">{item.nomor}</Text>
-          <Text className="text-base font-poppins-regular text-black">{item.tentang}</Text>
+          <Text className="text-[15px] font-poppins-semibold text-black">{item.nomor}</Text>
+          <Text className="text-[14px] font-poppins-regular text-black">{item.tentang}</Text>
         </View>
         <MenuView
           title="Menu Title"
@@ -71,7 +71,7 @@ const Peraturan = ({ navigation }) => {
           }}
           shouldOpenOnLongPress={false}>
           <View>
-            <Entypo name="dots-three-vertical" size={12} color="#312e81" />
+            <Entypo name="dots-three-vertical" size={15} color="#312e81" />
           </View>
         </MenuView>
       </View>
