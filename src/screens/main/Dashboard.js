@@ -25,7 +25,7 @@ const Dashboard = () => {
     { label: "Total Permohonan", value: "total" },
   ];
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [tahuns, setTahuns] = useState([]);
+  const [tahuns, setTahuns] = useState([]); 
   const { data: user } = useUser();
   const navigation = useNavigation();
   const paginateRef = useRef();
