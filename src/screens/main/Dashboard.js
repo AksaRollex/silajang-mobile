@@ -3,9 +3,8 @@ import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState, useRef } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator, Modal ,TouchableHighlight, TouchableOpacity } from "react-native";
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -15,6 +14,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { TextFooter } from "../components/TextFooter";
 import Paginate from "@/src/screens/components/Paginate";
 import { MenuView } from "@react-native-menu/menu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -180,9 +182,40 @@ const Dashboard = () => {
 
   const MainCard = () => {
     const { data: user } = useUser();
+    const [modalVisible, setModalVisible] = useState(false);
+    const queryClient = useQueryClient();
 
     const getFontSize = (text, defaultSize, smallerSize) => {
       return text.length > 15 ? smallerSize : defaultSize; 
+    };
+
+    const { mutate: logout } = useMutation(
+      () => axios.post("/auth/logout"),
+      {
+        onSuccess: async () => {
+          await AsyncStorage.removeItem("@auth-token");
+          Toast.show({
+            type: "success",
+            text1: "Logout Berhasil",
+          });
+          queryClient.invalidateQueries(["auth", "user"]);
+        },
+        onError: () => {
+          Toast.show({
+            type: "error",
+            text1: "Gagal Logout",
+          });
+        },
+      }
+    );
+
+    const handleLogout = () => {
+      setModalVisible(true);
+    };
+
+    const confirmLogout = () => {
+      setModalVisible(false);
+      logout();
     };
 
     return (
@@ -203,7 +236,7 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-black"
                     style={{
-                      fontSize: getFontSize(user.nama, 18, 14), // Default size 18, smaller size 14
+                      fontSize: getFontSize(user.nama, 18, 14),
                     }}
                   >
                     Hi, {user.nama}
@@ -211,13 +244,21 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-gray-500"
                     style={{
-                      fontSize: getFontSize(user.email, 14, 12), // Default size 14, smaller size 12
+                      fontSize: getFontSize(user.email, 14, 12),
                     }}
                   >
                     {user.email}
                   </Text>
                 </View>
               </View>
+              <TouchableOpacity 
+                className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
+                onPress={handleLogout}
+                activeOpacity={0.7}
+              >
+                <IonIcons name="log-out-outline" size={16} color="#f2416e" />
+                <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
+              </TouchableOpacity>
             </View>
           </View>
 
@@ -243,6 +284,64 @@ const Dashboard = () => {
             </View>
           </View>
         </View>
+
+        <Modal
+          transparent={true}
+          visible={modalVisible}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+            <View style={{
+              width: 300,
+              padding: 20,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              alignItems: 'center',
+            }}>
+              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
+
+              <View style={{
+                width: '100%',
+                borderBottomWidth: 1,
+                borderBottomColor: '#dedede',
+                marginBottom: 15,
+              }} />
+
+              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    backgroundColor: '#dedede',
+                    borderRadius: 5,
+                    marginRight: 10,
+                  }}
+                >
+                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-red-100"
+                  onPress={confirmLogout}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     );
   };
