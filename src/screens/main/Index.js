@@ -23,6 +23,18 @@ import PermohonanScreen from "../pengujian/permohonan/Permohonan";
 import TrackingPengujianScreen from "../pengujian/trackingPengujian/TrackingPengujian";
 import PengujianPembayaran from "../pembayaran/pengujian/Pengujian";
 import MultiPayment from "../pembayaran/multipayment/Multipayment";
+import TitikUji from "../pengujian/permohonan/titikUji/TitikUji";
+import FormTitikUji from "../pengujian/permohonan/titikUji/Form";
+import Parameter from "../pengujian/permohonan/parameter/Parameter";
+import TrackingList from "../pengujian/trackingPengujian/Detail";
+import EditPermohonan from "../pengujian/permohonan/FormEdit";
+import TambahPermohonan from "../pengujian/permohonan/FormTambah";
+import Pembayaran from "../pembayaran/Pembayaran";
+import PengujianDetail from "../pembayaran/pengujian/Detail";
+import MultipaymentDetail from "../pembayaran/multipayment/Detail";
+import Akun from "../profile/tabs/Akun";
+import Perusahaan from "../profile/tabs/Perusahaan";
+import Keamanan from "../profile/tabs/Keamanan";
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -43,7 +55,7 @@ const screenOptions = {
 };
 
 // Fungsi untuk mengatur visibilitas tab bar
-const getTabBarVisibility = (route) => {
+const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? "";
   const hideOnScreens = [
     "TrackingPengujian",
@@ -58,6 +70,10 @@ const getTabBarVisibility = (route) => {
     "PengujianDetail",
     "Multipayment",
     "MultipaymentDetail",
+    "Akun",
+    "Keamanan",
+    "Perusahaan",
+    "ProfileMain"
   ];
 
   if (hideOnScreens.includes(routeName)) {
@@ -77,8 +93,10 @@ const getTabBarVisibility = (route) => {
 
 const CustomTabBar = props => {
   const { state, descriptors, navigation } = props;
-  const [pengujianDropdownVisible, setPengujianDropdownVisible] = useState(false);
-  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] = useState(false);
+  const [pengujianDropdownVisible, setPengujianDropdownVisible] =
+    useState(false);
+  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] =
+    useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const pengujianTabRef = useRef(null);
   const pembayaranTabRef = useRef(null);
@@ -147,7 +165,11 @@ const CustomTabBar = props => {
                 navigation.navigate("Permohonan");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Permohonan</Text>
+              <Text
+                style={styles.dropdownText}
+                className="font-poppins-semibold">
+                Permohonan
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -155,7 +177,11 @@ const CustomTabBar = props => {
                 navigation.navigate("TrackingPengujian");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Tracking Pengujian</Text>
+              <Text
+                style={styles.dropdownText}
+                className="font-poppins-semibold">
+                Tracking Pengujian
+              </Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -183,7 +209,11 @@ const CustomTabBar = props => {
                 navigation.navigate("PengujianPembayaran");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Pengujian</Text>
+              <Text
+                style={styles.dropdownText}
+                className="font-poppins-semibold">
+                Pengujian
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.dropdownItem}
@@ -191,7 +221,11 @@ const CustomTabBar = props => {
                 navigation.navigate("Multipayment");
                 closeAllDropdowns();
               }}>
-              <Text style={styles.dropdownText}>Multi Payment</Text>
+              <Text
+                style={styles.dropdownText}
+                className="font-poppins-semibold">
+                Multi Payment
+              </Text>
             </TouchableOpacity>
           </View>
         </Pressable>
@@ -237,7 +271,9 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/home.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text
+                    style={[styles.label, isFocused && styles.labelFocused]}
+                    className="font-poppins-semibold">
                     Beranda
                   </Text>
                 </View>
@@ -252,7 +288,9 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/approval.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text
+                    style={[styles.label, isFocused && styles.labelFocused]}
+                    className="font-poppins-semibold">
                     Pengujian
                   </Text>
                 </View>
@@ -267,8 +305,27 @@ const CustomTabBar = props => {
                     source={require("@/assets/images/wallet.png")}
                     style={[styles.logo, isFocused && styles.logoFocused]}
                   />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]}>
+                  <Text
+                    style={[styles.label, isFocused && styles.labelFocused]}
+                    className="font-poppins-semibold">
                     Pembayaran
+                  </Text>
+                </View>
+              )}
+              {route.name === "Profile" && (
+                <View
+                  style={[
+                    styles.iconContainer,
+                    isFocused && styles.iconContainerFocused,
+                  ]}>
+                  <Image
+                    source={require("@/assets/images/user.png")}
+                    style={[styles.logo, isFocused && styles.logoFocused]}
+                  />
+                  <Text
+                    style={[styles.label, isFocused && styles.labelFocused]}
+                    className="font-poppins-semibold">
+                    Profil
                   </Text>
                 </View>
               )}
@@ -280,6 +337,34 @@ const CustomTabBar = props => {
   );
 };
 
+const ProfileStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileMain" component={Profile} />
+      <Stack.Screen 
+        name="Akun" 
+        component={Akun}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+      <Stack.Screen 
+        name="Perusahaan" 
+        component={Perusahaan}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+      <Stack.Screen 
+        name="Keamanan" 
+        component={Keamanan}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+    </Stack.Navigator>
+  );
+};  
 const TabNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -289,16 +374,23 @@ const TabNavigator = () => {
             tabBar={props => <CustomTabBar {...props} />}
             screenOptions={screenOptions}>
             <Tab.Screen name="Dashboard" component={Dashboard} />
-            <Tab.Screen 
-              name="PengujianTab" 
+            <Tab.Screen
+              name="PengujianTab"
               component={PengujianStack}
               options={({ route }) => ({
                 tabBarStyle: getTabBarVisibility(route),
-              })} 
+              })}
             />
-            <Tab.Screen 
-              name="PembayaranTab" 
+            <Tab.Screen
+              name="PembayaranTab"
               component={PembayaranStack}
+              options={({ route }) => ({
+                tabBarStyle: getTabBarVisibility(route),
+              })}
+            />
+             <Tab.Screen 
+              name="Profile" 
+              component={ProfileStack}
               options={({ route }) => ({
                 tabBarStyle: getTabBarVisibility(route),
               })} 
@@ -307,9 +399,39 @@ const TabNavigator = () => {
         )}
       </Stack.Screen>
       <Stack.Screen name="Permohonan" component={PermohonanScreen} />
-      <Stack.Screen name="TrackingPengujian" component={TrackingPengujianScreen} />
-      <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
+      <Stack.Screen
+        name="TrackingPengujian"
+        component={TrackingPengujianScreen}
+      />
+      <Stack.Screen
+        name="PengujianPembayaran"
+        component={PengujianPembayaran}
+      />
       <Stack.Screen name="Multipayment" component={MultiPayment} />
+      <Stack.Screen name="TitikUji" component={TitikUji} />
+      <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
+      <Stack.Screen name="Parameter" component={Parameter} />
+      <Stack.Screen name="TrackingList" component={TrackingList} />
+      <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
+      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
+      <Stack.Screen name="Pembayaran" component={Pembayaran} />
+      <Stack.Screen name="PengujianDetail" component={PengujianDetail} />
+      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail} />
+      <Stack.Screen
+        name="Akun"
+        component={Akun}
+        options={{ tabBarStyle: { display: "none" } }}
+      />
+      <Stack.Screen
+        name="Perusahaan"
+        component={Perusahaan}
+        options={{ tabBarStyle: { display: "none" } }}
+      />
+      <Stack.Screen
+        name="Keamanan"
+        component={Keamanan}
+        options={{ tabBarStyle: { display: "none" } }}
+      />
     </Stack.Navigator>
   );
 };
@@ -386,4 +508,4 @@ const styles = StyleSheet.create({
     color: Colors.brand,
     textAlign: "center",
   },
-});
+}); 

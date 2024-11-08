@@ -17,6 +17,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
+import LottieView from "lottie-react-native";
+
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -231,55 +233,61 @@ export default function Profile({ navigation }) {
           }}>
           <View
             style={{
-              width: 300,
               padding: 20,
               backgroundColor: "white",
               borderRadius: 10,
               alignItems: "center",
-            }}>
+            }}
+            className="w-10/12">
+            <LottieView
+              source={require("../../../assets/lottiefiles/logout-animation.json")}
+              autoPlay
+              loop={false}
+              style={{ width: 170, height: 170 }}
+            />
             <Text
               style={{
-                fontSize: 18,
-                fontWeight: "bold",
+                fontSize: 16,
                 marginBottom: 15,
+                fontFamily: "Poppins-SemiBold",
                 color: "black",
               }}>
-              Konfirmasi Logout
+              Apakah anda yakin ingin keluar?
             </Text>
 
             <View
               style={{
                 width: "100%",
-                borderBottomWidth: 1,
-                borderBottomColor: "#dedede",
+                // borderBottomWidth: 1,
+                // borderBottomColor: "#dedede",
                 marginBottom: 15,
               }}
             />
 
-            <Text style={{ fontSize: 16, marginBottom: 25, color: "black" }}>
+            {/* <Text style={{ fontSize: 16, marginBottom: 25, color: "black", fontFamily : "Poppins-Regular" }}>
               Apakah Anda yakin ingin keluar?
-            </Text>
+            </Text> */}
             <View style={{ flexDirection: "row" }}>
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#dedede",
+                  backgroundColor: "#ececec",
                   borderRadius: 5,
                   marginRight: 10,
                 }}>
-                <Text style={{ color: "black" }}>Batal</Text>
+                <Text style={{ color: "#4f4f4f", fontFamily : "Poppins-SemiBold" }}>Batal</Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={confirmLogout}
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#f2416e",
+                  backgroundColor: "#ffcbd1",
                   borderRadius: 5,
                 }}>
-                <Text style={{ color: "white" }}>Ya, Logout</Text>
+                <Text style={{ color: "#de0a26",  fontFamily : "Poppins-SemiBold" }}>Ya, Keluar</Text>
               </TouchableOpacity>
             </View>
           </View>
