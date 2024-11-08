@@ -261,7 +261,8 @@ const Dashboard = () => {
           <MainCard />
         </View>
 
-        <View className="items-center mt-20">
+
+        <View className="items-center mt-28">
           {/* card picker tahun */}
           <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
             style={{
@@ -605,7 +606,7 @@ const Dashboard = () => {
                         className="absolute"
                         style={{
                           marginLeft: 72,
-                          marginTop: 62,
+                          marginTop: 59,
                           position: "absolute",
                           width: 100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                           height: 100,

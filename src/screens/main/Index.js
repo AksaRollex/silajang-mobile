@@ -66,7 +66,7 @@ const TabNavigator = () => {
   const { data: user } = useUser();
   const userRole = user?.role?.name;
 
-  // Define which roles can access which tabs
+
   const tabPermissions = {
     Dashboard: [
       'admin',
@@ -242,39 +242,39 @@ const TabNavigator = () => {
 };
 
 
-// const ProfileDetail = () => {
-//   const { data: user } = useUser();
-//   return (
-//     <View className="relative mb-5" style={{}}>
-//       {/* Background Image Container */}
-//       <View className="relative h-[160px] overflow-hidden">
-//         <Image
-//           source={require("@/assets/images/background.png")}
-//           className="w-full h-full absolute top-0 left-0"
-//           style={{ resizeMode: 'cover', }}
-//         />
+const ProfileDetail = () => {
+  const { data: user } = useUser();
+  return (
+    <View className="relative mb-5" style={{}}>
+      {/* Background Image Container */}
+      <View className="relative h-[160px] overflow-hidden">
+        <Image
+          source={require("@/assets/images/background.png")}
+          className="w-full h-full absolute top-0 left-0"
+          style={{ resizeMode: 'cover', }}
+        />
 
-//         {/* Profile Content - Positioned over the background */}
-//         <View className="absolute p-2 mt-11">
-//           <View className="flex flex-row items-center gap-2">
-//             <Image
-//               source={{ uri: "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
-//               className="w-12 h-12 rounded-full"
-//             />
-//             <View className="flex gap-y-0">
-//               <Text className="text-[17px] font-poppins-semibold text-white drop-shadow-lg">
-//                 {user.nama}
-//               </Text>
-//               <Text className="text-sm font-poppins-semibold text-white/90 drop-shadow-lg">
-//                 {user.email}
-//               </Text>
-//             </View>
-//           </View>
-//         </View>
-//       </View>
-//     </View>
-//   );
-// };
+        {/* Profile Content - Positioned over the background */}
+        <View className="absolute p-2 mt-11">
+          <View className="flex flex-row items-center gap-2">
+            <Image
+              source={{ uri: "https://i.pinimg.com/originals/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.webp" }}
+              className="w-12 h-12 rounded-full"
+            />
+            <View className="flex gap-y-0">
+              <Text className="text-[17px] font-poppins-semibold text-white drop-shadow-lg">
+                {user.nama}
+              </Text>
+              <Text className="text-sm font-poppins-semibold text-white/90 drop-shadow-lg">
+                {user.email}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+    </View>
+  );
+};
 
 const CustomDrawerItem = ({ label, onPress, depth, isExpanded, isActive, hasSubItems, isSub, ionIcon, fontAwesome, fontAwesome6, setIcon }) => {
   const animatedHeight = useRef(new Animated.Value(0)).current;
@@ -593,20 +593,20 @@ const DrawerContent = (props) => {
     }] : []),
   ];
 
-  return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <View style={{ flexGrow: 1 }}>
-        {/* <ProfileDetail /> */}
-        {customDrawerItems.map((item) => renderMenuItem(item))}
-      </View>
-      <Logout />
-    </DrawerContentScrollView>
-  );
+  // return (
+  //   <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
+  //     <View style={{ flexGrow: 1 }}>
+  //       {/* <ProfileDetail /> */}
+  //       {/* {customDrawerItems.map((item) => renderMenuItem(item))} */}
+  //     </View>
+  //     {/* <Logout /> */}
+  //   </DrawerContentScrollView>
+  // );
 };
 
 const Admin = () => (
   <NavigationContainer independent={true}>
-    <Drawer.Navigator
+     <Drawer.Navigator
       drawerContent={(props) => <DrawerContent {...props} />}
       screenOptions={({ navigation }) => ({
         headerRight: () => <Header />,
@@ -620,8 +620,8 @@ const Admin = () => (
         headerTintColor: "white",
         drawerActiveBackgroundColor: "#312e81",
         drawerActiveTintColor: "#fff",
-        headerLeft: () => null,
-        gestureEnabled: false,
+        headerLeft: () => null  ,
+        gestureEnabled: false
       })}
     >
       <Drawer.Screen name="Home" component={TabNavigator} />
