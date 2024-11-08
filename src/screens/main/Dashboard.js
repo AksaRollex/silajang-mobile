@@ -235,7 +235,7 @@ const Dashboard = () => {
               <View className="items-center">
                 <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
                   onPress={() => navigation.navigate("IndexKonfigurasi")}
-                  >
+                >
                   <IonIcons name="options" size={24} color="#312e81" />
                 </TouchableOpacity>
                 <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
@@ -375,12 +375,12 @@ const Dashboard = () => {
                 </>
               ) : (
                 <>
-                  <View className="mt-0">
-                    <View className="px-4 mb-2">
+                    <View className="self-center">
                       <Text className="text-xl font-poppins-semibold text-black">
                         Data Dashboard
                       </Text>
                     </View>
+                  <View className="w-full bg-indigo-50 mt-4 pt-3 pb-2">
 
                     <ScrollView
                       horizontal
@@ -389,7 +389,9 @@ const Dashboard = () => {
                       contentContainerStyle={{ paddingBottom: 8 }}
                     >
                       {['admin', 'kepala-upt'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow bg-white border-l-[6px] border-[#828cff]"
+                        <TouchableOpacity
+                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
+                          onPress={() => navigation.navigate('IndexMaster', { screen: "Users" })}
                           style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                         >
                           <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
@@ -403,7 +405,7 @@ const Dashboard = () => {
                               Customers
                             </Text>
                           </View>
-                        </View>
+                        </TouchableOpacity>
                       )}
 
                       {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
@@ -601,12 +603,12 @@ const Dashboard = () => {
                         hasLegend={false}
                       />
                       <View
-                      className="absolute"
+                        className="absolute"
                         style={{
                           marginLeft: 72,
                           marginTop: 59,
                           position: "absolute",
-                          width:100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                          width: 100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                           height: 100,
                           backgroundColor: "white",
                           borderRadius: 50, // Ini membuatnya menjadi lingkaran
@@ -659,12 +661,12 @@ const Dashboard = () => {
                         hasLegend={false}
                       />
                       <View
-                      className="absolute"
+                        className="absolute"
                         style={{
                           marginLeft: 45,
                           marginTop: 75,
                           position: "absolute",
-                          width:150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                          width: 150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                           height: 150,
                           backgroundColor: "white",
                           borderRadius: 100, // Ini membuatnya menjadi lingkaran
@@ -681,7 +683,7 @@ const Dashboard = () => {
                           </Text>
                         </View>
                       ))}
-                    <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
+                      <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
 
                     </View>
 

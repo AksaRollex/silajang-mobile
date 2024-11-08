@@ -66,7 +66,7 @@ const TabNavigator = () => {
   const { data: user } = useUser();
   const userRole = user?.role?.name;
 
-  // Define which roles can access which tabs
+
   const tabPermissions = {
     Dashboard: [
       'admin',
@@ -593,15 +593,15 @@ const DrawerContent = (props) => {
     }] : []),
   ];
 
-  return (
-    <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
-      <View style={{ flexGrow: 1 }}>
-        <ProfileDetail />
-        {customDrawerItems.map((item) => renderMenuItem(item))}
-      </View>
-      <Logout />
-    </DrawerContentScrollView>
-  );
+  // return (
+  //   <DrawerContentScrollView {...props} contentContainerStyle={{ flex: 1 }}>
+  //     <View style={{ flexGrow: 1 }}>
+  //       {/* <ProfileDetail /> */}
+  //       {/* {customDrawerItems.map((item) => renderMenuItem(item))} */}
+  //     </View>
+  //     {/* <Logout /> */}
+  //   </DrawerContentScrollView>
+  // );
 };
 
 const Admin = () => (
