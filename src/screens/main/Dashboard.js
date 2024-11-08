@@ -186,7 +186,7 @@ const Dashboard = () => {
     };
 
     return (
-      <View className="absolute left-0 right-0 px-4" style={{ top: '37%' }}>
+      <View className="absolute left-0 right-0 px-4" style={{ top: '20%' }}>
         <View className="bg-white rounded-lg shadow-lg"
           style={{
             shadowColor: '#000',
@@ -728,6 +728,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
 
 export default Dashboard;

@@ -23,11 +23,11 @@ const generateYears = () => {
   }
   return years;
 };
-const analisOptions = [
-  { id: 3, name: "Menunggu Pengujian" },
-  { id: 4, name: "Telah diuji" },
-];
 
+const analisOptions = [
+  { id: 3, name: "Menunggu Pengujian", index: 0 },
+  { id: 4, name: "Telah diuji", index: 1 },
+];
 const Analis = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
@@ -36,6 +36,8 @@ const Analis = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
   const isConfirmed = Analis === 4; // Telah Diambil
+
+  const [initialRender, setInitialRender] = useState(true);
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -148,6 +150,10 @@ const Analis = ({ navigation }) => {
     }
   };
 
+  useEffect(() => {
+    setInitialRender(false);
+  }, []);
+
   const renderItem = ({ item }) => {
     const isDiterima = item.text_status;
     const dropdownOptionsForItem = isDiterima
@@ -242,15 +248,24 @@ const Analis = ({ navigation }) => {
                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                   items={analisOptions}
                   selected={selectedAnalis}
-                  onPress={item => setSelectedAnalis(item.id)}
+                  onPress={item => {
+                    if (!initialRender) {
+                      setSelectedAnalis(item.id);
+                    }
+                  }}
                   itemWidth={170}
-                  scrollAreaStyle={{ height: 30, justifyContent: "flex-start" }}
+                  scrollAreaStyle={{ 
+                    height: 30, 
+                    justifyContent: "flex-start"
+                  }}
                   activeBackgroundColor={"#312e81"}
                   buttonStyle={{
                     marginRight: 10,
                     borderRadius: 20,
                     backgroundColor: "white",
                   }}
+                  initialIndex={0}
+                  disableInitialAnimation={true}
                 />
               </View>
 
@@ -301,13 +316,6 @@ const Analis = ({ navigation }) => {
         className="mb-12"
       />
 
-      {/* <AntDesign
-        name="plus"
-        size={28}
-        color="white"
-        style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-      onPress={() => navigation.navigate("FormMetode")}
-      /> */}
       <DeleteConfirmationModal />
       <Modal
         transparent={true}
