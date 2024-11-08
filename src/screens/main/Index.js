@@ -611,13 +611,17 @@ const Admin = () => (
       screenOptions={({ navigation }) => ({
         headerRight: () => <Header />,
         headerTitle: () => <Text></Text>,
-        headerStyle: { backgroundColor: "#312e81" },
+        headerStyle: {
+          backgroundColor: "#312e81",
+          elevation: 0, 
+          shadowColor: 'transparent', 
+          borderBottomWidth: 0,
+        },
         headerTintColor: "white",
         drawerActiveBackgroundColor: "#312e81",
         drawerActiveTintColor: "#fff",
         headerLeft: () => null,
         gestureEnabled: false,
-
       })}
     >
       <Drawer.Screen name="Home" component={TabNavigator} />

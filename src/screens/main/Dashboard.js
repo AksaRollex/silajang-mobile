@@ -186,7 +186,7 @@ const Dashboard = () => {
     };
 
     return (
-      <View className="absolute left-0 right-0 px-4" style={{ top: '37%' }}>
+      <View className="absolute left-0 right-0 px-4" style={{ top: '20%' }}>
         <View className="bg-white rounded-lg shadow-lg"
           style={{
             shadowColor: '#000',
@@ -261,7 +261,7 @@ const Dashboard = () => {
           <MainCard />
         </View>
 
-        <View className="items-center mt-28">
+        <View className="items-center mt-20">
           {/* card picker tahun */}
           <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
             style={{
@@ -727,6 +727,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
 
 export default Dashboard;
