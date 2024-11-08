@@ -247,7 +247,7 @@ const CustomTabBar = props => {
                   ? pembayaranTabRef
                   : null
               }
-              style={[styles.tabItem, { borderTopWidth : 0.3}]}>
+              style={[styles.tabItem, { borderTopWidth : 0.1 }]}>
               {route.name === "Dashboard" && (
                 <View
                   style={[
@@ -263,7 +263,7 @@ const CustomTabBar = props => {
                   </Text>
                 </View>
               )}
-              {route.name === "PengujianTab" && (
+              {route.name === "PengujianTab" && ( 
                 <View
                   style={[
                     styles.iconContainer,

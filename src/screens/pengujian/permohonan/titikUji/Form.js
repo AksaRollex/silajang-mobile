@@ -1,5 +1,3 @@
-// form titik uji
-
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/Back";
 import Select2 from "@/src/screens/components/Select2";
@@ -28,6 +26,7 @@ import { Button, Colors, TextField } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextArea } from "react-native-ui-lib";
+import MaterialIconss from "react-native-vector-icons/MaterialIcons";
 
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
@@ -103,6 +102,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const { permohonan } = route.params || {};
 
   const {
+    watch,
     control,
     handleSubmit,
     formState: { errors },
@@ -112,7 +112,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const queryClient = useQueryClient();
 
-  const { data, isLoading: isLoadingData } = useQuery(
+  const { data, isFetching: isLoadingData } = useQuery(
     ["permohonan", uuid],
     () =>
       axios.get(`/permohonan/titik/${uuid}/edit`).then(res => res.data.data),
@@ -121,6 +121,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
+          console.log(data.keterangan, 999);
           setDate(new Date(data.tanggal_pengambilan));
           (location.latitude = data.south),
             (location.longitude = data.east),
@@ -159,10 +160,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             "arah_angin",
             "kelembapan",
             "kecepatan_angin",
-          ]
-          // .forEach(key => {
-          //   delete requestData[key];
-          // });
+          ];
         }
       },
       onError: error => {
@@ -226,8 +224,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           Toast.show({
             type: "error",
             text1: "Error",
-            text2: error.message?.data?.message || "Failed to update data"
-          })
+            text2: error.message?.data?.message || "Failed to update data",
+          });
         }
       },
     },
@@ -285,8 +283,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           ]);
 
         const formattedSampelData = sampelResponse.data.data.map(item => ({
-         title: item.nama,
-         value: item.id,
+          title: item.nama,
+          value: item.id,
         }));
         setSampelData(formattedSampelData);
 
@@ -371,6 +369,22 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     );
   }
 
+  const renderKeteranganField = ({ field: { onChange, value } }) => (
+    <View>
+      <Text className="font-poppins-semibold mb-2 text-black">Keterangan</Text>
+      <View className="border border-stone-300 bg-[#fff]">
+        <TextField
+          className="px-2 py-2 bg-[#fff] rounded-xl font-poppins-regular"
+          value={value || ""} // Add fallback empty string
+          onChangeText={text => {
+            console.log("Keterangan changed:", text); // Debug log
+            onChange(text);
+          }}
+        />
+      </View>
+    </View>
+  );
+
   return (
     <>
       <View
@@ -392,102 +406,108 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         </Text>
       )}
       <FlatList
-        className="bg-[#ececec] h-full px-1 py-1"
+        className="bg-[#ececec] h-full px-1 py-1 rounded-lg"
         data={[{ key: "from" }]}
         renderItem={() => (
-          <View className="bg-[#ececec] w-full h-full px-3 py-1">
+          <View className="bg-[#ececec] w-full h-full px-1 py-1">
             <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-2">
-              <Text className="text-base font-bold text-center  text-black">
-                Detail Pengiriman
-              </Text>
-              <View className="flex-1 flex-row justify-between my-2 ">
-                <TouchableOpacity
-                  className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
-                  style={[selectedPayment === "va" && styles.selectedCard]}
-                  onPress={() => handleSelectedPayment("va")}>
-                  <MaterialIcons
-                    name="cellphone-text"
-                    size={50}
-                    color="black"
-                    style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
-                  />
-                  <Text className="text-black font-bold text-lg text-center">
-                    Virtual Account
-                  </Text>
-                  {/* <Text className="text-black text-justify">
+              <View className="bg-slate-200 rounded-xl p-4 shadow-md">
+                <Text className="text-base font-poppins-bold text-center  text-black">
+                  Detail Pengiriman
+                </Text>
+                <View className="flex-1 flex-row justify-between my-2 ">
+                  <TouchableOpacity
+                    className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
+                    style={[selectedPayment === "va" && styles.selectedCard]}
+                    onPress={() => handleSelectedPayment("va")}>
+                    <MaterialIcons
+                      name="cellphone-text"
+                      size={50}
+                      color="black"
+                      style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
+                    />
+                    <Text className="text-black font-poppins-semibold text-lg text-center">
+                      Virtual Account
+                    </Text>
+                    {/* <Text className="text-black text-justify">
                     Transfer melalui Virtual Account Bank Jatim
                   </Text> */}
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
-                  style={[selectedPayment === "qris" && styles.selectedCard]}
-                  onPress={() => handleSelectedPayment("qris")}>
-                  <MaterialIcons
-                    name="qrcode"
-                    size={50}
-                    color="black"
-                    style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
-                  />
-                  <Text className="text-black font-bold text-lg text-center">
-                    QRIS
-                  </Text>
-                  {/* <Text className="text-black text-justify">
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
+                    style={[selectedPayment === "qris" && styles.selectedCard]}
+                    onPress={() => handleSelectedPayment("qris")}>
+                    <MaterialIcons
+                      name="qrcode"
+                      size={50}
+                      color="black"
+                      style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
+                    />
+                    <Text className="text-black font-poppins-semibold text-lg text-center">
+                      QRIS
+                    </Text>
+                    {/* <Text className="text-black text-justify">
                     Scan dan bayar melalui QRIS
                   </Text> */}
-                </TouchableOpacity>
-              </View>
+                  </TouchableOpacity>
+                </View>
+                <Controller
+                  name="lokasi"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Nama Lokasi / Titik Uji
+                      </Text>
+                      <TextField
+                        className="p-2 bg-[#fff] rounded-lg border-stone-300 border font-poppins-regular"
+                        value={value}
+                        onChangeText={onChange}
+                        placeholder="Masukkan Lokasi Titik Uji"
+                        error={errors.lokasi?.message}
+                      />
+                    </View>
+                  )}
+                />
+                <Controller
+                  name="jenis_sampel_id"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold text-black">
+                        Jenis Sampel
+                      </Text>
 
-              <Controller
-                name="lokasi"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Nama Lokasi / Titik Uji
-                    </Text>
-                    <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                      value={value}
-                      onChangeText={onChange}
-                      error={errors.lokasi?.message}
-                    />
-                  </View>
-                )}
-              />
-
-              <Controller
-                name="jenis_sampel_id"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold text-black">
-                      Jenis Sampel
-                    </Text>
-
-                    <Select2
-                    data={sampelData}
-                      onSelect={(value) => {
-                        onChange(value);
-                        setSelectedSampel(value);
-                      }}
-                      defaultValue={data?.jenis_sampel_id}
-                      placeholder="Pilih Jenis Sampel"
-                    />
-                  </View>
-                )}
-              />
-              <Controller
-                name="jenis_wadahs_id"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 mt-2 text-black">
-                      Jenis Wadah
-                    </Text>
+                      <Select2
+                        data={sampelData}
+                        onSelect={value => {
+                          onChange(value);
+                          setSelectedSampel(value);
+                        }}
+                        defaultValue={data?.jenis_sampel_id}
+                        placeholder="Pilih Jenis Sampel"
+                      />
+                    </View>
+                  )}
+                />
+                <Controller
+                  name="jenis_wadahs_id"
+                  control={control}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-2 mt-2 text-black">
+                        Jenis Wadah
+                      </Text>
 
                       <MultiSelect
                         hideTags
                         styleItemsContainer={{ backgroundColor: "#fff" }}
+                        styleDropdownMenuSubsection={{
+                          borderRadius: 5, // Mengatur border radius
+                          borderWidth: 1,
+                          borderColor: "#CCC",
+                          // padding: 10,
+                        }}
                         items={jenisWadah}
                         uniqueKey="id"
                         onSelectedItemsChange={items => {
@@ -498,7 +518,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         selectText="Pilih Jenis Wadah"
                         searchInputPlaceholderText="Cari Jenis Wadah..."
                         onChangeInput={text => console.log(text)}
-                        altFontFamily="sans-serif"
+                        altFontFamily="poppins"
                         tagRemoveIconColor="#CCC"
                         tagTextColor="#CCC"
                         selectedItemTextColor="#CCC"
@@ -506,411 +526,418 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         itemTextColor="#000"
                         displayKey="name"
                         searchInputStyle={{ color: "#CCC" }}
-                        submitButtonColor='#311B74'
+                        submitButtonColor="#311B74"
                         submitButtonText="Submit"
                       />
-                  </View>
-                )}
-              />
-
-              <Controller
-                name="keterangan"
-                control={control}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Keterangan
-                    </Text>
-                    <View className="border border-stone-300 bg-[#fff]">
-                      <TextArea
-                        className="px-2 py-4 bg-[#fff] rounded-sm font-sans"
+                    </View>
+                  )}
+                />
+                <Controller
+                  name="keterangan"
+                  control={control}
+                  defaultValue=""
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Keterangan
+                      </Text>
+                      <TextField
+                        className="p-2 bg-[#fff] rounded-lg border-stone-300 border font-poppins-regular"
                         value={value}
                         onChangeText={onChange}
+                        placeholder="Masukkan keterangan"
                         error={errors.keterangan?.message}
                       />
                     </View>
-                  </View>
-                )}
-              />
+                  )}
+                />
+              </View>
               {permohonan && permohonan?.is_mandiri ? (
                 <>
-                  <Text className="text-base font-bold text-center my-5 text-black">
-                    Detail Pengiriman
-                  </Text>
-                  <Controller
-                    name="nama_pengambil"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <View>
-                        <Text className="font-poppins-semibold mb-2 text-black">
-                          Nama Pengirim
-                        </Text>
+                  <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
+                    <Text className="text-base font-poppins-semibold text-center  text-black">
+                      Detail Pengiriman
+                    </Text>
+                    <Controller
+                      name="nama_pengambil"
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <View>
+                          <Text className="font-poppins-semibold mb-2 text-black">
+                            Nama Pengirim
+                          </Text>
 
-                        <TextField
-                          className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                          value={value}
-                          onChangeText={onChange}
-                          error={errors.nama_pengambil?.message}
-                        />
-                      </View>
+                          <TextField
+                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                            value={value}
+                            onChangeText={onChange}
+                            placeholder="Masukkan nama pengirim"
+                            error={errors.nama_pengambil?.message}
+                          />
+                        </View>
+                      )}
+                    />
+
+                    <Text className="font-poppins-semibold text-black mb-2">
+                      Tanggal/Jam Pengambilan
+                    </Text>
+                    <View>
+                      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                        <View className="flex-row items-center p-2 bg-[#fff] rounded-sm border-stone-300 border ">
+                          <Text className="text-sm flex-1 text-black font-poppins-regular">
+                            {date
+                              ? `${moment(date).format("YYYY-MM-DD HH:mm:ss")} `
+                              : "Pilih Tanggal dan Waktu"}
+                          </Text>
+                          <FontAwesome5Icon
+                            name="calendar-alt"
+                            size={20}
+                            color="black"
+                            marginHorizontal={10}
+                          />
+                        </View>
+                      </TouchableOpacity>
+                    </View>
+
+                    {showDatePicker && (
+                      <DateTimePicker
+                        value={date || new Date()}
+                        mode="date"
+                        timeZoneName="Asia/Jakarta"
+                        display={Platform.OS === "ios" ? "spinner" : "default"}
+                        onChange={handleDateChange}
+                      />
                     )}
-                  />
 
-                  <Text className="text-sans font-bold text-black mb-2">
-                    Tanggal/Jam Pengambilan
-                  </Text>
-                  <View>
-                    <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                      <View className="flex-row items-center p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
-                        <Text className="text-sm flex-1 text-black">
-                          {date
-                            ? `${moment(date).format("YYYY-MM-DD HH:mm:ss")} `
-                            : "Pilih Tanggal dan Waktu"}
-                        </Text>
-                        <FontAwesome5Icon
-                          name="calendar-alt"
-                          size={20}
-                          color="black"
-                          marginHorizontal={10}
+                    {showTimePicker && isDateSelected && (
+                      <DateTimePicker
+                        value={date || new Date()}
+                        mode="time"
+                        timeZoneName="Asia/Jakarta"
+                        display={Platform.OS === "ios" ? "spinner" : "default"}
+                        onChange={handleTimeChange}
+                      />
+                    )}
+
+                    <Controller
+                      name="acuan_metode_id"
+                      control={control}
+                      render={({ field: { onChange, value } }) => (
+                        <View>
+                          <Text className="font-poppins-semibold text-black mt-2">
+                            Metode
+                          </Text>
+
+                          <Select2
+                            data={metode}
+                            onSelect={value => {
+                              onChange(value);
+                              setSelectedMetode(value);
+                            }}
+                            defaultValue={data?.acuan_metode_id}
+                            placeholder="Pilih Metode"
+                            // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans"
+                            // open={openMetode}
+                            // value={value}
+                            // items={metode}
+                            // setOpen={setOpenMetode}
+                            // setValue={onChange}
+                            // nestedScrollEnabled={true}
+                            // setItems={setMetode}
+                            // style={styles.dropdown}
+                          />
+                        </View>
+                      )}
+                    />
+                  </View>
+                  <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
+                    <Text className="font-poppins-semibold text-base text-center mb-4 text-black">
+                      Lokasi Pada Koordinat
+                    </Text>
+
+                    <View className="flex-row">
+                      <Controller
+                        name="south"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black text-start">
+                              Selatan
+                            </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              placeholder="0.0"
+                              value={location.latitude}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+
+                      <Controller
+                        name="east"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black ">
+                              Timur
+                            </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              placeholder="0.0"
+                              value={location.longitude}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+                    </View>
+                    <TouchableOpacity
+                      onPress={handleLocationPress}
+                      className="w-full mt-2 p-3 rounded-md bg-[#007AFF]">
+                      <View className="flex-row gap-4 justify-center">
+                        <MaterialIconss
+                          name="location-searching"
+                          size={24}
+                          color={"white"}
                         />
+                        <Text className="text-white text-base  font-poppins-semibold text-center">
+                          Tekan Untuk Mendapatkan Lokasi
+                        </Text>
                       </View>
                     </TouchableOpacity>
                   </View>
 
-                  {showDatePicker && (
-                    <DateTimePicker
-                      value={date || new Date()}
-                      mode="date"
-                      timeZoneName="Asia/Jakarta"
-                      display={Platform.OS === "ios" ? "spinner" : "default"}
-                      onChange={handleDateChange}
-                    />
-                  )}
-
-                  {showTimePicker && isDateSelected && (
-                    <DateTimePicker
-                      value={date || new Date()}
-                      mode="time"
-                      timeZoneName="Asia/Jakarta"
-                      display={Platform.OS === "ios" ? "spinner" : "default"}
-                      onChange={handleTimeChange}
-                    />
-                  )}
-
-                  <Controller
-                    name="acuan_metode_id"
-                    control={control}
-                    render={({ field: { onChange, value } }) => (
-                      <View>
-                        <Text className="font-poppins-semibold text-black mt-2">
-                          Metode
-                        </Text>
-
-                        <Select2
-                        data={metode}
-                          onSelect={(value) => {
-                            onChange(value);
-                            setSelectedMetode(value);
-                          }}
-                          defaultValue={data?.acuan_metode_id}
-                          placeholder="Pilih Metode"
-                          // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans"
-                          // open={openMetode}
-                          // value={value}
-                          // items={metode}
-                          // setOpen={setOpenMetode}
-                          // setValue={onChange}
-                          // nestedScrollEnabled={true}
-                          // setItems={setMetode}
-                          // style={styles.dropdown}
-                        />
-                      </View>
-                    )}
-                  />
-
-                  <Text className="text-base font-bold text-center my-5 text-black">
-                    Detail Lokasi
-                  </Text>
-
-                  <View className="flex-row">
-                    <Controller
-                      name="south"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black text-start">
-                            South
-                          </Text>
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            placeholder="0.0"
-                            value={location.latitude}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-
-                    <Controller
-                      name="east"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black ">
-                            East
-                          </Text>
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            placeholder="0.0"
-                            value={location.longitude}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-                  </View>
-                  <TouchableOpacity
-                    onPress={handleLocationPress}
-                    className="w-full p-3 rounded-sm "
-                    style={{
-                      backgroundColor: Colors.brand,
-                    }}>
-                    <Text className="text-white text-base font-bold text-center">
-                      Gunakan Lokasi Saat Ini
+                  <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
+                    <Text className="text-base font-poppins-semibold text-center mb-5 text-black">
+                      Hasil Pengukuran Lapangan
                     </Text>
-                  </TouchableOpacity>
 
-                  <Text className="text-base font-bold text-center my-5 text-black">
-                    Hasil Pengukuran Lapangan
-                  </Text>
+                    <View className="flex-row flex-wrap">
+                      <Controller
+                        name="suhu_air"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Suhu Air
+                            </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                  <View className="flex-row flex-wrap">
-                    <Controller
-                      name="suhu_air"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Suhu Air
-                          </Text>
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="ph"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              pH
+                            </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+                      <Controller
+                        name="dhl"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              DHL
+                            </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+                      <Controller
+                        name="salinitas"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Salinitas
+                            </Text>
 
-                    <Controller
-                      name="ph"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            pH
-                          </Text>
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-                    <Controller
-                      name="dhl"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            DHL
-                          </Text>
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-                    <Controller
-                      name="salinitas"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Salinitas
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+                      <Controller
+                        name="do"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              DO
+                            </Text>
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-                    <Controller
-                      name="do"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            DO
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="kekeruhan"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Kekeruhan
+                            </Text>
 
-                    <Controller
-                      name="kekeruhan"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Kekeruhan
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="klorin_bebas"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Klorin Babas
+                            </Text>
 
-                    <Controller
-                      name="klorin_bebas"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Klorin Babas
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="suhu_udara"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Suhu Udara
+                            </Text>
 
-                    <Controller
-                      name="suhu_udara"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Suhu Udara
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="cuaca"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Cuaca
+                            </Text>
 
-                    <Controller
-                      name="cuaca"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Cuaca
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="arah_angin"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Arah Angin
+                            </Text>
 
-                    <Controller
-                      name="arah_angin"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Arah Angin
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="kelembapan"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pr-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Kelembapan
+                            </Text>
 
-                    <Controller
-                      name="kelembapan"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pr-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Kelembapan
-                          </Text>
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
 
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
+                      <Controller
+                        name="kecepatan_angin"
+                        control={control}
+                        render={({ field: { onChange, value } }) => (
+                          <View className="w-1/2 pl-2">
+                            <Text className="font-poppins-semibold mb-2 text-black">
+                              Kecepatan Angin
+                            </Text>
 
-                    <Controller
-                      name="kecepatan_angin"
-                      control={control}
-                      render={({ field: { onChange, value } }) => (
-                        <View className="w-1/2 pl-2">
-                          <Text className="font-poppins-semibold mb-2 text-black">
-                            Kecepatan Angin
-                          </Text>
-
-                          <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                            value={value}
-                            onChangeText={onChange}
-                          />
-                        </View>
-                      )}
-                    />
-                    {/* </>
-            )} */}
-                  </View>
-                </>
-              ) : (
-                <View></View>
-              )}
-
+                            <TextField
+                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              value={value}
+                              onChangeText={onChange}
+                            />
+                          </View>
+                        )}
+                      />
+                    </View>
               <Button
                 onPress={handleSubmit(createOrUpdate)}
                 loading={isLoading}
-                className="p-2 rounded-sm mt-4"
+                className="p-2 rounded-md mt-4"
                 style={{ backgroundColor: Colors.brand }}>
                 <Text className="text-white text-center text-base font-bold font-sans">
                   SUBMIT
                 </Text>
               </Button>
+                  </View>
+                </>
+              ) : (
+                <View></View>
+              )}
             </View>
           </View>
         )}
