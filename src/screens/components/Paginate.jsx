@@ -67,7 +67,7 @@ const Paginate = forwardRef(
     }, [search, payload]);
 
     const handleLoadMore = () => {
-      if (!isFetchingMore && page < data.last_page) {
+      if (!isFetchingMore && page < data?.last_page) {
         setIsFetchingMore(true);
         setPage(prevPage => prevPage + 1);
       }
@@ -78,6 +78,10 @@ const Paginate = forwardRef(
         refetch().finally(() => setIsFetchingMore(false));
       }
     }, [isFetchingMore]);
+
+    // useEffect(() => {
+    //   if(!data.data?.length) queryClient.invalidateQueries([url]);
+    // }, [data])
 
     const handleScroll = event => {
       const scrollOffset = event.nativeEvent.contentOffset.y;

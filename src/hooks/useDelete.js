@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import axios from '../libs/axios';
+import Toast from 'react-native-toast-message';
 
 const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => (
   <Modal
@@ -44,10 +45,10 @@ export const useDelete = (callback) => {
     try {
       const response = await axios.delete(currentUrl);
       hideConfirmationModal();
-      showToast("Data Berhasil Dihapus")
+      Toast.show("Data Berhasil Dihapus")
       onSuccess && onSuccess(response);
     } catch (error) {
-      showToast("Data Gagal Dihapus")
+      Toast.show("Data Gagal Dihapus")
       onError && onError(error);
     } finally {
       onSettled && onSettled();

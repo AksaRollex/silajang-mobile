@@ -87,6 +87,7 @@ const styles = StyleSheet.create({
     flex: 1,
     fontSize: 16,
     color: 'black', // Warna teks hitam
+    fontFamily: 'Poppins-Regular',
   },
   dropdownButtonArrowStyle: {
     fontSize: 18,
@@ -110,8 +111,10 @@ const styles = StyleSheet.create({
     color: 'black', // Warna teks hitam
   },
   dropdownItemTxtStyle: {
-    fontSize: 16,
+    fontSize: 17,
     color: 'black', // Warna teks hitam
+    fontFamily: 'Poppins-Regular',
+    
   },
   searchInput: {
     borderBottomWidth: 1,

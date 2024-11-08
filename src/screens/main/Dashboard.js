@@ -117,17 +117,27 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
+    <ScrollView
+      className="flex-col"
+      showsVerticalScrollIndicator={false}
+      stickyHeaderIndices={[]}>
+        
       <Header
         navigate={() => {
           navigation.navigate("Profile");
         }}
-      />
+        />
 
+      <View className="min-h-[100px] relative shadow-lg z-10 mb-10" style={{ backgroundColor : Colors.brand }}>
+        <View className="px-4 pt-4">
+          <Text className="text-2xl text-center font-poppins-semibold text-white mb-1">Dashboard</Text>
+          </View>
       <YearSelector
         value={tahun}
         onValueChange={handleYearChange}
         items={tahuns.map(item => ({ label: item.text, value: item.id }))}
-      />
+        />
+      </View>
 
       {user.has_tagihan && (
         <View style={styles.warningContainer}>
@@ -170,7 +180,7 @@ const Dashboard = () => {
                 icon="leaf"
                 iconColor="#EC4899"
                 gradientColors={["#FCE7F3", "#FBCFE8"]}
-              />
+                />
               <DashboardCard
                 style={styles.cardCompleted}
                 number={dashboard.permohonanSelesai}
@@ -178,7 +188,7 @@ const Dashboard = () => {
                 icon="clipboard-check"
                 iconColor="#10B981"
                 gradientColors={["#ECFDF5", "#A7F3D0"]}
-              />
+                />
               <DashboardCard
                 style={styles.cardTotal}
                 className="mb-2"
@@ -187,7 +197,7 @@ const Dashboard = () => {
                 icon="chart-pie"
                 iconColor="#8B5CF6"
                 gradientColors={["#EDE9FE", "#DDD6FE"]}
-              />
+                />
             </>
           ) : (
             <View style={styles.loadingContainer}>
@@ -197,6 +207,7 @@ const Dashboard = () => {
         </View>
         {/* <FooterText /> */}
       </ScrollView>
+    </ScrollView>
     </View>
   );
 };
@@ -246,12 +257,12 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
   },
-  yearLabel: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#374151",
-    marginRight: 12,
-  },
+  // yearLabel: {
+  //   fontSize: 16,
+  //   fontWeight: "600",
+  //   color: "#374151",
+  //   marginRight: 15,
+  // },
   pickerWrapper: {
     flex: 1,
     maxWidth: 150,
@@ -378,10 +389,13 @@ const styles = StyleSheet.create({
     flexGrow: 1,
   },
   yearSelectorContainer: {
-    margin: 16,
+    zIndex: 10,
+    marginHorizontal: 35,
     backgroundColor: '#FFFFFF',
     borderRadius: 12,
-    padding: 12,
+    padding: 8,
+    position: 'absolute',
+    top: 60,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -389,12 +403,14 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
-    elevation: 2,
+    elevation: 10,
+    width: '80%',
   },
   yearLabel: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 7,
+    left: 6,
   },
   yearText: {
     fontSize: 16,

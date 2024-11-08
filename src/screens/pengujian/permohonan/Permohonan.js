@@ -77,45 +77,63 @@ const Permohonan = ({ navigation }) => {
   const CardPermohonan = ({ item }) => {
     return (
       <View style={styles.card}>
-        <View style={styles.cards}>
-          <Text style={[styles.cardTexts]}>{item.tanggal}</Text>
-          <Text className="font-bold text-xl text-black my-1">
-            {item.industri}
-          </Text>
+        <View style={styles.roundedBackground} className="rounded-br-full" />
 
-          <Text
-            style={[styles.badge]}
-            className="bg-indigo-400 text-white text-xs">
-            Cara Pengambilan :{" "}
-            {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
-          </Text>
-          <Text
-            style={[styles.badge]}
-            className="bg-emerald-400 text-white text-xs">
-            Pembayaran : {item.pembayaran}
-          </Text>
-
-          <Text className="text-black text-xs font-bold">{item.alamat}</Text>
-        </View>
-        <View style={styles.cards2}>
-          <MenuView
-            title="Menu Title"
-            actions={dropdownOptions.map(option => ({
-              ...option,
-            }))}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = dropdownOptions.find(
-                option => option.title === nativeEvent.event,
-              );
-              if (selectedOption) {
-                selectedOption.action(item);
-              }
-            }}
-            shouldOpenOnLongPress={false}>
-            <View>
-              <Entypo name="dots-three-vertical" size={16} color="#312e81" />
+        <View style={styles.cardWrapper}>
+          {/* Left section with rounded background */}
+          <View style={styles.leftSection}>
+            <View style={styles.cardContent}>
+              <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
+                Industri
+              </Text>
+              <Text className="text-black  text-base font-poppins-regular">
+                {item.industri}
+              </Text>
+              <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
+                Alamat
+              </Text>
+              <Text className="text-black  text-base  font-poppins-regular">
+                {item.alamat}
+              </Text>
+              <Text className="text-slate-600 text-xs mt-3 uppercase  font-poppins-semibold">
+                Cara Pengambilan
+              </Text>
+              <Text className="text-black  font-poppins-regular">
+                {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
+              </Text>
             </View>
-          </MenuView>
+          </View>
+
+          {/* Middle section */}
+          <View
+            style={styles.cardContents}
+            className="flex flex-end   font-poppins-semibold">
+            <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
+              {item.tanggal}
+            </Text>
+          </View>
+
+          {/* Right section (dots menu) */}
+          <View style={styles.cardActions} className="mb-4">
+            <MenuView
+              title="Menu Title"
+              actions={dropdownOptions.map(option => ({
+                ...option,
+              }))}
+              onPressAction={({ nativeEvent }) => {
+                const selectedOption = dropdownOptions.find(
+                  option => option.title === nativeEvent.event,
+                );
+                if (selectedOption) {
+                  selectedOption.action(item);
+                }
+              }}
+              shouldOpenOnLongPress={false}>
+              <View>
+                <Entypo name="dots-three-vertical" size={20} color="#312e81" />
+              </View>
+            </MenuView>
+          </View>
         </View>
       </View>
     );
@@ -164,42 +182,42 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
+      <View className="p-2 bg-[#ececec]">
+        <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
           <Back
             size={24}
-            color={"white"}
+            color={"black"}
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg ">Permohonan</Text>
+          <Text className=" text-black text-lg font-poppins-semibold">
+            Permohonan
+          </Text>
         </View>
-      </View>
-      <View className="bg-[#ececec] w-full h-full">
-        {user.has_tagihan ? (
-          <View className="p-2">
-            <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
-              <Text className="text-black mb-0 text-sm">
-                Tidak dapat membuat Permohonan Baru
-              </Text>
-              <Text className="text-black text-xs">
-                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-              </Text>
+        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
+          {user.has_tagihan ? (
+            <View className="p-2">
+              <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+                <Text className="text-black mb-0 text-sm font-poppins-semibold">
+                  Tidak dapat membuat Permohonan Baru
+                </Text>
+                <Text className="text-black text-xs font-poppins-semibold">
+                  Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                </Text>
+              </View>
             </View>
-          </View>
-        ) : (
-          <></>
-        )}
-        <Paginate
-          className="mb-20"
-          ref={paginateRef}
-          key={refreshKey}
-          url="/permohonan"
-          payload={{ tahun: tahun }}
-          Plugin={filtah}
-          renderItem={CardPermohonan}></Paginate>
+          ) : (
+            <></>
+          )}
+          <Paginate
+            className="mb-20"
+            ref={paginateRef}
+            key={refreshKey}
+            url="/permohonan"
+            payload={{ tahun: tahun }}
+            Plugin={filtah}
+            renderItem={CardPermohonan}></Paginate>
+        </View>
         <Icons
           name="plus"
           size={28}
@@ -207,35 +225,55 @@ const Permohonan = ({ navigation }) => {
           style={styles.plusIcon}
           onPress={() => navigation.navigate("TambahPermohonan")}
         />
-      </View>
 
-      <DeleteConfirmationModal />
+        <DeleteConfirmationModal />
+      </View>
     </>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: "#f8f8f8",
     borderRadius: 15,
-    padding: rem(0.7),
-    backgroundColor: "#fff",
+    marginVertical: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    overflow: "hidden",
+    position: "relative", // Added to position the background
+  },
+  roundedBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "100%", // Adjust this value to control how much of the card is covered
+    backgroundColor: "#e2e8f0", // slate-200 equivalent
+  },
+  cardWrapper: {
     flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
-    marginVertical : 10
+    position: "relative",
+    zIndex: 2,
   },
-  cards: {
-    borderRadius: 10,
-    width: "90%",
-    marginBottom: 4,
+  leftSection: {
+    width: "45%",
+    position: "relative",
   },
-  cards2: {
-    borderRadius: 10,
+  cardContent: {
+    padding: 12,
+  },
+  cardContents: {
+    width: "45%",
+    paddingTop: 12,
+  },
+  cardActions: {
     width: "10%",
-    marginBottom: 4,
-    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
+    zIndex: 4,
   },
   picker: {
     flex: 1,
@@ -261,7 +299,6 @@ const styles = StyleSheet.create({
     paddingHorizontal: 4,
     borderRadius: 4,
     marginBottom: 4,
-    fontWeight: "bold",
   },
 });
 export default Permohonan;
