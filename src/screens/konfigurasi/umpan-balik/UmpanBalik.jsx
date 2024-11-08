@@ -295,6 +295,12 @@ const handleMonthChange = (event) => {
       <View className="mx-4">
         <View className="bg-[#F9F9F9] rounded-lg flex-1 overflow-hidden shadow-sm" 
           style={{
+            borderTopWidth:1,
+            borderTopColor: '#e5e7eb',
+            borderRightWidth:1,
+            borderRightColor: '#e5e7eb',
+            borderBottomWidth:1,
+            borderBottomColor: '#e5e7eb',
             borderLeftWidth: 4,
             borderLeftColor: '#0090a6',
           }}>
@@ -306,7 +312,7 @@ const handleMonthChange = (event) => {
                 <Text className="text-[20px] font-poppins-bold text-[#0090a6]">
                   {data.ikm?.toFixed(2)}
                 </Text>
-                <Text className="text-gray-400 font-poppins-regular">
+                <Text className="text-black font-poppins-regular">
                   IKM Unit Pelayanan
                 </Text>
               </View>
@@ -315,7 +321,13 @@ const handleMonthChange = (event) => {
   
         <View className="bg-[#F9F9F9] rounded-lg flex-1 overflow-hidden shadow-sm mt-2"
           style={{
-            borderLeftWidth: 5,
+            borderTopWidth:1,
+            borderTopColor: '#e5e7eb',
+            borderRightWidth:1,
+            borderRightColor: '#e5e7eb',
+            borderBottomWidth:1,
+            borderBottomColor: '#e5e7eb',
+            borderLeftWidth: 4,
             borderLeftColor: '#0090a6',
           }}>
 
@@ -327,7 +339,7 @@ const handleMonthChange = (event) => {
               <Text className="text-[20px] font-poppins-bold text-[#0090a6]">
                 {data.data?.jumlah}
               </Text>
-              <Text className="text-gray-400 font-poppins-regular">
+              <Text className="text-black font-poppins-regular">
                 Jumlah Responden
               </Text>
             </View>
@@ -362,7 +374,7 @@ const handleMonthChange = (event) => {
         <View className="mt-4 bg-white rounded-lg" style={{ marginLeft: -15}}>
           <BarChart
             data={chartData}
-            width={Dimensions.get('window').width - 65}
+            width={Dimensions.get('window').width - 60}
             height={250}
             yAxisLabel=""
             chartConfig={{
