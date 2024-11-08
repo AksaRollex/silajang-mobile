@@ -182,7 +182,7 @@ const Dashboard = () => {
     const { data: user } = useUser();
 
     const getFontSize = (text, defaultSize, smallerSize) => {
-      return text.length > 15 ? smallerSize : defaultSize; // adjust '15' as per your length requirement
+      return text.length > 15 ? smallerSize : defaultSize; 
     };
 
     return (
