@@ -266,53 +266,56 @@ const PenerimaSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="p-3">
-        <View className="flex-row items-center space-x-2">
-          <View className="flex-col w-full">
-            <View className="flex-row items-center space-x-2 mb-4">
-              <BackButton action={() => navigation.goBack()} size={26} />
-              <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] text-black font-poppins-semibold">Penerima Sampel</Text>
-              </View>
+    <View className=" p-4">
+      <View className="flex-row items-center space-x-2">
+        <View className="flex-col w-full">
+          <View className="flex-row items-center space-x-2 mb-4">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <View className="absolute left-0 right-2 items-center">
+              <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text>
             </View>
+          </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
-                  <HorizontalScrollMenu
-                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
-                    items={pengambilOptions}
-                    selected={selectedPengambil}
-                    onPress={item => setSelectedPengambil(item.id)}
-                    itemWidth={170}
-                    scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                    activeBackgroundColor={"#312e81"}
-                    buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-                  />
-              </View>
+            <View className="mt-3 ml-[-10] mr-2"> 
+              <HorizontalScrollMenu
+                items={pengambilOptions}
+                selected={selectedPengambil}
+                onPress={item => setSelectedPengambil(item.id)}
+                itemWidth={170}
+                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
+                activeBackgroundColor={"#312e81"}
+                buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                textStyle={{ fontSize: 12, fontFamily: "Poppins-SemiBold" }}
+              />
+            </View>
 
-              <MenuView
-                title="filterOptions"
-                actions={filterOptions.map(option => ({
-                  id: option.id.toString(),
-                  title: option.title,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = filterOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  if (selectedOption) {
-                    setSelectedYear(selectedOption.title)
-                    // console.log(selectedOption.title)
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-                
-              >
-                <View style={{ marginEnd: 60 }}>
-                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
-                </View>
-              </MenuView>
-            </View>   
+            <MenuView
+              title="filterOptions"
+              actions={filterOptions.map(option => ({
+                id: option.id.toString(),
+                title: option.title,
+              }))}
+              onPressAction={({ nativeEvent }) => {
+                const selectedOption = filterOptions.find(
+                  option => option.title === nativeEvent.event,
+                );
+                if (selectedOption) {
+                  setSelectedYear(selectedOption.title);
+                }
+              }}
+              shouldOpenOnLongPress={false}
+            >
+              <View style={{ marginEnd: 50 }}>
+                <MaterialCommunityIcons
+                  name="filter-menu-outline"
+                  size={24}
+                  color="white"
+                  style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
+                />
+              </View>
+            </MenuView>
+          </View>
           </View>
         </View>
       </View>
@@ -346,7 +349,7 @@ const PenerimaSampel = ({ navigation }) => {
             </Text>
             <TextInput
               style={styles.longInput}
-              placeholder="Masukkan Revisi"
+              placeholder="Masukkan Revisi"  
               value={deskripsi}
               onChangeText={setDeskripsi}
               multiline={true} // Mengaktifkan input untuk beberapa baris
