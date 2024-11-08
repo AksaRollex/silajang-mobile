@@ -128,7 +128,7 @@ const TambahPermohonan = ({ navigation }) => {
                 </Text>
                 <TextField
                   enableErrors
-                  placeholder="CV. PT. "
+                  placeholder="Masukkan Nama Industri"
                   onChangeText={onChange}
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                   value={value}

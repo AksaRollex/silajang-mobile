@@ -54,7 +54,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   const { onSuccess, onError, onSettled } = callback || {};
 
   useEffect(() => {
-    console.log("DATA ANJAY", uuid);
+    // console.log("DATA ANJAY", uuid);
   }, [uuid]);
 
   const closeModal = () => {
@@ -81,10 +81,10 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["/permohonan/titik"]);
-      navigation.navigate("TitikUji");
+      // navigation.navigate("TitikUji");
     },
     onError: error => {
-      console.log("Delete error : ", error);
+      // console.log("Delete error : ", error);
     },
   });
 

@@ -1,61 +1,135 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, Text, StyleSheet } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-import RNPickerSelect from "react-native-picker-select";
+import SelectDropdown from "react-native-select-dropdown";
 
-const Select2 = ({ onChangeValue, items, value, placeholder }) => {
+const Select2 = ({ onSelect, data, value, placeholder, defaultValue }) => {
+  const [selectedValue, setSelectedValue] = useState(null);
+
+  // Effect untuk menangani defaultValue
+  useEffect(() => {
+    if (defaultValue && data.length > 0) {
+      const defaultItem = data.find(item => item.value === defaultValue);
+      if (defaultItem) {
+        setSelectedValue(defaultItem);
+      }
+    }
+  }, [defaultValue, data]);
+
   return (
-    <View style={styles.container}>
-      <View className=" bg-[#fff] rounded-sm border-stone-300 border font-sans">
-        <RNPickerSelect
-          onValueChange={onChangeValue}
-          items={items}
-          value={value}
-          placeholder={
-            placeholder || { label: "Select an item...", value: null }
+    <View className="bg-[#fff] rounded-sm font-poppins-regular">
+      <SelectDropdown
+        data={data}
+        onSelect={selectedItem => {
+          setSelectedValue(selectedItem);
+          if (onSelect) {
+            onSelect(selectedItem.value);
           }
-          placeholderTextColor="black"
-          useNativeAndroidPickerStyle={false}
-          Icon={() => (
-            <Icon name="down" style={styles.icon} size={16} color={"black"} />
-          )}
-        />
-      </View>
+        }}
+        defaultValue={selectedValue}
+        renderButton={(selectedItem, isOpened) => {
+          return (
+            <View style={styles.dropdownButtonStyle}>
+              {selectedItem && (
+                <Icon
+                  name={selectedItem.icon}
+                  style={styles.dropdownButtonIconStyle}
+                />
+              )}
+              <Text
+                style={[
+                  styles.dropdownButtonTxtStyle,
+                  { color: selectedItem ? "black" : "grey" }, // Warna teks dinamis
+                ]}>
+                {(selectedItem && selectedItem.title) ||
+                  placeholder ||
+                  "Select Option"}
+              </Text>
+              <Icon
+                name={isOpened ? "up" : "down"}
+                style={styles.dropdownButtonArrowStyle}
+              />
+            </View>
+          );
+        }}
+        renderItem={(item, index, isSelected) => {
+          return (
+            <View
+              style={[
+                styles.dropdownItemStyle,
+                isSelected && { backgroundColor: "#D2D9DF" },
+              ]}>
+              <Icon name={item.icon} style={styles.dropdownItemIconStyle} />
+              <Text style={styles.dropdownItemTxtStyle}>{item.title}</Text>
+            </View>
+          );
+        }}
+        search
+        searchPlaceHolder={`Search ${placeholder}`}
+        searchInputStyle={styles.searchInput}
+        searchPlaceHolderColor="grey"
+        renderSearchInputLeftIcon={() => {
+          return <Icon name={"search1"} color={"grey"} size={18} />;
+        }}
+        rowTextForSelection={item => item.title}
+        buttonTextAfterSelection={item => item.title}
+        showsVerticalScrollIndicator={false}
+        dropdownStyle={styles.dropdownMenuStyle}
+      />
     </View>
   );
 };
 
 const styles = StyleSheet.create({
-  container: {
-    marginVertical: 10,
-  },
-  icon: {
-    position: "absolute",
-    right: 12,
-    top: 15,
-  },
-});
-
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 0.5,
-    borderRadius: 8,
-    color: "black",
-    paddingRight: 30,
-    backgroundColor: "#fff",
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
+  dropdownButtonStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
     paddingVertical: 8,
-    borderWidth: 1,
-    borderRadius: 1,
+    borderRadius: 8, // Tambahkan border radius sesuai kebutuhan
+    borderWidth: 1, // Tambahkan border jika diinginkan
+    borderColor: "#E5E7EB", // Warna border
+    backgroundColor: "#FFFFFF",
+  },
+  dropdownButtonIconStyle: {
+    fontSize: 18,
+    marginRight: 8,
     color: "black",
-    paddingRight: 30,
-    backgroundColor: "#fff",
+  },
+  dropdownButtonTxtStyle: {
+    flex: 1,
+    fontSize: 16,
+    color: "grey",
+  },
+  dropdownButtonArrowStyle: {
+    fontSize: 18,
+    color: "black",
+  },
+  dropdownMenuStyle: {
+    backgroundColor: "#FFFFFF",
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#E5E7EB",
+  },
+  dropdownItemStyle: {
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 8,
+  },
+  dropdownItemIconStyle: {
+    fontSize: 18,
+    marginRight: 8,
+    color: "black", // Warna teks hitam
+  },
+  dropdownItemTxtStyle: {
+    fontSize: 16,
+    color: "black", // Warna teks hitam
+  },
+  searchInput: {
+    borderBottomWidth: 1,
+    borderBottomColor: "#E5E7EB",
+    color: "black", // Warna teks hitam pada input pencarian
   },
 });
 

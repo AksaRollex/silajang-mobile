@@ -103,7 +103,7 @@ const EditPermohonan = ({ route, navigation }) => {
                 <Text className="font-sans font-bold mb-2 text-black ">Nama industri</Text>
                 <TextField
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  placeholder="PT, CV, DINAS, ETC ...X`"
+                  placeholder="Masukkan Nama Industri"
                   onChangeText={onChange}
                   value={value}
                   error={errors.industri?.message}

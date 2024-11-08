@@ -67,7 +67,7 @@ const Paginate = forwardRef(
     }, [search, payload]);
 
     const handleLoadMore = () => {
-      if (!isFetchingMore && page < data.last_page) {
+      if (!isFetchingMore && page < data?.last_page) {
         setIsFetchingMore(true);
         setPage(prevPage => prevPage + 1);
       }

@@ -47,7 +47,7 @@ const Permohonan = ({ navigation }) => {
   const { delete: deletePermohonan, DeleteConfirmationModal, SuccessOverlayModal, FailedOverlayModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["permohonan"]);
-      navigation.navigate("Permohonan");
+      // navigation.navigate("Permohonan");
     },
     onError: error => {
       console.log("Delete error : ", error);
