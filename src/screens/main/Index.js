@@ -1,5 +1,3 @@
-// index main
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
@@ -39,7 +37,6 @@ import Perusahaan from "../profile/tabs/Perusahaan";
 import Keamanan from "../profile/tabs/Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PengujianScreen from "../pengujian/Pengujian";
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -471,4 +468,4 @@ const styles = StyleSheet.create({
     color: Colors.brand,
     textAlign: "center",
   },
-});
+}); 

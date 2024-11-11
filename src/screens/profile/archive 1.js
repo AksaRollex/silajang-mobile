@@ -384,12 +384,7 @@ const Parameter = ({ route, navigation }) => {
     queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
   };
 
-  const {
-    Save: SaveParameter,
-    SaveConfirmationModal,
-    SuccessOverlayModal,
-    FailedOverlayModal,
-  } = useSendParameter({
+  const { Save: SaveParameter, SaveConfirmationModal } = useSendParameter({
     onSuccess: () => {
       queryClient.invalidateQueries([
         `/permohonan/titik/${uuid}/parameter`,
@@ -774,8 +769,8 @@ const Parameter = ({ route, navigation }) => {
         shadowOpacity: 0.8,
         shadowRadius: 2,
       }}
-      className="bg-[#fbcfe8]  px-2 py-4 rounded-lg mt-1 flex ">
-      <View style={styles.roundedBackgroundSelected} />
+      className="bg-[#c7d2fe]  px-2 py-4 rounded-lg mt-1 flex ">
+      <View style={styles.roundedBackgrounds} />
 
       <View className="justify-center items-center">
         <Image
@@ -1083,8 +1078,6 @@ const Parameter = ({ route, navigation }) => {
       </View>
 
       <SaveConfirmationModal />
-      <FailedOverlayModal />
-      <SuccessOverlayModal />
     </View>
   );
 };

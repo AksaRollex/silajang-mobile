@@ -44,7 +44,12 @@ const Permohonan = ({ navigation }) => {
   const paginateRef = useRef();
   const queryClient = useQueryClient();
 
-  const { delete: deletePermohonan, DeleteConfirmationModal } = useDelete({
+  const {
+    delete: deletePermohonan,
+    DeleteConfirmationModal,
+    SuccessOverlayModal,
+    FailedOverlayModal,
+  } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["permohonan"]);
       // navigation.navigate("Permohonan");
@@ -227,6 +232,8 @@ const Permohonan = ({ navigation }) => {
         />
 
         <DeleteConfirmationModal />
+        <SuccessOverlayModal />
+        <FailedOverlayModal />
       </View>
     </>
   );
