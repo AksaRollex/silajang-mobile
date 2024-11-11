@@ -83,6 +83,10 @@ const Paginate = forwardRef(
       }
     }, [isFetchingMore]);
 
+    // useEffect(() => {
+    //   if(!data.data?.length) queryClient.invalidateQueries([url]);
+    // }, [data])
+
     const handleScroll = event => {
       const scrollOffset = event.nativeEvent.contentOffset.y;
       if (scrollOffset <= 0 && page > 1) {

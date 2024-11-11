@@ -32,9 +32,10 @@ const TambahPermohonan = ({ navigation }) => {
       .get("/master/jasa-pengambilan")
       .then(response => {
         const formattedJasaPengambilan = response.data.data.map(item => ({
-          label: item.wilayah,
+          title: item.wilayah,
           value: item.id,
         }));
+        console.log(formattedJasaPengambilan);
         setJasaPengambilan(formattedJasaPengambilan);
       })
       .catch(error => {
@@ -266,34 +267,29 @@ const TambahPermohonan = ({ navigation }) => {
               </View>
             </View>
             {selectedCara === "ambilPetugas" && (
-              <Select2
-                onChangeValue={value => {
-                  setSelectedJasaPengambilan(value);
-                }}
-                open={OpenJasaPengambilan}
-                value={selectedJasaPengambilan}
-                items={jasaPengambilan}
-                name="jasa_pengambilan_id"
-                setValue={setSelectedJasaPengambilan}
-                placeholder={{ label: "Pilih Jasa Pengambilan" }}
-                placeholderTextColor="black"
-                className="p-3 px-3 bg-[#fff] mb-5"
-              />
+              <View className=" mb-4">
+                <Select2
+                  onSelect={value => {
+                    setSelectedJasaPengambilan(value);
+                  }}
+                  data={jasaPengambilan}
+                  placeholder="Pilih Jasa Pengambilan"
+                />
+              </View>
             )}
-
             <Button
               backgroundColor={Colors.brand}
-              className="p-3 rounded-md"
-              onPress={handleSubmit(onSubmit)}
+              className="p-3 rounded-md "
+              onPress={handleSubmit(send)}
               disabled={isLoading}>
-              <Text className="text-white text-center text-base font-poppins-semibold">
+              <Text className="text-white text-center text-base font-bold font-sans">
                 SUBMIT
               </Text>
             </Button>
           </View>
         </View>
       </View>
-      <Modal animationType="fade" transparent={true} visible={modalVisible} >
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
             <LottieView
@@ -304,7 +300,8 @@ const TambahPermohonan = ({ navigation }) => {
             />
             <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
             <Text style={styles.successText}>
-              Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu parameter !
+              Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu
+              parameter !
             </Text>
           </View>
         </View>
