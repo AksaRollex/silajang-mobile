@@ -5,25 +5,27 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  Image,
   ScrollView,
+  Modal,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { TextField, Colors, Button, TextArea } from "react-native-ui-lib";
 import Toast from "react-native-toast-message";
-import DropDownPicker from "react-native-dropdown-picker";
 import axios from "@/src/libs/axios";
 import Back from "../../components/Back";
-import Header from "../../components/Header";
 import { useQueryClient, useQuery } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Select2 from "../../components/Select2";
+import LottieView from "lottie-react-native";
 
 const TambahPermohonan = ({ navigation }) => {
   const [jasaPengambilan, setJasaPengambilan] = useState([]);
   const [selectedJasaPengambilan, setSelectedJasaPengambilan] = useState(null);
   const [OpenJasaPengambilan, setOpenJasaPengambilan] = useState(false);
+  const [selectedCara, setSelectedCara] = useState(null);
+  const [selectedPembayaran, setSelectedPembayaran] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
     axios
@@ -63,14 +65,17 @@ const TambahPermohonan = ({ navigation }) => {
       return axios.post("/permohonan/store", requestData).then(res => res.data);
     },
     {
-      onSuccess: data => {
-        Toast.show({
-          type: "success",
-          text1: "Data Berhasil Di Kirim",
-        });
+      onSuccess: () => {
+        setModalVisible(true); // Tampilkan modal dulu
         queryClient.invalidateQueries(["/permohonan"]);
-        navigation.navigate("Permohonan");
+
+        // Tunggu sebentar sebelum navigasi
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.navigate("Permohonan");
+        }, 2000);
       },
+
       onError: error => {
         console.error(error.response.data);
         Toast.show({
@@ -82,8 +87,25 @@ const TambahPermohonan = ({ navigation }) => {
     },
   );
 
-  const [selectedCara, setSelectedCara] = useState(null);
-  const [selectedPembayaran, setSelectedPembayaran] = useState(null);
+  const onSubmit = data => {
+    if (!selectedCara) {
+      Toast.show({
+        type: "error",
+        text1: "Silakan pilih cara pengambilan",
+      });
+      return;
+    }
+
+    if (selectedCara === "ambilPetugas" && !selectedJasaPengambilan) {
+      Toast.show({
+        type: "error",
+        text1: "Silakan pilih jasa pengambilan",
+      });
+      return;
+    }
+
+    send(data);
+  };
 
   const handleSelectCara = cara => {
     setSelectedCara(cara);
@@ -100,197 +122,193 @@ const TambahPermohonan = ({ navigation }) => {
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row  p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
-          <Back
-            size={24}
-            color={"white"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-bold text-white text-lg ">
-            Tambah Permohonan
-          </Text>
-        </View>
-      </View>
-      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md my-2">
-          <Controller
-            control={control}
-            name="industri"
-            rules={{ required: "Nama Industri tidak boleh kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="font-sans font-bold mb-2 text-black ">
-                  Nama Industri
-                </Text>
-                <TextField
-                  enableErrors
-                  placeholder="Masukkan Nama Industri"
-                  onChangeText={onChange}
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  value={value}
-                />
-              </View>
-            )}
-          />
-          {errors.industri && (
-            <Text style={{ color: "red" }}>{errors.industri.message}</Text>
-          )}
-
-          <Controller
-            control={control}
-            name="alamat"
-            rules={{ required: "alamat industri tidak boleh kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="font-sans font-bold mb-2 text-black ">
-                  Alamat Industri
-                </Text>
-                <TextField
-                  enableErrors
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  onChangeText={onChange}
-                  placeholder="Masukkan Alamat"
-                  value={value}
-                />
-              </View>
-            )}
-          />
-          {errors.alamat && (
-            <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
-          )}
-
-          <Controller
-            control={control}
-            name="kegiatan"
-            rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="font-sans font-bold mb-2 text-black ">
-                  Kegiatan Industri
-                </Text>
-                <TextField
-                  enableErrors
-                  placeholder="Masukkan Kegiatan Industri"
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  onChangeText={onChange}
-                  value={value}
-                />
-              </View>
-            )}
-          />
-          {errors.kegiatan && (
-            <Text style={{ color: "red" }}>{errors.kegiatan.message}</Text>
-          )}
-
-          <Controller
-            control={control}
-            name="keterangan"
-            rules={{ required: "Keterangan tidak boleh kosong" }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="font-sans font-bold mb-2 text-black ">
-                  Keterangan
-                </Text>
-                <View className="border border-stone-300 bg-[#fff]">
-                  <TextArea
-                    className="px-2 py-4 bg-[#fff] rounded-sm font-sans"
-                    value={value}
+      <View className="bg-[#ececec] w-full h-full p-3">
+        <View className="w-full bg-[#f8f8f8] h-full rounded-md">
+          <View className="flex-row  p-3 justify-between">
+            <Back
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className="font-poppins-semibold text-black text-lg ">
+              Tambah Permohonan
+            </Text>
+          </View>
+          <View className=" py-4 px-3">
+            <Controller
+              control={control}
+              name="industri"
+              rules={{ required: "Nama Industri tidak boleh kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold mb-2 text-black ">
+                    Nama Industri
+                  </Text>
+                  <TextField
+                    enableErrors
+                    placeholder="CV. PT. "
                     onChangeText={onChange}
+                    placeholderTextColor="grey"
+                    className="p-2 bg-[#fff] rounded-md text-black border-stone-300 border font-poppins-regular"
+                    value={value}
                   />
                 </View>
-              </View>
+              )}
+            />
+            {errors.industri && (
+              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
+                {errors.industri.message}
+              </Text>
             )}
-          />
-          <View>
-            <Text className="text-xl font-bold text-black my-4 text-center">
-              Cara Pengambilan
-            </Text>
 
-            <View style={styles.cardContainer}>
-              <TouchableOpacity
-                style={[
-                  styles.cardPengambilan,
-                  selectedCara === "kirimMandiri" && styles.selectedCard,
-                ]}
-                onPress={() => handleSelectCara("kirimMandiri")}>
-                <MaterialIcons name="transfer" size={40} color="black" />
-                <Text className="font-bold text-lg text-center text-black my-2">
-                  Kirim Mandiri
-                </Text>
-                {/* <Text className="text-justify text-black text-sm">
-                  Kirim Sampel Uji Anda Ke Laboratorium Dinas
-                </Text> */}
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={[
-                  styles.cardPengambilan,
-                  selectedCara === "ambilPetugas" && styles.selectedCard,
-                ]}
-                onPress={() => handleSelectCara("ambilPetugas")}>
-                <MaterialIcons name="truck" size={40} color="black" />
-                <Text className="font-bold text-lg text-center text-black my-2">
-                  Ambil Petugas
-                </Text>
-                {/* <Text className="text-justify text-black text-sm">
-                  Petugas Akan Menghubungi Anda Untuk Konfirmasi Lokasi
-                  Pengambilan
-                </Text> */}
-              </TouchableOpacity>
+            <Controller
+              control={control}
+              name="alamat"
+              rules={{ required: "alamat industri tidak boleh kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold mb-2 text-black ">
+                    Alamat Industri
+                  </Text>
+                  <TextField
+                    enableErrors
+                    placeholderTextColor="grey"
+                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
+                    onChangeText={onChange}
+                    placeholder="Masukkan Alamat"
+                    value={value}
+                  />
+                </View>
+              )}
+            />
+            {errors.alamat && (
+              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
+                {errors.alamat.message}
+              </Text>
+            )}
+
+            <Controller
+              control={control}
+              name="kegiatan"
+              rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold mb-2 text-black ">
+                    Kegiatan Industri
+                  </Text>
+                  <TextField
+                    enableErrors
+                    placeholderTextColor="grey"
+                    placeholder="Masukkan Kegiatan Industri"
+                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
+                    onChangeText={onChange}
+                    value={value}
+                  />
+                </View>
+              )}
+            />
+            {errors.kegiatan && (
+              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
+                {errors.kegiatan.message}
+              </Text>
+            )}
+
+            {/* <Controller
+              control={control}
+              name="keterangan"
+              rules={{ required: "Keterangan tidak boleh kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold mb-2 text-black ">
+                    Keterangan
+                  </Text>
+                  <View className="border border-stone-300 bg-[#fff]">
+                    <TextArea
+                      placeholder="Ketikkan Keterangan"
+                      placeholderTextColor="black"
+                      className="px-2 py-4 bg-[#fff] rounded-md font-poppins-regular"
+                      value={value}
+                      onChangeText={onChange}
+                    />
+                  </View>
+                </View>
+              )}
+            /> */}
+            <View>
+              <Text className="text-xl text-black mb-4 font-poppins-semibold text-center">
+                Cara Pengambilan
+              </Text>
+
+              <View style={styles.cardContainer}>
+                <TouchableOpacity
+                  style={[
+                    styles.cardPengambilan,
+                    selectedCara === "kirimMandiri" && styles.selectedCard,
+                  ]}
+                  onPress={() => handleSelectCara("kirimMandiri")}>
+                  <MaterialIcons name="transfer" size={40} color="black" />
+                  <Text className="text-lg font-poppins-semibold text-center text-black my-2">
+                    Kirim Mandiri
+                  </Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  style={[
+                    styles.cardPengambilan,
+                    selectedCara === "ambilPetugas" && styles.selectedCard,
+                  ]}
+                  onPress={() => handleSelectCara("ambilPetugas")}>
+                  <MaterialIcons name="truck" size={40} color="black" />
+                  <Text className="text-lg text-center font-poppins-semibold text-black my-2">
+                    Ambil Petugas
+                  </Text>
+                </TouchableOpacity>
+              </View>
             </View>
-          </View>
-          {/* Conditionally Render TextField based on selectedCara */}
-          {selectedCara === "ambilPetugas" && (
-            <Select2
-            onChangeValue={value => {
-              setSelectedJasaPengambilan(value); // Update state untuk nilai terpilih
-            }}
-            open={OpenJasaPengambilan}
-            value={selectedJasaPengambilan}
-            items={jasaPengambilan}
-            name="jasa_pengambilan_id"
-            setValue={setSelectedJasaPengambilan}
-            placeholder={{ label: "Pilih Jasa Pengambilan" }}
-            placeholderTextColor="black"
-            className="p-3 px-3 bg-[#fff] mb-5"
-          />
-          
-          )}
-          {/* <View>
-            <Text className="text-xl font-bold text-black mb-4 text-center">
-              Opsi Pembayaran
-            </Text>
-            <TouchableOpacity
-              style={[
-                styles.cardPembayaran,
-                selectedPembayaran === "transfer" && styles.selectedCard,
-              ]}
-              onPress={() => handleSelectPembayaran("transfer")}>
-              <MaterialIcons name="wallet" size={40} color="black" />
+            {selectedCara === "ambilPetugas" && (
+              <Select2
+                onChangeValue={value => {
+                  setSelectedJasaPengambilan(value);
+                }}
+                open={OpenJasaPengambilan}
+                value={selectedJasaPengambilan}
+                items={jasaPengambilan}
+                name="jasa_pengambilan_id"
+                setValue={setSelectedJasaPengambilan}
+                placeholder={{ label: "Pilih Jasa Pengambilan" }}
+                placeholderTextColor="black"
+                className="p-3 px-3 bg-[#fff] mb-5"
+              />
+            )}
 
-              <Text className="font-bold text-lg text-center text-black my-2">
-                Transfer (Non Tunai)
+            <Button
+              backgroundColor={Colors.brand}
+              className="p-3 rounded-md"
+              onPress={handleSubmit(onSubmit)}
+              disabled={isLoading}>
+              <Text className="text-white text-center text-base font-poppins-semibold">
+                SUBMIT
               </Text>
-              <Text className="text-justify text-black text-sm">
-                Transfer Virtual Account Bank Jatim, Untuk Nomor VA Akan Di
-                Informasikan Oleh Bendahara UPT
-              </Text>
-            </TouchableOpacity>
-          </View> */}
-          <Button
-            backgroundColor={Colors.brand}
-            className="p-2 rounded-sm mt-4"
-            onPress={handleSubmit(send)}
-            disabled={isLoading}>
-            <Text className="text-white text-center text-base font-bold font-sans">
-              SUBMIT
-            </Text>
-          </Button>
+            </Button>
+          </View>
         </View>
-      </ScrollView>
+      </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible} >
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            />
+            <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
+            <Text style={styles.successText}>
+              Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu parameter !
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -365,6 +383,40 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    height: "35%",
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+    fontSize: rem(1.5),
+    fontWeight: "bold",
+    marginBottom: rem(1.5),
+    marginTop: rem(1),
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
   },
 });
 

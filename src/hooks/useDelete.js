@@ -239,8 +239,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     padding: 20,
-    width: "90%",
-    height: "35%",
+    width: rem(25),
+    height: rem(25),
     borderRadius: 10,
   },
   lottie: {

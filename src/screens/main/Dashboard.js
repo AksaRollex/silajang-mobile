@@ -4,24 +4,18 @@ import {
   Text,
   ScrollView,
   StyleSheet,
-  Image,
   ActivityIndicator,
-  RefreshControl,
-  Platform,
   Dimensions,
+  TouchableOpacity,
+  Modal,
 } from "react-native";
-import { Colors } from "react-native-ui-lib";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
 import Header from "../components/Header";
-import FooterText from "../components/FooterText";
-import { Picker } from "@react-native-picker/picker";
-import Icon from "react-native-vector-icons/AntDesign";
-import RNPickerSelect from "react-native-picker-select";
-import Entypo from "react-native-vector-icons/Entypo";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
@@ -31,10 +25,31 @@ const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
+  const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
   const navigation = useNavigation();
 
+  const fetchDashboardData = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      const response = await axios.post(`/dashboard/${user.role.name}`, {
+        tahun: tahun,
+      });
+      setDashboard(response.data);
+    } catch (error) {
+      console.error("Error fetching dashboard data:", error);
+    } finally {
+      setRefreshing(false);
+    }
+  }, [tahun, user.role.name]);
+
+  useEffect(() => {
+    fetchDashboardData();
+  }, [fetchDashboardData]);
+
+  const handleYearChange = selectedYear => {
+    setTahun(selectedYear);
+  };
   const fetchUserData = useCallback(() => {
     setRefreshing(true);
     axios
@@ -54,78 +69,94 @@ const Dashboard = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  useEffect(() => {
-    const currentYear = new Date().getFullYear();
-    const years = Array.from({ length: currentYear - 2021 }, (_, i) => ({
-      id: currentYear - i,
-      text: `${currentYear - i}`,
-    }));
-    setTahuns(years);
-  }, []);
-
-  const handleYearChange = useCallback(itemValue => {
-    setTahun(itemValue);
-  }, []);
-
   const onRefresh = useCallback(() => {
     fetchUserData();
   }, [fetchUserData]);
 
-  const YearSelector = ({ value, onValueChange, items }) => (
-    <View style={styles.yearSelectorContainer}>
-      <View style={styles.yearLabel}>
-        <Icon name="calendar" size={20} color="#6B7280" />
-        <Text style={styles.yearText}>Tahun</Text>
-      </View>
-      <View style={styles.pickerContainer}>
-        <RNPickerSelect
-          onValueChange={onValueChange}
-          items={items}
-          value={value}
-          style={pickerSelectStyles}
-          useNativeAndroidPickerStyle={false}
-          Icon={() => (
-            <MaterialIcons
-              name="keyboard-arrow-down"
-              size={25}
-              color="#6B7280"
-              style={{ marginTop: 10, marginRight: 12 }}
-            />
-          )}
-          placeholder={{
-            label: "Pilih Tahun",
-            value: null,
-            color: "#9CA3AF",
-          }}
-        />
-      </View>
-    </View>
-  );
+  const Filtah = ({ tahun, onYearChange }) => {
+    const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
 
-  const pickerSelectStyles = StyleSheet.create({
-    inputIOS: {
-      fontSize: 17,
-      paddingVertical: 8,
-      paddingHorizontal: 20,
-      borderWidth: 1,
-      borderColor: "#E5E7EB",
-      borderRadius: 8,
-      color: "#4B5563",
-      fontFamily: "Poppins-SemiBold",
-      textAlign: "center",
-    },
-    inputAndroid: {
-      fontSize: 17,
-      paddingHorizontal: 20,
-      paddingVertical: 8,
-      borderWidth: 1,
-      borderColor: "#E5E7EB",
-      borderRadius: 8,
-      color: "#4B5563",
-      fontFamily: "Poppins-SemiBold",
-      textAlign: "center",
-    },
-  });
+    const handleFilterPress = () => {
+      setIsYearPickerVisible(true);
+    };
+
+    const handleYearSelect = selectedYear => {
+      onYearChange(selectedYear);
+      setIsYearPickerVisible(false);
+    };
+
+    return (
+      <>
+        <View className="flex-row items-center justify-end ">
+          <TouchableOpacity
+            onPress={handleFilterPress}
+            className="flex-row items-center bg-[#ececec] px-2 py-3  mx-6 mt-4 rounded-md">
+            <IonIcons name="calendar" size={24} color="black" />
+            <Text className="text-black font-poppins-regular mx-2">{tahun}</Text>
+            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+
+        <YearPicker
+          visible={isYearPickerVisible}
+          onClose={() => setIsYearPickerVisible(false)}
+          onSelect={handleYearSelect}
+          selectedYear={tahun}
+        />
+      </>
+    );
+  };
+  const YearPicker = ({ visible, onClose, onSelect, selectedYear }) => {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+      { length: currentYear - 2021 },
+      (_, i) => 2022 + i,
+    );
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={onClose}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Tahun</Text>
+              <TouchableOpacity onPress={onClose}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.yearList}>
+              {years.map(year => (
+                <TouchableOpacity
+                  key={year}
+                  style={[
+                    styles.yearItem,
+                    selectedYear === year && styles.selectedYear,
+                  ]}
+                  onPress={() => {
+                    onSelect(year);
+                    onClose();
+                  }}>
+                  <Text
+                    style={[
+                      styles.yearText,
+                      selectedYear === year && styles.selectedYearText,
+                    ]}>
+                    {year}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
 
   return (
     <View style={styles.container}>
@@ -134,13 +165,7 @@ const Dashboard = () => {
           navigation.navigate("Profile");
         }}
       />
-
-      <YearSelector
-        value={tahun}
-        onValueChange={handleYearChange}
-        items={tahuns.map(item => ({ label: item.text, value: item.id }))}
-      />
-
+      <Filtah tahun={tahun} onYearChange={handleYearChange} />
       {user.has_tagihan && (
         <View style={styles.warningContainer}>
           <View style={styles.warningContent}>
@@ -417,6 +442,55 @@ const styles = StyleSheet.create({
   pickerContainer: {
     flex: 1,
     maxWidth: 150,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+    maxHeight: Dimensions.get("window").height * 0.7,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e5e5",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000",
+    fontFamily: "Poppins-SemiBold",
+  },
+  yearList: {
+    paddingVertical: 8,
+  },
+  yearItem: {
+    padding: 16,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  selectedYear: {
+    backgroundColor: "#f8f8f8",
+    fontFamily: "Poppins-Regular",
+  },
+  yearText: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#000",
+    textAlign: "center",
+  },
+  selectedYearText: {
+    color: "#000",
+    fontFamily: "Poppins-Regular",
   },
 });
 

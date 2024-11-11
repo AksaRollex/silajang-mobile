@@ -6,6 +6,7 @@ import {
   Text,
   Image,
   ActivityIndicator,
+  Modal,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
@@ -17,6 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { APP_URL } from "@env";
 import Back from "../../components/Back";
+import LottieView from "lottie-react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 
 const Akun = () => {
@@ -24,6 +26,7 @@ const Akun = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
   const queryClient = useQueryClient();
 
   const {
@@ -127,14 +130,14 @@ const Akun = () => {
     isSuccess,
   } = useMutation(updateUser, {
     onSuccess: () => {
-      Toast.show({
-        type: "success",
-        text1: "Data Berhasil Di Perbarui",
-      });
+      setModalVisible(true);
       queryClient.invalidateQueries("/auth");
-      navigation.navigate("IndexProfile");
-      setFile(null);
-      fetchUserData();
+      setTimeout(() => {
+        setModalVisible(false);
+        fetchUserData();
+
+        navigation.navigate("IndexProfile");
+      }, 2000);
     },
     onError: error => {
       console.error(error.message);
@@ -175,25 +178,22 @@ const Akun = () => {
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row mb-4 p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
-          <Back
-            size={24}
-            color={"white"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-bold text-white text-lg ">
-            Informasi Personal
-          </Text>
-        </View>
-      </View>
-      <View className="bg-[#ececec] w-full h-full px-3 py-1 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-6">
+      <View className="bg-[#ececec] w-full h-full px-3 py-4 ">
+        <View className="bg-[#f8f8f8] py-4 px-3 h-full rounded-md mb-6">
+          <View className="flex-row justify-between">
+            <Back
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className="font-poppins-semibold text-black mb-3 text-lg ">
+              Informasi Personal
+            </Text>
+          </View>
+
           {userData ? (
-            <View>
+            <View className="flex">
               <Controller
                 control={control}
                 name="nama"
@@ -201,14 +201,14 @@ const Akun = () => {
                 rules={{ required: "Nama Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View className="">
-                    <Text className="font-sans font-bold mb-2 text-black ">
+                    <Text className="font-poppins-semibold mb-2 text-black ">
                       Nama
                     </Text>
 
                     <TextField
                       value={value}
                       placeholderTextColor="black"
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
                       enableErrors
                       onChangeText={onChange}
                     />
@@ -225,10 +225,10 @@ const Akun = () => {
                 name="photo"
                 render={({ field: { value } }) => (
                   <View className=" mb-4">
-                    <Text className="font-sans font-bold mb-2 text-black ">
+                    <Text className="font-poppins-semibold mb-2 text-black ">
                       Foto Profil
                     </Text>
-                    <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
+                    <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular">
                       <View className="bg-zinc-800 rounded-sm p-2">
                         {currentPhotoUrl || file ? (
                           <View style={styles.imageContainer}>
@@ -248,7 +248,7 @@ const Akun = () => {
                               style={{ backgroundColor: Colors.brand }}
                               className="px-5 py-2 rounded-sm items-center justify-center"
                               onPress={handleChoosePhoto}>
-                              <Text className="font-sans font-bold  text-white">
+                              <Text className="font-poppins-semibold  text-white">
                                 Ubah Gambar
                               </Text>
                             </TouchableOpacity> */}
@@ -282,14 +282,14 @@ const Akun = () => {
                 name="email"
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Email
                     </Text>
                     <TextField
                       placeholder={userData.user.email}
                       editable={false}
                       enableErrors
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
                       placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
@@ -302,14 +302,14 @@ const Akun = () => {
                 name="phone"
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Nomor Telepon
                     </Text>
                     <TextField
                       placeholder={userData.user.phone}
                       enableErrors
                       editable={false}
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
                       placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
@@ -319,12 +319,12 @@ const Akun = () => {
               />
 
               <Button
-                className="p-2 rounded-sm "
+                className="p-3 rounded-md "
                 backgroundColor={Colors.brand}
                 borderRadius={5}
                 onPress={handleSubmit(update)}
                 disabled={isLoading}>
-                <Text className="text-white text-center text-base font-bold font-sans">
+                <Text className="text-white text-center text-base font-poppins-semibold">
                   PERBARUI
                 </Text>
               </Button>
@@ -336,6 +336,22 @@ const Akun = () => {
           )}
         </View>
       </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            />
+            <Text style={styles.successTextTitle}>INformasi personal kamu berhasil di rubah</Text>
+            <Text style={styles.successText}>
+              Pastikan informasi personal yang kamu gunakan saat ini sudah benar !
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -487,7 +503,41 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "#fff",
     fontSize: 16,
+    fontFamily: "Poppins-SemiBold",
+  },
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    height: "35%",
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+    fontSize: rem(1.5),
     fontWeight: "bold",
+    marginBottom: rem(1.5),
+    marginTop: rem(1),
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
   },
 });
 

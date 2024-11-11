@@ -57,6 +57,10 @@ const Paginate = forwardRef(
       },
     });
 
+    useEffect(() => {
+      if (!data.data?.length) queryClient.invalidateQueries([url]);
+    }, [data]);
+
     useImperativeHandle(ref, () => ({
       refetch,
     }));
@@ -67,7 +71,7 @@ const Paginate = forwardRef(
     }, [search, payload]);
 
     const handleLoadMore = () => {
-      if (!isFetchingMore && page < data?.last_page) {
+      if (!isFetchingMore && page < data.last_page) {
         setIsFetchingMore(true);
         setPage(prevPage => prevPage + 1);
       }
@@ -195,23 +199,25 @@ const Paginate = forwardRef(
             name="search"
             render={({ field: { onChange, value } }) => (
               <TextInput
-                className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3"
+                className="flex-1 text-base border bg-white px-3 text-black border-gray-300 rounded-md mr-3 "
                 value={value}
+                placeholderTextColor={"grey"}
                 onChangeText={onChange}
                 placeholder="Cari..."
               />
             )}
           />
-          <TouchableOpacity
+          <View className="">{Plugin && <Plugin />}</View>
+
+          {/* <TouchableOpacity
             className="bg-[#312e81] p-4 rounded-md justify-center"
             onPress={handleSubmit(data => {
               setSearch(data.search);
               setPage(1);
             })}>
             <Icon name="search" size={18} color={"white"} />
-          </TouchableOpacity>
+          </TouchableOpacity> */}
         </View>
-        <View className="mb-1">{Plugin && <Plugin />}</View>
       </>
     );
 
@@ -233,7 +239,7 @@ const Paginate = forwardRef(
 
     if (isFetching && page === 1) {
       return (
-        <View className="mt-32">
+        <View className="mt-28">
           {cardData.map((item, index) => (
             <View
               key={index}
@@ -244,81 +250,96 @@ const Paginate = forwardRef(
                 marginTop: 12,
               }}>
               <View>
-                <View
-                  style={{
-                    width: 390,
-                    height: 10,
-                    borderTopLeftRadius: 20,
-                    borderTopRightRadius: 20,
-                    overflow: "hidden", // Pastikan elemen anak tidak keluar dari radius
-                  }}>
-                  <Skeleton
-                    animation="wave"
-                    width={390}
-                    height={20}
-                    LinearGradientComponent={LinearGradient}
-                  />
-                </View>
-                <View
-                  LinearGradientComponent={LinearGradient}
-                  style={{ width: "90%" }}>
-                  <Skeleton
-                    animation="wave"
-                    width={390}
-                    LinearGradientComponent={LinearGradient}
-                    height={180}
-                  />
-                  {/* Nested skeleton di dalam skeleton */}
+                <View className=" ">
                   <View
-                    style={{
-                      position: "absolute",
-                      top: "5%",
-                      left: "5%",
-                    }}>
+                    LinearGradientComponent={LinearGradient}
+                    style={{ width: "95%" }}>
                     <Skeleton
                       animation="wave"
-                      width={150}
-                      height={20}
+                      width={390}
                       LinearGradientComponent={LinearGradient}
+                      height={180}
                     />
-                    <Skeleton
-                      animation="wave"
-                      width={220}
-                      height={55}
-                      LinearGradientComponent={LinearGradient}
-                      style={{ marginTop: 10 }}
-                    />
-                    <Skeleton
-                      animation="wave"
-                      width={160}
-                      height={14}
-                      LinearGradientComponent={LinearGradient}
-                      style={{ marginTop: 10 }}
-                    />
-                    <Skeleton
-                      animation="wave"
-                      width={160}
-                      height={14}
-                      LinearGradientComponent={LinearGradient}
-                      style={{ marginTop: 10 }}
-                    />
-                    <Skeleton
-                      animation="wave"
-                      width={160}
-                      height={14}
-                      LinearGradientComponent={LinearGradient}
-                      style={{ marginTop: 10 }}
-                    />
+                    {/* Nested skeleton di dalam skeleton */}
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: "5%",
+                        left: "5%",
+                      }}>
+                      <Skeleton
+                        animation="wave"
+                        width={80}
+                        height={30}
+                        LinearGradientComponent={LinearGradient}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={150}
+                        height={32.5}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={80}
+                        height={30}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={150}
+                        height={32.5}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                    </View>
+                    <View
+                      style={{
+                        position: "absolute",
+                        top: "5%",
+                        left: "50%",
+                      }}>
+                      <Skeleton
+                        animation="wave"
+                        width={80}
+                        height={30}
+                        LinearGradientComponent={LinearGradient}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={150}
+                        height={32.5}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={80}
+                        height={30}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                      <Skeleton
+                        animation="wave"
+                        width={150}
+                        height={32.5}
+                        LinearGradientComponent={LinearGradient}
+                        style={{ marginTop: 10 }}
+                      />
+                    </View>
                   </View>
                 </View>
+
                 <View
                   LinearGradientComponent={LinearGradient}
                   style={{
-                    width: "10%",
+                    width: "5%",
                     position: "absolute",
                     justifyContent: "flex-end",
                     right: 0,
-                    top: "40%",
+                    top: "80%",
                   }}>
                   <Skeleton
                     animation="wave"
@@ -363,7 +384,9 @@ const Paginate = forwardRef(
           ListFooterComponent={ListFooter}
           ListEmptyComponent={() => (
             <View className="flex-1 justify-center items-center">
-              <Text className="text-gray-500">Data Tidak Tersedia</Text>
+              <Text className="text-gray-500 font-poppins-regular my-2">
+                Data Tidak Tersedia
+              </Text>
             </View>
           )}
         />

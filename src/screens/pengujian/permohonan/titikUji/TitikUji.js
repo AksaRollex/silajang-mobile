@@ -54,7 +54,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   const { onSuccess, onError, onSettled } = callback || {};
 
   useEffect(() => {
-    // console.log("DATA ANJAY", uuid);
+    console.log("DATA ANJAY", uuid);
   }, [uuid]);
 
   const closeModal = () => {
@@ -73,18 +73,13 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const {
-    delete: deleteTitikUji,
-    DeleteConfirmationModal,
-    SuccessOverlayModal,
-    FailedOverlayModal,
-  } = useDelete({
+  const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["/permohonan/titik"]);
-      // navigation.navigate("TitikUji");
+      navigation.navigate("TitikUji");
     },
     onError: error => {
-      // console.log("Delete error : ", error);
+      console.log("Delete error : ", error);
     },
   });
 
@@ -248,266 +243,181 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_sampel
   function getPenerimaanText(kesimpulan_sampel) {
     if (kesimpulan_sampel === 1) {
-      return " Diterima";
+      return "Diterima";
     } else if (kesimpulan_sampel === 2) {
-      return " Ditolak";
+      return "Ditolak";
     } else {
-      return " Menunggu";
+      return "Menunggu";
     }
   }
 
   const CardTitikUji = ({ item }) => (
-    <View style={styles.row}>
-      <View style={styles.card}>
-        <View style={styles.cards}>
-          <Text className="text-black text-base font-bold">{item.lokasi}</Text>
-          <Text className="font-bold text-xl text-black ">{item.kode}</Text>
-          <View className="py-1">
-            <Text className=" text-xs pt-1 text-black ">
-              Diambil : {item.tanggal_pengambilan || "-"}
+    <View style={styles.card}>
+      <View style={styles.roundedBackground} className="rounded-br-full" />
+
+      <View style={styles.cardWrapper}>
+        {/* Left section with rounded background */}
+        <View style={styles.leftSection}>
+          <View style={styles.cardContent}>
+            <Text className="font-bold text-slate-600 text-xs uppercase font-poppins-semibold">
+              Lokasi
             </Text>
-            <Text className=" text-xs pt-1 text-black ">
-              Diterima : {item.tanggal_diterima || "Tanggal Belum Tersedia"}
+            <Text className="text-black font-poppins-regular text-base">
+              {item.lokasi}
             </Text>
-            <Text className=" text-xs pt-1 text-black ">
-              Selesai : {item.tanggal_selesai_uji || "Tanggal Belum Tersedia"}
+
+            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              status PENGAMBILAN
             </Text>
-          </View>
-          <View className="">
-            <View>
-              <Text
-                style={styles.badge}
-                className={`${
-                  item.kesimpulan_permohonan == 1
-                    ? "text-green-600 bg-green-50 text-xs" // Diterima
-                    : item.kesimpulan_permohonan == 2
-                    ? "text-red-600 bg-red-50 text-xs" // Ditolak
-                    : "text-blue-600 bg-blue-50 text-xs" // Menunggu
-                }`}>
-                Pengambilan : {getKesimpulanText(item.kesimpulan_permohonan)}
-              </Text>
-            </View>
-            <View>
-              <Text
-                style={styles.badge}
-                className={`${
-                  item.kesimpulan_sampel == 1
-                    ? "text-green-600 bg-green-50 text-xs" // Diterima
-                    : item.kesimpulan_sampel == 2
-                    ? "text-red-600 bg-red-50 text-xs" // Ditolak
-                    : "text-blue-600 bg-blue-50 text-xs" // Menunggu
-                }`}>
-                Penerimaan :{getPenerimaanText(item.kesimpulan_sampel)}
-              </Text>
-            </View>
             <Text
-              style={styles.badge}
-              className="text-xs text-indigo-600  bg-slate-100 ">
-              Pengujian : {item.text_status || "-"}
+              className={`${
+                item.kesimpulan_permohonan == 1
+                  ? "text-green-600 text-xs" // Diterima
+                  : item.kesimpulan_permohonan == 2
+                  ? "text-red-600  text-xs" // Ditolak
+                  : "text-blue-600 text-xs" // Menunggu
+              } font-poppins-regular`}>
+              {getKesimpulanText(item.kesimpulan_permohonan)}
+            </Text>
+            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              status Penerimaan
+            </Text>
+            <Text
+              className={`${
+                item.kesimpulan_sampel == 1
+                  ? "text-green-600 text-xs" // Diterima
+                  : item.kesimpulan_sampel == 2
+                  ? "text-red-600 text-xs" // Ditolak
+                  : "text-blue-600  text-xs" // Menunggu
+              } font-poppins-regular `}>
+              {getPenerimaanText(item.kesimpulan_sampel)}
+            </Text>
+            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              status Pengujian
+            </Text>
+            <Text className="text-xs text-indigo-600 font-poppins-regular ">
+              {item.text_status || "-"}
             </Text>
           </View>
         </View>
-        <View style={styles.cards2}>
+
+        {/* Middle section */}
+        <View style={styles.cardContents} className="flex flex-end mb-3">
+          <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+            Kode
+          </Text>
+          <Text className="text-black font-poppins-regular text-base">
+            {item.kode}
+          </Text>
+          <Text className="text-slate-600 text-xs uppercase mt-3 font-poppins-semibold">
+            Diambil
+          </Text>
+          <Text className="text-black font-poppins-regular">
+            {item.tanggal_pengambilan || "-"}
+          </Text>
+          <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            Diterima :
+          </Text>
+          <Text className="text-black font-poppins-regular">
+            {item.tanggal_diterima || "-"}
+          </Text>
+          <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            Selesai :
+          </Text>
+          <Text className="text-black font-poppins-regular">
+            {item.tanggal_selesai_uji || "-"}
+          </Text>
+        </View>
+
+        {/* Right section (dots menu) */}
+        <View style={styles.cardActions} className="mb-4 ">
           <MenuView
-            title="Menu Report"
+            title="Menu Title"
             actions={dropdownOptions.map(option => ({
               ...option,
-              subactions: option.subactions
-                ? option.subactions.filter(subaction => {
-                    // Filter subactions berdasarkan kondisi
-                    if (subaction.id === "Permohonan Pengujian") {
-                      return item.status >= 2; // Tampilkan jika status >= 2
-                    } else if (subaction.id === "Berita Acara Pengambilan") {
-                      return data.is_mandiri === 1; // Tampilkan jika is_mandiri === 1
-                    }
-                    return true;
-                  })
-                : null,
             }))}
             onPressAction={({ nativeEvent }) => {
               const selectedOption = dropdownOptions.find(
                 option => option.title === nativeEvent.event,
               );
-              const sub = dropdownOptions.find(
-                option =>
-                  option.subactions &&
-                  option.subactions.some(
-                    suboption => suboption.title === nativeEvent.event,
-                  ),
-              );
               if (selectedOption) {
                 selectedOption.action(item);
               }
-              if (sub) {
-                const selectedSub = sub.subactions.find(
-                  sub => sub.title === nativeEvent.event,
-                );
-                if (selectedSub) {
-                  selectedSub.action(item);
-                }
-              }
             }}
             shouldOpenOnLongPress={false}>
-            {/* <TouchableOpacity
-        className="flex-row justify-center bg-red-600 p-2 rounded-xl absolute bottom-8 right-1 items-end"
-        onPress={openModal}>
-        <Icons name="plus" size={24} color="#fff" />
-        <Text className="text-white font-bold"></Text>
-      </TouchableOpacity>
-
-      {/* Modal to display the empty card */}
-            {/* <Modal
-        visible={isModalVisible}
-        animationType="fade"
-        onRequestClose={closeModal}
-        transparent={true}>
-        <View className="flex-1 justify-center items-center bg-black bg-black/50">
-          <View className="bg-white rounded-xl w-5/6 p-6 shadow-lg">
-            <Text className="text-black text-xl font-bold mb-4">Empty Card</Text>
-
-            {/* Empty card content */}
-            {/* <View className="w-full h-40 bg-gray-200 rounded-lg mb-4"></View> */}
-
-            {/* <TouchableOpacity
-              className="self-end bg-red-600 py-2 px-4 rounded-md"
-              onPress={closeModal}>
-              <Text className="text-white font-bold">Close</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal> */}
-
             <View>
-              <Entypo name="dots-three-vertical" size={16} color="#312e81" />
+              <Entypo name="dots-three-vertical" size={20} color="#312e81" />
             </View>
           </MenuView>
-          {/* <ActionColumn item={item} /> */}
         </View>
-
-        {/* Modal untuk Preview */}
-        <Modal
-          transparent={true}
-          animationType="fade"
-          visible={modalVisible}
-          onRequestClose={() => setModalVisible(false)}>
-          <View className="flex-1 justify-center items-center bg-black bg-black/50">
-            <View className="bg-white rounded-lg w-full h-full m-5">
-              <Text className="text-lg font-bold m-4">Preview LHU</Text>
-              <Pdf
-                source={{ uri: previewUrl, cache: true }}
-                style={{ flex: 1 }}
-                trustAllCerts={false}
-              />
-              {/* Show loading indicator when downloading */}
-              {isLoading ? (
-                <ActivityIndicator size="large" color="#0000ff" />
-              ) : (
-                <>
-                  {!downloadComplete ? (
-                    <>
-                      <TouchableOpacity
-                        onPress={handleConfirm}
-                        className="bg-blue-500 w-full my-48 p-2 m-1 rounded">
-                        <Text className="text-white text-center">Download</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
-                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
-                        <Text className="text-white text-center">Close</Text>
-                      </TouchableOpacity>
-                    </>
-                  ) : (
-                    <>
-                      <TouchableOpacity
-                        onPress={handleShare}
-                        className="bg-green-500 w-full my-48 p-2 m-1 rounded">
-                        <Text className="text-white text-center">Share</Text>
-                      </TouchableOpacity>
-                      <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
-                        className="bg-red-500 w-full my-48 p-2 m-1 rounded">
-                        <Text className="text-white text-center">Close</Text>
-                      </TouchableOpacity>
-                    </>
-                  )}
-                </>
-              )}
-            </View>
-          </View>
-        </Modal>
       </View>
     </View>
   );
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
-          <BackButton
-            size={24}
-            color={"white"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          {permohonan ? (
-            <Text className="font-bold text-white text-md mt-1 ">
-              {permohonan?.industri} : Titik Pengujian
-            </Text>
+      <View className="p-2 bg-[#ececec]">
+        <View className="w-full">
+          <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
+            <BackButton
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            {permohonan ? (
+              <Text className="font-poppins-semibold text-black   ">
+                {permohonan?.industri} : Titik Pengujian
+              </Text>
+            ) : (
+              <Text></Text>
+            )}
+          </View>
+        </View>
+        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
+          {!titikPermohonans?.data?.length && !pivotData?.length && (
+            <View className=" pt-5 px-5">
+              <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
+                <Text className="text-black mb-0 font-poppins-semibold">
+                  Silahkan Tambah Titik Lokasi Sampel Pengujian
+                </Text>
+                <Text className="text-black text-xs font-poppins-semibold">
+                  Anda belum memiliki Titik Lokasi Sampel satu pun.
+                </Text>
+              </View>
+            </View>
+          )}
+          {user.has_tagihan ? (
+            <View className="p-2">
+              <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+                <Text className="text-black mb-0">
+                  Tidak dapat membuat Permohonan Baru
+                </Text>
+                <Text className="text-black text-xs">
+                  Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                </Text>
+              </View>
+            </View>
           ) : (
-            <Text></Text>
+            <>
+              <Paginate
+                ref={paginateRef}
+                payload={{ permohonan_uuid: { uuid } }}
+                url="/permohonan/titik"
+                className="mb-20"
+                renderItem={CardTitikUji}></Paginate>
+            </>
           )}
         </View>
+        <Icons
+          name="plus"
+          size={28}
+          color="#fff"
+          style={styles.plusIcon}
+          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+        />
+        <DeleteConfirmationModal />
       </View>
-      <View className="bg-[#ececec] w-full h-full">
-        {!titikPermohonans?.data?.length && !pivotData?.length && (
-          <View className=" pt-5 px-5">
-            <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
-              <Text className="text-black mb-0">
-                Silahkan Tambah Titik Lokasi Sampel Pengujian
-              </Text>
-              <Text className="text-black text-xs">
-                Anda belum memiliki Titik Lokasi Sampel satu pun.
-              </Text>
-            </View>
-          </View>
-        )}
-        {user.has_tagihan ? (
-          <View className="p-2">
-            <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-              <Text className="text-black mb-0">
-                Tidak dapat membuat Permohonan Baru
-              </Text>
-              <Text className="text-black text-xs">
-                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-              </Text>
-            </View>
-          </View>
-        ) : (
-          <>
-            <Paginate
-              ref={paginateRef}
-              payload={{ permohonan_uuid: { uuid } }}
-              url="/permohonan/titik"
-              className="mb-20"
-              renderItem={CardTitikUji}></Paginate>
-            <Icons
-              name="plus"
-              size={28}
-              color="#fff"
-              style={styles.plusIcon}
-              onPress={() =>
-                navigation.navigate("FormTitikUji", { permohonan })
-              }
-            />
-          </>
-        )}
-      </View>
-
-      <DeleteConfirmationModal />
-      <SuccessOverlayModal />
-      <FailedOverlayModal />
     </>
   );
 };
@@ -547,28 +457,46 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   card: {
-    marginVertical: 10,
+    backgroundColor: "#f8f8f8",
     borderRadius: 15,
-    padding: rem(0.8),
-    backgroundColor: "#fff",
+    marginVertical: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    overflow: "hidden",
+    position: "relative", // Added to position the background
+  },
+  roundedBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "100%", // Adjust this value to control how much of the card is covered
+    backgroundColor: "#e2e8f0", // slate-200 equivalent
+  },
+  cardWrapper: {
     flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
+    position: "relative",
+    zIndex: 1,
   },
-  cards: {
-    borderRadius: 10,
-    width: "90%",
-    marginBottom: 4,
+  leftSection: {
+    width: "45%",
+    position: "relative",
   },
-  cards2: {
-    borderRadius: 10,
+  cardContent: {
+    padding: 12,
+  },
+  cardContents: {
+    width: "45%",
+    paddingTop: 12,
+  },
+  cardActions: {
     width: "10%",
-    marginBottom: 4,
-    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
   },
-
   cardTexts: {
     fontSize: 13,
     color: "black",

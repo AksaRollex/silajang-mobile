@@ -123,13 +123,18 @@ const MultipaymentDetail = ({ route, navigation }) => {
         <View
           className="border-gray-300"
           style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
+          <Text
+            style={{
+              color: "black",
+              fontSize: 16,
+              fontFamily: "Poppins-SemiBold",
+            }}>
             Titik Permohonan Dipilih
           </Text>
           <View className="px-2 py-1 bg-indigo-500 rounded-md">
             <Text
-              style={{ fontWeight: "bold", color: "white" }}
-              className="text-sm font-sans">
+              style={{ color: "white" }}
+              className="text-sm font-poppins-regular">
               {formData?.data?.multi_payments
                 ?.map(payment => payment.titik_permohonan.kode)
                 .join(", ") || "Kode Kosong"}
@@ -137,19 +142,31 @@ const MultipaymentDetail = ({ route, navigation }) => {
           </View>
         </View>
 
-        <View className="flex-row justify-between border-gray-300 pb-2 ">
-          <Text className="font-bold text-black text-base">Total Harga</Text>
-          <Text className="font-bold text-black text-base">
+        <View className="flex-row justify-between border-gray-300 pb-1">
+          <Text className="font-poppins-semibold text-black text-base">
+            Total Harga
+          </Text>
+          <Text className="font-poppins-regular text-black text-base">
             {rupiah(formData?.data?.jumlah)}
           </Text>
         </View>
         <View
           className="border-gray-300 mb-3"
           style={{ flexDirection: "row", justifyContent: "space-between" }}>
-          <Text style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
+          <Text
+            style={{
+              color: "black",
+              fontSize: 16,
+              fontFamily: "Poppins-SemiBold",
+            }}>
             Atas Nama
           </Text>
-          <Text style={{ fontWeight: "bold", color: "black", fontSize: 16 }}>
+          <Text
+            style={{
+              color: "black",
+              fontSize: 16,
+              fontFamily: "Poppins-Regular",
+            }}>
             {formData?.data?.nama || "-"}
           </Text>
         </View>
@@ -160,24 +177,26 @@ const MultipaymentDetail = ({ route, navigation }) => {
   const renderPaymentStatus = () => {
     if (formData?.data?.status === "success") {
       return (
-        <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-bold">
+        <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-poppins-semibold">
           Pembayaran berhasil dilakukan : {formData?.data?.tanggal_bayar}
         </Text>
       );
     } else if (formData?.data?.status === "failed") {
       return (
-        <Text className="bg-red-500 text-white text-center p-3 rounded-lg mb-4 font-bold">
+        <Text className="bg-red-500 text-white text-center p-3 rounded-lg mb-4 font-poppins-semibold">
           Pembayaran gagal. Silakan coba lagi.
         </Text>
       );
       return null;
     } else if (formData?.data?.is_expired) {
       return (
-        <View className="bg-[#fff] rounded-lg mb-3">
-          <Text style={styles.errorText} className="p-3 m-2">
+        <View className="bg-[#ececec] rounded-lg mb-3">
+          <Text
+            style={styles.errorText}
+            className="p-3 m-2 font-poppins-semibold">
             VA Pembayaran telah kedaluwarsa
           </Text>
-          <Text className="p-2 my-2 text-base font-bold text-center text-black">
+          <Text className="p-2 my-2 text-base font-poppins-semibold text-center text-black">
             Silakan Hubungi Admin Kami untuk Melakukan Permintaan Pembuatan VA
             Pembayaran
           </Text>
@@ -186,7 +205,7 @@ const MultipaymentDetail = ({ route, navigation }) => {
       );
     } else if (!formData?.data?.is_expired) {
       return (
-        <Text style={styles.warningText}>
+        <Text style={styles.warningText} className="font-poppins-semibold">
           Lakukan pembayaran sebelum : {countdownExp}
         </Text>
       );
@@ -232,7 +251,9 @@ const MultipaymentDetail = ({ route, navigation }) => {
       return (
         <>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Virtual Account</Text>
+            <Text style={styles.cardTitle} className="font-poppins-semibold">
+              Virtual Account
+            </Text>
             <View style={styles.cardContent}>
               <Image
                 source={require("@/assets/images/bank-jatim.png")}
@@ -243,26 +264,40 @@ const MultipaymentDetail = ({ route, navigation }) => {
                   resizeMode: "contain",
                 }}
               />
-              <Text style={styles.vaNumber} className="text-indigo-600">
+              <Text
+                style={styles.vaNumber}
+                className="text-indigo-600 font-poppins-semibold">
                 {formData?.data?.va_number || "Tidak Tersedia"}
               </Text>
               <TouchableOpacity
                 onPress={() => copyToClipboard(formData?.data?.va_number)}>
-                <Text style={styles.copyButton}>Salin</Text>
+                <Text
+                  style={styles.copyButton}
+                  className="font-poppins-semibold">
+                  Salin
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
           <View style={styles.card}>
-            <Text style={styles.cardTitle}>Total Harga</Text>
+            <Text style={styles.cardTitle} className="font-poppins-semibold">
+              Total Harga
+            </Text>
             <View style={styles.cardContent}>
-              <Text style={styles.vaNumber} className="text-indigo-600">
+              <Text
+                style={styles.vaNumber}
+                className="text-indigo-600 font-poppins-semibold">
                 {rupiah(formData?.data?.jumlah || 0)}
               </Text>
               <TouchableOpacity
                 onPress={() =>
                   copyToClipboard(formData?.data?.jumlah?.toString())
                 }>
-                <Text style={styles.copyButton}>Salin</Text>
+                <Text
+                  style={styles.copyButton}
+                  className="font-poppins-semibold">
+                  Salin
+                </Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -321,45 +356,43 @@ const MultipaymentDetail = ({ route, navigation }) => {
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row mb-4 p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
+      <View className="p-2 w-full h-full bg-[#ececec]">
+        <View className="flex-row rounded-t-md p-3 justify-between bg-[#f8f8f8]">
           <Back
             size={24}
-            color={"white"}
+            color={"black"}
             action={() => navigation.goBack()}
             className="mr-2 "
           />
 
           {formData?.data?.kode ? (
             <View>
-              <Text className="text-xl font-bold text-white text-center">
+              <Text className="text-xl font-poppins-semibold text-black text-center">
                 {formData?.data?.kode}
               </Text>
             </View>
           ) : (
             <View className="text-end text-sm items-center justify-center">
-              <Text className="text-white font-bold font-sans">
+              <Text className="text-white font-poppins-regular">
                 Kode tidak tersedia
               </Text>
             </View>
           )}
         </View>
+        <ScrollView className="px-3 py-1 bg-[#f8f8f8] rounded-b-md">
+          <View className="py-4 px-3 rounded-lg ">
+            {renderPaymentStatus()}
+            {formData?.data && (
+              <>
+                {renderPaymentInfo()}
+                {renderPaymentCards()}
+                {renderSilahkan()}
+              </>
+            )}
+            {renderPaymentButton()}
+          </View>
+        </ScrollView>
       </View>
-      <ScrollView className="px-3 py-1 bg-[#ececec]">
-        <View className="py-4 px-3 rounded-lg bg-[#f8f8f8]">
-          {renderPaymentStatus()}
-          {formData?.data && (
-            <>
-              {renderPaymentInfo()}
-              {renderPaymentCards()}
-              {renderSilahkan()}
-            </>
-          )}
-          {renderPaymentButton()}
-        </View>
-      </ScrollView>
     </>
   );
 };
@@ -371,7 +404,7 @@ const styles = StyleSheet.create({
   },
   alertText: {
     fontSize: 18,
-    fontWeight: "bold",
+
     textAlign: "center",
     color: "red",
   },
@@ -396,7 +429,6 @@ const styles = StyleSheet.create({
     color: "white",
     borderRadius: 5,
     textAlign: "center",
-    fontWeight: "bold",
   },
   card: {
     backgroundColor: "white",
@@ -407,7 +439,7 @@ const styles = StyleSheet.create({
   },
   cardTitle: {
     fontSize: 18,
-    fontWeight: "bold",
+
     marginBottom: 10,
     color: "black",
   },
@@ -417,15 +449,12 @@ const styles = StyleSheet.create({
   },
   vaNumber: {
     fontSize: 17,
-    fontWeight: "bold",
   },
   amount: {
     fontSize: 17,
-    fontWeight: "bold",
   },
   copyButton: {
     color: "#4caf50",
-    fontWeight: "bold",
   },
   button: {
     backgroundColor: "#1976d2",
@@ -435,7 +464,7 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     color: "white",
-    fontWeight: "bold",
+
     textAlign: "center",
     fontSize: 14,
   },
