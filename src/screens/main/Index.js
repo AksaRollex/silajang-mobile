@@ -615,8 +615,9 @@ const Admin = () => (
         headerTintColor: "white",
         drawerActiveBackgroundColor: "#312e81",
         drawerActiveTintColor: "#fff",
-        headerLeft: () => null  ,
-        gestureEnabled: false
+        headerLeft: () => null,
+        gestureEnabled: false,
+
       })}
     >
       <Drawer.Screen name="Home" component={TabNavigator} />
