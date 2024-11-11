@@ -3,7 +3,7 @@ import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState, useRef } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator, Modal ,TouchableHighlight, TouchableOpacity } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator, Modal, TouchableHighlight, TouchableOpacity } from "react-native";
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -186,7 +186,7 @@ const Dashboard = () => {
     const queryClient = useQueryClient();
 
     const getFontSize = (text, defaultSize, smallerSize) => {
-      return text.length > 15 ? smallerSize : defaultSize; 
+      return text.length > 15 ? smallerSize : defaultSize;
     };
 
     const { mutate: logout } = useMutation(
@@ -230,13 +230,14 @@ const Dashboard = () => {
           }}>
           <View className="p-4 border-b border-gray-100">
             <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row items-center space-x-3">
+              <View className="flex flex-row items-center space-x-3 flex-wrap">
                 <IonIcons name="person-circle" size={30} color="black" />
-                <View>
+                <View className="flex-wrap">
                   <Text
                     className="font-poppins-semibold text-black"
                     style={{
                       fontSize: getFontSize(user.nama, 18, 14),
+                      maxWidth: 180, // batas lebar agar teks dapat membungkus
                     }}
                   >
                     Hi, {user.nama}
@@ -251,7 +252,7 @@ const Dashboard = () => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
                 onPress={handleLogout}
                 activeOpacity={0.7}
@@ -261,6 +262,7 @@ const Dashboard = () => {
               </TouchableOpacity>
             </View>
           </View>
+
 
           <View className="p-5">
             <View className="flex flex-row justify-center gap-16">
@@ -361,9 +363,9 @@ const Dashboard = () => {
         </View>
 
 
-        <View className="items-center mt-28">
+        <View className="items-center mt-[73px]">
           {/* card picker tahun */}
-          <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
+          <View className="bg-white rounded-xl w-[92%] h-16 overflow-hidden"
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
@@ -474,12 +476,12 @@ const Dashboard = () => {
                 </>
               ) : (
                 <>
-                    <View className="self-center">
-                      <Text className="text-xl font-poppins-semibold text-black">
-                        Data Dashboard
-                      </Text>
-                    </View>
-                  <View className="w-full bg-indigo-50 mt-4 pt-3 pb-2">
+                  <View className="self-center">
+                    <Text className="text-xl font-poppins-semibold text-black">
+                      Data Dashboard
+                    </Text>
+                  </View>
+                  <View className="w-full bg-indigo-50 mt-3 pt-3 pb-2">
 
                     <ScrollView
                       horizontal
@@ -813,7 +815,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-around",
     paddingVertical: 30,
-    paddingTop: 35,
+    paddingTop: 25,
     zIndex: 0,
   },
   loadingContainer: {
