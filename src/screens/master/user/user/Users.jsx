@@ -94,7 +94,7 @@ const Users = ({ navigation }) => {
         <SafeAreaView className="flex-1 bg-[#ececec]">
             <View className="flex-row items-center justify-center mt-4 mb-2">
                 <View className="absolute left-4">
-                    <BackButton action={() => navigation.goBack()} size={26} />
+                   <BackButton action={() => navigation.goBack()} size={26} />
                 </View>
                 <Text className="text-[20px] font-poppins-semibold text-black">User</Text>
             </View>

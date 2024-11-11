@@ -22,7 +22,7 @@ const navigation = useNavigation()
                 className="bg-white border-b-2 border-[#ececec] font-poppins-semibold"
                 onPress={() => navigation.navigate("Users")}
             />
-                <TextFooter/>
+          <TextFooter/>
         </View>
     )
 }

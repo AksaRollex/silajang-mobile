@@ -35,6 +35,8 @@ const UmpanBalik = ({navigation}) => {
   const [chartData, setChartData] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
+  const [resetModalVisible, setResetModalVisible] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     uuid: '',
@@ -77,22 +79,6 @@ const UmpanBalik = ({navigation}) => {
           tahun: selectedYear,
           bulan: parseInt(selectedMonth)
         });
-
-        // Atau Opsi 2: Menggunakan URLSearchParams
-        /*
-        const params = new URLSearchParams();
-        params.append('tahun', selectedYear);
-        params.append('bulan', parseInt(selectedMonth));
-
-        const response = await axios.post('/konfigurasi/umpan-balik/summary', 
-          params.toString(),
-          {
-            headers: {
-              'Content-Type': 'application/x-www-form-urlencoded'
-            }
-          }
-        );
-        */
         
         console.log('API Response:', response.data);
         return response.data;
@@ -129,6 +115,39 @@ const handleMonthChange = (event) => {
   console.log('Month changed to:', newMonth);
   setSelectedMonth(newMonth);
   queryClient.invalidateQueries(['umpanBalikSummary']);
+};
+
+ const handleResetConfirmation = () => {
+  setResetModalVisible(true);
+};
+
+const handleResetData = async () => {
+  setIsResetting(true);
+  try {
+    const response = await axios.post('/konfigurasi/umpan-balik/reset', {
+      tahun: selectedYear,
+      bulan: parseInt(selectedMonth)
+    });
+
+    setResetModalVisible(false);
+    
+    queryClient.invalidateQueries(['umpanBalikSummary']);
+    
+    Toast.show({
+      type: 'success',
+      text1: 'Sukses',
+      text2: 'Data berhasil direset',
+    });
+  } catch (error) {
+    console.error('Reset Error:', error);
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: error.response?.data?.message || 'Gagal mereset data. Silakan coba lagi.',
+    });
+  } finally {
+    setIsResetting(false);
+  }
 };
 
   const handleSaveForm = async () => {
@@ -288,6 +307,56 @@ const handleMonthChange = (event) => {
     setModalVisible(false);
   };
 
+
+  const renderResetConfirmationModal = () => (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={resetModalVisible}
+      onRequestClose={() => setResetModalVisible(false)}
+    >
+      <View
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        className="flex-1 justify-center items-center"
+      >
+        <View className="bg-white rounded-lg w-[90%] p-6">
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-lg font-poppins-medium text-black">Konfirmasi Reset</Text>
+            <TouchableOpacity onPress={() => setResetModalVisible(false)}>
+              <MaterialIcons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          
+          <View className="mb-6">
+            <Text className="text-base font-poppins-regular text-black text-center">
+              Apakah Anda yakin ingin mereset data tersebut?
+            </Text>
+          </View>
+
+          <View className="flex-row justify-center gap-3">
+            <TouchableOpacity 
+              onPress={() => setResetModalVisible(false)} 
+              className="px-6 py-2 bg-gray-400 rounded-lg"
+            >
+              <Text className="text-white font-poppins-medium">Batal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={handleResetData}
+              disabled={isResetting}
+              className="px-6 py-2 bg-red-500 rounded-lg"
+            >
+              {isResetting ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text className="text-white font-poppins-medium">Ya, Reset</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+  
   const renderStats = (data) => {
     if (!data?.data) return null;
     
@@ -549,9 +618,26 @@ const handleMonthChange = (event) => {
               </MenuView>
             </View>
             
-            {/* Border separator */}
             <View className="border-b border-gray-200 my-4" />
+            
+            <View className="flex-row justify-center space-x-2 mb-4">
+              <TouchableOpacity 
+                onPress={handleResetConfirmation}
+                className="flex-row items-center bg-[#fff8dd] px-6 py-2 rounded-lg"
+              >
+                <MaterialIcons name="refresh" size={20} color="#ffa800" />
+                <Text className="ml-2 text-[#ffa800] font-poppins-medium">Reset Data</Text>
+              </TouchableOpacity>
   
+              <TouchableOpacity 
+                onPress={() => {/* Add import modal function here */}}
+                className="flex-row items-center bg-[#ffe2e5] px-6 py-2 rounded-lg"
+              >
+                <MaterialIcons name="file-upload" size={20} color="#f1416c" />
+                <Text className="ml-2 text-[#f1416c] font-poppins-medium">Import Data</Text>
+              </TouchableOpacity>
+            </View>
+             
             {isSummaryLoading ? (
               <View className="flex items-center justify-center p-4">
                 <ActivityIndicator size="large" color="#312e81" />
@@ -640,6 +726,7 @@ const handleMonthChange = (event) => {
         {renderContent()}
         {renderModal()}
         {renderDownloadConfirmationModal()}
+        {renderResetConfirmationModal()}
         
       </View>
       
