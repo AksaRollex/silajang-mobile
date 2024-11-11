@@ -18,6 +18,7 @@ import {
   Text,
   TouchableOpacity,
   View,
+  Modal,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MultiSelect from "react-native-multiple-select";
@@ -42,7 +43,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-
+  const [modalVisible, setModalVisible] = useState(false);
+  const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -94,12 +96,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     } catch (error) {}
   };
 
-  const handleCardPress = card => {
-    setSelectedCard(card);
-  };
-
   const { uuid } = route.params || {};
   const { permohonan } = route.params || {};
+  const queryClient = useQueryClient();
 
   const {
     watch,
@@ -110,22 +109,21 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     reset,
   } = useForm();
 
-  const queryClient = useQueryClient();
-
   const { data, isFetching: isLoadingData } = useQuery(
     ["permohonan", uuid],
     () =>
       axios.get(`/permohonan/titik/${uuid}/edit`).then(res => res.data.data),
     {
       enabled: !!uuid,
-      // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
-          console.log(data.keterangan, 999);
-          setDate(new Date(data.tanggal_pengambilan));
-          (location.latitude = data.south),
-            (location.longitude = data.east),
-            setSelectedPayment(data.payment_type);
+          // console.log(data.keterangan, 999);
+          setDate(data.tanggal_pengambilan ? new Date(data.tanggal_pengambilan) : null);
+          setLocation({
+            latitude: data.south || '',
+            longitude: data.east || ''
+          });
+            setSelectedPayment(data.payment_type || '');
           reset({
             lokasi: data.lokasi,
             jenis_sampel_id: data.jenis_sampel_id,
@@ -146,6 +144,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             arah_angin: data.arah_angin,
             kelembapan: data.kelembapan,
             kecepatan_angin: data.kecepatan_angin,
+            payment_type: data.payment_type,
+            tanggal_pengambilan: data.tanggal_pengambilan,
+            south: data.south,
           });
           [
             "suhu_air",
@@ -192,15 +193,17 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         return Promise.reject(new Error("Silahkan pilih metode pembayaran"));
       }
       const requestData = {
-        payment_type: selectedPayment === "va" ? "va" : "qris",
         ...data,
+        payment_type: selectedPayment, 
         permohonan_uuid: permohonan.uuid,
-        tanggal_pengambilan: date
-          ? moment(date).format("YYYY-MM-DD HH:mm:ss")
-          : null,
-        south: location.latitude,
-        east: location.longitude,
+        tanggal_pengambilan: date ? moment(date).format("YYYY-MM-DD HH:mm:ss") : null,
+        south: location.latitude || null,
+        east: location.longitude || null,
       };
+
+      Object.keys(requestData).forEach(key => 
+        (requestData[key] === undefined || requestData[key] === null) && delete requestData[key]
+      );
 
       return axios.post(
         uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
@@ -231,47 +234,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     },
   );
 
-  const onSubmit = data => {
-    let requestData = {
-      ...data,
-      permohonan_uuid: permohonan.uuid,
-      south: location.latitude,
-      east: location.longitude,
-    };
-
-    if (permohonan && permohonan.is_mandiri) {
-      if (date) {
-        requestData.tanggal_pengambilan = moment(date).format(
-          "YYYY-MM-DD HH:mm:ss",
-        );
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Tanggal pengambilan harus diisi",
-        });
-        return;
-      }
-    }
-
-    createOrUpdate(requestData, {
-      onError: error => {
-        console.error("Form submission error:", error);
-      },
-    });
-  };
-
-  const handleDateTimeChange = (event, selectedDate) => {
-    if (event.type === "dismissed") {
-      setShowDatePicker(false);
-      return;
-    }
-
-    const currentDate = selectedDate || tanggalJam;
-    setShowDatePicker(false);
-    setTanggalJam(currentDate);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -300,7 +262,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           }),
         );
         setMetode(formattedAcuanMetode);
-
         setSampelData(formattedSampelData);
         setJenisWadah(formattedJenisWadah);
         setMetode(formattedAcuanMetode);
@@ -308,7 +269,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         console.error("Error fetching data :", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -335,19 +295,27 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   };
 
   const getLocation = () => {
+    setLoading(true);
+
     Geolocation.getCurrentPosition(
       position => {
+        const latitude = position.coords.latitude.toString();
+        const longitude = position.coords.longitude.toString();
+
         setLocation({
-          latitude: position.coords.latitude.toString(),
-          longitude: position.coords.longitude.toString(),
+          latitude,
+          longitude,
         });
-        Alert.alert(
-          "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
-        );
+
+        setValue("south", latitude);
+        setValue("east", longitude);
+
+        setModalVisible(true); // Tampilkan modal setelah mendapatkan lokasi
+        setLoading(false); // Selesai loading
       },
       error => {
         console.log(error.code, error.message);
+        setLoading(false); // Selesai loading jika terjadi error
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
@@ -355,7 +323,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const handleLocationPress = () => {
     if (Platform.OS === "android") {
-      requestLocationPermission();
+      const permissionGranted = requestLocationPermission();
+      if (permissionGranted) {
+        getLocation();
+      }
     } else {
       getLocation();
     }
@@ -368,22 +339,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       </View>
     );
   }
-
-  const renderKeteranganField = ({ field: { onChange, value } }) => (
-    <View>
-      <Text className="font-poppins-semibold mb-2 text-black">Keterangan</Text>
-      <View className="border border-stone-300 bg-[#fff]">
-        <TextField
-          className="px-2 py-2 bg-[#fff] rounded-xl font-poppins-regular"
-          value={value || ""} // Add fallback empty string
-          onChangeText={text => {
-            console.log("Keterangan changed:", text); // Debug log
-            onChange(text);
-          }}
-        />
-      </View>
-    </View>
-  );
 
   return (
     <>
@@ -412,55 +367,75 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           <View className="bg-[#ececec] w-full h-full px-1 py-1">
             <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-2">
               <View className="bg-slate-200 rounded-xl p-4 shadow-md">
-                <Text className="text-base font-poppins-bold text-center  text-black">
+                <Text className="text-base font-poppins-semibold text-center  text-black">
                   Detail Pengiriman
                 </Text>
-                <View className="flex-1 flex-row justify-between my-2 ">
-                  <TouchableOpacity
-                    className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
-                    style={[selectedPayment === "va" && styles.selectedCard]}
-                    onPress={() => handleSelectedPayment("va")}>
-                    <MaterialIcons
-                      name="cellphone-text"
-                      size={50}
-                      color="black"
-                      style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
-                    />
-                    <Text className="text-black font-poppins-semibold text-lg text-center">
-                      Virtual Account
-                    </Text>
-                    {/* <Text className="text-black text-justify">
-                    Transfer melalui Virtual Account Bank Jatim
-                  </Text> */}
-                  </TouchableOpacity>
-                  <TouchableOpacity
-                    className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
-                    style={[selectedPayment === "qris" && styles.selectedCard]}
-                    onPress={() => handleSelectedPayment("qris")}>
-                    <MaterialIcons
-                      name="qrcode"
-                      size={50}
-                      color="black"
-                      style={{ marginVertical: 8 }} // Sesuaikan dengan my-2
-                    />
-                    <Text className="text-black font-poppins-semibold text-lg text-center">
-                      QRIS
-                    </Text>
-                    {/* <Text className="text-black text-justify">
-                    Scan dan bayar melalui QRIS
-                  </Text> */}
-                  </TouchableOpacity>
+                <View className="flex-1 flex-row justify-between mt-2">
+                  <Controller
+                    name="payment_type"
+                    control={control}
+                    rules={{ required: "Metode pembayaran tidak boleh kosong" }}
+                    render={({ field: { onChange } }) => (
+                      <View className="flex-1 flex-row justify-between">
+                        <TouchableOpacity
+                          className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
+                          style={[
+                            selectedPayment === "va" && styles.selectedCard,
+                          ]}
+                          onPress={() => {
+                            handleSelectedPayment("va");
+                            onChange("va");
+                          }}>
+                          <MaterialIcons
+                            name="cellphone-text"
+                            size={50}
+                            color="black"
+                            style={{ marginVertical: 8 }}
+                          />
+                          <Text className="text-black font-poppins-semibold text-lg text-center">
+                            Virtual Account
+                          </Text>
+                        </TouchableOpacity>
+
+                        <TouchableOpacity
+                          className="w-1/2 bg-[#fff] rounded-sm py-12 px-2 m-0.5 items-center"
+                          style={[
+                            selectedPayment === "qris" && styles.selectedCard,
+                          ]}
+                          onPress={() => {
+                            handleSelectedPayment("qris");
+                            onChange("qris");
+                          }}>
+                          <MaterialIconss
+                            name="qr-code-2"
+                            size={50}
+                            color="black"
+                            style={{ marginVertical: 8 }}
+                          />
+                          <Text className="text-black font-poppins-semibold text-lg text-center">
+                            QRIS
+                          </Text>
+                        </TouchableOpacity>
+                      </View>
+                    )}
+                  />
                 </View>
+                {errors.payment_type && (
+                  <Text className="text-red-500 text-xs mb-2">
+                    {errors.payment_type.message}
+                  </Text>
+                )}
                 <Controller
                   name="lokasi"
                   control={control}
+                  rules={{ required: "Nama Lokasi tidak boleh kosong" }}
                   render={({ field: { onChange, value } }) => (
                     <View>
-                      <Text className="font-poppins-semibold mb-2 text-black">
+                      <Text className="font-poppins-semibold mb-2 mt-3 text-black">
                         Nama Lokasi / Titik Uji
                       </Text>
                       <TextField
-                        className="p-2 bg-[#fff] rounded-lg border-stone-300 border font-poppins-regular"
+                        className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                         value={value}
                         onChangeText={onChange}
                         placeholder="Masukkan Lokasi Titik Uji"
@@ -469,12 +444,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     </View>
                   )}
                 />
+                {errors.lokasi && (
+                  <Text className="text-red-500 text-xs mb-2">
+                    {errors.lokasi.message}
+                  </Text>
+                )}
                 <Controller
                   name="jenis_sampel_id"
                   control={control}
+                  rules={{ required: "Jenis Sampel Tidak Boleh Kosong" }}
                   render={({ field: { onChange, value } }) => (
                     <View>
-                      <Text className="font-poppins-semibold text-black">
+                      <Text className="font-poppins-semibold mb-2 text-black">
                         Jenis Sampel
                       </Text>
 
@@ -490,12 +471,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     </View>
                   )}
                 />
+                {errors.jenis_sampel_id && (
+                  <Text className="text-red-500 text-xs mb-2 top-1">
+                    {errors.jenis_sampel_id.message}
+                  </Text>
+                )}
                 <Controller
                   name="jenis_wadahs_id"
                   control={control}
+                  rules={{ required: "Jenis wadah tidak boleh kosong" }}
                   render={({ field: { onChange, value } }) => (
                     <View>
-                      <Text className="font-poppins-semibold mb-2 mt-2 text-black">
+                      <Text className="font-poppins-semibold mb-2 mt-1 text-black">
                         Jenis Wadah
                       </Text>
 
@@ -503,7 +490,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         hideTags
                         styleItemsContainer={{ backgroundColor: "#fff" }}
                         styleDropdownMenuSubsection={{
-                          borderRadius: 5, // Mengatur border radius
+                          borderRadius: 4, // Mengatur border radius
                           borderWidth: 1,
                           borderColor: "#CCC",
                           // padding: 10,
@@ -527,17 +514,23 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         displayKey="name"
                         searchInputStyle={{ color: "#CCC" }}
                         submitButtonColor="#311B74"
-                        submitButtonText="Submit"
+                        submitButtonText="Pilih Wadah"
                       />
                     </View>
                   )}
                 />
+                {errors.jenis_wadahs_id && (
+                  <Text className="text-red-500 text-xs mb-2 bottom-2">
+                    {errors.jenis_wadahs_id.message}
+                  </Text>
+                )}
                 <Controller
                   name="keterangan"
                   control={control}
                   defaultValue=""
+                  rules={{ required: "Keterangan tidak boleh kosong" }}
                   render={({ field: { onChange, value } }) => (
-                    <View>
+                    <View className="bottom-1">
                       <Text className="font-poppins-semibold mb-2 text-black">
                         Keterangan
                       </Text>
@@ -551,16 +544,22 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     </View>
                   )}
                 />
+                {errors.keterangan && (
+                  <Text className="text-red-500 text-xs bottom-2">
+                    {errors.keterangan.message}
+                  </Text>
+                )}
               </View>
               {permohonan && permohonan?.is_mandiri ? (
                 <>
                   <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
-                    <Text className="text-base font-poppins-semibold text-center  text-black">
+                    <Text className="text-base font-poppins-semibold text-center mb-4 text-black">
                       Detail Pengiriman
                     </Text>
                     <Controller
                       name="nama_pengambil"
                       control={control}
+                      rules={{ required: "Nama Pengirim tidak boleh kosong" }}
                       render={({ field: { onChange, value } }) => (
                         <View>
                           <Text className="font-poppins-semibold mb-2 text-black">
@@ -568,7 +567,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           </Text>
 
                           <TextField
-                            className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                            className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                             value={value}
                             onChangeText={onChange}
                             placeholder="Masukkan nama pengirim"
@@ -577,51 +576,80 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         </View>
                       )}
                     />
-
-                    <Text className="font-poppins-semibold text-black mb-2">
-                      Tanggal/Jam Pengambilan
-                    </Text>
-                    <View>
-                      <TouchableOpacity onPress={() => setShowDatePicker(true)}>
-                        <View className="flex-row items-center p-2 bg-[#fff] rounded-sm border-stone-300 border ">
-                          <Text className="text-sm flex-1 text-black font-poppins-regular">
-                            {date
-                              ? `${moment(date).format("YYYY-MM-DD HH:mm:ss")} `
-                              : "Pilih Tanggal dan Waktu"}
-                          </Text>
-                          <FontAwesome5Icon
-                            name="calendar-alt"
-                            size={20}
-                            color="black"
-                            marginHorizontal={10}
-                          />
-                        </View>
-                      </TouchableOpacity>
-                    </View>
-
-                    {showDatePicker && (
-                      <DateTimePicker
-                        value={date || new Date()}
-                        mode="date"
-                        timeZoneName="Asia/Jakarta"
-                        display={Platform.OS === "ios" ? "spinner" : "default"}
-                        onChange={handleDateChange}
-                      />
-                    )}
-
-                    {showTimePicker && isDateSelected && (
-                      <DateTimePicker
-                        value={date || new Date()}
-                        mode="time"
-                        timeZoneName="Asia/Jakarta"
-                        display={Platform.OS === "ios" ? "spinner" : "default"}
-                        onChange={handleTimeChange}
-                      />
+                    {errors.nama_pengambil && (
+                      <Text className="text-red-500 text-xs bottom-1 mb-2">
+                        {errors.nama_pengambil.message}
+                      </Text>
                     )}
 
                     <Controller
+                      name="tanggal_pengambilan"
+                      control={control}
+                      rules={{ required: "Tanggal tidak boleh kosong" }}
+                      render={({ field: { value, onChange } }) => (
+                        <View>
+                          <Text className="font-poppins-semibold text-black mb-2">
+                            Tanggal/Jam Pengambilan
+                          </Text>
+                          <TouchableOpacity
+                            onPress={() => setShowDatePicker(true)}>
+                            <View className="flex-row items-center p-2 bg-[#fff] rounded-md border-stone-300 border">
+                              <Text className="text-sm flex-1 text-black font-poppins-regular">
+                                {date
+                                  ? moment(date).format("YYYY-MM-DD HH:mm:ss")
+                                  : "Pilih Tanggal dan Waktu"}
+                              </Text>
+                              <FontAwesome5Icon
+                                name="calendar-alt"
+                                size={20}
+                                color="black"
+                                marginHorizontal={10}
+                              />
+                            </View>
+                          </TouchableOpacity>
+
+                          {showDatePicker && (
+                            <DateTimePicker
+                              value={date || new Date()}
+                              mode="date"
+                              display={
+                                Platform.OS === "ios" ? "spinner" : "default"
+                              }
+                              onChange={(event, selectedDate) => {
+                                handleDateChange(event, selectedDate);
+                                setShowTimePicker(true); // Show time picker after selecting date
+                              }}
+                            />
+                          )}
+
+                          {showTimePicker && isDateSelected && (
+                            <DateTimePicker
+                              value={date || new Date()}
+                              mode="time"
+                              display={
+                                Platform.OS === "ios" ? "spinner" : "default"
+                              }
+                              onChange={(event, selectedTime) => {
+                                handleTimeChange(event, selectedTime);
+                                onChange(
+                                  moment(date).format("YYYY-MM-DD HH:mm:ss"),
+                                ); // Pass value to the form
+                              }}
+                            />
+                          )}
+
+                          {errors.tanggal_pengambilan && (
+                            <Text className="text-red-500 text-xs mb-2">
+                              {errors.tanggal_pengambilan.message}
+                            </Text>
+                          )}
+                        </View>
+                      )}
+                    />
+                    <Controller
                       name="acuan_metode_id"
                       control={control}
+                      rules={{ required: "Metode tidak boleh kosong" }}
                       render={({ field: { onChange, value } }) => (
                         <View>
                           <Text className="font-poppins-semibold text-black mt-2">
@@ -636,21 +664,97 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             }}
                             defaultValue={data?.acuan_metode_id}
                             placeholder="Pilih Metode"
-                            // className="p-2 bg-[#fff] rounded-sm border-stone-300 border-0 font-sans"
-                            // open={openMetode}
-                            // value={value}
-                            // items={metode}
-                            // setOpen={setOpenMetode}
-                            // setValue={onChange}
-                            // nestedScrollEnabled={true}
-                            // setItems={setMetode}
-                            // style={styles.dropdown}
                           />
                         </View>
                       )}
                     />
+                    {errors.acuan_metode_id && (
+                      <Text className="text-red-500 text-xs mb-2">
+                        {errors.acuan_metode_id.message}
+                      </Text>
+                    )}
                   </View>
+
                   <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
+                    <Modal
+                      transparent={true}
+                      visible={modalVisible}
+                      animationType="fade"
+                      onRequestClose={() => setModalVisible(false)}>
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        }}>
+                        <View
+                          style={{
+                            width: 300,
+                            padding: 20,
+                            backgroundColor: "white",
+                            borderRadius: 10,
+                            alignItems: "center",
+                          }}>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              fontWeight: "bold",
+                              marginBottom: 15,
+                              color: "black",
+                            }}>
+                            Koordinat Anda
+                          </Text>
+
+                          <View
+                            style={{
+                              width: "100%",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#dedede",
+                              marginBottom: 15,
+                            }}
+                          />
+
+                          {loading ? (
+                            <ActivityIndicator size="large" color="#007AFF" />
+                          ) : (
+                            <>
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  marginBottom: 10,
+                                  color: "black",
+                                }}>
+                                Latitude: {location.latitude}
+                              </Text>
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  marginBottom: 25,
+                                  color: "black",
+                                }}>
+                                Longitude: {location.longitude}
+                              </Text>
+                            </>
+                          )}
+
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => setModalVisible(false)}
+                              style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 20,
+                                backgroundColor: "#dedede",
+                                borderRadius: 5,
+                                marginRight: 10,
+                              }}>
+                              <Text style={{ color: "black" }}>Tutup</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                    </Modal>
+
                     <Text className="font-poppins-semibold text-base text-center mb-4 text-black">
                       Lokasi Pada Koordinat
                     </Text>
@@ -659,13 +763,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       <Controller
                         name="south"
                         control={control}
+                        rules={{ required: "Tidak boleh kosong" }}
                         render={({ field: { onChange, value } }) => (
                           <View className="w-1/2 pr-2">
                             <Text className="font-poppins-semibold mb-2 text-black text-start">
                               Selatan
                             </Text>
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               placeholder="0.0"
                               value={location.latitude}
                               onChangeText={onChange}
@@ -673,17 +778,17 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           </View>
                         )}
                       />
-
                       <Controller
                         name="east"
                         control={control}
+                        rules={{ required: "Tidak boleh kosong" }}
                         render={({ field: { onChange, value } }) => (
                           <View className="w-1/2 pl-2">
                             <Text className="font-poppins-semibold mb-2 text-black ">
                               Timur
                             </Text>
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               placeholder="0.0"
                               value={location.longitude}
                               onChangeText={onChange}
@@ -691,6 +796,20 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           </View>
                         )}
                       />
+                    </View>
+                    <View className="flex-row">
+                      {errors.east && (
+                        <Text className="text-red-500 text-xs mb-2">
+                          {errors.east.message}
+                        </Text>
+                      )}
+                      {errors.south && (
+                        <Text
+                          style={{ marginLeft: 60 }}
+                          className="text-red-500 text-xs mb-2">
+                          {errors.south.message}
+                        </Text>
+                      )}
                     </View>
                     <TouchableOpacity
                       onPress={handleLocationPress}
@@ -701,7 +820,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           size={24}
                           color={"white"}
                         />
-                        <Text className="text-white text-base  font-poppins-semibold text-center">
+                        <Text className="text-white font-poppins-semibold text-center">
                           Tekan Untuk Mendapatkan Lokasi
                         </Text>
                       </View>
@@ -709,10 +828,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   </View>
 
                   <View className="bg-slate-200 rounded-xl p-4 mt-5 shadow-md">
-                    <Text className="text-base font-poppins-semibold text-center mb-5 text-black">
+                    <Text className="text-base font-poppins-semibold text-center mb-4 text-black">
                       Hasil Pengukuran Lapangan
                     </Text>
-
                     <View className="flex-row flex-wrap">
                       <Controller
                         name="suhu_air"
@@ -723,7 +841,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                               Suhu Air
                             </Text>
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -740,7 +858,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                               pH
                             </Text>
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -756,7 +874,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                               DHL
                             </Text>
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -773,7 +891,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -790,7 +908,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -808,7 +926,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -826,7 +944,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -844,7 +962,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -862,7 +980,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -880,7 +998,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -898,7 +1016,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -916,7 +1034,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </Text>
 
                             <TextField
-                              className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                              className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
                               value={value}
                               onChangeText={onChange}
                             />
@@ -924,15 +1042,15 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         )}
                       />
                     </View>
-              <Button
-                onPress={handleSubmit(createOrUpdate)}
-                loading={isLoading}
-                className="p-2 rounded-md mt-4"
-                style={{ backgroundColor: Colors.brand }}>
-                <Text className="text-white text-center text-base font-bold font-sans">
-                  SUBMIT
-                </Text>
-              </Button>
+                    <Button
+                      onPress={handleSubmit(createOrUpdate)}
+                      loading={isLoading}
+                      className="p-2 rounded-md mt-4"
+                      style={{ backgroundColor: Colors.brand }}>
+                      <Text className="text-white text-center text-base font-bold font-sans">
+                        SUBMIT
+                      </Text>
+                    </Button>
                   </View>
                 </>
               ) : (

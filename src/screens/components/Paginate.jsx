@@ -2,6 +2,7 @@ import React, {
   memo,
   useState,
   useEffect,
+  useCallback,
   forwardRef,
   useImperativeHandle,
 } from "react";
@@ -21,9 +22,8 @@ import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/Feather";
 import { Skeleton } from "@rneui/themed";
-// import SkeletonPlaceholder from "react-native-skeleton-placeholder";
 import LinearGradient from "react-native-linear-gradient";
-
+import { debounce } from "lodash";
 // Aktivasi LayoutAnimation di Android
 if (
   Platform.OS === "android" &&
@@ -72,6 +72,14 @@ const Paginate = forwardRef(
         setPage(prevPage => prevPage + 1);
       }
     };
+
+    const debouncedSearch = useCallback(
+      debounce(value => {
+        setSearch(value);
+        setPage(1);
+      }, 800),
+      [],
+    );
 
     useEffect(() => {
       if (isFetchingMore) {
@@ -197,7 +205,10 @@ const Paginate = forwardRef(
               <TextInput
                 className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3"
                 value={value}
-                onChangeText={onChange}
+                onChangeText={text => {
+                  onChange(text);
+                  debouncedSearch(text);
+                }}
                 placeholder="Cari..."
               />
             )}

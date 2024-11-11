@@ -76,7 +76,7 @@ export default function Profile({ navigation }) {
             <View
               className="w-full py-5 rounded-b-2xl"
               style={{ backgroundColor: Colors.brand, height: "32%" }}>
-              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
+              <Text className="text-white text-xl font-poppins-semibold mx-6 top-20">
                 Profil Saya
               </Text>
               <View className="w-full items-center mt-28 justify-center">
@@ -130,11 +130,11 @@ export default function Profile({ navigation }) {
             <TouchableOpacity
               onPress={() => navigation.navigate("Akun")}
               className=" w-full py-6 px-6  flex-row justify-between items-center"
-              style={{ zIndex: 5 }}
+              style={{ zIndex: 5,  }}
               >
               <View className="flex-row items-center">
-                <Icon name="user" size={29} color="#312e81" />
-                <Text className="text-black font-poppins-regular ml-3">
+                <IonIcons name="person-sharp" size={29} color="#2196F3" />
+                <Text className="text-black font-poppins-regular ml-3 mt-1">
                   Informasi Personal
                 </Text>
               </View>
@@ -145,8 +145,8 @@ export default function Profile({ navigation }) {
               onPress={() => navigation.navigate("Perusahaan")}
               className=" w-full py-6 px-6 flex-row justify-between items-center">
               <View className="flex-row items-center">
-                <Icon name="archive" size={29} color="#312e81" />
-                <Text className="text-black font-poppins-regular ml-3">
+                <IonIcons name="business" size={29} color="#4CAF50" />
+                <Text className="text-black font-poppins-regular ml-3 mt-1" >
                   Informasi Perusahaan
                 </Text>
               </View>
@@ -157,8 +157,8 @@ export default function Profile({ navigation }) {
               onPress={() => navigation.navigate("Keamanan")}
               className=" w-full py-6 px-6 flex-row justify-between items-center">
               <View className="flex-row items-center">
-                <Icon name="lock" size={29} color="#312e81" />
-                <Text className="text-black font-poppins-regular ml-3">
+                <IonIcons name="shield-checkmark-sharp" size={29} color="#FF9800" />
+                <Text className="text-black font-poppins-regular ml-3 mt-1">
                   Ganti Password
                 </Text>
               </View>
@@ -166,21 +166,23 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
 
             <TouchableOpacity
-              className="bg-red-100 w-full py-6 px-6  flex-row justify-between items-center"
+              className=" w-full py-6 px-6  flex-row justify-between items-center"
               onPress={handleLogout}
-              style={{
-                elevation: 2,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.2,
-                shadowRadius: 2,
-              }}>
+              // style={{
+              //   elevation: 2,
+              //   shadowColor: "#000",
+              //   shadowOffset: { width: 0, height: 2 },
+              //   shadowOpacity: 0.2,
+              //   shadowRadius: 2,
+              // }}
+              >
               <View className="flex-row items-center">
                 <Icon name="log-out" size={29} color="red" />
                 <Text className="text-red-500 font-poppins-regular ml-3">Logout</Text>
               </View>
               <Icon name="chevron-right" size={24} color="red" />
             </TouchableOpacity>
+            <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
               <View className="top-40 items-center justify-center flex-end">
               <Text className="flex-end"> 
