@@ -74,7 +74,7 @@ const Dashboard = () => {
   const YearSelector = ({ value, onValueChange, items }) => (
     <View style={styles.yearSelectorContainer}>
       <View style={styles.yearLabel}>
-        <Icon name="calendar" size={20} color="#6B7280"/>
+        <FontAwesome6Icon name="calendar-week" size={24} color="#312e81" />
         <Text style={styles.yearText}>Tahun</Text>
       </View>
       <View style={styles.pickerContainer}>
@@ -84,7 +84,19 @@ const Dashboard = () => {
           value={value}
           style={pickerSelectStyles}
           useNativeAndroidPickerStyle={false}
-          Icon={() => (<MaterialIcons name="keyboard-arrow-down" size={25} color="#6B7280" style={{ marginTop: 10, marginRight: 12  }}/>)}
+          Icon={() => (
+            <MaterialIcons
+              name="keyboard-arrow-down"
+              size={25}
+              color="#6B7280"
+              style={{ marginTop: 10, marginRight: 12 }}
+            />
+          )}
+          placeholder={{
+            label: "Pilih Tahun",
+            value: null,
+            color: "#9CA3AF",
+          }}
         />
       </View>
     </View>
@@ -96,22 +108,22 @@ const Dashboard = () => {
       paddingVertical: 8,
       paddingHorizontal: 20,
       borderWidth: 1,
-      borderColor: '#E5E7EB',
+      borderColor: "#E5E7EB",
       borderRadius: 8,
-      color: '#4B5563',
-      fontFamily: 'Poppins-SemiBold',
-      textAlign: 'center',
+      color: "#4B5563",
+      fontFamily: "Poppins-SemiBold",
+      textAlign: "center",
     },
     inputAndroid: {
       fontSize: 17,
       paddingHorizontal: 20,
       paddingVertical: 8,
       borderWidth: 1,
-      borderColor: '#E5E7EB',
+      borderColor: "#E5E7EB",
       borderRadius: 8,
-      color: '#4B5563',
-      fontFamily: 'Poppins-SemiBold',
-      textAlign: 'center',
+      color: "#4B5563",
+      fontFamily: "Poppins-SemiBold",
+      textAlign: "center",
     },
   });
 
@@ -414,15 +426,14 @@ const styles = StyleSheet.create({
   },
   yearText: {
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
-    color: '#6B7280',
+    fontFamily: "Poppins-SemiBold",
+    color: "#6B7280",
     marginTop: 5,
   },
   pickerContainer: {
     flex: 1,
     maxWidth: 150,
   },
-
 });
 
 export default Dashboard;

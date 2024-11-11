@@ -30,9 +30,10 @@ const TambahPermohonan = ({ navigation }) => {
       .get("/master/jasa-pengambilan")
       .then(response => {
         const formattedJasaPengambilan = response.data.data.map(item => ({
-          label: item.wilayah,
+          title: item.wilayah,
           value: item.id,
         }));
+        console.log(formattedJasaPengambilan)
         setJasaPengambilan(formattedJasaPengambilan);
       })
       .catch(error => {
@@ -128,7 +129,7 @@ const TambahPermohonan = ({ navigation }) => {
                 </Text>
                 <TextField
                   enableErrors
-                  placeholder="CV. PT. "
+                  placeholder="Masukkan Nama Industri"
                   onChangeText={onChange}
                   className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
                   value={value}
@@ -245,17 +246,11 @@ const TambahPermohonan = ({ navigation }) => {
           {/* Conditionally Render TextField based on selectedCara */}
           {selectedCara === "ambilPetugas" && (
             <Select2
-            onChangeValue={value => {
+            onSelect={value => {
               setSelectedJasaPengambilan(value); // Update state untuk nilai terpilih
             }}
-            open={OpenJasaPengambilan}
-            value={selectedJasaPengambilan}
-            items={jasaPengambilan}
-            name="jasa_pengambilan_id"
-            setValue={setSelectedJasaPengambilan}
-            placeholder={{ label: "Pilih Jasa Pengambilan" }}
-            placeholderTextColor="black"
-            className="p-3 px-3 bg-[#fff] mb-5"
+            data={jasaPengambilan}
+            placeholder="Pilih Jasa Pengambilan"
           />
           
           )}

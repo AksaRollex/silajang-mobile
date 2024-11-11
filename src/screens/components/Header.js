@@ -17,9 +17,6 @@ export default function Header({ navigate }) {
             />
           <Text style={styles.headerText}>SI-LAJANG</Text>
           </View>
-          <View>
-            <Icons name="user" size={28} color={"#fff"} onPress={navigate}/>
-          </View>
       </View>
     </View>
   );

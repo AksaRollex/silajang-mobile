@@ -367,7 +367,7 @@ const Paginate = forwardRef(
           ListFooterComponent={ListFooter}
           ListEmptyComponent={() => (
             <View className="flex-1 justify-center items-center">
-              <Text className="text-gray-500">Data Tidak Tersedia</Text>
+              <Text className="text-gray-500 font-poppins-regular">Data Tidak Tersedia</Text>
             </View>
           )}
         />

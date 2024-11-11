@@ -34,6 +34,10 @@ import TambahPermohonan from "../pengujian/permohonan/FormTambah";
 import Pembayaran from "../pembayaran/Pembayaran";
 import PengujianDetail from "../pembayaran/pengujian/Detail";
 import MultipaymentDetail from "../pembayaran/multipayment/Detail";
+import Akun from "../profile/tabs/Akun";
+import Perusahaan from "../profile/tabs/Perusahaan";
+import Keamanan from "../profile/tabs/Keamanan";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import PengujianScreen from "../pengujian/Pengujian";
 
 const Tab = createBottomTabNavigator();
@@ -55,7 +59,7 @@ const screenOptions = {
 };
 
 // Fungsi untuk mengatur visibilitas tab bar
-const getTabBarVisibility = (route) => {
+const getTabBarVisibility = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? "";
   const hideOnScreens = [
     "TrackingPengujian",
@@ -70,6 +74,10 @@ const getTabBarVisibility = (route) => {
     "PengujianDetail",
     "Multipayment",
     "MultipaymentDetail",
+    "Akun",
+    "Keamanan",
+    "Perusahaan",
+    "ProfileMain"
   ];
 
   if (hideOnScreens.includes(routeName)) {
@@ -89,8 +97,10 @@ const getTabBarVisibility = (route) => {
 
 const CustomTabBar = props => {
   const { state, descriptors, navigation } = props;
-  const [pengujianDropdownVisible, setPengujianDropdownVisible] = useState(false);
-  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] = useState(false);
+  const [pengujianDropdownVisible, setPengujianDropdownVisible] =
+    useState(false);
+  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] =
+    useState(false);
   const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
   const pengujianTabRef = useRef(null);
   const pembayaranTabRef = useRef(null);
@@ -227,6 +237,7 @@ const CustomTabBar = props => {
 
           return (
             <TouchableOpacity
+              className=" border-gray-500"
               key={index}
               onPress={onPress}
               ref={
@@ -236,31 +247,31 @@ const CustomTabBar = props => {
                   ? pembayaranTabRef
                   : null
               }
-              style={styles.tabItem}>
+              style={[styles.tabItem, { borderTopWidth : 0.1 }]}>
               {route.name === "Dashboard" && (
                 <View
                   style={[
                     styles.iconContainer,
-                    isFocused && styles.iconContainerFocused,
                   ]}>
-                  <Image
-                    source={require("@/assets/images/home.png")}
-                    style={[styles.logo, isFocused && styles.logoFocused]}
+                  <Ionicons
+                    name="home"
+                    size={25}
+                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
                   <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Beranda
                   </Text>
                 </View>
               )}
-              {route.name === "PengujianTab" && (
+              {route.name === "PengujianTab" && ( 
                 <View
                   style={[
                     styles.iconContainer,
-                    isFocused && styles.iconContainerFocused,
                   ]}>
-                  <Image
-                    source={require("@/assets/images/approval.png")}
-                    style={[styles.logo, isFocused && styles.logoFocused]}
+                  <Ionicons
+                    name="document-text"
+                    size={25}
+                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
                   <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pengujian
@@ -273,12 +284,31 @@ const CustomTabBar = props => {
                     styles.iconContainer,
                     isFocused && styles.iconContainerFocused,
                   ]}>
-                  <Image
-                    source={require("@/assets/images/wallet.png")}
-                    style={[styles.logo, isFocused && styles.logoFocused]}
+                  <Ionicons
+                    name="wallet"
+                    size={25}
+                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
                   />
                   <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
                     Pembayaran
+                  </Text>
+                </View>
+              )}
+              {route.name === "Profile" && (
+                <View
+                  style={[
+                    styles.iconContainer,
+                    isFocused && styles.iconContainerFocused,
+                  ]}>
+                  <Ionicons
+                    name="person-sharp"
+                    size={25}
+                    color={isFocused ? Colors.brand : Colors.grey} 
+                  />
+                  <Text
+                    style={[styles.label, isFocused && styles.labelFocused]}
+                    className="font-poppins-semibold">
+                    Profil
                   </Text>
                 </View>
               )}
@@ -290,6 +320,34 @@ const CustomTabBar = props => {
   );
 };
 
+const ProfileStack = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="ProfileMain" component={Profile} />
+      <Stack.Screen 
+        name="Akun" 
+        component={Akun}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+      <Stack.Screen 
+        name="Perusahaan" 
+        component={Perusahaan}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+      <Stack.Screen 
+        name="Keamanan" 
+        component={Keamanan}
+        options={{ 
+          tabBarStyle: { display: 'none' }
+        }} 
+      />
+    </Stack.Navigator>
+  );
+};  
 const TabNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
@@ -299,16 +357,23 @@ const TabNavigator = () => {
             tabBar={props => <CustomTabBar {...props} />}
             screenOptions={screenOptions}>
             <Tab.Screen name="Dashboard" component={Dashboard} />
-            <Tab.Screen 
-              name="PengujianTab" 
+            <Tab.Screen
+              name="PengujianTab"
               component={PengujianStack}
               options={({ route }) => ({
                 tabBarStyle: getTabBarVisibility(route),
-              })} 
+              })}
             />
-            <Tab.Screen 
-              name="PembayaranTab" 
+            <Tab.Screen
+              name="PembayaranTab"
               component={PembayaranStack}
+              options={({ route }) => ({
+                tabBarStyle: getTabBarVisibility(route),
+              })}
+            />
+             <Tab.Screen 
+              name="Profile" 
+              component={ProfileStack}
               options={({ route }) => ({
                 tabBarStyle: getTabBarVisibility(route),
               })} 
@@ -368,14 +433,14 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 12,
-    color: "white",
+    color: "grey",
   },
   labelFocused: {
-    color: "white",
+    color: Colors.brand,
   },
   tabBar: {
     flexDirection: "row",
-    backgroundColor: Colors.brand,
+    backgroundColor: "#ececec",
     height: 60,
   },
   tabItem: {

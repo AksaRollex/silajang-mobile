@@ -76,7 +76,7 @@ export default function Profile({ navigation }) {
             <View
               className="w-full py-5 rounded-b-2xl"
               style={{ backgroundColor: Colors.brand, height: "32%" }}>
-              <Text className="text-white text-xl font-poppins-semibold mx-6 top-20">
+              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
                 Profil Saya
               </Text>
               <View className="w-full items-center mt-28 justify-center">
@@ -110,7 +110,7 @@ export default function Profile({ navigation }) {
           </View>
         )}
 
-        <View className="h-full bottom-56">
+        <View className="h-full bottom-52">
           <View className="rounded-3xl h-full bg-slate-200 ">
             {userData ? (
               <>
@@ -182,7 +182,7 @@ export default function Profile({ navigation }) {
               <Icon name="chevron-right" size={24} color="red" />
             </TouchableOpacity>
             <View className="flex-end">
-              <View className="top-48 items-center justify-center flex-end">
+              <View className="top-40 items-center justify-center flex-end">
               <Text className="flex-end"> 
                 <FooterText />
               </Text>
