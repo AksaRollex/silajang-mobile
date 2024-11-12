@@ -17,6 +17,7 @@ import RNFS from 'react-native-fs';
 import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
+import DocumentPicker from 'react-native-document-picker';
 
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
@@ -37,6 +38,9 @@ const UmpanBalik = ({navigation}) => {
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
   const [resetModalVisible, setResetModalVisible] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
+  const [importModalVisible, setImportModalVisible] = useState(false);
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [isImporting, setIsImporting] = useState(false);
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     uuid: '',
@@ -147,6 +151,75 @@ const handleResetData = async () => {
     });
   } finally {
     setIsResetting(false);
+  }
+};
+
+const pickFile = async () => {
+  try {
+    const result = await DocumentPicker.pick({
+      type: [DocumentPicker.types.xlsx, DocumentPicker.types.xls],
+    });
+    
+    setSelectedFile(result[0]);
+  } catch (err) {
+    if (DocumentPicker.isCancel(err)) {
+      // User cancelled the picker
+    } else {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Gagal memilih file',
+      });
+    }
+  }
+};
+
+// Add import function
+const handleImport = async () => {
+  if (!selectedFile) {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: 'File tidak boleh kosong',
+    });
+    return;
+  }
+
+  setIsImporting(true);
+  
+  try {
+    const formData = new FormData();
+    formData.append('tahun', selectedYear);
+    formData.append('bulan', parseInt(selectedMonth));
+    formData.append('file', {
+      uri: selectedFile.uri,
+      type: selectedFile.type,
+      name: selectedFile.name,
+    });
+
+    const response = await axios.post('/konfigurasi/umpan-balik/import', formData, {
+      headers: {
+        'Content-Type': 'multipart/form-data',
+      },
+    });
+
+    setImportModalVisible(false);
+    setSelectedFile(null);
+    queryClient.invalidateQueries(['umpanBalikSummary']);
+
+    Toast.show({
+      type: 'success',
+      text1: 'Sukses',
+      text2: 'Data berhasil diimport',
+    });
+  } catch (error) {
+    Toast.show({
+      type: 'error',
+      text1: 'Error',
+      text2: error.response?.data?.message || 'Gagal mengimport data',
+    });
+  } finally {
+    setIsImporting(false);
   }
 };
 
@@ -349,6 +422,67 @@ const handleResetData = async () => {
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <Text className="text-white font-poppins-medium">Ya, Reset</Text>
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
+  );
+
+  const renderImportModal = () => (
+    <Modal
+      animationType="fade"
+      transparent
+      visible={importModalVisible}
+      onRequestClose={() => setImportModalVisible(false)}
+    >
+      <View
+        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+        className="flex-1 justify-center items-center"
+      >
+        <View className="bg-white rounded-lg w-[90%] p-6">
+          <View className="flex-row justify-between items-center mb-6">
+            <Text className="text-lg font-poppins-medium text-black">Import Data Umpan Balik</Text>
+            <TouchableOpacity onPress={() => {
+              setImportModalVisible(false);
+              setSelectedFile(null);
+            }}>
+              <MaterialIcons name="close" size={24} color="black" />
+            </TouchableOpacity>
+          </View>
+          
+          <View className="mb-6">
+            <Text className="text-base font-poppins-medium text-black mb-2">File Excel</Text>
+            <TouchableOpacity 
+              onPress={pickFile}
+              className="border border-gray-300 rounded-lg p-4 bg-gray-50"
+            >
+              <Text className="text-gray-600 font-poppins-regular">
+                {selectedFile ? selectedFile.name : 'Pilih file excel'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+
+          <View className="flex-row justify-end gap-3">
+            <TouchableOpacity 
+              onPress={() => {
+                setImportModalVisible(false);
+                setSelectedFile(null);
+              }} 
+              className="px-6 py-2 bg-gray-400 rounded-lg"
+            >
+              <Text className="text-white font-poppins-medium">Batal</Text>
+            </TouchableOpacity>
+            <TouchableOpacity 
+              onPress={handleImport}
+              disabled={isImporting || !selectedFile}
+              className={`px-6 py-2 rounded-lg ${isImporting || !selectedFile ? 'bg-red-300' : 'bg-red-500'}`}
+            >
+              {isImporting ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text className="text-white font-poppins-medium">Import</Text>
               )}
             </TouchableOpacity>
           </View>
@@ -630,7 +764,7 @@ const handleResetData = async () => {
               </TouchableOpacity>
   
               <TouchableOpacity 
-                onPress={() => {/* Add import modal function here */}}
+                onPress={() => setImportModalVisible(true)}
                 className="flex-row items-center bg-[#ffe2e5] px-6 py-2 rounded-lg"
               >
                 <MaterialIcons name="file-upload" size={20} color="#f1416c" />
@@ -727,6 +861,7 @@ const handleResetData = async () => {
         {renderModal()}
         {renderDownloadConfirmationModal()}
         {renderResetConfirmationModal()}
+        {renderImportModal()} 
         
       </View>
       
