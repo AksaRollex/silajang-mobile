@@ -9,6 +9,7 @@ import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
 import { HorizontalAlignment } from 'react-native-ui-lib/src/components/gridListItem';
 import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
+import IndexMaster from '../../../masterdash/IndexMaster';
 
 
 const Users = ({ navigation }) => {
@@ -31,7 +32,7 @@ const Users = ({ navigation }) => {
 
     const dropdownOptions = [
         { id: "Parameter", title: "Parameter", action: item => navigation.navigate("Parameter", { uuid: item.uuid })},
-        { id: "Edit", title: "Edit", action: item => navigation.navigate("editUser", { uuid: item.uuid })},
+        { id: "Edit", title: "Edit", action: item => navigation.navigate("FormUsers", { uuid: item.uuid })},
         { id: "Delete", title: "Delete", action: item => deleteMetode(`/master/user/${item.uuid}`)},
     ]
 

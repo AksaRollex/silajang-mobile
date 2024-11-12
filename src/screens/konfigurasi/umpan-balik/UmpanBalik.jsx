@@ -307,7 +307,6 @@ const handleImport = async () => {
     }
   };
   
-
   const downloadTemplate = async () => {
     try {
       // First check/request permissions
@@ -326,6 +325,12 @@ const handleImport = async () => {
       const localFile = `${RNFS.DownloadDirectoryPath}/${fileName}`;
       const authToken = await AsyncStorage.getItem('@auth_token');
   
+      // Check if file already exists and delete it
+      const fileExists = await RNFS.exists(localFile);
+      if (fileExists) {
+        await RNFS.unlink(localFile);
+      }
+  
       // Set up download options with proper headers
       const options = {
         fromUrl: `${APP_URL}/konfigurasi/umpan-balik/template`,
@@ -333,10 +338,12 @@ const handleImport = async () => {
         headers: {
           'Authorization': `Bearer ${authToken}`,
           'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+          'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
         },
-        background: true, // Enable background downloads
+        background: true,
         discretionary: true,
         cacheable: true,
+        progressDivider: 1
       };
   
       // Start download with progress tracking
@@ -345,18 +352,21 @@ const handleImport = async () => {
       // Track download progress
       download.promise.then(async (response) => {
         if (response.statusCode === 200) {
-          const fileExists = await RNFS.exists(localFile);
-          if (fileExists) {
-            // Set proper MIME type for the file
-            await RNFS.setExternalStorageDirectoryPath(RNFS.DownloadDirectoryPath);
-            
-            Toast.show({
-              type: 'success',
-              text1: 'Sukses',
-              text2: `File berhasil diunduh ke folder Download dengan nama ${fileName}`,
-            });
+          const downloadedFileExists = await RNFS.exists(localFile);
+          if (downloadedFileExists) {
+            // Check file size to ensure it's not empty
+            const fileStats = await RNFS.stat(localFile);
+            if (fileStats.size > 0) {
+              Toast.show({
+                type: 'success',
+                text1: 'Sukses',
+                text2: `File berhasil diunduh`,
+              });
+            } else {
+              throw new Error('Downloaded file is empty');
+            }
           } else {
-            throw new Error('File download failed');
+            throw new Error('File download failed - file not found');
           }
         } else {
           throw new Error(`Download failed with status ${response.statusCode}`);
@@ -406,7 +416,7 @@ const handleImport = async () => {
               Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
             </Text>
           </View>
-
+  
           <View className="flex-row justify-center gap-3">
             <TouchableOpacity 
               onPress={() => setDownloadModalVisible(false)} 
@@ -415,7 +425,10 @@ const handleImport = async () => {
               <Text className="text-white font-poppins-medium">Batal</Text>
             </TouchableOpacity>
             <TouchableOpacity 
-              onPress={downloadTemplate}
+              onPress={() => {
+                downloadTemplate();
+                setDownloadModalVisible(false);
+              }}
               className="px-6 py-2 bg-green-500 rounded-lg"
             >
               <Text className="text-white font-poppins-medium">Download</Text>
@@ -676,15 +689,15 @@ const handleImport = async () => {
         overflow: 'hidden'
       }}
     >
-      <View className="bg-[#217346]  rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
-        <Text className="text-white text-sm font-poppins-medium text-center">
+      <View className="bg-green-100 rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
+        <Text className="text-[#217346]  text-sm font-poppins-semibold text-center">
           Download Template Import
         </Text>
     
         <MaterialCommunityIcons 
           name="file-excel-outline" 
           size={20} 
-          color="white" 
+          color="#217346" 
         />
       </View>
     </TouchableOpacity>
@@ -820,10 +833,10 @@ const handleImport = async () => {
   
               <TouchableOpacity 
                 onPress={() => setImportModalVisible(true)}
-                className="flex-row items-center bg-[#ffe2e5] px-6 py-2 rounded-lg"
+                className="flex-row items-center bg-indigo-100 px-6 py-2 rounded-lg"
               >
-                <MaterialIcons name="file-upload" size={20} color="#f1416c" />
-                <Text className="ml-2 text-[#f1416c] font-poppins-medium">Import Data</Text>
+                <MaterialIcons name="file-upload" size={20} color="#6366f1" />
+                <Text className="ml-2 text-indigo-500 font-poppins-medium">Import Data</Text>
               </TouchableOpacity>
             </View>
              
