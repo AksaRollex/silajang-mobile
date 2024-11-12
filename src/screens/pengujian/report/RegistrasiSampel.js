@@ -1,13 +1,14 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
 import {APP_URL} from "@env";
+import RNFetchBlob from 'rn-fetch-blob';
 
 const RegistrasiSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -78,7 +79,7 @@ const RegistrasiSampel = ({ navigation }) => {
   const downloadExcel = async (url, params) => {
     try {
       // Request permission for Android
-      if (Platform.OS === 'android') {
+      if (Platform.OS === 'android' && Number(Platform.Version) < 33) {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
         );

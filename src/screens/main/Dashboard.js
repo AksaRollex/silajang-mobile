@@ -270,7 +270,7 @@ const Dashboard = () => {
             <View className="flex flex-row justify-center gap-16">
               <View className="items-center">
                 <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexMaster")}
+                  onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
                 >
                   <IonIcons name="cube" size={26} color="#312e81" />
                 </TouchableOpacity>
