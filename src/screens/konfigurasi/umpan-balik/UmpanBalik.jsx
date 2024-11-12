@@ -1,5 +1,5 @@
 import React, {  useEffect, useState, useRef } from 'react';
-import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform, PermissionsAndroid } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -18,6 +18,7 @@ import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import DocumentPicker from 'react-native-document-picker';
+
 
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
@@ -285,38 +286,92 @@ const handleImport = async () => {
     }
   };
 
-    const downloadTemplate = async () => {
+  const requestStoragePermission = async () => {
+    if (Platform.OS !== 'android') return true;
+    
     try {
-      const localFile = `${RNFS.DownloadDirectoryPath}/Template Import Umpan Balik.xlsx`;
-      const authToken = await AsyncStorage.getItem('@auth_token');
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        {
+          title: "Storage Permission",
+          message: "Application needs access to your storage to download files",
+          buttonNeutral: "Ask Me Later",
+          buttonNegative: "Cancel",
+          buttonPositive: "OK"
+        }
+      );
+      return granted === PermissionsAndroid.RESULTS.GRANTED;
+    } catch (err) {
+      console.error('Permission error:', err);
+      return false;
+    }
+  };
+  
 
+  const downloadTemplate = async () => {
+    try {
+      // First check/request permissions
+      const hasPermission = await requestStoragePermission();
+      if (!hasPermission) {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Storage permission is required to download files',
+        });
+        return;
+      }
+  
+      // Define the file path - use proper extension
+      const fileName = 'Template_Import_Umpan_Balik.xlsx';
+      const localFile = `${RNFS.DownloadDirectoryPath}/${fileName}`;
+      const authToken = await AsyncStorage.getItem('@auth_token');
+  
+      // Set up download options with proper headers
       const options = {
         fromUrl: `${APP_URL}/konfigurasi/umpan-balik/template`,
         toFile: localFile,
         headers: {
-          'Authorization': `Bearer ${authToken}`
-        }
+          'Authorization': `Bearer ${authToken}`,
+          'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        },
+        background: true, // Enable background downloads
+        discretionary: true,
+        cacheable: true,
       };
-
-      const response = await RNFS.downloadFile(options).promise;
-
-      if (response.statusCode === 200) {
-        const fileExists = await RNFS.exists(localFile);
-        if (fileExists) {
-          Toast.show({
-            type: 'success',
-            text1: 'Sukses',
-            text2: 'File berhasil diunduh',
-          });
+  
+      // Start download with progress tracking
+      const download = RNFS.downloadFile(options);
+      
+      // Track download progress
+      download.promise.then(async (response) => {
+        if (response.statusCode === 200) {
+          const fileExists = await RNFS.exists(localFile);
+          if (fileExists) {
+            // Set proper MIME type for the file
+            await RNFS.setExternalStorageDirectoryPath(RNFS.DownloadDirectoryPath);
+            
+            Toast.show({
+              type: 'success',
+              text1: 'Sukses',
+              text2: `File berhasil diunduh ke folder Download dengan nama ${fileName}`,
+            });
+          } else {
+            throw new Error('File download failed');
+          }
         } else {
-          throw new Error('Failed to download template');
+          throw new Error(`Download failed with status ${response.statusCode}`);
         }
-      } else {
-        throw new Error(`Failed to download template ${response.statusCode}`);
-      }
+      }).catch((error) => {
+        console.error('Download error:', error);
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Gagal mengunduh template. Silakan coba lagi.',
+        });
+      });
+  
     } catch (error) {
-      console.error('Download Error:', error);
-
+      console.error('Download process error:', error);
       Toast.show({
         type: 'error',
         text1: 'Error',
