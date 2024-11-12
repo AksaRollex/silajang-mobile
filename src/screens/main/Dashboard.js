@@ -236,8 +236,8 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-black"
                     style={{
-                      fontSize: getFontSize(user.nama, 18, 14),
-                      maxWidth: 180, // batas lebar agar teks dapat membungkus
+                      fontSize: getFontSize(user.nama, 18, 13),
+                      maxWidth: 200, // batas lebar agar teks dapat membungkus
                     }}
                   >
                     Hi, {user.nama}
