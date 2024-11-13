@@ -383,7 +383,7 @@ const Dashboard = () => {
         </View>
 
 
-        <View className="items-center mt-[73px]">
+        <View className="items-center mt-[80px]">
           {/* card picker tahun */}
           <View className="bg-white rounded-xl w-[92%] h-16 overflow-hidden"
             style={{
