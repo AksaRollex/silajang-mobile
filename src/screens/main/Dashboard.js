@@ -3,9 +3,8 @@ import { rupiah } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
 import { useNavigation } from '@react-navigation/native';
 import React, { useEffect, useState, useRef } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator } from "react-native";
+import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator, Modal, TouchableHighlight, TouchableOpacity } from "react-native";
 import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
-import { TouchableOpacity } from "react-native-gesture-handler";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -15,6 +14,9 @@ import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityI
 import { TextFooter } from "../components/TextFooter";
 import Paginate from "@/src/screens/components/Paginate";
 import { MenuView } from "@react-native-menu/menu";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
+import Toast from "react-native-toast-message";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
@@ -149,7 +151,7 @@ const Dashboard = () => {
   const handleYearChange = (event) => {
     const selectedYear = event.nativeEvent.event;
     setSelectedYear(selectedYear);
-    setIsLoading(true); 
+    setIsLoading(true);
     fetchDashboardData(selectedYear);
   };
 
@@ -182,22 +184,65 @@ const Dashboard = () => {
 
   const MainCard = () => {
     const { data: user } = useUser();
-
+    const [modalVisible, setModalVisible] = useState(false);
+    const queryClient = useQueryClient();
+  
     const getFontSize = (text, defaultSize, smallerSize) => {
-      return text.length > 15 ? smallerSize : defaultSize; // adjust '15' as per your length requirement
+      return text.length > 15 ? smallerSize : defaultSize;
     };
-
+  
+    // Check if user is pengambil-sample or analis (simplified view without any buttons)
+    const isSimplifiedView = ['pengambil-sample', 'analis'].includes(user.role.name);
+    // Check if user is admin
+    const isAdmin = user.role.name === 'admin';
+  
+    const { mutate: logout } = useMutation(
+      () => axios.post("/auth/logout"),
+      {
+        onSuccess: async () => {
+          await AsyncStorage.removeItem("@auth-token");
+          Toast.show({
+            type: "success",
+            text1: "Logout Berhasil",
+          });
+          queryClient.invalidateQueries(["auth", "user"]);
+        },
+        onError: () => {
+          Toast.show({
+            type: "error",
+            text1: "Gagal Logout",
+          });
+        },
+      }
+    );
+  
+    const handleLogout = () => {
+      setModalVisible(true);
+    };
+  
+    const confirmLogout = () => {
+      setModalVisible(false);
+      logout();
+    };
+  
     return (
-      <View className="absolute left-0 right-0 px-4" style={{ top: '37%' }}>
-        <View className="bg-white rounded-lg shadow-lg"
+      <View 
+        className="absolute left-0 right-0 px-4" 
+        style={{ 
+          top: isSimplifiedView ? '80%' : '20%'
+        }}
+      >
+        <View 
+          className="bg-white rounded-lg shadow-lg"
           style={{
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 6,
             elevation: 8,
-          }}>
-          <View className="p-4 border-b border-gray-100">
+          }}
+        >
+          <View className={`p-4 ${!isSimplifiedView ? 'border-b border-gray-100' : ''}`}>
             <View className="flex flex-row justify-between items-center">
               <View className="flex flex-row items-center space-x-3">
                 <IonIcons name="person-circle" size={30} color="black" />
@@ -206,7 +251,7 @@ const Dashboard = () => {
                     className="font-poppins-semibold text-black"
                     style={{
                       fontSize: getFontSize(user.nama, 18, 13),
-                      maxWidth: 200, // batas lebar agar teks dapat membungkus
+                      maxWidth: 200,
                     }}
                   >
                     Hi, {user.nama}
@@ -223,33 +268,111 @@ const Dashboard = () => {
               </View>
             </View>
           </View>
-
-          <View className="p-5">
-            <View className="flex flex-row justify-center gap-16">
-              <View className="items-center">
-                <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
-                >
-                  <IonIcons name="cube" size={26} color="#312e81" />
-                </TouchableOpacity>
-                <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
+  
+          {!isSimplifiedView && (
+            <View className="p-5">
+              <View className="flex flex-row justify-center">
+                {isAdmin ? (
+                  // Tampilan untuk admin dengan 2 menu
+                  <View className="flex flex-row justify-center gap-16">
+                    <View className="items-center">
+                      <TouchableOpacity 
+                        className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                        onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
+                      >
+                        <IonIcons name="cube" size={26} color="#312e81" />
+                      </TouchableOpacity>
+                      <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
+                    </View>
+                    <View className="h-18 w-[2px] bg-gray-100" />
+                    <View className="items-center">
+                      <TouchableOpacity 
+                        className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                        onPress={() => navigation.navigate("IndexKonfigurasi")}
+                      >
+                        <IonIcons name="options" size={24} color="#312e81" />
+                      </TouchableOpacity>
+                      <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                    </View>
+                  </View>
+                ) : (
+                  // Tampilan untuk role lain dengan 1 menu
+                  <View className="items-center">
+                    <TouchableOpacity 
+                      className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                      onPress={() => navigation.navigate("IndexKonfigurasi")}
+                    >
+                      <IonIcons name="options" size={24} color="#312e81" />
+                    </TouchableOpacity>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                  </View>
+                )}
               </View>
-              <View className="h-18 w-[2px] bg-gray-100" />
-              <View className="items-center">
-                <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexKonfigurasi")}
-                  >
-                  <IonIcons name="options" size={24} color="#312e81" />
+            </View>
+          )}
+        </View>
+  
+        <Modal
+          transparent={true}
+          visible={modalVisible}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+            <View style={{
+              width: 300,
+              padding: 20,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              alignItems: 'center',
+            }}>
+              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
+  
+              <View style={{
+                width: '100%',
+                borderBottomWidth: 1,
+                borderBottomColor: '#dedede',
+                marginBottom: 15,
+              }} />
+  
+              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    backgroundColor: '#dedede',
+                    borderRadius: 5,
+                    marginRight: 10,
+                  }}
+                >
+                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
                 </TouchableOpacity>
-                <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                <TouchableOpacity
+                  className="bg-red-100"
+                  onPress={confirmLogout}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                </TouchableOpacity>
               </View>
             </View>
           </View>
-        </View>
+        </Modal>
       </View>
     );
   };
-
+  
 
   return (
     <SafeAreaView className="flex-1 bg-slate-100">
@@ -265,7 +388,7 @@ const Dashboard = () => {
         </View>
 
 
-        <View className="items-center mt-28">
+        <View className="items-center mt-[85px]">
           {/* card picker tahun */}
           <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
             style={{
@@ -395,7 +518,7 @@ const Dashboard = () => {
                     {['admin', 'kepala-upt'].includes(user.role.name) && (
                       <TouchableOpacity
                         className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
-                        onPress={() => navigation.navigate('IndexMaster', { screen: "Users" })}
+                        onPress={() => navigation.navigate('IndexMaster', { screen: "Users", params: { golongan_id: 1 } })}
                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                       >
                         <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
@@ -413,7 +536,8 @@ const Dashboard = () => {
                     )}
 
                     {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                      <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
+                      <TouchableOpacity className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
+                        onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}>
                         <View className="bg-[#5a3dff] bg-opacity-10 p-3 rounded-full">
                           <IonIcons name="book" size={20} color="white" style={{ width: 20, height: 20, }} />
@@ -426,7 +550,7 @@ const Dashboard = () => {
                             Total Permohonan
                           </Text>
                         </View>
-                      </View>
+                      </TouchableOpacity>
                     )}
 
                     {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
@@ -511,11 +635,20 @@ const Dashboard = () => {
 
                     <TouchableOpacity
                       className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      onPress={() => {
+                        if (['admin'].includes(user.role.name)) {
+                          navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })
+                        }
+                      }}
+                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3 }}
                     >
                       <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                        <IonIcons name="ribbon" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        <IonIcons
+                          name="ribbon"
+                          size={20}
+                          color="white"
+                          style={{ width: 20, height: 20 }}
+                        />
                       </View>
                       <View className="ml-4 flex-1">
                         <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
@@ -529,7 +662,11 @@ const Dashboard = () => {
 
                     <TouchableOpacity
                       className="w-80 h-36 mr-8 rounded-lg p-4  flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
+                      onPress={() => {
+                        if (['admin'].includes(user.role.name)) {
+                          navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })
+                        }
+                      }}
                       style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                     >
                       <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
@@ -701,7 +838,7 @@ const Dashboard = () => {
             <ActivityIndicator size="large" color="#312e81" />
           </View>
         )}
-    </ScrollView>
+      </ScrollView>
     </SafeAreaView >
   );
 };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState , useMemo} from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
@@ -125,9 +125,7 @@ export default function DetailKontrak({ route, navigation }) {
 
     if (loading) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Loading...</Text>
-            </View>
+            <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
         )
     }
 

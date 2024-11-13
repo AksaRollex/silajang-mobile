@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Icon from "react-native-vector-icons/Feather";
@@ -149,9 +150,7 @@ export default function HasilUji({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
     );
   }
 
