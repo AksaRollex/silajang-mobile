@@ -27,7 +27,7 @@ const Dashboard = () => {
     { label: "Total Permohonan", value: "total" },
   ];
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [tahuns, setTahuns] = useState([]);
+  const [tahuns, setTahuns] = useState([]); 
   const { data: user } = useUser();
   const navigation = useNavigation();
   const paginateRef = useRef();
@@ -259,9 +259,9 @@ const Dashboard = () => {
         >
           <View className={`p-4 ${!isSimplifiedView ? 'border-b border-gray-100' : ''}`}>
             <View className="flex flex-row justify-between items-center">
-              <View className="flex flex-row items-center space-x-3 flex-wrap">
+              <View className="flex flex-row items-center space-x-3">
                 <IonIcons name="person-circle" size={30} color="black" />
-                <View className="flex-wrap">
+                <View>
                   <Text
                     className="font-poppins-semibold text-black"
                     style={{
@@ -274,21 +274,13 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-gray-500"
                     style={{
-                      fontSize: getFontSize(user.email, 14),
+                      fontSize: getFontSize(user.email, 14, 12), // Default size 14, smaller size 12
                     }}
                   >
                     {user.email}
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity
-                className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
-                onPress={handleLogout}
-                activeOpacity={0.7}
-              >
-                <IonIcons name="log-out-outline" size={16} color="#f2416e" />
-                <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
-              </TouchableOpacity>
             </View>
           </View>
   
@@ -413,7 +405,7 @@ const Dashboard = () => {
 
         <View className="items-center mt-[85px]">
           {/* card picker tahun */}
-          <View className="bg-white rounded-xl w-[92%] h-16 overflow-hidden"
+          <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
@@ -876,7 +868,7 @@ const styles = StyleSheet.create({
     flexWrap: "wrap",
     justifyContent: "space-around",
     paddingVertical: 30,
-    paddingTop: 25,
+    paddingTop: 35,
     zIndex: 0,
   },
   loadingContainer: {
@@ -890,5 +882,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
+
 
 export default Dashboard;
