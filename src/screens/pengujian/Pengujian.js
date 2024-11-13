@@ -25,7 +25,7 @@ export default function Pengujian() {
     },
     'kepala-upt': {
       sections: ['verifikasi', 'report'],
-      items: ['analis', 'koordinator-teknis',
+      items: ['analis', 'koordinator-teknis', 'cetak-lhu',
         'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
     },
     'pengambil-sample': {

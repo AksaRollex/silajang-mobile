@@ -192,9 +192,7 @@ const Dashboard = () => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
   
-    // Check if user is pengambil-sample or analis (simplified view without any buttons)
     const isSimplifiedView = ['pengambil-sample', 'analis'].includes(user.role.name);
-    // Check if user is admin
     const isAdmin = user.role.name === 'admin';
   
     const { mutate: logout } = useMutation(
@@ -244,7 +242,7 @@ const Dashboard = () => {
       <View 
         className="absolute left-0 right-0 px-4" 
         style={{ 
-          top: isSimplifiedView ? '80%' : '20%'
+          top: isSimplifiedView ? '70%' : '20%',
         }}
       >
         <View 
@@ -274,44 +272,39 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-gray-500"
                     style={{
-                      fontSize: getFontSize(user.email, 14, 12), // Default size 14, smaller size 12
+                      fontSize: getFontSize(user.email, 14, 12),
                     }}
                   >
                     {user.email}
                   </Text>
                 </View>
               </View>
+              <TouchableOpacity
+                className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
+                onPress={handleLogout}
+                activeOpacity={0.7}
+              >
+                <IonIcons name="log-out-outline" size={16} color="#f2416e" />
+                <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
+              </TouchableOpacity>
             </View>
           </View>
   
           {!isSimplifiedView && (
             <View className="p-5">
-              <View className="flex flex-row justify-center">
-                {isAdmin ? (
-                  // Tampilan untuk admin dengan 2 menu
-                  <View className="flex flex-row justify-center gap-16">
-                    <View className="items-center">
-                      <TouchableOpacity 
-                        className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                        onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
-                      >
-                        <IonIcons name="cube" size={26} color="#312e81" />
-                      </TouchableOpacity>
-                      <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
-                    </View>
-                    <View className="h-18 w-[2px] bg-gray-100" />
-                    <View className="items-center">
-                      <TouchableOpacity 
-                        className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                        onPress={() => navigation.navigate("IndexKonfigurasi")}
-                      >
-                        <IonIcons name="options" size={24} color="#312e81" />
-                      </TouchableOpacity>
-                      <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
-                    </View>
+              {isAdmin ? (
+                // Admin view dengan 2 menu
+                <View className="flex flex-row justify-center gap-16">
+                  <View className="items-center">
+                    <TouchableOpacity 
+                      className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                      onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
+                    >
+                      <IonIcons name="cube" size={26} color="#312e81" />
+                    </TouchableOpacity>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
                   </View>
-                ) : (
-                  // Tampilan untuk role lain dengan 1 menu
+                  <View className="h-18 w-[2px] bg-gray-100" />
                   <View className="items-center">
                     <TouchableOpacity 
                       className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
@@ -321,8 +314,27 @@ const Dashboard = () => {
                     </TouchableOpacity>
                     <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
                   </View>
-                )}
-              </View>
+                </View>
+              ) : (
+                // pengambil-sample & analis view
+                <View className="px-2 py-1 bg-indigo-50 rounded-lg border border-indigo-100">
+                  <TouchableOpacity 
+                    className="bg-gradient-to-r from-indigo-100 to-blue-50 rounded-xl p-1 flex-row items-center justify-between"
+                    onPress={() => navigation.navigate("IndexKonfigurasi")}
+                  >
+                    <View className="flex-row items-center space-x-3">
+                      <View className="bg-indigo-50 w-12 h-12 rounded-full items-center justify-center">
+                        <IonIcons name="options" size={24} color="#312e81" />
+                      </View>
+                      <View>
+                        <Text className="text-sm font-poppins-semibold text-black">Konfigurasi</Text>
+                        <Text className="text-xs font-poppins-regular text-gray-600">Lihat Tracking Pengujian</Text>
+                      </View>
+                    </View>
+                    <IonIcons name="chevron-forward" size={20} color="#312e81" />
+                  </TouchableOpacity>
+                </View>
+              )}
             </View>
           )}
         </View>
@@ -386,7 +398,7 @@ const Dashboard = () => {
         </Modal>
       </View>
     );
-  };
+};
   
 
   return (
