@@ -267,24 +267,42 @@ const Dashboard = () => {
 
 
           <View className="p-5">
-            <View className="flex flex-row justify-center gap-16">
-              <View className="items-center">
-                <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
-                >
-                  <IonIcons name="cube" size={26} color="#312e81" />
-                </TouchableOpacity>
-                <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
-              </View>
-              <View className="h-18 w-[2px] bg-gray-100" />
-              <View className="items-center">
-                <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexKonfigurasi")}
-                >
-                  <IonIcons name="options" size={24} color="#312e81" />
-                </TouchableOpacity>
-                <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
-              </View>
+            <View className="flex flex-row justify-center">
+              {['admin'].includes(user.role.name) ? (
+                // Tampilan untuk admin dengan 2 menu
+                <View className="flex flex-row justify-center gap-16">
+                  <View className="items-center">
+                    <TouchableOpacity 
+                      className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                      onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
+                    >
+                      <IonIcons name="cube" size={26} color="#312e81" />
+                    </TouchableOpacity>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
+                  </View>
+                  <View className="h-18 w-[2px] bg-gray-100" />
+                  <View className="items-center">
+                    <TouchableOpacity 
+                      className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                      onPress={() => navigation.navigate("IndexKonfigurasi")}
+                    >
+                      <IonIcons name="options" size={24} color="#312e81" />
+                    </TouchableOpacity>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                  </View>
+                </View>
+              ) : (
+                // Tampilan untuk non-admin dengan 1 menu di tengah
+                <View className="items-center">
+                  <TouchableOpacity 
+                    className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
+                    onPress={() => navigation.navigate("IndexKonfigurasi")}
+                  >
+                    <IonIcons name="options" size={24} color="#312e81" />
+                  </TouchableOpacity>
+                  <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                </View>
+              )}
             </View>
           </View>
         </View>
@@ -495,7 +513,7 @@ const Dashboard = () => {
                     {['admin', 'kepala-upt'].includes(user.role.name) && (
                       <TouchableOpacity
                         className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
-                        onPress={() => navigation.navigate('IndexMaster', { screen: "Users" })}
+                        onPress={() => navigation.navigate('IndexMaster', { screen: "Users", params: { golongan_id: 1 } })}
                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                       >
                         <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
@@ -513,7 +531,8 @@ const Dashboard = () => {
                     )}
 
                     {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                      <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
+                      <TouchableOpacity className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
+                        onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}>
                         <View className="bg-[#5a3dff] bg-opacity-10 p-3 rounded-full">
                           <IonIcons name="book" size={20} color="white" style={{ width: 20, height: 20, }} />
@@ -526,7 +545,7 @@ const Dashboard = () => {
                             Total Permohonan
                           </Text>
                         </View>
-                      </View>
+                      </TouchableOpacity>
                     )}
 
                     {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
@@ -611,11 +630,20 @@ const Dashboard = () => {
 
                     <TouchableOpacity
                       className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      onPress={() => {
+                        if (['admin'].includes(user.role.name)) {
+                          navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })
+                        }
+                      }}
+                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3 }}
                     >
                       <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                        <IonIcons name="ribbon" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        <IonIcons 
+                          name="ribbon" 
+                          size={20} 
+                          color="white" 
+                          style={{ width: 20, height: 20 }} 
+                        />
                       </View>
                       <View className="ml-4 flex-1">
                         <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
@@ -629,7 +657,11 @@ const Dashboard = () => {
 
                     <TouchableOpacity
                       className="w-80 h-36 mr-8 rounded-lg p-4  flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
+                      onPress={() => {
+                        if (['admin'].includes(user.role.name)) {
+                          navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })
+                        }
+                      }}
                       style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                     >
                       <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">

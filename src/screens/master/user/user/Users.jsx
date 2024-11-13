@@ -12,11 +12,13 @@ import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-sc
 import IndexMaster from '../../../masterdash/IndexMaster';
 
 
-const Users = ({ navigation }) => {
+const Users = ({ navigation, route }) => {
     const Options = [
         { id: 2, name: "Dinas Internal" },
         { id: 1, name: "Customer" },
       ];
+
+    const { golongan_id } = route.params || 2
     const [selectedMenu, setSelectedMenu] = useState(2);
     const paginateRef = useRef();
     const queryClient = useQueryClient();
@@ -29,6 +31,10 @@ const Users = ({ navigation }) => {
           console.error('Delete error:', error);
         }
       });
+
+      React.useEffect(() => {
+        setSelectedMenu(golongan_id ?? 2);
+      }, [golongan_id])
 
     const dropdownOptions = [
         { id: "Parameter", title: "Parameter", action: item => navigation.navigate("Parameter", { uuid: item.uuid })},
@@ -131,7 +137,7 @@ const Users = ({ navigation }) => {
                 ref={paginateRef}
                 url="/master/user"
                 payload={{
-                    golongan_id: selectedMenu,
+                    golongan_id: golongan_id ?? selectedMenu,
                     page: 1,
                     per: 10,
                 }}
