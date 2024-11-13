@@ -117,7 +117,7 @@ export default function IndexMaster() {
           <>
 
             <View className="flex-row items-center space-x-2 mt-5 bg-white p-2 ml-3 mr-3 rounded-xl py-2.5">
-              <BackButton action={() => navigation.goBack()} size={26} className="ml-2" />
+              <BackButton action={() => navigation.navigate("Dashboard", { screen: 'Dashboard' })} size={26} className="ml-2" />
 
               <View className="w-px h-full bg-gray-200 " />
 

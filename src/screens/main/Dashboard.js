@@ -30,6 +30,7 @@ const Dashboard = () => {
   const navigation = useNavigation();
   const paginateRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
+  const [isRefreshingYear, setIsRefreshingYear] = useState(false);
   const screenWidth = Dimensions.get("window").width;
   const [chartData, setChartData] = useState(null);
   const currentYear = new Date().getFullYear();
@@ -54,7 +55,6 @@ const Dashboard = () => {
     ],
   };
 
-
   const fetchDashboardData = async (year) => {
     setIsLoading(true);
     try {
@@ -62,7 +62,6 @@ const Dashboard = () => {
       const response = await axios.post(`/dashboard/${endpoint}`, { tahun: parseInt(year) });
 
       setDashboard(response.data);
-
       // Set chart data if available
       if (response.data.chartSampels) {
         setChartData({
@@ -110,6 +109,8 @@ const Dashboard = () => {
       }
     } catch (error) {
       console.error("Error fetching dashboard data:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -148,6 +149,7 @@ const Dashboard = () => {
   const handleYearChange = (event) => {
     const selectedYear = event.nativeEvent.event;
     setSelectedYear(selectedYear);
+    setIsLoading(true); 
     fetchDashboardData(selectedYear);
   };
 
@@ -203,7 +205,8 @@ const Dashboard = () => {
                   <Text
                     className="font-poppins-semibold text-black"
                     style={{
-                      fontSize: getFontSize(user.nama, 18, 14), // Default size 18, smaller size 14
+                      fontSize: getFontSize(user.nama, 18, 13),
+                      maxWidth: 200, // batas lebar agar teks dapat membungkus
                     }}
                   >
                     Hi, {user.nama}
@@ -225,7 +228,7 @@ const Dashboard = () => {
             <View className="flex flex-row justify-center gap-16">
               <View className="items-center">
                 <TouchableOpacity className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                  onPress={() => navigation.navigate("IndexMaster")}
+                  onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
                 >
                   <IonIcons name="cube" size={26} color="#312e81" />
                 </TouchableOpacity>
@@ -273,13 +276,17 @@ const Dashboard = () => {
               elevation: 3,
             }}>
             <View className="flex-row h-full">
-
               <View className="bg-gradient-to-r from-indigo-900 to-indigo-700 w-1/ justify-center ml-6 ">
                 <Text className="text-black text-sm font-poppins-medium">
                   Pilih Tahun Data Dashboard :
                 </Text>
               </View>
 
+              <View className="bg-indigo-50 px-4 py-1.5 rounded-lg self-center ml-2">
+                <Text className="text-indigo-900 font-poppins-medium">
+                  {selectedYear}
+                </Text>
+              </View>
 
               <MenuView
                 title="Pilih Tahun"
@@ -289,13 +296,7 @@ const Dashboard = () => {
                   title: option.title,
                 }))}
               >
-                <View className="flex-1 flex-row items-center justify-end space-x-3 px-4">
-                  <View className="bg-indigo-50 px-4 py-1.5 rounded-lg">
-                    <Text className="text-indigo-900 font-poppins-medium">
-                      {selectedYear}
-                    </Text>
-                  </View>
-
+                <View className="flex-1 flex-row items-center justify-end px-4">
                   <View className="bg-indigo-100 rounded-full p-1.5">
                     <View className="w-4 h-4 items-center justify-center">
                       <View className="w-0 h-0 border-l-[4px] border-l-transparent border-t-[6px] border-t-indigo-900 border-r-[4px] border-r-transparent" />
@@ -315,390 +316,393 @@ const Dashboard = () => {
           </View>
         </View>
 
-        <View style={styles.contentContainer}>
-          {dashboard ? (
-            <>
-              {user.role.name === 'customer' ? (
-                <>
-                  {/* Card 1: Permohonan Baru */}
-                  <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
-                    <View className="flex-row items-center">
-                      <MaterialIcons name="people-alt" size={34} color="#828cff" />
-                      <Text className="text-[35px] font-poppins-semibold mx-3 text-[#828cff]">
-                        {dashboard.permohonanBaru}
-                      </Text>
-                    </View>
-                    <Text className="text-[16px] font-poppins-semibold text-black text-left">
-                      Permohonan Baru
+        {isLoading ? (
+          <View style={[styles.loadingContainer, { marginTop: 50 }]}>
+            <ActivityIndicator size="large" color="#312e81" />
+          </View>
+        ) : dashboard ? (
+          <View style={styles.contentContainer}>
+            {user.role.name === 'customer' ? (
+              <>
+                {/* Card 1: Permohonan Baru */}
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
+                  <View className="flex-row items-center">
+                    <MaterialIcons name="people-alt" size={34} color="#828cff" />
+                    <Text className="text-[35px] font-poppins-semibold mx-3 text-[#828cff]">
+                      {dashboard.permohonanBaru}
                     </Text>
                   </View>
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
+                    Permohonan Baru
+                  </Text>
+                </View>
 
-                  {/* Card 2: Permohonan Diproses */}
-                  <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]">
-                    <View className="flex-row items-center">
-                      <FontAwesome5 name="leaf" size={30} color="#ffc300" />
-                      <Text className="text-[35px] font-poppins-semibold mx-3 text-[#ffc300]">
-                        {dashboard.permohonanDiproses}
-                      </Text>
-                    </View>
-                    <Text className="text-[16px] font-poppins-semibold text-black text-left">
-                      Permohonan Diproses
+                {/* Card 2: Permohonan Diproses */}
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#ffc300]">
+                  <View className="flex-row items-center">
+                    <FontAwesome5 name="leaf" size={30} color="#ffc300" />
+                    <Text className="text-[35px] font-poppins-semibold mx-3 text-[#ffc300]">
+                      {dashboard.permohonanDiproses}
                     </Text>
                   </View>
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
+                    Permohonan Diproses
+                  </Text>
+                </View>
 
-                  {/* Card 3: Permohonan Selesai */}
-                  <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#50cc88]">
-                    <View className="flex-row items-center">
-                      <FontAwesome5 name="book-open" size={32} color="#50cc88" />
-                      <Text className="text-[35px] font-poppins-semibold mx-3 text-[#50cc88]">
-                        {dashboard.permohonanSelesai}
-                      </Text>
-                    </View>
-                    <Text className="text-[16px] font-poppins-semibold text-black text-left">
-                      Permohonan Selesai
+                {/* Card 3: Permohonan Selesai */}
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#50cc88]">
+                  <View className="flex-row items-center">
+                    <FontAwesome5 name="book-open" size={32} color="#50cc88" />
+                    <Text className="text-[35px] font-poppins-semibold mx-3 text-[#50cc88]">
+                      {dashboard.permohonanSelesai}
                     </Text>
                   </View>
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
+                    Permohonan Selesai
+                  </Text>
+                </View>
 
-                  {/* Card 4: Total Permohonan */}
-                  <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#5a3dff]">
-                    <View className="flex-row items-center">
-                      <IonIcons name="book" size={32} color="#5a3dff" />
-                      <Text className="text-[35px] font-poppins-semibold mx-3 text-[#5a3dff]">
-                        {dashboard.permohonanTotal}
-                      </Text>
-                    </View>
-                    <Text className="text-[16px] font-poppins-semibold text-black text-left">
-                      Total Permohonan
+                {/* Card 4: Total Permohonan */}
+                <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#5a3dff]">
+                  <View className="flex-row items-center">
+                    <IonIcons name="book" size={32} color="#5a3dff" />
+                    <Text className="text-[35px] font-poppins-semibold mx-3 text-[#5a3dff]">
+                      {dashboard.permohonanTotal}
                     </Text>
                   </View>
-                  <TextFooter />
-                </>
-              ) : (
-                <>
-                  <View className="mt-0">
-                    <View className="px-4 mb-2">
-                      <Text className="text-xl font-poppins-semibold text-black">
-                        Data Dashboard
-                      </Text>
-                    </View>
+                  <Text className="text-[16px] font-poppins-semibold text-black text-left">
+                    Total Permohonan
+                  </Text>
+                </View>
+                <TextFooter />
+              </>
+            ) : (
+              <>
+                <View className="self-center">
+                  <Text className="text-xl font-poppins-semibold text-black">
+                    Data Dashboard
+                  </Text>
+                </View>
+                <View className="w-full bg-indigo-50 mt-3 pt-3 pb-2">
 
-                    <ScrollView
-                      horizontal
-                      showsHorizontalScrollIndicator={false}
-                      className="pl-4"
-                      contentContainerStyle={{ paddingBottom: 8 }}
-                    >
-                      {['admin', 'kepala-upt'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow bg-white border-l-[6px] border-[#828cff]"
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
-                          <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="people" size={24} color="white" style={{ width: 24, height: 24 }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-2xl font-poppins-semibold text-[#828cff]">
-                              {dashboard.customers}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Customers
-                            </Text>
-                          </View>
-                        </View>
-                      )}
-
-                      {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                        <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}>
-                          <View className="bg-[#5a3dff] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="book" size={20} color="white" style={{ width: 20, height: 20, }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-2xl font-poppins-semibold text-[#5a3dff]">
-                              {dashboard.allSampels}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Total Permohonan
-                            </Text>
-                          </View>
-                        </View>
-                      )}
-
-                      {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                        <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#ffc300]"
-                          onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
-                          <View className="bg-[#ffc300] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="checkmark-sharp" size={20} color="white" style={{ width: 20, height: 20 }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-2xl font-poppins-semibold text-[#ffc300]">
-                              {dashboard.newSampels}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Persetujuan Permohonan
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-
-                      {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
-                        <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
-                          onPress={() => navigation.navigate('Pengujian', { screen: 'Analis' })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
-                          <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="flask" size={20} color="white" style={{ width: 20, height: 20 }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
-                              {dashboard.undoneSampels}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Sampel Belum Dianalisa
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-
-                      {['admin', 'kepala-upt', 'koordinator-teknis'].includes(user.role.name) && (
-                        <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
-                          onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
-                          <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="document-text" size={20} color="white" style={{ width: 20, height: 20 }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
-                              {dashboard.unverifSampels}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Dokumen Belum Diverifikasi
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-
-                      {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
-                        <TouchableOpacity
-                          className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0fd194]"
-                          onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}
-                          style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                        >
-                          <View className="bg-[#0fd194] bg-opacity-10 p-3 rounded-full">
-                            <IonIcons name="cash" size={20} color="white" style={{ width: 20, height: 20 }} />
-                          </View>
-                          <View className="ml-4 flex-1">
-                            <Text className="text-lg font-poppins-semibold text-[#0fd194]">
-                              {rupiah(dashboard.revenue)}
-                            </Text>
-                            <Text className="text-sm font-poppins-medium text-black">
-                              Pendapatan
-                            </Text>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-
-                      <TouchableOpacity
-                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                        onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                      >
-                        <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                          <IonIcons name="ribbon" size={20} color="white" style={{ width: 20, height: 20 }} />
-                        </View>
-                        <View className="ml-4 flex-1">
-                          <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
-                            {dashboard.total?.toFixed(2)}
-                          </Text>
-                          <Text className="text-sm font-poppins-medium text-black">
-                            IKM Unit Pelayanan
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-
-                      <TouchableOpacity
-                        className="w-80 h-36 mr-8 rounded-lg p-4  flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
-                        onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                      >
-                        <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
-                          <MaterialCommunityIcons name="clipboard-text" size={20} color="white" style={{ width: 20, height: 20 }} />
-                        </View>
-                        <View className="ml-4 flex-1">
-                          <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
-                            {dashboard.jumlah}
-                          </Text>
-                          <Text className="text-sm font-poppins-medium text-black">
-                            Jumlah Responden
-                          </Text>
-                        </View>
-                      </TouchableOpacity>
-                    </ScrollView>
-                  </View>
-
-
-                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
-                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                  <ScrollView
+                    horizontal
+                    showsHorizontalScrollIndicator={false}
+                    className="pl-4"
+                    contentContainerStyle={{ paddingBottom: 8 }}
                   >
-                    <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
-                    {/* Pembatas garis di bawah teks */}
-                    <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
-
-                    {chartData ? (
-                      <LineChart
-                        className="font-poppins-semibold"
-                        data={chartData}
-                        width={screenWidth - 40}
-                        height={340}
-                        verticalLabelRotation={20}
-                        chartConfig={chartConfig}
-                        bezier
-                        style={{
-                          marginVertical: 8,
-                          borderRadius: 16
-                        }}
-                        fromZero
-                        yAxisInterval={1}
-                      />
-                    ) : (
-                      <ActivityIndicator size="large" color="#312e81" />
+                    {['admin', 'kepala-upt'].includes(user.role.name) && (
+                      <TouchableOpacity
+                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
+                        onPress={() => navigation.navigate('IndexMaster', { screen: "Users" })}
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      >
+                        <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="people" size={24} color="white" style={{ width: 24, height: 24 }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-2xl font-poppins-semibold text-[#828cff]">
+                            {dashboard.customers}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Customers
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
                     )}
 
-                    <Text className="text-[9px] text-gray-500 mt-2 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
-                  </View>
-
-                  <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
-                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                  >
-                    <Text className="text-lg font-poppins-semibold text-black p-3">
-                      {chartPeraturans.data.length > 1
-                        ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
-                        : "Peraturan Paling Banyak Digunakan"}
-                    </Text>
-
-                    <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
-
-                    <View className="ml-16">
-                      <PieChart
-                        className="ml-96 font-poppins-semibold "
-                        data={chartPeraturans.data}
-                        width={screenWidth}
-                        height={220}
-                        chartConfig={{
-                          backgroundColor: "#1cc910",
-                          backgroundGradientFrom: "#eff3ff",
-                          backgroundGradientTo: "#efefef",
-                          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        }}
-                        accessor={"population"}
-                        backgroundColor={"transparent"}
-                        paddingLeft={"15"}
-                        hasLegend={false}
-                      />
-                      <View
-                      className="absolute"
-                        style={{
-                          marginLeft: 72,
-                          marginTop: 62,
-                          position: "absolute",
-                          width:100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
-                          height: 100,
-                          backgroundColor: "white",
-                          borderRadius: 50, // Ini membuatnya menjadi lingkaran
-                        }}
-                      />
-                    </View>
-
-                    <View className="mt-2 ml-4">
-                      {chartPeraturans.data.map((item, index) => (
-                        <View key={index} className="flex-row items-center mb-1">
-                          <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
-                          <Text className="font-poppins-semibold break-words max-w-[92%]">
-                            <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                    {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                      <View className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}>
+                        <View className="bg-[#5a3dff] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="book" size={20} color="white" style={{ width: 20, height: 20, }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-2xl font-poppins-semibold text-[#5a3dff]">
+                            {dashboard.allSampels}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Total Permohonan
                           </Text>
                         </View>
-                      ))}
-                    </View>
-                    <Text className="text-[9px] text-gray-500 mt-10 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
+                      </View>
+                    )}
 
-                  </View>
-
-
-
-                  <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4"
-                    style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                  >
-                    <Text className="text-[17px] text-black font-poppins-semibold p-3 truncate">
-                      {chartParameters.data.length > 1
-                        ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
-                        : "Parameter Paling Banyak Digunakan"}
-                    </Text>
-
-                    <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
-
-                    <View className="ml-16">
-                      <PieChart
-                        className="breack-words"
-                        data={chartParameters.data}
-                        width={screenWidth}
-                        height={300}
-                        chartConfig={{
-                          backgroundColor: "#1cc910",
-                          backgroundGradientFrom: "#eff3ff",
-                          backgroundGradientTo: "#efefef",
-                          color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
-                        }}
-                        accessor={"population"}
-                        backgroundColor={"transparent"}
-                        paddingLeft={"15"}
-                        hasLegend={false}
-                      />
-                      <View
-                      className="absolute"
-                        style={{
-                          marginLeft: 45,
-                          marginTop: 75,
-                          position: "absolute",
-                          width:150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
-                          height: 150,
-                          backgroundColor: "white",
-                          borderRadius: 100, // Ini membuatnya menjadi lingkaran
-                        }}
-                      />
-
-                    </View>
-                    <View className="mt-2 ml-4">
-                      {chartParameters.data.map((item, index) => (
-                        <View key={index} className="flex-row items-center mb-1">
-                          <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
-                          <Text className="font-poppins-semibold break-words max-w-[92%]">
-                            <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                    {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                      <TouchableOpacity
+                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#ffc300]"
+                        onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      >
+                        <View className="bg-[#ffc300] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="checkmark-sharp" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-2xl font-poppins-semibold text-[#ffc300]">
+                            {dashboard.newSampels}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Persetujuan Permohonan
                           </Text>
                         </View>
-                      ))}
+                      </TouchableOpacity>
+                    )}
+
+                    {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                      <TouchableOpacity
+                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
+                        onPress={() => navigation.navigate('Pengujian', { screen: 'Analis' })}
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      >
+                        <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="flask" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
+                            {dashboard.undoneSampels}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Sampel Belum Dianalisa
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    )}
+
+                    {['admin', 'kepala-upt', 'koordinator-teknis'].includes(user.role.name) && (
+                      <TouchableOpacity
+                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#f2416e]"
+                        onPress={() => navigation.navigate('Pengujian', { screen: "Kortek" })}
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      >
+                        <View className="bg-[#f2416e] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="document-text" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-2xl font-poppins-semibold text-[#f2416e]">
+                            {dashboard.unverifSampels}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Dokumen Belum Diverifikasi
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    )}
+
+                    {['admin', 'kepala-upt', 'koordinator-teknis', 'koordinator-administrasi'].includes(user.role.name) && (
+                      <TouchableOpacity
+                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0fd194]"
+                        onPress={() => navigation.navigate('Pembayaran', { screen: "Global" })}
+                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                      >
+                        <View className="bg-[#0fd194] bg-opacity-10 p-3 rounded-full">
+                          <IonIcons name="cash" size={20} color="white" style={{ width: 20, height: 20 }} />
+                        </View>
+                        <View className="ml-4 flex-1">
+                          <Text className="text-lg font-poppins-semibold text-[#0fd194]">
+                            {rupiah(dashboard.revenue)}
+                          </Text>
+                          <Text className="text-sm font-poppins-medium text-black">
+                            Pendapatan
+                          </Text>
+                        </View>
+                      </TouchableOpacity>
+                    )}
+
+                    <TouchableOpacity
+                      className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
+                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
+                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                    >
+                      <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
+                        <IonIcons name="ribbon" size={20} color="white" style={{ width: 20, height: 20 }} />
+                      </View>
+                      <View className="ml-4 flex-1">
+                        <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
+                          {dashboard.total?.toFixed(2)}
+                        </Text>
+                        <Text className="text-sm font-poppins-medium text-black">
+                          IKM Unit Pelayanan
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+
+                    <TouchableOpacity
+                      className="w-80 h-36 mr-8 rounded-lg p-4  flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#0090a6]"
+                      onPress={() => navigation.navigate('PengujianKonfig', { screen: "UmpanBalik" })}
+                      style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                    >
+                      <View className="bg-[#0090a6] bg-opacity-10 p-3 rounded-full">
+                        <MaterialCommunityIcons name="clipboard-text" size={20} color="white" style={{ width: 20, height: 20 }} />
+                      </View>
+                      <View className="ml-4 flex-1">
+                        <Text className="text-2xl font-poppins-semibold text-[#0090a6]">
+                          {dashboard.jumlah}
+                        </Text>
+                        <Text className="text-sm font-poppins-medium text-black">
+                          Jumlah Responden
+                        </Text>
+                      </View>
+                    </TouchableOpacity>
+                  </ScrollView>
+                </View>
+
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                >
+                  <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
+                  {/* Pembatas garis di bawah teks */}
+                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+
+                  {chartData ? (
+                    <LineChart
+                      className="font-poppins-semibold"
+                      data={chartData}
+                      width={screenWidth - 40}
+                      height={340}
+                      verticalLabelRotation={20}
+                      chartConfig={chartConfig}
+                      bezier
+                      style={{
+                        marginVertical: 8,
+                        borderRadius: 16
+                      }}
+                      fromZero
+                      yAxisInterval={1}
+                    />
+                  ) : (
+                    <ActivityIndicator size="large" color="#312e81" />
+                  )}
+
+                  <Text className="text-[9px] text-gray-500 mt-2 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
+                </View>
+
+                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                >
+                  <Text className="text-lg font-poppins-semibold text-black p-3">
+                    {chartPeraturans.data.length > 1
+                      ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
+                      : "Peraturan Paling Banyak Digunakan"}
+                  </Text>
+
+                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+
+                  <View className="ml-16">
+                    <PieChart
+                      className="ml-96 font-poppins-semibold "
+                      data={chartPeraturans.data}
+                      width={screenWidth}
+                      height={220}
+                      chartConfig={{
+                        backgroundColor: "#1cc910",
+                        backgroundGradientFrom: "#eff3ff",
+                        backgroundGradientTo: "#efefef",
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                      }}
+                      accessor={"population"}
+                      backgroundColor={"transparent"}
+                      paddingLeft={"15"}
+                      hasLegend={false}
+                    />
+                    <View
+                      className="absolute"
+                      style={{
+                        marginLeft: 72,
+                        marginTop: 59,
+                        position: "absolute",
+                        width: 100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                        height: 100,
+                        backgroundColor: "white",
+                        borderRadius: 50, // Ini membuatnya menjadi lingkaran
+                      }}
+                    />
+                  </View>
+
+                  <View className="mt-2 ml-4">
+                    {chartPeraturans.data.map((item, index) => (
+                      <View key={index} className="flex-row items-center mb-1">
+                        <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                        <Text className="font-poppins-semibold break-words max-w-[92%]">
+                          <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                        </Text>
+                      </View>
+                    ))}
+                  </View>
+                  <Text className="text-[9px] text-gray-500 mt-10 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
+
+                </View>
+
+
+
+                <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4"
+                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
+                >
+                  <Text className="text-[17px] text-black font-poppins-semibold p-3 truncate">
+                    {chartParameters.data.length > 1
+                      ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
+                      : "Parameter Paling Banyak Digunakan"}
+                  </Text>
+
+                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+
+                  <View className="ml-16">
+                    <PieChart
+                      className="breack-words"
+                      data={chartParameters.data}
+                      width={screenWidth}
+                      height={300}
+                      chartConfig={{
+                        backgroundColor: "#1cc910",
+                        backgroundGradientFrom: "#eff3ff",
+                        backgroundGradientTo: "#efefef",
+                        color: (opacity = 1) => `rgba(0, 0, 0, ${opacity})`,
+                      }}
+                      accessor={"population"}
+                      backgroundColor={"transparent"}
+                      paddingLeft={"15"}
+                      hasLegend={false}
+                    />
+                    <View
+                      className="absolute"
+                      style={{
+                        marginLeft: 45,
+                        marginTop: 75,
+                        position: "absolute",
+                        width: 150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                        height: 150,
+                        backgroundColor: "white",
+                        borderRadius: 100, // Ini membuatnya menjadi lingkaran
+                      }}
+                    />
+
+                  </View>
+                  <View className="mt-2 ml-4">
+                    {chartParameters.data.map((item, index) => (
+                      <View key={index} className="flex-row items-center mb-1">
+                        <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                        <Text className="font-poppins-semibold break-words max-w-[92%]">
+                          <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                        </Text>
+                      </View>
+                    ))}
                     <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
 
-                    </View>
-
                   </View>
 
-                </>
-              )}
+                </View>
 
-            </>
-          ) : (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#312e81" />
-            </View>
-          )}
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+              </>
+            )}
+          </View>
+        ) : (
+          <View style={styles.loadingContainer}>
+            <ActivityIndicator size="large" color="#312e81" />
+          </View>
+        )}
+    </ScrollView>
+    </SafeAreaView >
   );
 };
 
