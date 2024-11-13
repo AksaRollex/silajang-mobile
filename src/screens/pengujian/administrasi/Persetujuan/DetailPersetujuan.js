@@ -11,6 +11,7 @@ import {
   Modal,
   FlatList,
   Button,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -330,9 +331,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
     );
   }
 
