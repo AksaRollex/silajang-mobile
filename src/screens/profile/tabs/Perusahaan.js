@@ -28,6 +28,7 @@ import { APP_URL } from "@env";
 import Back from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
+import Select2 from "@/src/screens/components/Select2";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -48,6 +49,18 @@ const Perusahaan = () => {
 
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+
+  const {
+    handleSubmit,
+    control,
+    formState: { errors },
+    getValues,
+    reset,
+    setValue,
+    watch,
+  } = useForm({
+    values: { ...userData },
+  });
 
   // START GEO LOCATION
   const [location, setLocation] = useState({
@@ -116,7 +129,7 @@ const Perusahaan = () => {
       .get("/master/kota-kabupaten")
       .then(response => {
         const formattedKotaKabupaten = response.data.data.map(item => ({
-          label: item.nama,
+          title: item.nama,
           value: item.id,
         }));
         console.log("Response data from API:", response.data);
@@ -129,14 +142,15 @@ const Perusahaan = () => {
 
   // FETCH KECAMATAN
   useEffect(() => {
-    if (selectedKotaKabupaten) {
+    console.log({ selectedKotaKabupaten });
+    if (selectedKotaKabupaten || watch("kab_kota_id")) {
       axios
         .get(`/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan`)
         .then(response => {
           console.log("Response data:", response.data);
           if (response.data && response.data.data) {
             const formattedKecamatan = response.data.data.map(item => ({
-              label: item.nama,
+              title: item.nama,
               value: item.id,
             }));
             setKecamatan(formattedKecamatan);
@@ -151,7 +165,7 @@ const Perusahaan = () => {
     } else {
       setKecamatan([]);
     }
-  }, [selectedKotaKabupaten]);
+  }, [selectedKotaKabupaten, watch("kab_kota_id")]);
 
   // FETCH KELURAHAN
   useEffect(() => {
@@ -160,7 +174,7 @@ const Perusahaan = () => {
         .get(`/wilayah/kecamatan/${selectedKecamatan}/kelurahan`)
         .then(response => {
           const formattedKelurahan = response.data.data.map(item => ({
-            label: item.nama,
+            title: item.nama,
             value: item.id,
           }));
           setKelurahan(formattedKelurahan);
@@ -183,12 +197,26 @@ const Perusahaan = () => {
         //   response.data.user.detail,
         // );
         setUserData(response.data.user.detail);
-        console.log("userData setelah setUserData:", response.data.user.detail);
+
+        setSelectedKotaKabupaten(response.data.user.detail.kab_kota_id);
+        setSelectedKecamatan(response.data.user.detail.kecamatan_id);
+        setSelectedKelurahan(response.data.user.detail.kelurahan_id);
+        // console.log("userData setelah setUserData:", response.data.user.detail);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
       });
   }, []);
+
+  useEffect(() => {
+    return () => {
+      setSelectedKotaKabupaten(null);
+      setSelectedKecamatan(null);
+      setSelectedKelurahan(null);
+      setKecamatan([])
+      setKelurahan([])
+    }
+  }, [])
 
   // FETCH DATA TANDA TANGAN
   useEffect(() => {
@@ -209,17 +237,6 @@ const Perusahaan = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
-
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    getValues,
-    reset,
-    setValue,
-  } = useForm({
-    values: { ...userData },
-  });
 
   const QueryClient = useQueryClient();
 
@@ -259,7 +276,7 @@ const Perusahaan = () => {
       });
     }
     try {
-      const response = await axios.post("/user/companySecure", formData, {
+      const response = await axios.post("/user/company", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
@@ -464,7 +481,9 @@ const Perusahaan = () => {
                 )}
               />
               {errors.instansi && (
-                <Text style={{ color: "red", }} className="bottom-5">{errors.instansi.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.instansi.message}
+                </Text>
               )}
 
               <Controller
@@ -486,10 +505,11 @@ const Perusahaan = () => {
                     />
                   </View>
                 )}
-                  
-                />
+              />
               {errors.alamat && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.alamat.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.alamat.message}
+                </Text>
               )}
 
               <Controller
@@ -511,7 +531,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pimpinan && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.pimpinan.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.pimpinan.message}
+                </Text>
               )}
 
               <Controller
@@ -533,7 +555,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pj_mutu && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.pj_mutu.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.pj_mutu.message}
+                </Text>
               )}
 
               <Controller
@@ -555,7 +579,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.telepon && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.telepon.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.telepon.message}
+                </Text>
               )}
 
               <Controller
@@ -595,7 +621,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.email && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.email.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.email.message}
+                </Text>
               )}
 
               <Controller
@@ -621,7 +649,7 @@ const Perusahaan = () => {
                   {errors.jenis_kegiatan.message}
                 </Text>
               )}
-              <View className="rounded-2xl p-2 ">
+              <View className="rounded-2xl p-3 bottom-1 ">
                 <View className="flex-row justify-between">
                   <Controller
                     control={control}
@@ -645,7 +673,7 @@ const Perusahaan = () => {
                       </View>
                     )}
                   />
-                  
+
                   <Controller
                     control={control}
                     name="long"
@@ -670,17 +698,17 @@ const Perusahaan = () => {
                   />
                 </View>
                 <View className="flex-row">
-                {errors.lat && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.lat.message}
-                </Text>
-              )}
+                  {errors.lat && (
+                    <Text style={{ color: "red" }} className="bottom-5">
+                      {errors.lat.message}
+                    </Text>
+                  )}
                   {errors.long && (
-                <Text style={{ color: "red" }} className="bottom-5 ml-14">
-                  {errors.long.message}
-                </Text>
-              )}
-              </View>
+                    <Text style={{ color: "red" }} className="bottom-5 ml-14">
+                      {errors.long.message}
+                    </Text>
+                  )}
+                </View>
                 <TouchableOpacity
                   onPress={handleLocationPress}
                   className="w-full p-3 rounded-3xl bg-[#007AFF]">
@@ -730,40 +758,30 @@ const Perusahaan = () => {
                     <View
                       style={{ borderColor: "black", borderWidth: 0.5 }}
                       className="rounded-2xl p-1">
-                      <RNPickerSelect
-                        onValueChange={value => {
+                      <Select2
+                        data={kotaKabupaten}
+                        onSelect={value => {
                           onChange(value);
                           setSelectedKotaKabupaten(value);
+                          setSelectedKecamatan(null); // Reset Kecamatan
+                          setSelectedKelurahan(null); // Reset Kelurahan
+                          setValue("kecamatan_id", null); // Clear Kecamatan field
+                          setValue("kelurahan_id", null); // Clear Kelurahan field
+                          setKecamatan([]);
+                          setKelurahan([]);
                         }}
-                        value={value}
-                        items={kotaKabupaten
-                          .filter(item => item.value != null)
-                          .map(item => ({
-                            label: item.label,
-                            value: item.value,
-                            key: item.value.toString(),
-                          }))}
-                        style={pickerSelectStyles}
-                        useNativeAndroidPickerStyle={false}
-                        // value={value}: userData.kab_kota_id
-                        //     ? `Kab/Kota: ${userData.kab_kota_id}`
-                        //     : "Pilih Kabupaten/Kota",
-                        //   value: null, // Tambahkan nilai untuk placeholder
-                        // }}
+                        defaultValue={watch("kab_kota_id")}
+                        placeholder={"Pilih Kabupaten/Kota"}
                       />
                     </View>
                   </View>
                 )}
               />
-              {errors.kab_kota_id && (
-                <Text style={{ color: "red" }}>
-                  {errors.kab_kota_id.message}
-                </Text>
-              )}
+
               <Controller
                 name="kecamatan_id"
-                rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
                 control={control}
+                rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View className="mt-4">
                     <Text className="font-poppins-semibold mb-2 text-black">
@@ -772,37 +790,23 @@ const Perusahaan = () => {
                     <View
                       style={{ borderColor: "black", borderWidth: 0.5 }}
                       className="rounded-2xl p-1">
-                      <RNPickerSelect
-                        onValueChange={value => {
+                      <Select2
+                        data={kecamatan}
+                        onSelect={value => {
                           onChange(value);
-                          setSelectedKecamatan(value); // Set Kecamatan
+                          setSelectedKecamatan(value);
+                          setSelectedKelurahan(null); // Reset Kelurahan when Kecamatan changes
+                          setValue("kelurahan_id", null); // Clear Kelurahan field
+                          setKelurahan([]);
                         }}
-                        value={value}
-                        items={kecamatan
-                          .filter(item => item.value != null)
-                          .map(item => ({
-                            label: item.label,
-                            value: item.value,
-                            key: item.value.toString(), // Tambahkan key yang unik
-                          }))}
-                        style={pickerSelectStyles}
-                        useNativeAndroidPickerStyle={false}
-                        // value={value}: userData.kecamatan_id
-                        //     ? `Kecamatan: ${userData.kecamatan_id}`
-                        //     : "Pilih Kecamatan",
-                        //   value: null, // Tambahkan nilai untuk placeholder
-                        // }}
-                        disabled={!selectedKotaKabupaten} // Disabled jika Kota/Kabupaten belum dipilih
+                        defaultValue={selectedKecamatan} // Use local state to reset
+                        placeholder={"Pilih Kecamatan"}
+                        disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
                       />
                     </View>
                   </View>
                 )}
               />
-              {errors.kecamatan_id && (
-                <Text style={{ color: "red" }}>
-                  {errors.kecamatan_id.message}
-                </Text>
-              )}
 
               <Controller
                 name="kelurahan_id"
@@ -814,39 +818,22 @@ const Perusahaan = () => {
                       Kelurahan
                     </Text>
                     <View
-                      style={{ borderWidth: 0.5, borderColor: "black" }}
+                      style={{ borderColor: "black", borderWidth: 0.5 }}
                       className="rounded-2xl p-1">
-                      <RNPickerSelect
-                        onValueChange={value => {
+                      <Select2
+                        data={kelurahan}
+                        onSelect={value => {
                           onChange(value);
-                          setSelectedKelurahan(value); // Set Kelurahan
+                          setSelectedKelurahan(value);
                         }}
-                        value={value}
-                        items={kelurahan
-                          .filter(item => item.value != null)
-                          .map(item => ({
-                            label: item.label,
-                            value: item.value,
-                            key: item.value.toString(), // Tambahkan key yang unik
-                          }))}
-                        style={pickerSelectStyles}
-                        useNativeAndroidPickerStyle={false}
-                        // value={value}: userData.kelurahan_id
-                        //     ? `Kelurahan: ${userData.kelurahan_id}`
-                        //     : "Pilih Kelurahan",
-                        //   value: null, // Tambahkan nilai untuk placeholder
-                        // }}
-                        disabled={!selectedKecamatan} // Disabled jika Kecamatan belum dipilih
+                        defaultValue={selectedKelurahan} // Use local state to reset
+                        placeholder={"Pilih Kelurahan"}
+                        disabled={!selectedKecamatan} // Disable if Kecamatan not selected
                       />
                     </View>
                   </View>
                 )}
               />
-              {errors.kelurahan_id && (
-                <Text style={{ color: "red" }}>
-                  {errors.kelurahan_id.message}
-                </Text>
-              )}
               <Button
                 onPress={handleSubmit(update)}
                 loading={isLoading}
@@ -869,7 +856,6 @@ const Perusahaan = () => {
 };
 
 const styles = StyleSheet.create({
-  
   modalContainer: {
     flex: 1,
     justifyContent: "center",
