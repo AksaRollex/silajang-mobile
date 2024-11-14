@@ -4,6 +4,7 @@ import User from './User'
 import Jabatan from './jabatan/Jabatan'
 import FormJabatan from './jabatan/FormJabatan'
 import Users from './user/Users'
+import FormUsers from './user/FormUsers'
 import IndexMaster from '../../masterdash/IndexMaster'
 
 const Stack = createNativeStackNavigator()
