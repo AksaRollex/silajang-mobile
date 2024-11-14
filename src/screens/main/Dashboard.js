@@ -88,22 +88,45 @@ const Dashboard = () => {
 
     return (
       <>
-        <View className="flex-row items-center justify-end ">
+        <View className="px-4 py-2 w-full">
+      <View className="bg-white rounded-lg border border-gray-200" style={{ elevation: 8 }}>
+        <View className="p-4 flex-row justify-between">
+        <View className="flex-row gap-2 items-center">
+         <IonIcons 
+                name="calendar-clear" 
+                size={27} 
+                color={"#4d5b7a"}
+                />
+          <Text className="text-lg text-gray-600 font-poppins-bold" style={{ top: 3 }}>
+            Tahun
+          </Text>
+        </View>
+          
           <TouchableOpacity
             onPress={handleFilterPress}
-            className="flex-row items-center bg-[#ececec] px-2 py-3  mx-6 mt-4 rounded-md">
-            <IonIcons name="calendar" size={24} color="black" />
-            <Text className="text-black font-poppins-regular mx-2">{tahun}</Text>
-            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+            className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg" >
+            <View className="flex-row items-center">
+             
+              <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
+                {tahun}
+              </Text>
+            </View>
+            <MaterialIcons 
+              name="keyboard-arrow-down" 
+              size={24} 
+              className="text-gray-600" 
+            />
           </TouchableOpacity>
         </View>
+      </View>
 
-        <YearPicker
-          visible={isYearPickerVisible}
-          onClose={() => setIsYearPickerVisible(false)}
-          onSelect={handleYearSelect}
-          selectedYear={tahun}
-        />
+      <YearPicker
+        visible={isYearPickerVisible}
+        onClose={() => setIsYearPickerVisible(false)}
+        onSelect={handleYearSelect}
+        selectedYear={tahun}
+      />
+    </View>
       </>
     );
   };
@@ -238,7 +261,7 @@ const Dashboard = () => {
             </View>
           )}
         </View>
-        <FooterText />
+        {/* <FooterText /> */}
       </ScrollView>
     </ScrollView>
     </View>

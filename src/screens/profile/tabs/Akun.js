@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
+  ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
@@ -178,16 +179,21 @@ const Akun = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] w-full h-full px-3 py-4 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 h-full rounded-md mb-6">
-          <View className="flex-row justify-between">
+      <View className="bg-[#ececec] px-5 w-full h-full ">
+          <View className="flex-row  py-5 ">
             <Back
-              size={24}
+              size={30}
               color={"black"}
               action={() => navigation.goBack()}
-              className="mr-2 "
+              className="mr-5 "
+              style={{
+                borderWidth: 0.5,
+                padding: 4,
+                borderColor: "black",
+                borderRadius: 8,
+              }}
             />
-            <Text className="font-poppins-semibold text-black mb-3 text-lg ">
+            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
               Informasi Personal
             </Text>
           </View>
@@ -196,40 +202,14 @@ const Akun = () => {
             <View className="flex">
               <Controller
                 control={control}
-                name="nama"
-                defaultValue={userData.user.nama}
-                rules={{ required: "Nama Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black ">
-                      Nama
-                    </Text>
-
-                    <TextField
-                      value={value}
-                      placeholderTextColor="black"
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}
-              />
-              {errors.nama && (
-                <Text style={{ color: "red" }} className="mb-4 -mt-5">
-                  {errors.nama.message}
-                </Text>
-              )}
-              <Controller
-                control={control}
                 name="photo"
                 render={({ field: { value } }) => (
-                  <View className=" mb-4">
-                    <Text className="font-poppins-semibold mb-2 text-black ">
+                  <View className="mt-2">
+                    <Text className="font-poppins-semibold mb-1 text-md text-black " style={{ fontSize: 15 }}>
                       Foto Profil
                     </Text>
-                    <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular">
-                      <View className="bg-zinc-800 rounded-sm p-2">
+                    <View className="p-[5px] bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular">
+                      <View className="bg-zinc-800 rounded-2xl p-2">
                         {currentPhotoUrl || file ? (
                           <View style={styles.imageContainer}>
                             <Image
@@ -244,14 +224,6 @@ const Akun = () => {
                                 )
                               }
                             />
-                            {/* <TouchableOpacity
-                              style={{ backgroundColor: Colors.brand }}
-                              className="px-5 py-2 rounded-sm items-center justify-center"
-                              onPress={handleChoosePhoto}>
-                              <Text className="font-poppins-semibold  text-white">
-                                Ubah Gambar
-                              </Text>
-                            </TouchableOpacity> */}
                             <TouchableOpacity
                               style={styles.deleteButton}
                               className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
@@ -276,20 +248,44 @@ const Akun = () => {
                   </View>
                 )}
               />
-
+              <Controller
+                control={control}
+                name="nama"
+                defaultValue={userData.user.nama}
+                rules={{ required: "Nama Tidak Boleh Kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View className="mt-4">
+                    <Text className="font-poppins-semibold mb-1 text-black ">
+                      Nama
+                    </Text>
+                    <TextField
+                      value={value}
+                      placeholderTextColor="black"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                      enableErrors
+                      onChangeText={onChange}
+                    />
+                  </View>
+                )}
+              />
+              {errors.nama && (
+                <Text style={{ color: "red" }} className="mb-4 -mt-5">
+                  {errors.nama.message}
+                </Text>
+              )}
               <Controller
                 control={control}
                 name="email"
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
+                  <View className="bottom-2">
+                    <Text className="font-poppins-semibold mb-1 text-black">
                       Email
                     </Text>
                     <TextField
                       placeholder={userData.user.email}
                       editable={false}
                       enableErrors
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
@@ -301,15 +297,15 @@ const Akun = () => {
                 control={control}
                 name="phone"
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
+                  <View className="bottom-4">
+                    <Text className="font-poppins-semibold mb-1 text-black">
                       Nomor Telepon
                     </Text>
                     <TextField
                       placeholder={userData.user.phone}
                       enableErrors
                       editable={false}
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       placeholderTextColor="grey"
                       onChangeText={onChange}
                       value={value}
@@ -317,9 +313,8 @@ const Akun = () => {
                   </View>
                 )}
               />
-
               <Button
-                className="p-3 rounded-md "
+                className="p-3 rounded-3xl mt-3"
                 backgroundColor={Colors.brand}
                 borderRadius={5}
                 onPress={handleSubmit(update)}
@@ -334,7 +329,6 @@ const Akun = () => {
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
-        </View>
       </View>
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
@@ -345,9 +339,12 @@ const Akun = () => {
               loop={false}
               style={styles.lottie}
             />
-            <Text style={styles.successTextTitle}>INformasi personal kamu berhasil di rubah</Text>
+            <Text style={styles.successTextTitle}>
+              INformasi personal kamu berhasil di rubah
+            </Text>
             <Text style={styles.successText}>
-              Pastikan informasi personal yang kamu gunakan saat ini sudah benar !
+              Pastikan informasi personal yang kamu gunakan saat ini sudah benar
+              !
             </Text>
           </View>
         </View>
@@ -408,7 +405,6 @@ const styles = StyleSheet.create({
   imagePreview: {
     width: 100,
     height: 100,
-    marginBottom: 16,
     borderRadius: 10,
   },
   deleteButton: {
@@ -456,10 +452,10 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   signaturePreview: {
-    width: 200,
-    height: 100,
+    width: 150,
+    height: 200,
     resizeMode: "contain",
-    marginBottom: 10,
+    borderRadius: 20,
   },
   changeButton: {
     backgroundColor: "#4682B4",

@@ -48,7 +48,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
   const [selectedCard, setSelectedCard] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [showTimePicker, setShowTimePicker] = useState(false);
@@ -100,12 +100,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     } catch (error) {}
   };
 
-  const handleCardPress = card => {
-    setSelectedCard(card);
-  };
-
   const { uuid } = route.params || {};
   const { permohonan } = route.params || {};
+  const queryClient = useQueryClient();
 
   const {
     watch,
@@ -116,22 +113,25 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     reset,
   } = useForm();
 
-  const queryClient = useQueryClient();
-
   const { data, isFetching: isLoadingData } = useQuery(
     ["permohonan", uuid],
     () =>
       axios.get(`/permohonan/titik/${uuid}/edit`).then(res => res.data.data),
     {
       enabled: !!uuid,
-      // MENAMPILKAN DATA -> REQUEST DATA YANG DI TAMPILKAN
       onSuccess: data => {
         if (data) {
-          console.log(data.keterangan, 999);
-          setDate(new Date(data.tanggal_pengambilan));
-          (location.latitude = data.south),
-            (location.longitude = data.east),
-            setSelectedPayment(data.payment_type);
+          // console.log(data.keterangan, 999);
+          setDate(
+            data.tanggal_pengambilan
+              ? new Date(data.tanggal_pengambilan)
+              : null,
+          );
+          setLocation({
+            latitude: data.south || "",
+            longitude: data.east || "",
+          });
+          setSelectedPayment(data.payment_type || "");
           reset({
             lokasi: data.lokasi,
             jenis_sampel_id: data.jenis_sampel_id,
@@ -152,6 +152,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             arah_angin: data.arah_angin,
             kelembapan: data.kelembapan,
             kecepatan_angin: data.kecepatan_angin,
+            payment_type: data.payment_type,
+            tanggal_pengambilan: data.tanggal_pengambilan,
+            south: data.south,
           });
           [
             "suhu_air",
@@ -198,15 +201,21 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         return Promise.reject(new Error("Silahkan pilih metode pembayaran"));
       }
       const requestData = {
-        payment_type: selectedPayment === "va" ? "va" : "qris",
         ...data,
+        payment_type: selectedPayment,
         permohonan_uuid: permohonan.uuid,
         tanggal_pengambilan: date
           ? moment(date).format("YYYY-MM-DD HH:mm:ss")
           : null,
-        south: location.latitude,
-        east: location.longitude,
+        south: location.latitude || null,
+        east: location.longitude || null,
       };
+
+      Object.keys(requestData).forEach(
+        key =>
+          (requestData[key] === undefined || requestData[key] === null) &&
+          delete requestData[key],
+      );
 
       return axios.post(
         uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
@@ -237,47 +246,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     },
   );
 
-  const onSubmit = data => {
-    let requestData = {
-      ...data,
-      permohonan_uuid: permohonan.uuid,
-      south: location.latitude,
-      east: location.longitude,
-    };
-
-    if (permohonan && permohonan.is_mandiri) {
-      if (date) {
-        requestData.tanggal_pengambilan = moment(date).format(
-          "YYYY-MM-DD HH:mm:ss",
-        );
-      } else {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Tanggal pengambilan harus diisi",
-        });
-        return;
-      }
-    }
-
-    createOrUpdate(requestData, {
-      onError: error => {
-        console.error("Form submission error:", error);
-      },
-    });
-  };
-
-  const handleDateTimeChange = (event, selectedDate) => {
-    if (event.type === "dismissed") {
-      setShowDatePicker(false);
-      return;
-    }
-
-    const currentDate = selectedDate || tanggalJam;
-    setShowDatePicker(false);
-    setTanggalJam(currentDate);
-  };
-
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -306,7 +274,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           }),
         );
         setMetode(formattedAcuanMetode);
-
         setSampelData(formattedSampelData);
         setJenisWadah(formattedJenisWadah);
         setMetode(formattedAcuanMetode);
@@ -314,7 +281,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         console.error("Error fetching data :", error);
       }
     };
-
     fetchData();
   }, []);
 
@@ -341,19 +307,27 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   };
 
   const getLocation = () => {
+    setLoading(true);
+
     Geolocation.getCurrentPosition(
       position => {
+        const latitude = position.coords.latitude.toString();
+        const longitude = position.coords.longitude.toString();
+
         setLocation({
-          latitude: position.coords.latitude.toString(),
-          longitude: position.coords.longitude.toString(),
+          latitude,
+          longitude,
         });
-        Alert.alert(
-          "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
-        );
+
+        setValue("south", latitude);
+        setValue("east", longitude);
+
+        setModalVisible(true); // Tampilkan modal setelah mendapatkan lokasi
+        setLoading(false); // Selesai loading
       },
       error => {
         console.log(error.code, error.message);
+        setLoading(false); // Selesai loading jika terjadi error
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
@@ -361,7 +335,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const handleLocationPress = () => {
     if (Platform.OS === "android") {
-      requestLocationPermission();
+      const permissionGranted = requestLocationPermission();
+      if (permissionGranted) {
+        getLocation();
+      }
     } else {
       getLocation();
     }
@@ -375,22 +352,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     );
   }
 
-  const renderKeteranganField = ({ field: { onChange, value } }) => (
-    <View>
-      <Text className="font-poppins-semibold mb-2 text-black">Keterangan</Text>
-      <View className="border border-stone-300 bg-[#fff]">
-        <TextField
-          className="px-2 py-2 bg-[#fff] rounded-xl font-poppins-regular"
-          value={value || ""} // Add fallback empty string
-          onChangeText={text => {
-            console.log("Keterangan changed:", text); // Debug log
-            onChange(text);
-          }}
-        />
-      </View>
-    </View>
-  );
-
   return (
     <>
       {formData?.uuid && formData?.status > 2 && (
@@ -400,7 +361,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         </Text>
       )}
       <FlatList
-        className="bg-[#ececec] h-full p-3 rounded-lg"
+        className=" h-full rounded-lg"
         data={[{ key: "from" }]}
         renderItem={() => (
           <View className="bg-[#ececec] w-full h-full ">
@@ -606,7 +567,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           selectedItems={value || []}
                           selectText="Pilih Jenis Wadah"
                           confirmText="KONFIRMASI"
-                          confirmFontFamily={"Poppins-Semibold"}
                           showRemoveAll={true}
                           removeAllText="Hapus Semua"
                           modalAnimationType="fade"

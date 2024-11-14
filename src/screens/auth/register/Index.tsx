@@ -61,10 +61,11 @@ export default memo(function Login({ navigation }): React.JSX.Element {
           <Text h2 color={Colors.brand} marginB-5>
             Daftar Akun Baru
           </Text>
-          <Text color={Colors.grey30} marginB-40>
+          <Text color={Colors.grey30} marginB-10>
             Isi formulir di bawah ini untuk membuat akun baru dan mulai
             menikmati layanan kami.
           </Text>
+          <View className="w-full h-px bg-gray-300 mt-1" style={{ marginBottom: 18, width: "full" }}/>
 
           <If isTrue={index === 0}>
             <Credential />

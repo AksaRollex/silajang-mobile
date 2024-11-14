@@ -132,7 +132,7 @@ const styles = StyleSheet.create({
   searchInput: {
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
-    color: "black", // Warna teks hitam pada input pencarian
+    color: "black",
   },
 });
 

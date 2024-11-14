@@ -44,14 +44,14 @@ export default function Pembayaran() {
       icon: "science",
       screen: "PengujianPembayaran",
       color: "#2196F3",
-      description: "Pembayaran untuk layanan pengujian",
+      description: "Klik untuk membayar pengujian",
     },
     {
       title: "Multi Payment",
       icon: "payments",
       screen: "Multipayment",
       color: "#4CAF50",
-      description: "Pembayaran multiple tagihan sekaligus",
+      description: "Klik untuk membayar multipayment",
     },
   ];
 
@@ -72,6 +72,21 @@ export default function Pembayaran() {
           icon: "verified-user",
           text: "Jika pembayaran berhasil dilakukan, anda akan mendapatkan invoice",
         },
+        // {
+        //   icon: "receipt-long",
+        //   color: "purple", // Tambahkan warna hijau
+        //   text: "Isi detail pembayaran dengan teliti",
+        // },
+        // {
+        //   icon: "verified-user",
+        //   color: "orange", // Tambahkan warna oranye
+        //   text: "Konfirmasi dan verifikasi pembayaran",
+        // },
+        // {
+        //   icon: "check-circle",
+        //   color: "green", // Tambahkan warna ungu
+        //   text: "Tunggu konfirmasi pembayaran berhasil",
+        // },
         // {
         //   icon: "check-circle",
         //   text: "Tunggu konfirmasi pembayaran berhasil",
@@ -129,6 +144,27 @@ export default function Pembayaran() {
                 </Text>
               </View>
             </View>
+          </View>
+        </ScrollView>
+
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
+          <View style={styles.guideContainer}>
+            {paymentGuides[0].steps.map((step, index) => (
+              <View key={index} style={styles.guideStep}>
+                <View style={styles.stepNumberContainer}>
+                  <Text style={styles.stepNumber}>{index + 1}</Text>
+                </View>
+                <View style={styles.stepContent}>
+                  <MaterialIcons
+                    name={step.icon}
+                    size={24}
+                    color={step.color || "#666"}
+                  />
+                  <Text style={styles.stepText}>{step.text}</Text>
+                </View>
+              </View>
+            ))}
           </View>
 
           <ScrollView contentContainerStyle={styles.scrollContent}>

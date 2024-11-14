@@ -4,7 +4,7 @@ import { TextInput } from "react-native-paper";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
-import { useQueryClient } from '@tanstack/react-query';
+import { useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
@@ -25,7 +25,7 @@ const Keamanan = () => {
     formState: { errors },
     reset,
     isLoading,
-    getValues
+    getValues,
   } = useForm();
   const navigation = useNavigation();
 
@@ -79,158 +79,162 @@ const Keamanan = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] w-full h-full px-3 py-4 ">
-        <View className="bg-[#f8f8f8] h-full py-4 px-3 rounded-md mb-6">
-          <View className="flex-row justify-between">
-            <Back
-              size={24}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-2 "
-            />
-            <Text className="font-poppins-semibold text-black mb-3 text-lg ">Keamanan</Text>
-          </View>
-          <Controller
-            control={control}
-            name="old_password"
-            rules={{ required: "Password Lama Harus Diisi" }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="text-black font-poppins-semibold mb-2">
-                  Password Lama
-                </Text>
-                <TextField
-                  secureTextEntry={!isPasswordVisible}
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                  onChangeText={onChange}
-                  value={value}
-                  error={!!errors.old_password}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility}
-                  style={{
-                    position: "absolute",
-                    right: 10,
-                    top: "53%",
-                  }}>
-                  <Ionicons
-                    name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
-                    size={20}
-                    color={Colors.brand}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-          {errors.old_password && (
-            <Text style={{ color: "red" }} className="mb-2 ">
-              {errors.old_password.message}
-            </Text>
-          )}
-
-          <Controller
-            control={control}
-            name="password"
-            rules={{
-              required: "Password Baru Harus Diisi",
-              minLength: { value: 12, message: "Password minimal 12 karakter" },
-              pattern: {
-                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-                message: 'Password harus mengandung huruf kecil, huruf kapital, dan angka'
-              }
+      <View className="bg-[#ececec] w-full h-full px-4 py-4 ">
+        <View className="flex-row mb-6">
+          <Back
+            size={30}
+            color={"black"}
+            action={() => navigation.goBack()}
+            className="mr-5 "
+            style={{
+              borderWidth: 0.5,
+              padding: 4,
+              borderColor: "black",
+              borderRadius: 8,
             }}
-            render={({ field: { onChange, value } }) => (
-              <View>
-                <Text className="font-poppins-semibold my-2 text-black">
-                  Password Baru
-                </Text>
-                <TextField
-                  mode="outlined"
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                  secureTextEntry={!isPasswordVisible2}
-                  onChangeText={onChange}
-                  value={value}
-                  error={!!errors.password}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility2}
-                  style={{
-                    position: "absolute",
-                    right: 10,
-                    top: "57%",
-                  }}>
-                  <Ionicons
-                    name={
-                      isPasswordVisible2 ? "eye-outline" : "eye-off-outline"
-                    }
-                    size={20}
-                    color={Colors.brand}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
           />
-          {errors.password && (
-            <Text style={{ color: "red" }} className="mb-2">
-              {errors.password.message}
-            </Text>
-          )}
-
-          <Controller
-            control={control}
-            name="password_confirmation"
-            rules={{ 
-              required: "Konfirmasi Password Baru Harus Diisi", 
-              validate: value => value === getValues("password") || "Password tidak cocok"
-            }}
-            render={({ field: { onChange, value } }) => (
-              <View className="mt-2">
-                <Text className="font-poppins-semibold mb-2 text-black">
-                  Konfirmasi Password Baru
-                </Text>
-                <TextField
-                  mode="outlined"
-                  secureTextEntry={!isPasswordVisible3}
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                  onChangeText={onChange}
-                  value={value}
-                  error={!!errors.password_confirmation}
-                />
-                <TouchableOpacity
-                  onPress={togglePasswordVisibility3}
-                  style={{
-                    position: "absolute",
-                    top: "53%",
-                    right: 10,
-                  }}>
-                  <Ionicons
-                    name={
-                      isPasswordVisible3 ? "eye-outline" : "eye-off-outline"
-                    }
-                    size={20}
-                    color={Colors.brand}
-                  />
-                </TouchableOpacity>
-              </View>
-            )}
-          />
-          {errors.password_confirmation && (
-            <Text style={{ color: "red" }} className="mb-2">
-              {errors.password_confirmation.message}
-            </Text>
-          )}
-
-          <Button
-            className="3 rounded-md mt-2"
-            backgroundColor={Colors.brand}
-            borderRadius={5}
-            onPress={handleSubmit(onSubmit)}
-            disabled={isLoading}>
-            <Text className="text-white text-center text-base  font-poppins-semibold">
-              PERBARUI
-            </Text>
-          </Button>
+          <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            Ganti Password
+          </Text>
         </View>
+        <Controller
+          control={control}
+          name="old_password"
+          rules={{ required: "Password Lama Harus Diisi" }}
+          render={({ field: { onChange, value } }) => (
+            <View>
+              <Text className="text-black font-poppins-semibold mb-2">
+                Password Lama
+              </Text>
+              <TextField
+                secureTextEntry={!isPasswordVisible}
+                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.old_password}
+              />
+              <TouchableOpacity
+                onPress={togglePasswordVisibility}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "53%",
+                }}>
+                <Ionicons
+                  name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
+                  size={20}
+                  color={Colors.brand}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+        {errors.old_password && (
+          <Text style={{ color: "red" }} className="mb-2 ">
+            {errors.old_password.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="password"
+          rules={{
+            required: "Password Baru Harus Diisi",
+            minLength: { value: 12, message: "Password minimal 12 karakter" },
+            pattern: {
+              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+              message:
+                "Password harus mengandung huruf kecil, huruf kapital, dan angka",
+            },
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View>
+              <Text className="font-poppins-semibold my-2 text-black">
+                Password Baru
+              </Text>
+              <TextField
+                mode="outlined"
+                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                secureTextEntry={!isPasswordVisible2}
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.password}
+              />
+              <TouchableOpacity
+                onPress={togglePasswordVisibility2}
+                style={{
+                  position: "absolute",
+                  right: 10,
+                  top: "57%",
+                }}>
+                <Ionicons
+                  name={isPasswordVisible2 ? "eye-outline" : "eye-off-outline"}
+                  size={20}
+                  color={Colors.brand}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+        {errors.password && (
+          <Text style={{ color: "red" }} className="mb-2">
+            {errors.password.message}
+          </Text>
+        )}
+
+        <Controller
+          control={control}
+          name="password_confirmation"
+          rules={{
+            required: "Konfirmasi Password Baru Harus Diisi",
+            validate: value =>
+              value === getValues("password") || "Password tidak cocok",
+          }}
+          render={({ field: { onChange, value } }) => (
+            <View className="mt-2">
+              <Text className="font-poppins-semibold mb-2 text-black">
+                Konfirmasi Password Baru
+              </Text>
+              <TextField
+                mode="outlined"
+                secureTextEntry={!isPasswordVisible3}
+                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                onChangeText={onChange}
+                value={value}
+                error={!!errors.password_confirmation}
+              />
+              <TouchableOpacity
+                onPress={togglePasswordVisibility3}
+                style={{
+                  position: "absolute",
+                  top: "53%",
+                  right: 10,
+                }}>
+                <Ionicons
+                  name={isPasswordVisible3 ? "eye-outline" : "eye-off-outline"}
+                  size={20}
+                  color={Colors.brand}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        />
+        {errors.password_confirmation && (
+          <Text style={{ color: "red" }} className="mb-2">
+            {errors.password_confirmation.message}
+          </Text>
+        )}
+
+        <Button
+          className="p-3 rounded-3xl mt-8"
+          backgroundColor={Colors.brand}
+          borderRadius={5}
+          onPress={handleSubmit(onSubmit)}
+          disabled={isLoading}>
+          <Text className="text-white text-center text-base  font-poppins-semibold">
+            PERBARUI
+          </Text>
+        </Button>
       </View>
     </>
   );
