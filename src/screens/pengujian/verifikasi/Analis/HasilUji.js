@@ -33,7 +33,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
       <View style={styles.parameterHeader}>
         <View style={styles.headerTitleContainer}>
           {parameter.pivot.acc_analis && (
-            <Icon name="check-circle" size={24} color="#0096FF" style={styles.checkIcon} />
+            <Icon name="check-circle" size={24} color="#312e81" style={styles.checkIcon} />
           )}
           <View>
             <Text style={styles.parameterTitle}>

@@ -344,6 +344,7 @@ export default function Pengujian() {
                 </View>
                 )}
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress = {() => navigation.navigate("RekapParameter")}
               />
             )}
           </>
