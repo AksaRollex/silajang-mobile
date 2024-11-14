@@ -34,6 +34,8 @@ import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
 import LaporanHasilPengujian from "./report/LaporanHasilPengujian"
 import RegistrasiSampel from "./report/RegistrasiSampel"
 import RekapData from "./report/RekapData"
+import RekapParameter from "./report/RekapParameter";
+
 import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
@@ -163,6 +165,11 @@ export default function MainScreen() {
       <Stack.Screen
         name="RekapData"
         component={RekapData}
+      />
+
+      <Stack.Screen
+        name="RekapParameter"
+        component={RekapParameter}
       />
    </Stack.Navigator>
   );
