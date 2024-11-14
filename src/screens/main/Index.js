@@ -654,34 +654,29 @@ const DrawerContent = (props) => {
 
 const Admin = () => (
   <NavigationContainer independent={true}>
-     <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={({ navigation }) => ({
+    <Stack.Navigator
+      screenOptions={{
         headerRight: () => <Header />,
         headerTitle: () => <Text></Text>,
+        headerBackVisible: false,
         headerStyle: {
           backgroundColor: "#312e81",
-          elevation: 0, 
-          shadowColor: 'transparent', 
-          borderBottomWidth: 0, 
+          borderBottomWidth: 0,        
         },
         headerTintColor: "white",
-        drawerActiveBackgroundColor: "#312e81",
-        drawerActiveTintColor: "#fff",
-        headerLeft: () => null  ,
-        gestureEnabled: false
-      })}
+        headerLeft: () => null,
+        gestureEnabled: false,
+      }}
     >
-      <Drawer.Screen name="Home" component={TabNavigator} />
-      <Drawer.Screen name="Profile" component={Profile} />
-      <Drawer.Screen name="Master" component={MasterNavigator} />
-      <Drawer.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
-      <Drawer.Screen name="User" component={IndexUser} />
-      <Drawer.Screen name="Wilayah" component={IndexWilayah} />
-      <Drawer.Screen name="IndexMaster" component={IndexMaster} />
-      <Drawer.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
-    </Drawer.Navigator>
-
+      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Master" component={MasterNavigator} />
+      <Stack.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
+      <Stack.Screen name="User" component={IndexUser} />
+      <Stack.Screen name="Wilayah" component={IndexWilayah} />
+      <Stack.Screen name="IndexMaster" component={IndexMaster} />
+      <Stack.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
+    </Stack.Navigator>
   </NavigationContainer>
 );
 
