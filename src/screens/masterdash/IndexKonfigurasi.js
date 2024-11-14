@@ -22,12 +22,15 @@ export default function IndexKonfigurasi() {
       items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian']
     },
     'kepala-upt': {
+      sections: ['konfigurasi'],
       items: ['tracking-pengujian']
     },
     'koordinator-administrasi': {
+      sections: ['konfigurasi'],
       items: ['tracking-pengujian']
     },
     'koordinator-teknis': {
+      sections: ['konfigurasi'],
       items: ['tracking-pengujian']
     },
   };

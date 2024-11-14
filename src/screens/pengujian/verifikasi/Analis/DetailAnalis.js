@@ -35,7 +35,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
             <Icon
               name="check-circle"
               size={24}
-              color="#0096FF"
+              color="#312e81"
               style={styles.checkIcon}
             />
           ) : null}

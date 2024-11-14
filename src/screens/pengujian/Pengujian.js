@@ -25,7 +25,7 @@ export default function Pengujian() {
     },
     'kepala-upt': {
       sections: ['verifikasi', 'report'],
-      items: ['analis', 'koordinator-teknis',
+      items: ['analis', 'koordinator-teknis', 'cetak-lhu',
         'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
     },
     'pengambil-sample': {
@@ -344,6 +344,7 @@ export default function Pengujian() {
                 </View>
                 )}
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress = {() => navigation.navigate("RekapParameter")}
               />
             )}
           </>

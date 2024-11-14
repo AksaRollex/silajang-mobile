@@ -23,7 +23,7 @@ import IndexWilayah from "../master/wilayah/Index";
 import IndexPembayaran from "../pembayaran/Index";
 import IndexPengujian from "../pengujian/Index";
 import Dashboard from "./Dashboard";
-import Profile from "./Profile";
+import Profile from "../profile/Index";
 import IndexMaster from "../masterdash/index/index";
 import IndexKonfigurasi from "../masterdash/index/IndexKonfig";
 import LinearGradient from "react-native-linear-gradient";
@@ -43,7 +43,7 @@ const screenOptions = {
     right: 0,
     left: 0,
     elevation: 0,
-    height: 60,
+    height: 70,
     backgroundColor: "#ffffff",
     borderTopWidth: 0,
   },
@@ -90,6 +90,13 @@ const TabNavigator = () => {
       'koordinator-teknis',
       'kepala-upt',
     ],
+    Profile: [
+      'pengambil-sample',
+      'analis',
+      'koordinator-administrasi',
+      'koordinator-teknis',
+      'kepala-upt',
+    ],
   };
 
   const hasPermission = (tabName) => {
@@ -123,7 +130,7 @@ const TabNavigator = () => {
                     borderBottomLeftRadius: 999,
                     borderBottomRightRadius: 999,
                     position: "absolute",
-                    top: -9, // Posisikan border sedikit di atas ikon
+                    top: -14, // Posisikan border sedikit di atas ikon
                   }}
                 />
               )}
@@ -164,7 +171,7 @@ const TabNavigator = () => {
                       borderBottomLeftRadius: 999,
                       borderBottomRightRadius: 999,
                       position: "absolute",
-                      top: -9,
+                      top: -14,
                     }}
                   />
                 )}
@@ -221,7 +228,7 @@ const TabNavigator = () => {
                       borderBottomLeftRadius: 999,
                       borderBottomRightRadius: 999,
                       position: "absolute",
-                      top: -9,
+                      top: -14,
                     }}
                   />
                 )}
@@ -231,6 +238,47 @@ const TabNavigator = () => {
                     }`}
                 >
                   Pembayaran
+                </Text>
+              </View>
+            ),
+          }}
+        />
+      )}
+      {hasPermission('Profile') && (
+        <Tab.Screen
+          name="Profile"
+          component={Profile}
+          options={{
+            tabBarIcon: ({ focused }) => (
+              <View
+                className="items-center"
+                style={{
+                  shadowColor: focused ? "#4338ca" : "transparent",
+                  shadowOffset: { width: 0, height: 4 },
+                  shadowOpacity: focused ? 0.5 : 0,
+                  shadowRadius: 6,
+                  elevation: focused ? 10 : 0,
+                }}
+              >
+                {focused && (
+                  <View
+                    style={{
+                      width: 96,
+                      height: 4,
+                      backgroundColor: "#312e81",
+                      borderBottomLeftRadius: 999,
+                      borderBottomRightRadius: 999,
+                      position: "absolute",
+                      top: -14,
+                    }}
+                  />
+                )}
+                <IonIcons name="person" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
+                <Text
+                  className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
+                    }`}
+                >
+                  Profile
                 </Text>
               </View>
             ),
@@ -606,34 +654,29 @@ const DrawerContent = (props) => {
 
 const Admin = () => (
   <NavigationContainer independent={true}>
-     <Drawer.Navigator
-      drawerContent={(props) => <DrawerContent {...props} />}
-      screenOptions={({ navigation }) => ({
+    <Stack.Navigator
+      screenOptions={{
         headerRight: () => <Header />,
         headerTitle: () => <Text></Text>,
+        headerBackVisible: false,
         headerStyle: {
           backgroundColor: "#312e81",
-          elevation: 0, 
-          shadowColor: 'transparent', 
-          borderBottomWidth: 0, 
+          borderBottomWidth: 0,        
         },
         headerTintColor: "white",
-        drawerActiveBackgroundColor: "#312e81",
-        drawerActiveTintColor: "#fff",
-        headerLeft: () => null  ,
-        gestureEnabled: false
-      })}
+        headerLeft: () => null,
+        gestureEnabled: false,
+      }}
     >
-      <Drawer.Screen name="Home" component={TabNavigator} />
-      <Drawer.Screen name="Profile" component={Profile} />
-      <Drawer.Screen name="Master" component={MasterNavigator} />
-      <Drawer.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
-      <Drawer.Screen name="User" component={IndexUser} />
-      <Drawer.Screen name="Wilayah" component={IndexWilayah} />
-      <Drawer.Screen name="IndexMaster" component={IndexMaster} />
-      <Drawer.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
-    </Drawer.Navigator>
-
+      <Stack.Screen name="Home" component={TabNavigator} />
+      <Stack.Screen name="Profile" component={Profile} />
+      <Stack.Screen name="Master" component={MasterNavigator} />
+      <Stack.Screen name="PengujianKonfig" component={KonfigurasiNavigator} />
+      <Stack.Screen name="User" component={IndexUser} />
+      <Stack.Screen name="Wilayah" component={IndexWilayah} />
+      <Stack.Screen name="IndexMaster" component={IndexMaster} />
+      <Stack.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
+    </Stack.Navigator>
   </NavigationContainer>
 );
 

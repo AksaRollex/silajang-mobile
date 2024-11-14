@@ -148,7 +148,7 @@ const Users = ({ navigation, route }) => {
                 size={28}
                 color="#fff"
                 style={{ position: "absolute", bottom: 20, padding: 10, right: 20, backgroundColor: "#312e81", borderRadius: 50 }}
-                onPress={() => navigation.navigate("FormJenisSampel")}
+                onPress={() => navigation.navigate("FormUsers")}
             />
             <DeleteConfirmationModal />
         </SafeAreaView>
