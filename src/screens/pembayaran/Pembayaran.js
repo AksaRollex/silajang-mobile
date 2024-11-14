@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from 'react';
 import {
   View,
   Text,
@@ -6,33 +6,37 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
-  useWindowDimensions,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
+import { Colors } from 'react-native-ui-lib';
 
 const { width } = Dimensions.get("window");
 
 export default function Pembayaran() {
   const navigation = useNavigation();
 
-  // Data dummy untuk statistik pembayaran
-  const stats = [
-    {
-      label: "Total Tagihan",
-      value: "Rp 2.4M",
-      icon: "account-balance-wallet",
-      color: "#FF9800",
-    },
-    {
-      label: "Belum Bayar",
-      value: "Rp 800K",
-      icon: "warning",
-      color: "#f44336",
-    },
-    { label: "Sudah Bayar", value: "Rp 1.6M", icon: "paid", color: "#4CAF50" },
-  ];
+  const paymentInfo = {
+    title: "Informasi Pembayaran",
+    features: [
+      {
+        icon: "verified",
+        color: "#4CAF50",
+        text: "Pembayaran Aman dan Terverifikasi",
+      },
+      {
+        icon: "speed",
+        color: "#2196F3",
+        text: "Proses Pembayaran Cepat & Mudah",
+      },
+      {
+        icon: "support-agent",
+        color: "#FF9800",
+        text: "Dukungan Teknis 24/7",
+      },
+    ],
+  };
 
   const paymentMenus = [
     {
@@ -40,53 +44,62 @@ export default function Pembayaran() {
       icon: "science",
       screen: "PengujianPembayaran",
       color: "#2196F3",
-      description: "Pembayaran untuk layanan pengujian",
+      description: "Klik untuk membayar pengujian",
     },
     {
       title: "Multi Payment",
       icon: "payments",
       screen: "Multipayment",
       color: "#4CAF50",
-      description: "Pembayaran multiple tagihan sekaligus",
+      description: "Klik untuk membayar multipayment",
     },
   ];
 
-  const paymentInfo = {
-    title: "Informasi Pembayaran",
-    // description: "Silakan pilih metode pembayaran yang tersedia:",
-    features: [
-      {
-        icon: "verified",
-        color: "#4CAF50",
-        text: "Pembayaran Aman dan Terpercaya",
-      },
-      {
-        icon: "speed",
-        color: "#2196F3",
-        text: "Proses Cepat & Real-time",
-      },
-      {
-        icon: "support-agent",
-        color: "#FF9800",
-        text: "Dukungan 24/7",
-      },
-    ],
-  };
-
-  const recentPayments = [
+  // Konten baru: Panduan pembayaran
+  const paymentGuides = [
     {
-      title: "Pengujian #123",
-      amount: "Rp 450.000",
-      status: "Berhasil",
-      date: "22 Oct 2024",
-      method: "QRIS",
+      title: "Cara Melakukan Pembayaran",
+      steps: [
+        {
+          icon: "assignment",
+          color: "blue", // Tambahkan warna biru
+          text: "Pilih metode pembayaran yang tersedia",
+        },
+        {
+          icon: "receipt-long",
+          color: "purple", // Tambahkan warna hijau
+          text: "Isi detail pembayaran dengan teliti",
+        },
+        {
+          icon: "verified-user",
+          color: "orange", // Tambahkan warna oranye
+          text: "Konfirmasi dan verifikasi pembayaran",
+        },
+        {
+          icon: "check-circle",
+          color: "green", // Tambahkan warna ungu
+          text: "Tunggu konfirmasi pembayaran berhasil",
+        },
+      ],
+    },
+  ];
+  
+
+  // Konten baru: Promo dan penawaran khusus
+  const specialOffers = [
+    {
+      title: "Promo Pembayaran",
+      icon: "local-offer",
+      color: "#9C27B0",
+      description: "Dapatkan cashback 5% untuk pembayaran QRIS",
+      validUntil: "31 Des 2024",
     },
     {
-      title: "Pengujian #122",
-      amount: "Rp 350.000",
-      status: "Pending",
-      date: "20 Oct 2024",
-      method: "Bank Transfer",
+      title: "Diskon Khusus",
+      icon: "card-giftcard",
+      color: "#E91E63",
+      description: "Potongan 10% untuk pembayaran pertama",
+      validUntil: "31 Des 2024",
     },
   ];
 
@@ -98,11 +111,18 @@ export default function Pembayaran() {
         }}
       />
       <View style={styles.container}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          {/* Welcome Section */}
-          <View style={styles.welcomeSection}>
-            <Text style={styles.welcomeText}>Pembayaran</Text>
-            <Text style={styles.dateText}>
+        <ScrollView 
+          className="flex-col"
+          showsVerticalScrollIndicator={false}
+          stickyHeaderIndices={[]}>
+
+          {/* Header Section with Gradient */}
+        <View className="min-h-[100px] relative shadow-lg z-10 mb-16"
+        style={{ backgroundColor: Colors.brand }}>
+          <View style={styles.welcomeCard}>
+          <View style={styles.headerSection}>
+            <Text className="text-center" style={styles.headerTitle}>Pembayaran</Text>
+            <Text className="text-center" style={styles.headerSubtitle}>
               {new Date().toLocaleDateString("id-ID", {
                 weekday: "long",
                 year: "numeric",
@@ -111,46 +131,34 @@ export default function Pembayaran() {
               })}
             </Text>
           </View>
-
-          {/* Statistics Section */}
-          <View style={styles.infoSection}>
-            <View style={styles.infoHeader}>
-              <Text style={styles.infoTitle}>{paymentInfo.title}</Text>
-            </View>
-
-            <View style={styles.featuresContainer}>
-              {paymentInfo.features.map((feature, index) => (
-                <View key={index} style={styles.featureCard}>
-                  <View
-                    style={[
-                      styles.featureIconContainer,
-                      { backgroundColor: feature.color },
-                    ]}>
-                    <MaterialIcons
-                      name={feature.icon}
-                      size={24}
-                      color="white"
-                    />
-                  </View>
-                  <Text style={styles.featureText}>{feature.text}</Text>
-                </View>
-              ))}
-            </View>
           </View>
+        </View>
 
-          {/* Payment Methods Grid */}
+        <ScrollView contentContainerStyle={styles.scrollContent}>
+          <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
+          <View style={styles.guideContainer}>
+  {paymentGuides[0].steps.map((step, index) => (
+    <View key={index} style={styles.guideStep}>
+      <View style={styles.stepNumberContainer}>
+        <Text style={styles.stepNumber}>{index + 1}</Text>
+      </View>
+      <View style={styles.stepContent}>
+        <MaterialIcons name={step.icon} size={24} color={step.color || "#666"} />
+        <Text style={styles.stepText}>{step.text}</Text>
+      </View>
+    </View>
+  ))}
+</View>
+
+
           <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
           <View style={styles.menuGrid}>
             {paymentMenus.map((menu, index) => (
               <TouchableOpacity
-                key={index}
-                style={styles.menuCard}
-                onPress={() => navigation.navigate(menu.screen)}>
-                <View
-                  style={[
-                    styles.menuIconContainer,
-                    { backgroundColor: menu.color },
-                  ]}>
+              key={index}
+              style={styles.menuCard}
+              onPress={() => navigation.navigate(menu.screen)}>
+                <View style={[styles.menuIconContainer, { backgroundColor: menu.color }]}>
                   <MaterialIcons name={menu.icon} size={32} color="white" />
                 </View>
                 <Text style={styles.menuTitle}>{menu.title}</Text>
@@ -159,43 +167,41 @@ export default function Pembayaran() {
             ))}
           </View>
 
-          {/* Recent Payments Section */}
-          <Text style={styles.sectionTitle}>Riwayat Pembayaran</Text>
-          <View style={styles.activityContainer}>
-            {recentPayments.map((payment, index) => (
-              <TouchableOpacity key={index} style={styles.activityCard}>
-                <View style={styles.activityHeader}>
-                  <Text style={styles.activityTitle}>{payment.title}</Text>
-                  <View
-                    style={[
-                      styles.statusBadge,
-                      {
-                        backgroundColor:
-                          payment.status === "Berhasil" ? "#E8F5E9" : "#FFF3E0",
-                      },
-                    ]}>
-                    <Text
-                      style={[
-                        styles.statusText,
-                        {
-                          color:
-                            payment.status === "Berhasil"
-                              ? "#2E7D32"
-                              : "#E65100",
-                        },
-                      ]}>
-                      {payment.status}
-                    </Text>
-                  </View>
+          {/* Payment Information Cards */}
+
+          <View style={styles.infoSection}>
+            {paymentInfo.features.map((feature, index) => (
+              <View key={index} style={styles.featureCard}>
+                <View style={[styles.featureIconContainer, { backgroundColor: feature.color }]}>
+                  <MaterialIcons name={feature.icon} size={24} color="white" />
                 </View>
-                <View style={styles.paymentDetails}>
-                  <Text style={styles.amountText}>{payment.amount}</Text>
-                  <Text style={styles.methodText}>{payment.method}</Text>
-                </View>
-                <Text style={styles.activityDate}>{payment.date}</Text>
-              </TouchableOpacity>
+                <Text style={styles.featureText}>{feature.text}</Text>
+              </View>
             ))}
           </View>
+
+          {/* Payment Methods */}
+
+          {/* Payment Guide Section */}
+
+          {/* Special Offers Section */}
+          {/* <Text style={styles.sectionTitle}>Promo Spesial</Text>
+          <ScrollView 
+          horizontal 
+          showsHorizontalScrollIndicator={false}
+          contentContainerStyle={styles.offersContainer}>
+          {specialOffers.map((offer, index) => (
+            <View key={index} style={styles.offerCard}>
+            <View style={[styles.offerIconContainer, { backgroundColor: offer.color }]}>
+            <MaterialIcons name={offer.icon} size={32} color="white" />
+            </View>
+            <Text style={styles.offerTitle}>{offer.title}</Text>
+            <Text style={styles.offerDescription}>{offer.description}</Text>
+                <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
+              </View>
+              ))}
+              </ScrollView> */}
+        </ScrollView>
         </ScrollView>
       </View>
     </>
@@ -203,61 +209,6 @@ export default function Pembayaran() {
 }
 
 const styles = StyleSheet.create({
-  // Tambahkan styles baru
-  infoSection: {
-    backgroundColor: "white",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 24,
-    elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
-  },
-  infoHeader: {
-    // marginBottom: 8,
-  },
-  infoTitle: {
-    fontSize: 20,
-    color: "#333",
-    fontFamily: "Poppins-SemiBold",
-    marginBottom: 8,
-  },
-  infoDescription: {
-    fontSize: 14,
-    color: "#666",
-    fontFamily: "Poppins-Regular",
-    lineHeight: 20,
-  },
-  featuresContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    flexWrap: "wrap",
-  },
-  featureCard: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: "100%",
-    marginBottom: 16,
-    backgroundColor: "#f8f9fa",
-    padding: 12,
-    borderRadius: 12,
-  },
-  featureIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginRight: 12,
-  },
-  featureText: {
-    flex: 1,
-    fontSize: 14,
-    color: "#333",
-    fontFamily: "Poppins-Medium",
-  },
   container: {
     flex: 1,
     backgroundColor: "#f5f5f5",
@@ -265,151 +216,180 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
   },
-  welcomeSection: {
-    marginBottom: 20,
+  headerSection: {
+    marginBottom: 14,
   },
-  welcomeText: {
-    fontSize: 24,
-    color: "#333",
-    fontFamily: "Poppins-SemiBold",
-  },
-  dateText: {
-    fontSize: 14,
-    color: "#666",
-    marginTop: 4,
-    fontFamily: "Poppins-Regular",
-  },
-  statsContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    marginBottom: 24,
-  },
-  statCard: {
-    backgroundColor: "white",
+  welcomeCard: {
+    backgroundColor: "#FFFFFF",
+    zIndex: 10,
     borderRadius: 12,
-    padding: 12,
-    width: width / 3.5,
+    width: "85%",
+    top: 55,
     alignItems: "center",
+    marginHorizontal: 31,
+    position: "absolute",
+    padding: 12,
+    marginBottom: 16,
     elevation: 2,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
+    elevation: 10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
     shadowOpacity: 0.22,
     shadowRadius: 2.22,
   },
-  statIconContainer: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    justifyContent: "center",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  statValue: {
-    fontSize: 16,
-    fontWeight: "bold",
+  headerTitle: {
+    fontSize: 21,
     color: "#333",
-    marginBottom: 4,
+    fontFamily: "Poppins-Bold",
   },
-  statLabel: {
-    fontSize: 12,
+  headerSubtitle: {
+    fontSize: 14,
     color: "#666",
-    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+  },
+  infoSection: {
+    marginBottom: 24,
+    
+  },
+  featureCard: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: 'white',
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    elevation: 2,
+  },
+  featureIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  featureText: {
+    flex: 1,
+    fontSize: 16,
+    color: '#333',
+    fontFamily: 'Poppins-Medium',
   },
   sectionTitle: {
-    fontSize: 18,
-    fontWeight: "bold",
-    color: "#333",
+    fontSize: 20,
+    color: '#333',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 16,
   },
   menuGrid: {
-    flexDirection: "row",
-    flexWrap: "wrap",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
     marginBottom: 24,
   },
   menuCard: {
-    backgroundColor: "white",
+    backgroundColor: 'white',
     borderRadius: 16,
     padding: 16,
-    width: "48%",
+    width: '48%',
     marginBottom: 16,
     elevation: 3,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   menuIconContainer: {
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: "center",
-    alignItems: "center",
+    justifyContent: 'center',
+    alignItems: 'center',
     marginBottom: 12,
   },
   menuTitle: {
     fontSize: 17,
-    color: "#333",
-    fontFamily: "Poppins-SemiBold",
+    color: '#333',
+    fontFamily: 'Poppins-SemiBold',
     marginBottom: 8,
   },
   menuDescription: {
     fontSize: 13,
-    color: "#666",
-    lineHeight: 16,
-    fontFamily: "Poppins-Regular",
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+    lineHeight: 18,
   },
-  activityContainer: {
-    marginBottom: 24,
-  },
-  activityCard: {
-    backgroundColor: "white",
-    borderRadius: 12,
+  guideContainer: {
+    backgroundColor: 'white',
+    borderRadius: 16,
     padding: 16,
-    marginBottom: 12,
+    marginBottom: 24,
     elevation: 2,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.22,
-    shadowRadius: 2.22,
   },
-  activityHeader: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
+  guideStep: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 16,
   },
-  activityTitle: {
+  stepNumberContainer: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: Colors.brand,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 16,
+  },
+  stepNumber: {
+    color: 'white',
     fontSize: 16,
-    fontWeight: "600",
-    color: "#333",
+    fontFamily: 'Poppins-SemiBold',
   },
-  statusBadge: {
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 12,
+  stepContent: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
   },
-  statusText: {
-    fontSize: 12,
-    fontWeight: "500",
-  },
-  paymentDetails: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    marginBottom: 8,
-  },
-  amountText: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#2196F3",
-  },
-  methodText: {
+  stepText: {
+    marginLeft: 12,
     fontSize: 14,
-    color: "#666",
+    color: '#333',
+    fontFamily: 'Poppins-Regular',
+    flex: 1,
   },
-  activityDate: {
+  offersContainer: {
+    paddingBottom: 16,
+  },
+  offerCard: {
+    backgroundColor: 'white',
+    borderRadius: 16,
+    padding: 16,
+    marginRight: 16,
+    width: width * 0.75,
+    elevation: 2,
+  },
+  offerIconContainer: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 12,
+  },
+  offerTitle: {
+    fontSize: 18,
+    color: '#333',
+    fontFamily: 'Poppins-SemiBold',
+    marginBottom: 8,
+  },
+  offerDescription: {
+    fontSize: 14,
+    color: '#666',
+    fontFamily: 'Poppins-Regular',
+    marginBottom: 8,
+    lineHeight: 20,
+  },
+  offerValidity: {
     fontSize: 12,
-    color: "#666",
+    color: '#999',
+    fontFamily: 'Poppins-Regular',
   },
 });

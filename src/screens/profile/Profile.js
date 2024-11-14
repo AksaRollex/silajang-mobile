@@ -19,6 +19,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
+import LottieView from "lottie-react-native";
+
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -71,12 +73,12 @@ export default function Profile({ navigation }) {
   return (
     <View style={{ backgroundColor: Colors.brand }}>
       <>
-        {userData ? (
+      {userData ? (
           <View className="z-10 bottom-20">
             <View
               className="w-full py-5 rounded-b-2xl"
               style={{ backgroundColor: Colors.brand, height: "32%" }}>
-              <Text className="text-white text-xl font-poppins-semibold mx-6 top-20">
+              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
                 Profil Saya
               </Text>
               <View className="w-full items-center mt-28 justify-center">
@@ -109,7 +111,6 @@ export default function Profile({ navigation }) {
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
         )}
-
         <View className="h-full bottom-52">
           <View className="rounded-3xl h-full bg-slate-200 ">
             {userData ? (
@@ -130,8 +131,7 @@ export default function Profile({ navigation }) {
             <TouchableOpacity
               onPress={() => navigation.navigate("Akun")}
               className=" w-full py-6 px-6  flex-row justify-between items-center"
-              style={{ zIndex: 5,  }}
-              >
+              style={{ zIndex: 5 }}>
               <View className="flex-row items-center">
                 <IonIcons name="person-sharp" size={29} color="#2196F3" />
                 <Text className="text-black font-poppins-regular ml-3 mt-1">
@@ -146,7 +146,7 @@ export default function Profile({ navigation }) {
               className=" w-full py-6 px-6 flex-row justify-between items-center">
               <View className="flex-row items-center">
                 <IonIcons name="business" size={29} color="#4CAF50" />
-                <Text className="text-black font-poppins-regular ml-3 mt-1" >
+                <Text className="text-black font-poppins-regular ml-3 mt-1">
                   Informasi Perusahaan
                 </Text>
               </View>
@@ -157,7 +157,11 @@ export default function Profile({ navigation }) {
               onPress={() => navigation.navigate("Keamanan")}
               className=" w-full py-6 px-6 flex-row justify-between items-center">
               <View className="flex-row items-center">
-                <IonIcons name="shield-checkmark-sharp" size={29} color="#FF9800" />
+                <IonIcons
+                  name="shield-checkmark-sharp"
+                  size={29}
+                  color="#FF9800"
+                />
                 <Text className="text-black font-poppins-regular ml-3 mt-1">
                   Ganti Password
                 </Text>
@@ -175,113 +179,134 @@ export default function Profile({ navigation }) {
               //   shadowOpacity: 0.2,
               //   shadowRadius: 2,
               // }}
-              >
+            >
               <View className="flex-row items-center">
                 <Icon name="log-out" size={29} color="red" />
-                <Text className="text-red-500 font-poppins-regular ml-3">Logout</Text>
+                <Text className="text-red-500 font-poppins-regular ml-3">
+                  Logout
+                </Text>
               </View>
               <Icon name="chevron-right" size={24} color="red" />
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-40 items-center justify-center flex-end">
-              <Text className="flex-end"> 
-                <FooterText />
-              </Text>
+              <View className="top-36 items-center justify-center flex-end">
+                <Text className="flex-end">
+                  <FooterText />
+                </Text>
               </View>
             </View>
-          </View>
-        </View>
-        <Modal
-          transparent={true}
-          visible={modalVisible}
-          animationType="fade"
-          onRequestClose={() => setModalVisible(false)}>
-          <View
-            style={{
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center",
-              backgroundColor: "rgba(0, 0, 0, 0.5)",
-            }}>
+            {/* Modal Logout */}
+          <Modal
+            transparent={true}
+            visible={modalVisible}
+            animationType="fade"
+            onRequestClose={() => setModalVisible(false)}>
             <View
               style={{
-                width: 300,
-                padding: 20,
-                backgroundColor: "white",
-                borderRadius: 10,
+                flex: 1,
+                justifyContent: "center",
                 alignItems: "center",
+                backgroundColor: "rgba(0, 0, 0, 0.5)",
               }}>
-              <Text
-                style={{
-                  fontSize: 18,
-                  marginBottom: 15,
-                  color: "black",
-                }}
-                className="font-poppins-bold">
-                Konfirmasi Logout
-              </Text>
-
               <View
                 style={{
-                  width: "100%",
-                  borderBottomWidth: 1,
-                  borderBottomColor: "#dedede",
-                  marginBottom: 15,
+                  padding: 20,
+                  backgroundColor: "white",
+                  borderRadius: 10,
+                  alignItems: "center",
                 }}
-              />
+                className="w-10/12">
+                <LottieView
+                  source={require("../../../assets/lottiefiles/logout-animation.json")}
+                  autoPlay
+                  loop={false}
+                  style={{ width: 170, height: 170 }}
+                />
+                <Text
+                  style={{
+                    fontSize: 16,
+                    marginBottom: 15,
+                    fontFamily: "Poppins-SemiBold",
+                    color: "black",
+                  }}>
+                  Apakah anda yakin ingin keluar?
+                </Text>
 
-              <Text style={{ fontSize: 15, marginBottom: 25, color: "black" }} className="font-poppins-regular">
-                Apakah Anda yakin ingin keluar?
-              </Text>
-              <View style={{ flexDirection: "row" }}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
+                <View
                   style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    backgroundColor: "#dedede",
-                    borderRadius: 5,
-                    marginRight: 10,
-                  }}>
-                  <Text style={{ color: "black" }} className="font-poppins-semibold">Batal</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={confirmLogout}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    backgroundColor: "#f2416e",
-                    borderRadius: 5,
-                  }}>
-                  <Text style={{ color: "white" }} className="font-poppins-semibold">Ya, Logout</Text>
-                </TouchableOpacity>
+                    width: "100%",
+                    // borderBottomWidth: 1,
+                    // borderBottomColor: "#dedede",
+                    marginBottom: 15,
+                  }}
+                />
+
+                {/* <Text style={{ fontSize: 16, marginBottom: 25, color: "black", fontFamily : "Poppins-Regular" }}>
+              Apakah Anda yakin ingin keluar?
+            </Text> */}
+                <View style={{ flexDirection: "row" }}>
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 20,
+                      backgroundColor: "#ececec",
+                      borderRadius: 5,
+                      marginRight: 10,
+                    }}>
+                    <Text
+                      style={{
+                        color: "#4f4f4f",
+                        fontFamily: "Poppins-SemiBold",
+                      }}>
+                      Batal
+                    </Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    onPress={confirmLogout}
+                    style={{
+                      paddingVertical: 10,
+                      paddingHorizontal: 20,
+                      backgroundColor: "#ffcbd1",
+                      borderRadius: 5,
+                    }}>
+                    <Text
+                      style={{
+                        color: "#de0a26",
+                        fontFamily: "Poppins-SemiBold",
+                      }}>
+                      Ya, Keluar
+                    </Text>
+                  </TouchableOpacity>
+                </View>
               </View>
             </View>
+          </Modal>
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={imageViewerVisible}
+            onRequestClose={() => setImageViewerVisible(false)}>
+            <View style={styles.imageViewerContainer}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setImageViewerVisible(false)}>
+                <IonIcons name="close" size={40} color="white" />
+              </TouchableOpacity>
+              <FastImage
+                style={styles.fullScreenImage}
+                source={{
+                  uri: selectedImage,
+                  priority: FastImage.priority.high,
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            </View>
+          </Modal>
           </View>
-        </Modal>
+        </View>
 
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={imageViewerVisible}
-          onRequestClose={() => setImageViewerVisible(false)}>
-          <View style={styles.imageViewerContainer}>
-            <TouchableOpacity
-              style={styles.closeButton}
-              onPress={() => setImageViewerVisible(false)}>
-              <IonIcons name="close" size={40} color="white" />
-            </TouchableOpacity>
-            <FastImage
-              style={styles.fullScreenImage}
-              source={{
-                uri: selectedImage,
-                priority: FastImage.priority.high,
-              }}
-              resizeMode={FastImage.resizeMode.contain}
-            />
-          </View>
-        </Modal>
       </>
     </View>
   );

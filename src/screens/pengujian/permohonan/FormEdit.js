@@ -1,15 +1,16 @@
 import * as React from "react";
-import { View, StyleSheet, TouchableOpacity, Text } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
 import axios from "@/src/libs/axios";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Colors, TextField } from "react-native-ui-lib";
 import Back from "../../components/Back";
-import Header from "../../components/Header";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import { memo, useEffect } from "react";
+import LottieView from "lottie-react-native";
+import { memo, useEffect, useState } from "react";
 
 const EditPermohonan = ({ route, navigation }) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const { uuid } = route.params || {};
   const {
     control,
@@ -53,13 +54,14 @@ const EditPermohonan = ({ route, navigation }) => {
     data => axios.post(`/permohonan/${uuid}/update`, data),
     {
       onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: "Data updated successfully",
-        });
+        setModalVisible(true); // Tampilkan modal dulu
         queryClient.invalidateQueries(["/permohonan"]);
-        navigation.navigate("Permohonan");
+
+        // Tunggu sebentar sebelum navigasi
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.navigate("Permohonan");
+        }, 2000);
       },
       onError: error => {
         Toast.show({
@@ -79,106 +81,112 @@ const EditPermohonan = ({ route, navigation }) => {
 
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row mb-4 p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
-          <Back
-            size={24}
-            color={"white"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-bold text-white text-lg ">Edit Permohonan</Text>
-        </View>
-      </View>
-      <View className="bg-[#ececec] w-full h-full px-3 py-1">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md">
-          <Controller
-            name="industri"
-            control={control}
-            rules={{ required: "Industri is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                <Text className="font-sans font-bold mb-2 text-black ">Nama industri</Text>
-                <TextField
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  placeholder="Masukkan Nama Industri"
-                  onChangeText={onChange}
-                  value={value}
-                  error={errors.industri?.message}
-                />
-              </View>
-            )}
-          />
-
-          <Controller
-            name="alamat"
-            control={control}
-            rules={{ required: "Alamat is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                <Text className="font-sans font-bold my-2 text-black">
-                  Alamat industri
-                </Text>
-
-                <TextField
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  placeholder="Alamat"
-                  onChangeText={onChange}
-                  value={value}
-                  error={errors.alamat?.message}
-                />
-              </View>
-            )}
-          />
-
-          <Controller
-            name="kegiatan"
-            control={control}
-            rules={{ required: "Kegiatan is required" }}
-            render={({ field: { onChange, onBlur, value } }) => (
-              <View>
-                <Text className="font-sans font-bold my-2 text-black">
-                  Kegiatan Industri
-                </Text>
-                <TextField
-                  className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                  placeholder="Kegiatan"
-                  onChangeText={onChange}
-                  value={value}
-                  error={errors.kegiatan?.message}
-                />
-              </View>
-            )}
-          />
-
-          <Button
-            onPress={handleSubmit(onSubmit)}
-            isLoading={isUpdating}
-            className="p-2 rounded-sm mt-4"
-            style={{ backgroundColor: Colors.brand }}>
-            <TouchableOpacity>
-              <Text className="text-white text-center text-base font-bold font-sans">
-                SIMPAN
+      <View className="bg-[#ececec] w-full h-full p-3">
+        <View className="h-full w-full bg-[#f8f8f8]">
+          <View className="w-full">
+            <View className="flex-row mb-4 p-3 justify-between">
+              <Back
+                size={24}
+                color={"black"}
+                action={() => navigation.goBack()}
+                className="mr-2 "
+              />
+              <Text className="font-bold text-black text-lg ">
+                Edit Permohonan
               </Text>
-            </TouchableOpacity>
-          </Button>
-        </View>
-
-        {/* <Controller
-          name="keterangan"
-          control={control}
-          render={({ field: { onChange, onBlur, value } }) => (
-            <TextField
-              className="p-3 bg-[#fff] rounded-md"
-              placeholder="Keterangan"
-              onChangeText={onChange}
-              value={value}
+            </View>
+          </View>
+          <View className="py-4 px-3 ">
+            <Controller
+              name="industri"
+              control={control}
+              rules={{ required: "Industri is required" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold mb-2 text-black ">
+                    Nama industri
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                    placeholder="Masukkan Nama Industri"
+                    onChangeText={onChange}
+                    value={value}
+                    error={errors.industri?.message}
+                  />
+                </View>
+              )}
             />
-          )}
-        /> */}
+
+            <Controller
+              name="alamat"
+              control={control}
+              rules={{ required: "Alamat is required" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold my-2 text-black">
+                    Alamat industri
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
+                    placeholder="Alamat"
+                    onChangeText={onChange}
+                    value={value}
+                    error={errors.alamat?.message}
+                  />
+                </View>
+              )}
+            />
+
+            <Controller
+              name="kegiatan"
+              control={control}
+              rules={{ required: "Kegiatan is required" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <View>
+                  <Text className="font-poppins-semibold my-2 text-black">
+                    Kegiatan Industri
+                  </Text>
+                  <TextField
+                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
+                    placeholder="Kegiatan"
+                    onChangeText={onChange}
+                    value={value}
+                    error={errors.kegiatan?.message}
+                  />
+                </View>
+              )}
+            />
+
+            <Button
+              onPress={handleSubmit(onSubmit)}
+              isLoading={isUpdating}
+              className="p-3 rounded-md mt-4"
+              style={{ backgroundColor: Colors.brand }}>
+              <TouchableOpacity>
+                <Text className="text-white text-center text-base font-poppins-semibold">
+                  SIMPAN
+                </Text>
+              </TouchableOpacity>
+            </Button>
+          </View>
+        </View>
       </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            />
+            <Text style={styles.successTextTitle}>Data berhasil di perbarui</Text>
+            <Text style={styles.successText}>
+              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -228,6 +236,40 @@ const styles = StyleSheet.create({
     color: "#fff",
     fontSize: 18,
     fontWeight: "bold",
+  },
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    height: "35%",
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+    fontSize: rem(1.5),
+    fontWeight: "bold",
+    marginBottom: rem(1.5),
+    marginTop: rem(1),
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
   },
 });
 

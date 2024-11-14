@@ -53,7 +53,8 @@ export default memo(function Credential() {
 
   return (
     <View>
-      <View marginB-20>
+      
+      <View marginB-10>
         <Text marginB-5>Nama</Text>
         <Controller
           control={control}
@@ -66,7 +67,7 @@ export default memo(function Credential() {
               fieldStyle={{
                 paddingVertical: 8,
                 paddingHorizontal: 15,
-                borderRadius: 5,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: Colors.grey50,
               }}
@@ -84,7 +85,7 @@ export default memo(function Credential() {
           </Text>
         )}
       </View>
-      <View marginB-20>
+      <View marginB-10>
         <Text marginB-5>Email</Text>
         <Controller
           control={control}
@@ -97,7 +98,7 @@ export default memo(function Credential() {
               fieldStyle={{
                 paddingVertical: 8,
                 paddingHorizontal: 15,
-                borderRadius: 5,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: Colors.grey50,
               }}
@@ -129,7 +130,7 @@ export default memo(function Credential() {
               fieldStyle={{
                 paddingVertical: 8,
                 paddingHorizontal: 15,
-                borderRadius: 5,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: Colors.grey50,
               }}
@@ -151,7 +152,7 @@ export default memo(function Credential() {
         label="Selanjutnya"
         backgroundColor={Colors.brand}
         paddingV-12
-        borderRadius={5}
+        borderRadius={56}
         onPress={handleSubmit(getEmailOtp)}
         iconOnRight
         iconSource={Assets.getAssetByPath("icons.chevronRight")}

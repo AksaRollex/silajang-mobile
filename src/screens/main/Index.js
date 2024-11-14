@@ -1,5 +1,3 @@
-// index main
-
 import React, { useState, useEffect, useRef } from "react";
 import {
   Text,
@@ -39,7 +37,6 @@ import Perusahaan from "../profile/tabs/Perusahaan";
 import Keamanan from "../profile/tabs/Keamanan";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import PengujianScreen from "../pengujian/Pengujian";
-
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
 
@@ -58,8 +55,7 @@ const screenOptions = {
   },
 };
 
-// Fungsi untuk mengatur visibilitas tab bar
-const getTabBarVisibility = route => {
+const getTabBarStyle = route => {
   const routeName = getFocusedRouteNameFromRoute(route) ?? "";
   const hideOnScreens = [
     "TrackingPengujian",
@@ -77,12 +73,17 @@ const getTabBarVisibility = route => {
     "Akun",
     "Keamanan",
     "Perusahaan",
-    "ProfileMain"
+    "ProfileMain",
   ];
 
+  // console.log('Current Route:', routeName);
+  
   if (hideOnScreens.includes(routeName)) {
+    console.log('Hiding tab bar for route:', routeName); // Tambahkan ini
     return { display: "none" };
   }
+
+
   return {
     position: "absolute",
     bottom: 0,
@@ -95,306 +96,103 @@ const getTabBarVisibility = route => {
   };
 };
 
-const CustomTabBar = props => {
-  const { state, descriptors, navigation } = props;
-  const [pengujianDropdownVisible, setPengujianDropdownVisible] =
-    useState(false);
-  const [pembayaranDropdownVisible, setPembayaranDropdownVisible] =
-    useState(false);
-  const [dropdownPosition, setDropdownPosition] = useState({ x: 0, y: 0 });
-  const pengujianTabRef = useRef(null);
-  const pembayaranTabRef = useRef(null);
-  const isFirstRender = useRef(true);
-
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-    }
-  }, []);
-
-  const handlePengujianPress = () => {
-    if (pengujianTabRef.current) {
-      pengujianTabRef.current.measure((x, y, width, height, pageX, pageY) => {
-        setDropdownPosition({
-          x: pageX,
-          width: width,
-        });
-        navigation.navigate("Pengujian")
-      });
-    }
-  };
-
-  const handlePembayaranPress = () => {
-    if (pembayaranTabRef.current) {
-      pembayaranTabRef.current.measure((x, y, width, height, pageX, pageY) => {
-        setDropdownPosition({
-          x: pageX,
-          width: width,
-        });
-        navigation.navigate("Pembayaran")
-      });
-    }
-  };
-
-  const closeAllDropdowns = () => {
-    setPengujianDropdownVisible(false);
-    setPembayaranDropdownVisible(false);
-  };
-
-  if (!state) return null;
-
+const CustomTabBar = ({ state, descriptors, navigation }) => {
   return (
-    <View style={{ position: "relative" }}>
-      {/* Pengujian Dropdown Menu */}
-      <Modal
-        transparent={true}
-        visible={pengujianDropdownVisible}
-        onRequestClose={closeAllDropdowns}
-        animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={closeAllDropdowns}>
-          <View
-            style={[
-              styles.dropdownContainer,
-              {
-                left: dropdownPosition.x,
-                width: dropdownPosition.width,
-                bottom: 60,
-              },
-            ]}>
-            <TouchableOpacity
-              style={styles.dropdownItem}
-              onPress={() => {
-                navigation.navigate("Permohonan");
-                closeAllDropdowns();
-              }}>
-              <Text style={styles.dropdownText} className="font-poppins-semibold">Permohonan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.dropdownItem}
-              onPress={() => {
-                navigation.navigate("TrackingPengujian");
-                closeAllDropdowns();
-              }}>
-              <Text style={styles.dropdownText} className="font-poppins-semibold">Tracking Pengujian</Text>
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </Modal>
+    <View style={styles.tabBar}>
+      {state.routes.map((route, index) => {
+        const { options } = descriptors[route.key];
+        const isFocused = state.index === index;
 
-      {/* Pembayaran Dropdown Menu */}
-      <Modal
-        transparent={true}
-        visible={pembayaranDropdownVisible}
-        onRequestClose={closeAllDropdowns}
-        animationType="fade">
-        <Pressable style={styles.modalOverlay} onPress={closeAllDropdowns}>
-          <View
-            style={[
-              styles.dropdownContainer,
-              {
-                left: dropdownPosition.x,
-                width: dropdownPosition.width,
-                bottom: 60,
-              },
-            ]}>
-            <TouchableOpacity
-              style={styles.dropdownItem}
-              onPress={() => {
-                navigation.navigate("PengujianPembayaran");
-                closeAllDropdowns();
-              }}>
-              <Text style={styles.dropdownText} className="font-poppins-semibold">Pengujian</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.dropdownItem}
-              onPress={() => {
-                navigation.navigate("Multipayment");
-                closeAllDropdowns();
-              }}>
-              <Text style={styles.dropdownText} className="font-poppins-semibold">Multi Payment</Text>
-            </TouchableOpacity>
-          </View>
-        </Pressable>
-      </Modal>
+        const onPress = () => {
+          const event = navigation.emit({
+            type: "tabPress",
+            target: route.key,
+          });
 
-      {/* Bottom Tab Bar */}
-      <View style={styles.tabBar}>
-        {state.routes.map((route, index) => {
-          const { options } = descriptors[route.key];
-          const isFocused = state.index === index;
-
-          const onPress = () => {
-            if (route.name === "PengujianTab") {
-              handlePengujianPress();
-              return;
-            }
-            if (route.name === "PembayaranTab") {
-              handlePembayaranPress();
-              return;
-            }
+          if (!isFocused && !event.defaultPrevented) {
             navigation.navigate(route.name);
-          };
+          }
+        };
 
-          return (
-            <TouchableOpacity
-              className=" border-gray-500"
-              key={index}
-              onPress={onPress}
-              ref={
-                route.name === "PengujianTab"
-                  ? pengujianTabRef
-                  : route.name === "PembayaranTab"
-                  ? pembayaranTabRef
-                  : null
-              }
-              style={[styles.tabItem, { borderTopWidth : 0.1 }]}>
-              {route.name === "Dashboard" && (
-                <View
-                  style={[
-                    styles.iconContainer,
-                  ]}>
-                  <Ionicons
-                    name="home"
-                    size={25}
-                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
-                  />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
-                    Beranda
-                  </Text>
-                </View>
-              )}
-              {route.name === "PengujianTab" && ( 
-                <View
-                  style={[
-                    styles.iconContainer,
-                  ]}>
-                  <Ionicons
-                    name="document-text"
-                    size={25}
-                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
-                  />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
-                    Pengujian
-                  </Text>
-                </View>
-              )}
-              {route.name === "PembayaranTab" && (
-                <View
-                  style={[
-                    styles.iconContainer,
-                    isFocused && styles.iconContainerFocused,
-                  ]}>
-                  <Ionicons
-                    name="wallet"
-                    size={25}
-                    color={isFocused ? Colors.brand : Colors.grey} // Kondisi warna saat fokus
-                  />
-                  <Text style={[styles.label, isFocused && styles.labelFocused]} className="font-poppins-semibold">
-                    Pembayaran
-                  </Text>
-                </View>
-              )}
-              {route.name === "Profile" && (
-                <View
-                  style={[
-                    styles.iconContainer,
-                    isFocused && styles.iconContainerFocused,
-                  ]}>
-                  <Ionicons
-                    name="person-sharp"
-                    size={25}
-                    color={isFocused ? Colors.brand : Colors.grey} 
-                  />
-                  <Text
-                    style={[styles.label, isFocused && styles.labelFocused]}
-                    className="font-poppins-semibold">
-                    Profil
-                  </Text>
-                </View>
-              )}
-            </TouchableOpacity>
-          );
-        })}
-      </View>
+        return (
+          <TouchableOpacity
+            key={index}
+            onPress={onPress}
+            style={[styles.tabItem, { borderTopWidth: 0.1 }]}>
+            <View style={[styles.iconContainer]}>
+              <Ionicons
+                name={
+                  route.name === "Dashboard"
+                    ? "home"
+                    : route.name === "Pengujian"
+                    ? "document-text"
+                    : route.name === "Pembayaran"
+                    ? "wallet"
+                    : "person-sharp"
+                }
+                size={25}
+                color={isFocused ? Colors.brand : Colors.grey}
+              />
+              <Text
+                style={[styles.label, isFocused && styles.labelFocused]}
+                className="font-poppins-semibold">
+                {route.name === "Dashboard"
+                  ? "Beranda"
+                  : route.name === "Pengujian"
+                  ? "Pengujian"
+                  : route.name === "Pembayaran"
+                  ? "Pembayaran"
+                  : "Profil"}
+              </Text>
+            </View>
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 };
 
-const ProfileStack = () => {
+const ProfileStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="ProfileMain" component={Profile} />
-      <Stack.Screen 
-        name="Akun" 
-        component={Akun}
-        options={{ 
-          tabBarStyle: { display: 'none' }
-        }} 
-      />
-      <Stack.Screen 
-        name="Perusahaan" 
-        component={Perusahaan}
-        options={{ 
-          tabBarStyle: { display: 'none' }
-        }} 
-      />
-      <Stack.Screen 
-        name="Keamanan" 
-        component={Keamanan}
-        options={{ 
-          tabBarStyle: { display: 'none' }
-        }} 
-      />
+      <Stack.Screen name="Akun" component={Akun} />
+      <Stack.Screen name="Perusahaan" component={Perusahaan} />
+      <Stack.Screen name="Keamanan" component={Keamanan} />
     </Stack.Navigator>
   );
-};  
-const TabNavigator = () => {
+};
+
+const PembayaranStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="MainTabs">
-        {() => (
-          <Tab.Navigator
-            tabBar={props => <CustomTabBar {...props} />}
-            screenOptions={screenOptions}>
-            <Tab.Screen name="Dashboard" component={Dashboard} />
-            <Tab.Screen
-              name="PengujianTab"
-              component={PengujianStack}
-              options={({ route }) => ({
-                tabBarStyle: getTabBarVisibility(route),
-              })}
-            />
-            <Tab.Screen
-              name="PembayaranTab"
-              component={PembayaranStack}
-              options={({ route }) => ({
-                tabBarStyle: getTabBarVisibility(route),
-              })}
-            />
-             <Tab.Screen 
-              name="Profile" 
-              component={ProfileStack}
-              options={({ route }) => ({
-                tabBarStyle: getTabBarVisibility(route),
-              })} 
-            />
-          </Tab.Navigator>
-        )}
-      </Stack.Screen>
-      <Stack.Screen name="Permohonan" component={PermohonanScreen} />
-      <Stack.Screen name="Pengujian" component={PengujianScreen}/>
-      <Stack.Screen name="TrackingPengujian" component={TrackingPengujianScreen} />
-      <Stack.Screen name="PengujianPembayaran" component={PengujianPembayaran} />
+      <Stack.Screen name="PembayaranMain" component={Pembayaran} />
+      <Stack.Screen
+        name="PengujianPembayaran"
+        component={PengujianPembayaran}
+      />
       <Stack.Screen name="Multipayment" component={MultiPayment} />
-      <Stack.Screen name="TitikUji" component={TitikUji}/>
-      <Stack.Screen name="FormTitikUji" component={FormTitikUji}/>
-      <Stack.Screen name="Parameter" component={Parameter}/>
-      <Stack.Screen name="TrackingList" component={TrackingList}/>
-      <Stack.Screen name="EditPermohonan" component={EditPermohonan}/>
-      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan}/>
-      <Stack.Screen name="Pembayaran" component={Pembayaran}/>
-      <Stack.Screen name="PengujianDetail" component={PengujianDetail}/>
-      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail}/>
+      <Stack.Screen name="PengujianDetail" component={PengujianDetail} />
+      <Stack.Screen name="MultipaymentDetail" component={MultipaymentDetail} />
+    </Stack.Navigator>
+  );
+};
+
+const PengujianStackNavigator = () => {
+  return (
+    <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Screen name="PengujianMain" component={PengujianScreen} />
+      <Stack.Screen name="Permohonan" component={PermohonanScreen} />
+      <Stack.Screen
+        name="TrackingPengujian"
+        component={TrackingPengujianScreen}
+      />
+      <Stack.Screen name="TitikUji" component={TitikUji} />
+      <Stack.Screen name="FormTitikUji" component={FormTitikUji} />
+      <Stack.Screen name="Parameter" component={Parameter} />
+      <Stack.Screen name="TrackingList" component={TrackingList} />
+      <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
+      <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
     </Stack.Navigator>
   );
 };
@@ -402,10 +200,18 @@ const TabNavigator = () => {
 export default function MainScreen() {
   return (
     <NavigationContainer independent={true}>
-      <Stack.Navigator screenOptions={screenOptions}>
-        <Stack.Screen name="TabNavigator" component={TabNavigator} />
-        <Stack.Screen name="Profile" component={Profile} />
-      </Stack.Navigator>
+      <Tab.Navigator
+        tabBar={props => <CustomTabBar {...props} />}
+        screenOptions={({ route }) => ({
+          headerShown: false,
+          tabBarShowLabel: false,
+          tabBarStyle: getTabBarStyle(route),
+        })}>
+        <Tab.Screen name="Dashboard" component={Dashboard} />
+        <Tab.Screen name="Pengujian" component={PengujianStackNavigator} />
+        <Tab.Screen name="Pembayaran" component={PembayaranStackNavigator} />
+        <Tab.Screen name="Profile" component={ProfileStackNavigator} />
+      </Tab.Navigator>
     </NavigationContainer>
   );
 }

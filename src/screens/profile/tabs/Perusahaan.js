@@ -26,7 +26,7 @@ import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { APP_URL } from "@env";
 import Back from "../../components/Back";
-import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 
 rem = multiplier => baseRem * multiplier;
@@ -381,23 +381,25 @@ const Perusahaan = () => {
   };
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row mb-4 p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
-          <Back
-            size={24}
-            color={"white"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-bold text-white text-lg ">
-            Informasi Perusahaan
-          </Text>
-        </View>
-      </View>
-      <ScrollView className="bg-[#ececec] w-full h-full px-3 py-1 ">
-        <View className="bg-[#f8f8f8] py-4 px-3 rounded-md mb-6">
+      <ScrollView className="flex-1">
+        <View className="bg-[#f8f8f8] px-4 mb-6 flex-1">
+          <View className="flex-row py-5">
+            <Back
+              size={30}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-5 "
+              style={{
+                borderWidth: 0.5,
+                padding: 4,
+                borderColor: "black",
+                borderRadius: 8,
+              }}
+            />
+            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+              Informasi Perusahaan
+            </Text>
+          </View>
           {userData ? (
             <View>
               <Controller
@@ -405,18 +407,18 @@ const Perusahaan = () => {
                 name="tanda_tangan"
                 render={({ field: { value } }) => (
                   <View className="mb-4">
-                    <Text className="font-sans font-bold mb-2 text-black ">
+                    <Text className="font-poppins-semibold mb-2 text-black ">
                       Tanda Tangan
                     </Text>
 
-                    <View className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans">
-                      <View className="bg-zinc-800 rounded-sm p-2">
+                    <View className="p-[5px] bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular">
+                      <View className="bg-zinc-800 rounded-2xl p-2">
                         {file || currentPhotoUrl ? (
                           <View style={styles.imageContainer}>
                             <ImageComponent />
                             <TouchableOpacity
                               style={styles.deleteButton}
-                              className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
+                              className="absolute bg-red-600 rounded-full items-center justify-center top-3 w-8 h-8 right-3  m-3"
                               onPress={handleDeletePhoto}>
                               <Icons
                                 name="close"
@@ -428,7 +430,9 @@ const Perusahaan = () => {
                           <TouchableOpacity
                             style={styles.addSignatureButton}
                             onPress={handleChoosePhoto}>
-                            <Text style={styles.addSignatureText}>
+                            <Text
+                              style={styles.addSignatureText}
+                              className="font-poppins-semibold">
                               Tambah Tanda Tangan
                             </Text>
                           </TouchableOpacity>
@@ -446,21 +450,21 @@ const Perusahaan = () => {
                 defaultValue={userData.instansi}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Instansi
                     </Text>
 
                     <TextField
                       value={value}
                       enableErrors
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       onChangeText={onChange}
                     />
                   </View>
                 )}
               />
               {errors.instansi && (
-                <Text style={{ color: "red" }}>{errors.instansi.message}</Text>
+                <Text style={{ color: "red", }} className="bottom-5">{errors.instansi.message}</Text>
               )}
 
               <Controller
@@ -470,20 +474,22 @@ const Perusahaan = () => {
                 rules={{ required: "Alamat Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Alamat Industri
                     </Text>
                     <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
                     />
                   </View>
-                )}></Controller>
+                )}
+                  
+                />
               {errors.alamat && (
-                <Text style={{ color: "red" }}>{errors.alamat.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">{errors.alamat.message}</Text>
               )}
 
               <Controller
@@ -491,12 +497,12 @@ const Perusahaan = () => {
                 name="pimpinan"
                 rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Pimpinan
                     </Text>
                     <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="text-input"
                       value={value}
@@ -505,7 +511,7 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pimpinan && (
-                <Text style={{ color: "red" }}>{errors.pimpinan.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">{errors.pimpinan.message}</Text>
               )}
 
               <Controller
@@ -513,12 +519,12 @@ const Perusahaan = () => {
                 name="pj_mutu"
                 rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       PJ Mutu
                     </Text>
                     <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="text-input"
                       value={value}
@@ -527,7 +533,7 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pj_mutu && (
-                <Text style={{ color: "red" }}>{errors.pj_mutu.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">{errors.pj_mutu.message}</Text>
               )}
 
               <Controller
@@ -535,13 +541,13 @@ const Perusahaan = () => {
                 name="telepon"
                 rules={{ required: "Telepon Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Nomor Telepon
                     </Text>
                     <TextField
                       onChangeText={onChange}
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="phone-pad"
                       value={value}
@@ -549,20 +555,20 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.telepon && (
-                <Text style={{ color: "red" }}>{errors.telepon.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">{errors.telepon.message}</Text>
               )}
 
               <Controller
                 control={control}
                 name="fax"
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Fax
                     </Text>
                     <TextField
                       onChangeText={onChange}
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="phone-pad"
                       value={value}
@@ -575,12 +581,12 @@ const Perusahaan = () => {
                 name="email"
                 rules={{ required: "Email Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Email
                     </Text>
                     <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="email-address"
                       onChangeText={onChange}
@@ -589,7 +595,7 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.email && (
-                <Text style={{ color: "red" }}>{errors.email.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">{errors.email.message}</Text>
               )}
 
               <Controller
@@ -597,12 +603,12 @@ const Perusahaan = () => {
                 name="jenis_kegiatan"
                 rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Jenis Kegiatan
                     </Text>
                     <TextField
-                      className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
+                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
                       keyboardType="text-input"
                       onChangeText={onChange}
@@ -611,67 +617,86 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.jenis_kegiatan && (
-                <Text style={{ color: "red" }}>
+                <Text style={{ color: "red" }} className="bottom-5">
                   {errors.jenis_kegiatan.message}
                 </Text>
               )}
+              <View className="rounded-2xl p-2 ">
+                <View className="flex-row justify-between">
+                  <Controller
+                    control={control}
+                    name="lat"
+                    rules={{ required: "Tidak Boleh Kosong" }}
+                    render={({ field: { onChange, value } }) => (
+                      <View className="w-1/2 pr-2">
+                        <Text className="font-poppins-semibold mb-2 text-black">
+                          Selatan
+                        </Text>
 
-              <View className="flex-row justify-between">
-                <Controller
-                  control={control}
-                  name="lat"
-                  rules={{ required: "Latitude Tidak Boleh Kosong" }}
-                  render={({ field: { onChange, value } }) => (
-                    <View className="w-1/2 pr-2">
-                      <Text className="font-sans font-bold mb-2 text-black">
-                        South
-                      </Text>
+                        <TextField
+                          className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                          enableErrors
+                          keyboardType="numeric"
+                          onChangeText={onChange}
+                          value={value || location.lat}
+                          placeholderTextColor="gray"
+                          placeholder={userData.lat}
+                        />
+                      </View>
+                    )}
+                  />
+                  
+                  <Controller
+                    control={control}
+                    name="long"
+                    rules={{ required: "Tidak Boleh Kosong" }}
+                    render={({ field: { onChange, value } }) => (
+                      <View className="w-1/2 pl-2">
+                        <Text className="font-poppins-semibold mb-2 text-black text-end">
+                          Timur
+                        </Text>
 
-                      <TextField
-                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                        enableErrors
-                        keyboardType="numeric"
-                        onChangeText={onChange}
-                        value={value || location.lat}
-                        placeholderTextColor="gray"
-                        placeholder={userData.lat}
-                      />
-                    </View>
-                  )}
-                />
-                <Controller
-                  control={control}
-                  name="long"
-                  rules={{ required: "Longitude Tidak Boleh Kosong" }}
-                  render={({ field: { onChange, value } }) => (
-                    <View className="w-1/2 pl-2">
-                      <Text className="font-sans font-bold mb-2 text-black text-end">
-                        East
-                      </Text>
-
-                      <TextField
-                        className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-sans"
-                        keyboardType="numeric"
-                        onChangeText={onChange}
-                        enableErrors
-                        value={value || location.long}
-                        placeholderTextColor="gray"
-                        placeholder={userData.long}
-                      />
-                    </View>
-                  )}
-                />
-              </View>
-              <TouchableOpacity
-                onPress={handleLocationPress}
-                className="w-full p-3 rounded-sm mb-5 "
-                style={{
-                  backgroundColor: Colors.brand,
-                }}>
-                <Text className="text-white text-base font-bold text-center">
-                  Gunakan Lokasi Saat Ini
+                        <TextField
+                          className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                          keyboardType="numeric"
+                          onChangeText={onChange}
+                          enableErrors
+                          value={value || location.long}
+                          placeholderTextColor="gray"
+                          placeholder={userData.long}
+                        />
+                      </View>
+                    )}
+                  />
+                </View>
+                <View className="flex-row">
+                {errors.lat && (
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.lat.message}
                 </Text>
-              </TouchableOpacity>
+              )}
+                  {errors.long && (
+                <Text style={{ color: "red" }} className="bottom-5 ml-14">
+                  {errors.long.message}
+                </Text>
+              )}
+              </View>
+                <TouchableOpacity
+                  onPress={handleLocationPress}
+                  className="w-full p-3 rounded-3xl bg-[#007AFF]">
+                  <View className="flex-row gap-4 justify-center">
+                    <MaterialIcons
+                      name="location-searching"
+                      size={24}
+                      color={"white"}
+                    />
+                    <Text className="text-white font-poppins-semibold text-center">
+                      Tekan Untuk Mendapatkan Lokasi
+                    </Text>
+                  </View>
+                </TouchableOpacity>
+              </View>
+
               <Modal
                 animationType="slide"
                 transparent={true}
@@ -698,11 +723,13 @@ const Perusahaan = () => {
                 control={control}
                 rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-sans font-bold mb-2 text-black">
+                  <View className="mt-5">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Kabupaten / Kota
                     </Text>
-                    <View style={{ borderColor: "black", borderWidth: 0.5 }}>
+                    <View
+                      style={{ borderColor: "black", borderWidth: 0.5 }}
+                      className="rounded-2xl p-1">
                       <RNPickerSelect
                         onValueChange={value => {
                           onChange(value);
@@ -739,10 +766,12 @@ const Perusahaan = () => {
                 control={control}
                 render={({ field: { onChange, value } }) => (
                   <View className="mt-4">
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Kecamatan
                     </Text>
-                    <View style={{ borderColor: "black", borderWidth: 0.5 }}>
+                    <View
+                      style={{ borderColor: "black", borderWidth: 0.5 }}
+                      className="rounded-2xl p-1">
                       <RNPickerSelect
                         onValueChange={value => {
                           onChange(value);
@@ -781,10 +810,12 @@ const Perusahaan = () => {
                 rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
                 render={({ field: { onChange, value } }) => (
                   <View className="mt-4">
-                    <Text className="font-sans font-bold mb-2 text-black">
+                    <Text className="font-poppins-semibold mb-2 text-black">
                       Kelurahan
                     </Text>
-                    <View style={{ borderWidth: 0.5, borderColor: "black" }}>
+                    <View
+                      style={{ borderWidth: 0.5, borderColor: "black" }}
+                      className="rounded-2xl p-1">
                       <RNPickerSelect
                         onValueChange={value => {
                           onChange(value);
@@ -819,16 +850,16 @@ const Perusahaan = () => {
               <Button
                 onPress={handleSubmit(update)}
                 loading={isLoading}
-                className="p-2 rounded-sm mt-4"
+                className="p-3 rounded-3xl mt-10"
                 style={{ backgroundColor: Colors.brand }}>
-                <Text className="text-white text-center text-base font-bold font-sans">
+                <Text className="text-white text-center text-base font-bold font-poppins-regular">
                   SIMPAN
                 </Text>
               </Button>
             </View>
           ) : (
-            <View className="h-full flex justify-center">
-              <ActivityIndicator size={"large"} color={"#312e81"} />
+            <View className="flex-1 justify-center items-center my-4">
+              <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
         </View>
@@ -838,6 +869,7 @@ const Perusahaan = () => {
 };
 
 const styles = StyleSheet.create({
+  
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -983,9 +1015,8 @@ const styles = StyleSheet.create({
   },
   signaturePreview: {
     width: 200,
-    height: 100,
+    height: 200,
     resizeMode: "contain",
-    marginBottom: 10,
   },
   changeButton: {
     backgroundColor: Colors.brand,
@@ -1029,7 +1060,6 @@ const styles = StyleSheet.create({
     marginLeft: 10,
     color: "#fff",
     fontSize: 16,
-    fontWeight: "bold",
   },
   input: {
     backgroundColor: "#f0f0f0",
@@ -1059,6 +1089,7 @@ const pickerSelectStyles = StyleSheet.create({
     borderColor: "gray",
     borderRadius: 8,
     color: "black",
+    fontFamily: "Poppins-Regular",
   },
 });
 

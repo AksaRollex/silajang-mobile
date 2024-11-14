@@ -67,7 +67,7 @@ export default memo(function WithEmail() {
               fieldStyle={{
                 paddingVertical: 8,
                 paddingHorizontal: 15,
-                borderRadius: 5,
+                borderRadius: 16,
                 borderWidth: 1,
                 borderColor: Colors.grey50,
               }}
@@ -100,7 +100,7 @@ export default memo(function WithEmail() {
                 fieldStyle={{
                   paddingVertical: 8,
                   paddingHorizontal: 15,
-                  borderRadius: 5,
+                  borderRadius: 16,
                   borderWidth: 1,
                   borderColor: Colors.grey50,
                 }}
@@ -137,7 +137,7 @@ export default memo(function WithEmail() {
         label="Login"
         backgroundColor={Colors.brand}
         paddingV-12
-        borderRadius={5}
+        borderRadius={56}
         onPress={handleSubmit(login)}
         disabled={isLoading || isSuccess}></Button>
     </View>

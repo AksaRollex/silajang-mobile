@@ -1,17 +1,23 @@
-import { View, Text, StyleSheet } from "react-native";
-import { Colors } from "react-native-ui-lib";
-import React, { useRef, useState, useCallback } from "react";
+import {
+  View,
+  Text,
+  StyleSheet,
+  Modal,
+  Dimensions,
+  TouchableOpacity,
+  ScrollView
+} from "react-native";
+import React, { useRef, useState, useCallback, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
-import RNPickerSelect from "react-native-picker-select";
 import { MenuView } from "@react-native-menu/menu";
 import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
-import { Picker } from "@react-native-picker/picker";
 import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -19,16 +25,10 @@ const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState(new Date().getMonth() + 1);
-  const [type, setTypes] = useState("va");
+  const [type, setType] = useState("va");
   const [refreshKey, setRefreshKey] = useState(0);
-
-  const tahuns = Array.from(
-    { length: new Date().getFullYear() - 2021 },
-    (_, i) => ({
-      id: 2022 + i,
-      text: `${2022 + i}`,
-    }),
-  );
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const [isTypePickerVisible, setIsTypePickerVisible] = useState(false);
 
   const bulans = [
     { id: 1, text: "Januari" },
@@ -50,27 +50,33 @@ const Pengujian = ({ navigation }) => {
     { id: "qris", text: "QRIS" },
   ];
 
-  const handleYearChange = useCallback(itemValue => {
-    setTahun(itemValue);
+  const handleDateSelect = (selectedYear, selectedMonth) => {
+    setTahun(selectedYear);
+    setBulan(selectedMonth);
     setRefreshKey(prevKey => prevKey + 1);
-  }, []);
+    setIsDatePickerVisible(false);
+  };
 
-  const handleMonthChange = useCallback(itemValue => {
+  const handleTypeSelect = selectedType => {
+    setType(selectedType);
     setRefreshKey(prevKey => prevKey + 1);
-    setBulan(itemValue);
-  }, []);
+    setIsTypePickerVisible(false);
+  };
 
-  const handleTypeChange = useCallback(itemValue => {
-    setRefreshKey(prevKey => prevKey + 1);
-    setTypes(itemValue);
-  });
+  const handleDatePickerPress = () => {
+    setIsDatePickerVisible(true);
+  };
+
+  const handleTypePickerPress = () => {
+    setIsTypePickerVisible(true);
+  };
+
   const { download, PDFConfirmationModal } = useDownloadPDF({
     onSuccess: filePath => console.log("Download success:", filePath),
     onError: error => console.error("Download error:", error),
   });
 
   const CardPembayaran = ({ item }) => {
-    console.log("item:", item);
     const isExpired = item.payment?.is_expired;
     const status = item.payment?.status;
 
@@ -172,34 +178,63 @@ const Pengujian = ({ navigation }) => {
     const statusText = getStatusText(item);
     const statusStyle = getStatusStyle(item);
 
-    console.log("item: ", item);
+    // console.log("item: ", item);
 
     return (
       <View style={styles.card}>
-        <View style={styles.cards}>
-          <View style={{ flexDirection: "row" }}>
+        <View style={styles.roundedBackground} className="rounded-br-full" />
+
+        <View style={styles.cardWrapper}>
+          {/* Left section with rounded background */}
+          <View style={styles.leftSection}>
+            <View style={styles.cardContent}>
+              <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+                Kode
+              </Text>
+              <Text className="text-black font-poppins-regular text-base">
+                {item.kode}
+              </Text>
+              <Text className="font-poppins-semibold  text-slate-600 mt-3 text-xs uppercase">
+                Lokasi
+              </Text>
+              <Text className="text-black font-poppins-regular text-base">
+                {item.lokasi}
+              </Text>
+            </View>
+          </View>
+
+          {/* Middle section */}
+          <View style={styles.cardContents} className="flex flex-end ">
+            <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+              Status
+            </Text>
             <Text
-              style={[styles.badge, styles[statusStyle]]}
-              className={` bg-slate-100 ${getStatusStyle(item)}`}>
+              style={[styles[statusStyle]]}
+              className={` ${getStatusStyle(
+                item,
+              )} font-poppins-regular text-base`}>
               {statusText}
             </Text>
+
+            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              Tipe
+            </Text>
             <Text
-              style={[styles.badge, styles[statusStyle]]}
-              className={` bg-slate-100 text-black mx-2`}>
+              style={[styles[statusStyle]]}
+              className={`  text-black uppercase font-poppins-regular text-base`}>
               {item.payment_type}
             </Text>
+
+            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+              Harga
+            </Text>
+            <Text className="text-black mb-4 font-poppins-regular">
+              {rupiah(item.harga)}
+            </Text>
           </View>
-          <Text style={[styles.cardTexts, { fontSize: 15 }]}>
-            {item.lokasi}
-          </Text>
-          <Text
-            style={[styles.cardTexts, { fontWeight: "bold", fontSize: 22 }]}>
-            {item.kode}
-          </Text>
-          <Text style={[styles.cardTexts]}>{rupiah(item.harga)}</Text>
-        </View>
-        <View style={styles.cards2}>
-          <View>
+
+          {/* Right section (dots menu) */}
+          <View style={styles.cardActions} className="mb-4 ">
             <MenuView
               title="Menu Title"
               actions={dropdownOptions.map(option => ({
@@ -224,161 +259,271 @@ const Pengujian = ({ navigation }) => {
     );
   };
 
+
   const filtah = () => {
     return (
-      <View className="py-2 ">
-        <View className="flex flex-row justify-between bg-[#fff]">
-          <RNPickerSelect
-            onValueChange={handleYearChange}
-            items={tahuns.map(item => ({ label: item.text, value: item.id }))}
-            value={tahun}
-            style={{
-              inputIOS: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-              inputAndroid: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-            }}
-            Icon={() => {
-              return (
-                <MaterialIcons
-                  style={{ marginTop: 16, marginRight: 12 }}
-                  name="keyboard-arrow-down"
-                  size={24}
-                  color="black"
-                />
-              );
-            }}
-            placeholder={{
-              label: "Pilih Tahun",
-              value: null,
-              color: "grey",
-            }}></RNPickerSelect>
-          <RNPickerSelect
-            items={bulans.map(item => ({ label: item.text, value: item.id }))}
-            value={bulan}
-            style={{
-              inputIOS: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-              inputAndroid: {
-                paddingHorizontal: rem(5),
-                borderWidth: 3,
-                color: "black",
-              },
-            }}
-            onValueChange={handleMonthChange}
-            Icon={() => {
-              return (
-                <MaterialIcons
-                  style={{ marginTop: 16, marginRight: 12 }}
-                  name="keyboard-arrow-down"
-                  size={24}
-                  color="black"
-                />
-              );
-            }}
-            placeholder={{
-              label: "Pilih Bulan",
-              value: null,
-              color: "grey",
-            }}></RNPickerSelect>
-          <RNPickerSelect
-            items={types.map(item => ({ label: item.text, value: item.id }))}
-            value={type}
-            style={{
-              inputIOS: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-              inputAndroid: {
-                paddingHorizontal: rem(3.55),
-                borderWidth: 3,
-                color: "black",
-              },
-            }}
-            onValueChange={handleTypeChange}
-            Icon={() => {
-              return (
-                <MaterialIcons
-                  style={{ marginTop: 16, marginRight: 12 }}
-                  name="keyboard-arrow-down"
-                  size={24}
-                  color="black"
-                />
-              );
-            }}
-            placeholder={{
-              label: "Pilih Tipe",
-              value: null,
-              color: "grey",
-            }}></RNPickerSelect>
-        </View>
+      <View className="flex-row justify-end gap-2 ">
+        <TouchableOpacity
+          onPress={handleTypePickerPress}
+          className="flex-row items-center bg-[#ececec] px-2 py-3 rounded-md">
+          <IonIcons name="card" size={24} color="black" />
+          <Text className="text-black font-poppins-regular  mx-2">
+            {types.find(t => t.id === type)?.text}
+          </Text>
+          <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={handleDatePickerPress}
+          className="flex-row items-center bg-[#ececec] px-2 py-1    rounded-md">
+          <IonIcons name="calendar" size={24} color="black" />
+          <View className="flex-col items-center">
+            <Text className="text-black font-poppins-regular  mx-2">
+              {bulans[bulan - 1]?.text}
+            </Text>
+
+            <Text className="text-black font-poppins-regular  mx-2">
+              {tahun}
+            </Text>
+          </View>
+          <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+        </TouchableOpacity>
       </View>
     );
   };
+
+  const DatePicker = ({
+    visible,
+    onClose,
+    onSelect,
+    selectedYear,
+    selectedMonth,
+  }) => {
+    const currentYear = new Date().getFullYear();
+    const years = Array.from(
+      { length: currentYear - 2021 },
+      (_, i) => 2022 + i,
+    );
+    const [tempYear, setTempYear] = useState(selectedYear);
+    const [tempMonth, setTempMonth] = useState(selectedMonth);
+
+    useEffect(() => {
+      if (visible) {
+        setTempYear(selectedYear);
+        setTempMonth(selectedMonth);
+      }
+    }, [visible]);
+
+    const handleConfirm = () => {
+      if (tempYear && tempMonth) {
+        onSelect(tempYear, tempMonth);
+      }
+    };
+    const canConfirm = tempYear && tempMonth;
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={onClose}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Tahun dan Bulan</Text>
+              <TouchableOpacity onPress={onClose}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <View className="flex-row ">
+              <View className="w-1/2 flex-col items-center">
+                <Text className="text-black font-poppins-semibold text-base">
+                  Tahun
+                </Text>
+                <ScrollView className="max-h-64">
+                  {years.map(year => (
+                    <TouchableOpacity
+                      key={year}
+                      className={`mt-2 justify-center items-center ${
+                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                      }`}
+                      onPress={() => setTempYear(year)}>
+                      <Text className="text-black font-poppins-regular">
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+              <View className="w-1/2 flex-col items-center">
+                <Text
+                  style={styles.sectionTitle}
+                  className="text-black font-poppins-semibold text-base">
+                  Bulan
+                </Text>
+                <ScrollView className="max-h-64">
+                  {bulans.map(month => (
+                    <TouchableOpacity
+                      key={month.id}
+                      className={`mt-2 justify-center items-center ${
+                        tempMonth === month.id
+                          ? "bg-[#ececec] p-3 rounded-md"
+                          : ""
+                      }`}
+                      onPress={() => setTempMonth(month.id)}>
+                      <Text className="text-black font-poppins-regular">
+                        {month.text}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
+
+  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <TouchableOpacity
+          style={styles.modalOverlay}
+          activeOpacity={1}
+          onPress={onClose}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
+              <TouchableOpacity onPress={onClose}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <View style={styles.yearList} className="">
+              {types.map(item => (
+                <TouchableOpacity
+                  className={`mt-2 items-center ${
+                    selectedType === item.id
+                      ? "bg-[#ececec] p-3 rounded-md"
+                      : ""
+                  }`}
+                  key={item.id}
+                  onPress={() => onSelect(item.id)}>
+                  <Text className="text-black font-poppins-regular">
+                    {item.text}
+                  </Text>
+                </TouchableOpacity>
+              ))}
+            </View>
+          </View>
+        </TouchableOpacity>
+      </Modal>
+    );
+  };
+
   return (
     <>
-      <View className="w-full">
-        <View
-          className="flex-row  p-3 justify-between"
-          style={{ backgroundColor: Colors.brand }}>
+      <View className="p-2 bg-[#ececec] w-full h-full">
+        <View className="flex-row  p-3 justify-between bg-[#f8f8f8] rounded-t-md">
           <BackButton
             size={24}
-            color={"white"}
+            color={"black"}
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className="font-bold text-white text-lg ">
+          <Text className="font-poppins-semibold text-black text-lg ">
             Pengujian Pembayaran
           </Text>
         </View>
+        <View className=" w-full h-full bg-[#f8f8f8] ">
+          <Paginate
+            key={refreshKey}
+            className="mb-20"
+            url="/pembayaran/pengujian"
+            Plugin={filtah}
+            payload={{ tahun, bulan, type }}
+            renderItem={CardPembayaran}
+            ref={PaginateRef}></Paginate>
+        </View>
+        <DatePicker
+          visible={isDatePickerVisible}
+          onClose={() => setIsDatePickerVisible(false)}
+          onSelect={handleDateSelect}
+          selectedYear={tahun}
+          selectedMonth={bulan}
+        />
+        <TypePicker
+          visible={isTypePickerVisible}
+          onClose={() => setIsTypePickerVisible(false)}
+          onSelect={handleTypeSelect}
+          selectedType={type}
+        />
+        <PDFConfirmationModal />
       </View>
-      <View className=" w-full h-full bg-[#ececec] ">
-        <Paginate
-          key={refreshKey}
-          className="mb-20"
-          url="/pembayaran/pengujian"
-          Plugin={filtah}
-          payload={{ tahun, bulan, type }}
-          renderItem={CardPembayaran}
-          ref={PaginateRef}></Paginate>
-      </View>
-      <PDFConfirmationModal />
     </>
   );
 };
 
 const styles = StyleSheet.create({
   card: {
-    marginVertical: 10,
+    backgroundColor: "#f8f8f8",
     borderRadius: 15,
-    padding: rem(0.7),
-    backgroundColor: "#fff",
+    marginVertical: 10,
+    elevation: 5,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.5,
+    shadowRadius: 2,
+    overflow: "hidden",
+    position: "relative", // Added to position the background
+  },
+  roundedBackground: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "100%", // Adjust this value to control how much of the card is covered
+    backgroundColor: "#e2e8f0", // slate-200 equivalent
+  },
+  cardWrapper: {
     flexDirection: "row",
-    borderTopColor: Colors.brand,
-    borderTopWidth: 7,
+    position: "relative",
+    zIndex: 1,
   },
-  cards: {
-    borderRadius: 10,
-    width: "90%",
-    marginBottom: 4,
+  leftSection: {
+    width: "45%",
+    position: "relative",
   },
-  cards2: {
-    borderRadius: 10,
+  cardContent: {
+    padding: 12,
+  },
+  cardContents: {
+    width: "45%",
+    paddingTop: 12,
+  },
+  cardActions: {
     width: "10%",
-    marginBottom: 4,
-    display: "flex",
     alignItems: "center",
-    justifyContent: "center",
+    justifyContent: "flex-end",
   },
   badge: {
     alignSelf: "flex-start",
@@ -411,6 +556,55 @@ const styles = StyleSheet.create({
     flex: 1,
     color: "black",
     marginHorizontal: 4,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+    maxHeight: Dimensions.get("window").height * 0.7,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e5e5",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000",
+    fontFamily: "Poppins-SemiBold",
+  },
+  yearList: {
+    paddingVertical: 8,
+  },
+  yearItem: {
+    padding: 16,
+    borderRadius: 8,
+    marginVertical: 4,
+  },
+  selectedYear: {
+    backgroundColor: "#f8f8f8",
+    fontFamily: "Poppins-Regular",
+  },
+  yearText: {
+    fontSize: 16,
+    fontFamily: "Poppins-Regular",
+    color: "#000",
+    textAlign: "center",
+  },
+  selectedYearText: {
+    color: "#000",
+    fontFamily: "Poppins-Regular",
   },
 });
 export default Pengujian;

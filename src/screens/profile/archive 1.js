@@ -13,6 +13,9 @@ import {
   FlatList,
   TextInput,
   StyleSheet,
+  Touchable,
+  ActivityIndicator,
+  ImageBackground,
   Image,
 } from "react-native";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -100,6 +103,7 @@ const Paginates = forwardRef(
     const ListHeader = () => (
       <>
         <View className="flex-row mb-1 items-center">
+          {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} /> */}
           <Controller
             control={control}
             name="search"
@@ -131,6 +135,11 @@ const Paginates = forwardRef(
               onPress={() => setPage(1)}>
               <Icons name="chevrons-left" size={18} color="#312e81" />
             </TouchableOpacity>
+            {/* <TouchableOpacity
+              className="px-3 py-2 rounded-md border border-indigo-900"
+              onPress={() => setPage(prev => prev - 1)}>
+              <Icon name="chevron-left" size={18} color="#312e81" />
+            </TouchableOpacity> */}
           </>
         )}
 
@@ -154,6 +163,11 @@ const Paginates = forwardRef(
 
         {page < data.last_page && (
           <>
+            {/* <TouchableOpacity
+              className="px-3 mx-2 py-2 rounded-md border border-indigo-900"
+              onPress={() => setPage(prev => prev + 1)}>
+              <Icon name="chevron-right" size={18} color="#312e81" />
+            </TouchableOpacity> */}
             <TouchableOpacity
               className="px-3 py-2 mx-2 rounded-md border border-indigo-900"
               onPress={() => setPage(data.last_page)}>
@@ -238,15 +252,15 @@ const Paginates = forwardRef(
     }
 
     return (
-      <View className="flex-1 p-4 " {...props}>
+      <View className="flex-1 p-4" {...props}>
         <ListHeader />
         <FlatList
           data={data.data}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           ListEmptyComponent={() => (
-            <View className="flex-1 justify-center items-center mx-2">
-              <Text className="text-gray-500 font-poppins-regular">Data Tidak Tersedia</Text>
+            <View className="flex-1 justify-center items-center">
+              <Text className="text-gray-500">Data kosong</Text>
             </View>
           )}
         />
@@ -345,6 +359,8 @@ const throttle = (func, limit) => {
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
   const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
+  const [showPeraturan, setShowPeraturan] = useState(false);
+  const [showPaket, setShowPaket] = useState(false);
   const queryClient = useQueryClient();
   const [selectedView, setSelectedView] = useState("selected");
   const [isLoadingPaket, setIsLoadingPaket] = useState([]);
@@ -368,12 +384,7 @@ const Parameter = ({ route, navigation }) => {
     queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
   };
 
-  const {
-    Save: SaveParameter,
-    SaveConfirmationModal,
-    SuccessOverlayModal,
-    FailedOverlayModal,
-  } = useSendParameter({
+  const { Save: SaveParameter, SaveConfirmationModal } = useSendParameter({
     onSuccess: () => {
       queryClient.invalidateQueries([
         `/permohonan/titik/${uuid}/parameter`,
@@ -506,6 +517,7 @@ const Parameter = ({ route, navigation }) => {
     },
   );
 
+  // Modifikasi mutation removeFromPaket
   const removeFromPaket = useMutation(
     paketId =>
       axios.post(`/permohonan/titik/${uuid}/parameter/destroy/paket`, {
@@ -549,6 +561,7 @@ const Parameter = ({ route, navigation }) => {
     },
   );
 
+  // Menggunakan useCallback dan throttle untuk membatasi frekuensi pemanggilan
   const throttledAddPeraturan = useCallback(
     throttle(uuid => {
       if (!addPeraturan.isLoading) {
@@ -612,6 +625,21 @@ const Parameter = ({ route, navigation }) => {
     }, 1500),
     [removeParameter],
   );
+
+  // const throttledStoreFromPaket = useCallback(
+  //   throttle(async id => {
+  //     if (!isLoadingPaket.includes(id)) {
+  //       try {
+  //         await storeFromPaket.mutateAsync(id);
+  //       } catch (error) {
+  //         console.error("Error storing package:", error);
+  //         // Remove loading state in case of error
+  //         setIsLoadingPaket(prev => prev.filter(loadingId => loadingId !== id));
+  //       }
+  //     }
+  //   }, 1500),
+  //   [storeFromPaket, isLoadingPaket],
+  // );
 
   const throttledStoreFromPaket = useCallback(
     throttle(uuid => {
@@ -741,8 +769,8 @@ const Parameter = ({ route, navigation }) => {
         shadowOpacity: 0.8,
         shadowRadius: 2,
       }}
-      className="bg-[#fbcfe8]  px-2 py-4 rounded-lg mt-1 flex ">
-      <View style={styles.roundedBackgroundSelected} />
+      className="bg-[#c7d2fe]  px-2 py-4 rounded-lg mt-1 flex ">
+      <View style={styles.roundedBackgrounds} />
 
       <View className="justify-center items-center">
         <Image
@@ -815,6 +843,7 @@ const Parameter = ({ route, navigation }) => {
     </View>
   );
 
+  // Modify renderPaketSection to use the data from component level
   const renderPaketSection = () => {
     if (isPaketFetching || loadingPackages.length > 0) {
       return renderLoadingPackages();
@@ -1021,8 +1050,8 @@ const Parameter = ({ route, navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-[#ececec] p-3">
-      <View className="bg-[#f8f8f8] w-full h-full rounded-md">
+    <View className="flex-1 bg-[#ececec] p-2">
+      <View className="bg-[#f8f8f8] w-full h-full">
         <View
           className=" px-2 pt-4 bg-[#f8f8f8] flex-row flex items-center justify-between flex-wrap "
           // style={{ borderBottomWidth: 0.5 }}
@@ -1047,9 +1076,8 @@ const Parameter = ({ route, navigation }) => {
           />
         </View>
       </View>
+
       <SaveConfirmationModal />
-      <FailedOverlayModal />
-      <SuccessOverlayModal />
     </View>
   );
 };

@@ -83,7 +83,7 @@ export default memo(function WithPhone() {
                 fieldStyle={{
                   paddingVertical: 8,
                   paddingHorizontal: 15,
-                  borderRadius: 5,
+                  borderRadius: 16,
                   borderWidth: 1,
                   borderColor: Colors.grey50,
                 }}
@@ -105,7 +105,7 @@ export default memo(function WithPhone() {
           label="Dapatkan OTP"
           backgroundColor={Colors.brand}
           paddingV-12
-          borderRadius={5}
+          borderRadius={56}
           onPress={handleSubmit(getOtp)}
           disabled={statusOtp === "loading"}></Button>
       </If>

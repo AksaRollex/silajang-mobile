@@ -13,6 +13,9 @@ import {
   FlatList,
   TextInput,
   StyleSheet,
+  Touchable,
+  ActivityIndicator,
+  ImageBackground,
   Image,
 } from "react-native";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -100,6 +103,7 @@ const Paginates = forwardRef(
     const ListHeader = () => (
       <>
         <View className="flex-row mb-1 items-center">
+          {/* <Back size={24} action={() => navigation.goBack()} className="mr-2" color={"black"} /> */}
           <Controller
             control={control}
             name="search"
@@ -131,6 +135,11 @@ const Paginates = forwardRef(
               onPress={() => setPage(1)}>
               <Icons name="chevrons-left" size={18} color="#312e81" />
             </TouchableOpacity>
+            {/* <TouchableOpacity
+              className="px-3 py-2 rounded-md border border-indigo-900"
+              onPress={() => setPage(prev => prev - 1)}>
+              <Icon name="chevron-left" size={18} color="#312e81" />
+            </TouchableOpacity> */}
           </>
         )}
 
@@ -154,6 +163,11 @@ const Paginates = forwardRef(
 
         {page < data.last_page && (
           <>
+            {/* <TouchableOpacity
+              className="px-3 mx-2 py-2 rounded-md border border-indigo-900"
+              onPress={() => setPage(prev => prev + 1)}>
+              <Icon name="chevron-right" size={18} color="#312e81" />
+            </TouchableOpacity> */}
             <TouchableOpacity
               className="px-3 py-2 mx-2 rounded-md border border-indigo-900"
               onPress={() => setPage(data.last_page)}>
@@ -238,15 +252,15 @@ const Paginates = forwardRef(
     }
 
     return (
-      <View className="flex-1 p-4 " {...props}>
+      <View className="flex-1 p-4" {...props}>
         <ListHeader />
         <FlatList
           data={data.data}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           ListEmptyComponent={() => (
-            <View className="flex-1 justify-center items-center mx-2">
-              <Text className="text-gray-500 font-poppins-regular">Data Tidak Tersedia</Text>
+            <View className="flex-1 justify-center items-center">
+              <Text className="text-gray-500">Data kosong</Text>
             </View>
           )}
         />
@@ -255,65 +269,6 @@ const Paginates = forwardRef(
     );
   },
 );
-
-const renderLoadingPackages = () => {
-  return Array(1)
-    .fill(0)
-    .map((_, index) => (
-      <View
-        key={`loading-${index}`}
-        style={{
-          marginVertical: 4,
-          padding: 8,
-        }}>
-        <View LinearGradientComponent={LinearGradient}>
-          <Skeleton
-            animation="wave"
-            width={350}
-            LinearGradientComponent={LinearGradient}
-            height={150}
-          />
-          <View
-            style={{
-              position: "absolute",
-              top: "5%",
-              left: "5%",
-            }}>
-            <View className="flex-row">
-              <Skeleton
-                animation="wave"
-                width={120}
-                LinearGradientComponent={LinearGradient}
-                height={120}
-              />
-              <View className="ml-2">
-                <Skeleton
-                  animation="wave"
-                  width={150}
-                  LinearGradientComponent={LinearGradient}
-                  height={20}
-                  style={{ marginBottom: 8 }}
-                />
-                <Skeleton
-                  animation="wave"
-                  width={100}
-                  LinearGradientComponent={LinearGradient}
-                  height={20}
-                  style={{ marginBottom: 8 }}
-                />
-                <Skeleton
-                  animation="wave"
-                  width={130}
-                  LinearGradientComponent={LinearGradient}
-                  height={20}
-                />
-              </View>
-            </View>
-          </View>
-        </View>
-      </View>
-    ));
-};
 const throttle = (func, limit) => {
   let lastRun = 0;
   let timeout = null;
@@ -345,10 +300,11 @@ const throttle = (func, limit) => {
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
   const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
+  const [showPeraturan, setShowPeraturan] = useState(false);
+  const [showPaket, setShowPaket] = useState(false);
   const queryClient = useQueryClient();
   const [selectedView, setSelectedView] = useState("selected");
   const [isLoadingPaket, setIsLoadingPaket] = useState([]);
-  const [loadingPackages, setLoadingPackages] = useState([]);
 
   const menuOptions = [
     { label: "Parameter Yang Terpilih", value: "selected" },
@@ -368,12 +324,7 @@ const Parameter = ({ route, navigation }) => {
     queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`);
   };
 
-  const {
-    Save: SaveParameter,
-    SaveConfirmationModal,
-    SuccessOverlayModal,
-    FailedOverlayModal,
-  } = useSendParameter({
+  const { Save: SaveParameter, SaveConfirmationModal } = useSendParameter({
     onSuccess: () => {
       queryClient.invalidateQueries([
         `/permohonan/titik/${uuid}/parameter`,
@@ -398,21 +349,9 @@ const Parameter = ({ route, navigation }) => {
   });
 
   // GET PAKET
-  const { data: pakets = [], isFetching: isPaketFetching } = useQuery({
+  const { data: pakets = [] } = useQuery({
     queryKey: ["pakets"],
-    queryFn: async () => {
-      try {
-        const response = await axios.get("/master/paket");
-        // Pastikan selalu mengembalikan array
-        const responseData = response.data?.data;
-        return Array.isArray(responseData) ? responseData : [];
-      } catch (error) {
-        console.error("Error fetching pakets:", error);
-        return [];
-      }
-    },
-    // Tambahkan initial data untuk memastikan selalu ada nilai default
-    initialData: [],
+    queryFn: () => axios.get("/master/paket").then(res => res.data.data),
   });
 
   const addPeraturan = useMutation(
@@ -470,38 +409,11 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onMutate: paketId => {
-        // Start loading state
-        setLoadingPackages(prev => [...prev, paketId]);
-
-        // Simpan state sebelumnya
-        const previousPakets = queryClient.getQueryData(["pakets"]);
-
-        // Update cache dengan tetap mempertahankan struktur array
-        queryClient.setQueryData(["pakets"], old => {
-          if (Array.isArray(old)) {
-            return old.map(paket => ({
-              ...paket,
-              isLoading: paket.id === paketId,
-            }));
-          }
-          return old;
-        });
-
-        return { previousPakets };
+        setIsLoadingPaket(prev => [...prev, paketId]);
       },
-      onError: (err, paketId, context) => {
-        // Kembalikan ke state sebelumnya jika error
-        queryClient.setQueryData(["pakets"], context.previousPakets);
-        setLoadingPackages(prev => prev.filter(id => id !== paketId));
-      },
-      onSettled: async (data, error, paketId) => {
-        setLoadingPackages(prev => prev.filter(id => id !== paketId));
-
-        // Refresh data
-        await queryClient.invalidateQueries(["pakets"]);
-        await queryClient.invalidateQueries(
-          `/permohonan/titik/${uuid}/parameter`,
-        );
+      onSettled: (data, error, paketId) => {
+        setIsLoadingPaket(prev => prev.filter(id => id !== paketId));
+        invalidateQueries();
       },
     },
   );
@@ -513,42 +425,16 @@ const Parameter = ({ route, navigation }) => {
       }),
     {
       onMutate: paketId => {
-        setLoadingPackages(prev => [...prev, paketId]);
-
-        // Set loading state untuk paket
-        queryClient.setQueryData(["pakets"], old => ({
-          ...old,
-          isFetching: true,
-        }));
-
-        // Set loading state untuk parameter
-        queryClient.setQueryData(
-          [`/permohonan/titik/${uuid}/parameter`],
-          old => ({
-            ...old,
-            isFetching: true,
-          }),
-        );
+        setIsLoadingPaket(prev => [...prev, paketId]);
       },
-      onSettled: async (data, error, paketId) => {
-        await new Promise(resolve => setTimeout(resolve, 800));
-
-        setLoadingPackages(prev => prev.filter(id => id !== paketId));
-
-        // Invalidate dan refresh queries
-        await Promise.all([
-          queryClient.invalidateQueries(["pakets"]),
-          queryClient.invalidateQueries(`/permohonan/titik/${uuid}/parameter`),
-        ]);
-
-        await Promise.all([
-          queryClient.refetchQueries(["pakets"]),
-          queryClient.refetchQueries([`/permohonan/titik/${uuid}/parameter`]),
-        ]);
+      onSettled: (data, error, paketId) => {
+        setIsLoadingPaket(prev => prev.filter(id => id !== paketId));
+        invalidateQueries();
       },
     },
   );
 
+  // Menggunakan useCallback dan throttle untuk membatasi frekuensi pemanggilan
   const throttledAddPeraturan = useCallback(
     throttle(uuid => {
       if (!addPeraturan.isLoading) {
@@ -614,19 +500,18 @@ const Parameter = ({ route, navigation }) => {
   );
 
   const throttledStoreFromPaket = useCallback(
-    throttle(uuid => {
-      if (!storeFromPaket.isLoading) {
-        storeFromPaket.mutate(uuid, {
-          onSuccess: () => {
-            console.log("Package added successfully");
-          },
-          onError: error => {
-            console.error("Error adding package:", error);
-          },
-        });
+    throttle(async id => {
+      if (!isLoadingPaket.includes(id)) {
+        try {
+          await storeFromPaket.mutateAsync(id);
+        } catch (error) {
+          console.error("Error storing package:", error);
+          // Remove loading state in case of error
+          setIsLoadingPaket(prev => prev.filter(loadingId => loadingId !== id));
+        }
       }
     }, 1500),
-    [storeFromPaket],
+    [storeFromPaket, isLoadingPaket],
   );
 
   const throttledRemoveFromPaket = useCallback(
@@ -646,7 +531,7 @@ const Parameter = ({ route, navigation }) => {
 
   const renderPeraturan = ({ item }) => (
     <View
-      className="rounded-sm flex-row px-2 py-4   mt-1"
+      className="rounded-sm flex-row px-2 py-4 bg-[#c7d2fe]  mt-1"
       style={{
         elevation: 5,
         shadowColor: "#000",
@@ -654,7 +539,6 @@ const Parameter = ({ route, navigation }) => {
         shadowOpacity: 0.25,
         flexDirection: "row",
         shadowRadius: 3.84,
-        backgroundColor: item.selected ? "#fbcfe8" : "#c7d2fe",
       }}>
       <View
         style={[
@@ -685,7 +569,7 @@ const Parameter = ({ route, navigation }) => {
           }>
           <Text
             style={{
-              color: item.selected ? "white" : "white",
+              color: item.selected ? "red" : "white",
               backgroundColor: Colors.brand,
             }}
             className="px-2 py-1 rounded-md font-poppins-semibold  ">
@@ -741,8 +625,8 @@ const Parameter = ({ route, navigation }) => {
         shadowOpacity: 0.8,
         shadowRadius: 2,
       }}
-      className="bg-[#fbcfe8]  px-2 py-4 rounded-lg mt-1 flex ">
-      <View style={styles.roundedBackgroundSelected} />
+      className="bg-[#c7d2fe]  px-2 py-4 rounded-lg mt-1 flex ">
+      <View style={styles.roundedBackgrounds} />
 
       <View className="justify-center items-center">
         <Image
@@ -815,85 +699,6 @@ const Parameter = ({ route, navigation }) => {
     </View>
   );
 
-  const renderPaketSection = () => {
-    if (isPaketFetching || loadingPackages.length > 0) {
-      return renderLoadingPackages();
-    }
-
-    // Pastikan pakets selalu array
-    const paketsArray = Array.isArray(pakets) ? pakets : [];
-
-    if (paketsArray.length === 0) {
-      return (
-        <View className="p-4">
-          <Text className="text-black text-center">
-            Tidak ada paket tersedia
-          </Text>
-        </View>
-      );
-    }
-
-    return pakets.map(paket => {
-      const isSelected = !!titik?.pakets?.find(p => p.id === paket.id);
-      return (
-        <View
-          key={paket.id}
-          className="rounded-md w-full px-2 flex-row py-4 mt-1"
-          style={{
-            elevation: 5,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.8,
-            shadowRadius: 2,
-            backgroundColor: isSelected ? "#fbcfe8" : "#c7d2fe",
-          }}>
-          <View
-            style={
-              isSelected
-                ? styles.roundedBackgroundSelected
-                : styles.roundedBackgrounds
-            }
-          />
-          <View className="justify-center items-center">
-            <Image
-              source={require("../../../../../assets/images/bundle.png")}
-              className="h-24 w-24 rounded-md"
-            />
-          </View>
-          <View className="flex-col gap-y-2 mx-2 w-3/5">
-            <Text className="text-black font-poppins-regular">
-              {paket.nama}
-            </Text>
-            <Text className="text-black font-poppins-regular">
-              {rupiah(paket.harga)}
-            </Text>
-            <Text className="text-black font-poppins-regular">
-              {paket.parameters?.map(param => param.nama)?.join(", ") || ""}
-            </Text>
-          </View>
-
-          <TouchableOpacity
-            style={[
-              { backgroundColor: Colors.brand },
-              { position: "absolute", bottom: 20, right: 8 },
-            ]}
-            className="px-2 rounded-md"
-            onPress={() => {
-              if (isSelected) {
-                throttledRemoveFromPaket(paket.id);
-              } else {
-                throttledStoreFromPaket(paket.id);
-              }
-            }}>
-            <Text className="text-lg text-white font-poppins-semibold">
-              {isSelected ? "-" : "+"}
-            </Text>
-          </TouchableOpacity>
-        </View>
-      );
-    });
-  };
-
   const renderContent = () => {
     return (
       <View className="rounded-md">
@@ -935,14 +740,89 @@ const Parameter = ({ route, navigation }) => {
               shadowOpacity: 0.8,
               shadowRadius: 2,
             }}>
-            <View style={styles.roundedBackground} />
-            <View>
+            <View style={styles.roundedBackground}></View>
+
+            <View className="">
               {renderSectionHeader(
                 "Paket Tersedia",
                 "paket",
                 selectedView !== "paket_parameter" || true,
               )}
-              <View className="px-3 py-4">{renderPaketSection()}</View>
+
+              <View className="px-3 py-4">
+                {pakets.map(paket => {
+                  const isLoading = isLoadingPaket.includes(paket.id);
+                  const isSelected = !!titik?.pakets?.find(
+                    p => p.id === paket.id,
+                  );
+
+                  return (
+                    <>
+                      <View
+                        className="rounded-md w-full px-2 flex-row py-4"
+                        style={{
+                          elevation: 5,
+                          shadowColor: "#000",
+                          shadowOffset: { width: 0, height: 1 },
+                          shadowOpacity: 0.8,
+                          shadowRadius: 2,
+                          backgroundColor: isSelected ? "#fbcfe8" : "#c7d2fe",
+                        }}>
+                        <View
+                          style={
+                            isSelected
+                              ? styles.roundedBackgroundSelected
+                              : styles.roundedBackgrounds
+                          }
+                        />
+
+                        <View
+                          style={{
+                            flexDirection: "column",
+                            justifyContent: "space-between",
+                            marginBottom: 4,
+                          }}
+                          className="w-4/5 ">
+                          <Text className="text-black font-poppins-regular">
+                            {paket.nama}
+                          </Text>
+
+                          <Text className="text-black font-poppins-regular">
+                            {rupiah(paket.harga)}
+                          </Text>
+                          <Text className="text-black font-poppins-regular">
+                            {paket.parameters
+                              .map(param => param.nama)
+                              .join(", ")}
+                          </Text>
+                        </View>
+
+                        <View className="w-1/5">
+                          <TouchableOpacity
+                            key={paket.id}
+                            style={[
+                              { opacity: isLoading ? 0.7 : 1 },
+                              { backgroundColor: Colors.brand },
+                              { position: "absolute", bottom: 8, right: 1 }, // Positioning the button
+                            ]}
+                            className="px-2 rounded-md"
+                            onPress={() => {
+                              if (isSelected) {
+                                throttledRemoveFromPaket(paket.id);
+                              } else {
+                                throttledStoreFromPaket(paket.id);
+                              }
+                            }}>
+                            <Text className="text-lg text-white font-poppins-semibold">
+                              {isSelected ? "-" : "+"}
+                            </Text>
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </>
+                  );
+                })}
+              </View>
             </View>
           </View>
         )}
@@ -1021,8 +901,8 @@ const Parameter = ({ route, navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-[#ececec] p-3">
-      <View className="bg-[#f8f8f8] w-full h-full rounded-md">
+    <View className="flex-1 bg-[#ececec] p-2">
+      <View className="bg-[#f8f8f8] w-full h-full">
         <View
           className=" px-2 pt-4 bg-[#f8f8f8] flex-row flex items-center justify-between flex-wrap "
           // style={{ borderBottomWidth: 0.5 }}
@@ -1047,9 +927,8 @@ const Parameter = ({ route, navigation }) => {
           />
         </View>
       </View>
+
       <SaveConfirmationModal />
-      <FailedOverlayModal />
-      <SuccessOverlayModal />
     </View>
   );
 };

@@ -38,11 +38,12 @@ const styles = StyleSheet.create({
     alignSelf: "center",
     color: "black",
     fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   footerTexts: {
     alignSelf: "center",
     color: "black",
-    fontSize: 12  ,
-    fontWeight: "bold",
+    fontSize: 12 ,
+    fontFamily: "Poppins-Bold",
   },
 });
