@@ -124,10 +124,10 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm font-bold mb-2">Tanda Tangan *</Text>
+                        <Text className="text-sm font-poppins-bold mb-2">Tanda Tangan *</Text>
                         {isLoading ? (
                             <View className="border border-gray-300 rounded-md p-3">
-                                <Text className="text-black">Loading TTD options...</Text>
+                                <Text className="font-poppins-semibold">Loading TTD options...</Text>
                             </View>
                         ) : (
                             <MenuView
@@ -146,7 +146,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                             >
                                 <View className="border border-gray-300 rounded-md p-3">
                                     <View className="flex-row justify-between items-center">
-                                        <Text className="text-black">
+                                        <Text className="font-poppins-semibold">
                                             {ttds.find(t => t.id.toString() === formData.tanda_tangan_id)?.text || 'Pilih TTD'}
                                         </Text>
                                         <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -157,9 +157,10 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm font-bold mb-2">Passphrase *</Text>
+                        <Text className="text-sm font-poppins-bold mb-2">Passphrase *</Text>
                         <TextInput
-                            className="border border-gray-300 rounded-md p-3"
+                            
+                            className="border border-gray-300 rounded-md p-3 font-poppins-semibold"
                             secureTextEntry
                             value={formData.passphrase}
                             onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
@@ -173,7 +174,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                             className="bg-green-600 px-4 py-2 rounded-md flex-row items-center"
                         >
                             <FontAwesome5Icon name="file-signature" size={16} color="white" className="mr-2" />
-                            <Text className="text-white ml-2">Kirim</Text>
+                            <Text className="text-white font-poppins-semibold ml-2">Kirim</Text>
                         </TouchableOpacity>
                     </View>
                 </View>
@@ -497,7 +498,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             className="flex-row items-center p-2 bg-purple-100 rounded-md"
                         >
                             <FontAwesome name="eye" size={16} color="purple" />
-                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold"> view LHU</Text>
+                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold"> Preview LHU</Text>
                         </TouchableOpacity>
                     )}
     
@@ -619,16 +620,24 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 <View className="flex-1 justify-center items-center bg-black bg-black/50">
                     <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
                         <View className="flex-row justify-between items-center p-4">
-                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+                            <Text className="text-lg font-poppins-semibold text-black">Preview PDF</Text>
                             <TouchableOpacity onPress={handleDownloadPDF} className="p-2 rounded flex-row items-center">
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
                         </View>
-                        <Pdf
-                            source={{ uri: reportUrl, cache: true }}
-                            style={{ flex: 1 }}
-                            trustAllCerts={false}
-                        />
+                        
+                        {reportUrl ? (
+                            <Pdf
+                                source={{ uri: reportUrl, cache: true }}
+                                style={{ flex: 1 }}
+                                trustAllCerts={false}
+                            />
+                        ) : (
+                            <View className="flex-1 justify-center items-center">
+                                <Text className="text-xl font-poppins-semibold text-red-500">404 | File not found</Text>
+                            </View>
+                        )}
+                        
                         <View className="flex-row justify-between m-4">
                             <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
                                 <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
@@ -637,6 +646,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     </View>
                 </View>
             </Modal>
+
 
             <TTEModal
                 visible={tteModalVisible}

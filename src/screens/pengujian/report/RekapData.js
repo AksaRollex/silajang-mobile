@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Platform } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import moment from 'moment';
@@ -8,19 +8,23 @@ import { useQueryClient } from '@tanstack/react-query';
 import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Paginate from "@/src/screens/components/Paginate";
 import { APP_URL } from "@env";
+import BackButton from "@/src/screens/components/BackButton";
+import Pdf from "react-native-pdf";
 
-const RekapData = () => {
+const RekapData = ({navigation}) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [isDownloading, setIsDownloading] = useState(false);
-  const [isDatePickerVisible, setDatePickerVisible] = useState(false);
-  const [mode, setMode] = useState('sampel-permohonan'); // ['sampel-permohonan', 'total-biaya']
+  const [showDatePicker, setShowDatePicker] = useState(false);
+  const [dateType, setDateType] = useState('start'); 
+  const [modalVisible, setModalVisible] = useState(false);
+  const [mode, setMode] = useState('sampel-permohonan'); 
   const [selectedDate, setSelectedDate] = useState({
     start: moment().startOf('month').format('YYYY-MM-DD'),
     end: moment().format('YYYY-MM-DD')
   });
 
-  const [isMandiri, setIsMandiri] = useState('-');
+  const [isMandiri, setIsMandiri] = useState(false);
   const tipeMandiris = [
     { id: '-', title: 'Semua' },
     { id: '0', title: 'Diambil Petugas' },
@@ -34,20 +38,65 @@ const RekapData = () => {
     { id: '2', title: 'Dinas Internal' },
   ];
 
-  const handleDownloadReport = async () => {
-    if (isDownloading) return;
+  // Effect untuk me-refresh data ketika filter berubah
+  useEffect(() => {
+    if (paginateRef.current) {
+      paginateRef.current.refetch();
+    }
+  }, [selectedDate.start, selectedDate.end, isMandiri, golonganId, mode]);
 
-    try {
-      setIsDownloading(true);
-      await downloadPdf(`/report/rekap`, {
-        start: selectedDate.start,
-        end: selectedDate.end,
-        is_mandiri: isMandiri,
-        golongan_id: golonganId,
-        mode: mode
-      });
-    } finally {
-      setIsDownloading(false);
+  const handleDateSelection = (type) => {
+    setDateType(type);
+    setShowDatePicker(true);
+  };
+
+  const handleDateConfirm = (date) => {
+    const formattedDate = moment(date).format('YYYY-MM-DD');
+    setSelectedDate(prev => ({
+      ...prev,
+      [dateType]: formattedDate
+    }));
+    setShowDatePicker(false);
+    
+    if (dateType === 'start') {
+      setTimeout(() => {
+        setDateType('end');
+        setShowDatePicker(true);
+      }, 500);
+    }
+  };
+
+  const handleReport = async (mode) => {
+    const authToken = await AsyncStorage.getItem("@auth-token");
+    
+    if (isPreviewMode) {
+      const url = `${APP_URL}/api/v1/report/rekap?token=${authToken}&start=${startDate}&end=${endDate}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`;
+      setReportUrl(url);
+      setModalVisible(true);
+    } else {
+      try {
+        const response = await fetch(
+          `${APP_URL}/report/rekap?start=${startDate}&end=${endDate}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`,
+          {
+            headers: {
+              Authorization: `Bearer ${authToken}`
+            }
+          }
+        );
+        
+        if (!response.ok) {
+          throw new Error('Download failed');
+        }
+  
+        const blob = await response.blob();
+        const filePath = `${RNFS.DocumentDirectoryPath}/report_${Date.now()}.pdf`;
+        await RNFS.writeFile(filePath, blob, 'base64');
+        
+        Alert.alert('Success', 'Report downloaded successfully');
+      } catch (error) {
+        console.error('Download error:', error);
+        Alert.alert('Error', 'Failed to download report');
+      }
     }
   };
 
@@ -100,8 +149,32 @@ const RekapData = () => {
     }
   };
 
+  const getTipeMandirisActions = () => {
+    return tipeMandiris.map(option => ({
+      id: option.id,
+      title: option.title,
+      state: option.id === isMandiri ? 'on' : 'off',
+      image: Platform.select({
+        ios: option.id === isMandiri ? 'checkmark' : '',
+        android: null
+      })
+    }));
+  };
+
+  const getGolongansActions = () => {
+    return golongans.map(option => ({
+      id: option.id,
+      title: option.title,
+      state: option.id === golonganId ? 'on' : 'off',
+      image: Platform.select({
+        ios: option.id === golonganId ? 'checkmark' : '',
+        android: null
+      })
+    }));
+  };
+
   const CardItem = ({ item }) => (
-    <View className="my-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
+    <View className="mb-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
       <View className="flex-row items-center">
         <View style={{ width: "90%" }}>
           <View className="flex-col space-y-2">
@@ -130,8 +203,8 @@ const RekapData = () => {
 
             <View>
               <Text className="text-[14px] font-poppins-bold text-black">Status:</Text>
-              <View className="bg-blue-100 px-2 py-1 rounded-md self-start">
-                <Text className="text-[12px] font-poppins-semibold text-blue-700">
+              <View className="bg-indigo-100 px-2 py-1 rounded-md self-start">
+                <Text className="text-[12px] font-poppins-semibold text-indigo-600">
                   {item.text_status}
                 </Text>
               </View>
@@ -160,11 +233,12 @@ const RekapData = () => {
     <View className="flex-1 bg-gray-100">
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-xl font-poppins-bold text-black">Rekap Data</Text>
+          <BackButton action={() => navigation.goBack()} size={26} />
+          <Text className="text-lg font-poppins-bold text-black ml-16 self-center">Rekap Data</Text>
           <TouchableOpacity
-            onPress={handleDownloadReport}
+            onPress={handleReport}
             disabled={isDownloading}
-            className={`flex-row items-center space-x-2 ${
+            className={`flex-row space-x-2 ${
               isDownloading ? 'bg-gray-100' : 'bg-red-50'
             } px-4 py-2 rounded-md`}>
             {isDownloading ? (
@@ -179,50 +253,58 @@ const RekapData = () => {
         </View>
 
         <TouchableOpacity
-          onPress={() => setDatePickerVisible(true)}
+          onPress={() => handleDateSelection('start')}
           className="mb-4 bg-white p-3 rounded-lg border border-gray-300">
-          <Text className="text-center font-poppins-semibold">
+          <Text className="text-center text-black font-poppins-semibold">
             {`${selectedDate.start} to ${selectedDate.end}`}
           </Text>
         </TouchableOpacity>
 
-        <View className="flex-row justify-between mb-4 space-x-3">
-          <MenuView
-            title="Tipe Pengambilan/Pengiriman"
-            onPressAction={(e) => setIsMandiri(e.nativeEvent.event)}
-            actions={tipeMandiris.map(option => ({
-              id: option.id.toString(),
-              title: option.title,
-            }))}>
-            <View className="flex-1">
-              <View className="flex-row items-center bg-white p-3 rounded-lg border border-gray-300">
-                <Text className="flex-1 text-center font-poppins-semibold text-black">
-                  {tipeMandiris.find(t => t.id === isMandiri)?.title || 'Pilih Tipe'}
-                </Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+        <View className="flex-row justify-between mb-4">
+          <View className="flex-1 mr-2">
+            <Text className="text-[11px] font-poppins-bold text-black mb-1 text-center" >Tipe Pengambilan/Pengiriman</Text>
+            <MenuView
+              title="Tipe Pengambilan/Pengiriman"
+              onPressAction={({ nativeEvent }) => {
+                setIsMandiri(nativeEvent.event);
+              }}
+              actions={getTipeMandirisActions()}
+              shouldOpenOnLongPress={false}
+            >
+              <View>
+                <View className="flex-row items-center bg-white p-3 rounded-lg border border-gray-300">
+                  <Text className="flex-1 text-center font-poppins-semibold text-black">
+                    {tipeMandiris.find(t => t.id === isMandiri)?.title || 'Pilih Tipe'}
+                  </Text>
+                  <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                </View>
               </View>
-            </View>
-          </MenuView>
+            </MenuView>
+          </View>
 
-          <MenuView
-            title="Tipe User"
-            onPressAction={(e) => setGolonganId(e.nativeEvent.event)}
-            actions={golongans.map(option => ({
-              id: option.id.toString(),
-              title: option.title,
-            }))}>
-            <View className="flex-1">
-              <View className="flex-row items-center bg-white p-3 rounded-lg border border-gray-300">
-                <Text className="flex-1 text-center font-poppins-semibold text-black">
-                  {golongans.find(g => g.id === golonganId)?.title || 'Pilih User'}
-                </Text>
-                <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+          <View className="flex-1 ml-2">
+            <Text className="text-[11px] font-poppins-bold text-black mb-1 text-center" >Tipe User</Text>
+            <MenuView
+              title="Tipe User"
+              onPressAction={({ nativeEvent }) => {
+                setGolonganId(nativeEvent.event);
+              }}
+              actions={getGolongansActions()}
+              shouldOpenOnLongPress={false}
+            >
+              <View>
+                <View className="flex-row items-center bg-white p-3 rounded-lg border border-gray-300">
+                  <Text className="flex-1 text-center font-poppins-semibold text-black">
+                    {golongans.find(g => g.id === golonganId)?.title || 'Pilih User'}
+                  </Text>
+                  <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                </View>
               </View>
-            </View>
-          </MenuView>
+            </MenuView>
+          </View>
         </View>
 
-        <View className="flex-row mt-10">
+        <View className="flex-row">
           <TouchableOpacity
             className={`flex-1 p-3 rounded-t-lg ${mode === 'sampel-permohonan' ? 'bg-white border-t-2 border-indigo-900' : 'bg-gray-100'}`}
             onPress={() => setMode('sampel-permohonan')}>
@@ -254,16 +336,11 @@ const RekapData = () => {
       />
 
       <DateTimePickerModal
-        isVisible={isDatePickerVisible}
+        isVisible={showDatePicker}
         mode="date"
-        onConfirm={(date) => {
-          setSelectedDate({
-            ...selectedDate,
-            start: moment(date).format('YYYY-MM-DD')
-          });
-          setDatePickerVisible(false);
-        }}
-        onCancel={() => setDatePickerVisible(false)}
+        onConfirm={handleDateConfirm}
+        onCancel={() => setShowDatePicker(false)}
+        date={new Date(dateType === 'start' ? selectedDate.start : selectedDate.end)}
       />
     </View>
   );
