@@ -94,107 +94,6 @@ const Paginate = forwardRef(
       }
     };
 
-    // const SkeletonLoader = () => (
-    //   <SkeletonPlaceholder backgroundColor="#e0e0e0" highlightColor="#f5f5f5">
-    //     <View
-    //       style={{
-    //         flexDirection: "column",
-    //         alignItems: "center",
-    //         padding: 15,
-    //         width: "100%",
-    //         marginTop: rem(8),
-    //       }}>
-    //       {[...Array(5)].map((_, index) => (
-    //         <View key={index} style={{ marginVertical: 10 }}>
-    //           <View
-    //             style={{
-    //               flexDirection: "row",
-    //               padding: 10,
-    //               borderRadius: 15,
-    //               borderTopWidth: 7,
-    //               borderTopColor: "#e0e0e0",
-    //             }}>
-    //             <View style={{ width: "90%", padding: 10 }}>
-    //               {/* Individual skeleton items */}
-    //               <View
-    //                 style={{
-    //                   width: 100,
-    //                   height: 16,
-    //                   borderRadius: 4,
-    //                   backgroundColor: "#e0e0e0",
-    //                 }}
-    //               />
-    //               <View
-    //                 style={{
-    //                   marginTop: 8,
-    //                   width: 200,
-    //                   height: 24,
-    //                   borderRadius: 4,
-    //                   backgroundColor: "#e0e0e0",
-    //                 }}
-    //               />
-    //               <View
-    //                 style={{
-    //                   marginTop: 8,
-    //                   width: 150,
-    //                   height: 20,
-    //                   borderRadius: 4,
-    //                   backgroundColor: "#e0e0e0",
-    //                 }}
-    //               />
-    //               <View
-    //                 style={{
-    //                   marginTop: 8,
-    //                   width: 180,
-    //                   height: 20,
-    //                   borderRadius: 4,
-    //                   backgroundColor: "#e0e0e0",
-    //                 }}
-    //               />
-    //               <View
-    //                 style={{
-    //                   marginTop: 8,
-    //                   width: 250,
-    //                   height: 16,
-    //                   borderRadius: 4,
-    //                   backgroundColor: "#e0e0e0",
-    //                 }}
-    //               />
-    //             </View>
-    //             <View
-    //               style={{
-    //                 width: "10%",
-    //                 display: "flex",
-    //                 justifyContent: "center",
-    //                 alignItems: "center",
-    //               }}>
-    //               <View
-    //                 style={{
-    //                   width: 5,
-    //                   height: 5,
-    //                   borderRadius: 20,
-    //                 }}></View>
-    //               <View
-    //                 style={{
-    //                   width: 5,
-    //                   height: 5,
-    //                   borderRadius: 20,
-    //                   marginVertical: 1,
-    //                 }}></View>
-    //               <View
-    //                 style={{
-    //                   width: 5,
-    //                   height: 5,
-    //                   borderRadius: 20,
-    //                 }}></View>
-    //             </View>
-    //           </View>
-    //         </View>
-    //       ))}
-    //     </View>
-    //   </SkeletonPlaceholder>
-    // );
-
     const ListHeader = () => (
       <>
         <View className="flex-row mb-1 items-center">
@@ -202,16 +101,20 @@ const Paginate = forwardRef(
             control={control}
             name="search"
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                className="flex-1 text-base border bg-white px-3 text-black border-gray-300 rounded-md mr-3 "
-                value={value}
-                placeholderTextColor={"grey"}
-                onChangeText={onChange}
-                placeholder="Cari..."
-              />
+              <>
+                <TextInput
+                  className="flex-1 text-base border bg-white px-3 text-black border-gray-300 rounded-md "
+                  value={value}
+                  placeholderTextColor={"grey"}
+                  onChangeText={onChange}
+                  placeholder="Cari..."
+                />
+                <View style={Plugin ? { marginLeft: 12 } : {}}>
+                  {Plugin && <Plugin />}
+                </View>
+              </>
             )}
           />
-          <View className="">{Plugin && <Plugin />}</View>
 
           {/* <TouchableOpacity
             className="bg-[#312e81] p-4 rounded-md justify-center"
@@ -243,96 +146,125 @@ const Paginate = forwardRef(
 
     if (isFetching && page === 1) {
       return (
-        <View className="mt-28">
+        <View className="mt-5 items-center">
+          <View
+            className="flex-row justify-between items-center"
+            LinearGradientComponent={LinearGradient}
+            style={{
+              width: "93%", // Slightly smaller to allow padding space
+            }}>
+            <Skeleton
+              animation="wave"
+              width={220}
+              LinearGradientComponent={LinearGradient}
+              height={53}
+            />
+            <Skeleton
+              animation="wave"
+              width={75}
+              LinearGradientComponent={LinearGradient}
+              height={53}
+            />
+            <Skeleton
+              animation="wave"
+              width={75}
+              LinearGradientComponent={LinearGradient}
+              height={53}
+            />
+          </View>
+
           {cardData.map((item, index) => (
             <View
               key={index}
               style={{
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "space-between",
+                justifyContent: "center", // Center items vertically
                 marginTop: 12,
+                width: "90%", // Keeps everything centered
               }}>
-              <View>
-                <View className=" ">
-                  <View
+              <View className="items-center">
+                <View
+                  LinearGradientComponent={LinearGradient}
+                  style={{
+                    width: "100%",
+                    alignItems: "center", // Centers skeletons horizontally
+                  }}>
+                  <Skeleton
+                    animation="wave"
+                    width={390}
                     LinearGradientComponent={LinearGradient}
-                    style={{ width: "95%" }}>
+                    height={180}
+                  />
+
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: "5%",
+                      left: "5%",
+                    }}>
                     <Skeleton
                       animation="wave"
-                      width={390}
+                      width={80}
+                      height={30}
                       LinearGradientComponent={LinearGradient}
-                      height={180}
                     />
-                    {/* Nested skeleton di dalam skeleton */}
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: "5%",
-                        left: "5%",
-                      }}>
-                      <Skeleton
-                        animation="wave"
-                        width={80}
-                        height={30}
-                        LinearGradientComponent={LinearGradient}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={150}
-                        height={32.5}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={80}
-                        height={30}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={150}
-                        height={32.5}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                    </View>
-                    <View
-                      style={{
-                        position: "absolute",
-                        top: "5%",
-                        left: "50%",
-                      }}>
-                      <Skeleton
-                        animation="wave"
-                        width={80}
-                        height={30}
-                        LinearGradientComponent={LinearGradient}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={150}
-                        height={32.5}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={80}
-                        height={30}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                      <Skeleton
-                        animation="wave"
-                        width={150}
-                        height={32.5}
-                        LinearGradientComponent={LinearGradient}
-                        style={{ marginTop: 10 }}
-                      />
-                    </View>
+                    <Skeleton
+                      animation="wave"
+                      width={150}
+                      height={32.5}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={80}
+                      height={30}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={150}
+                      height={32.5}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                  </View>
+
+                  <View
+                    style={{
+                      position: "absolute",
+                      top: "5%",
+                      left: "50%",
+                    }}>
+                    <Skeleton
+                      animation="wave"
+                      width={80}
+                      height={30}
+                      LinearGradientComponent={LinearGradient}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={150}
+                      height={32.5}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={80}
+                      height={30}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
+                    <Skeleton
+                      animation="wave"
+                      width={150}
+                      height={32.5}
+                      LinearGradientComponent={LinearGradient}
+                      style={{ marginTop: 10 }}
+                    />
                   </View>
                 </View>
 
@@ -341,9 +273,9 @@ const Paginate = forwardRef(
                   style={{
                     width: "5%",
                     position: "absolute",
-                    justifyContent: "flex-end",
                     right: 0,
                     top: "80%",
+                    alignItems: "center", // Center circles vertically
                   }}>
                   <Skeleton
                     animation="wave"

@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 import {
   View,
   Text,
@@ -10,7 +10,7 @@ import {
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
-import { Colors } from 'react-native-ui-lib';
+import { Colors } from "react-native-ui-lib";
 
 const { width } = Dimensions.get("window");
 
@@ -62,20 +62,20 @@ export default function Pembayaran() {
       steps: [
         {
           icon: "assignment",
-          text: "Pilih metode pembayaran yang tersedia",
+          text: "Tunggu data pembayaran di konfirmasi oleh pihak admin",
         },
         {
           icon: "receipt-long",
-          text: "Isi detail pembayaran dengan teliti",
+          text: "Silahkan bayar dengan menggunakan kode VA / QRIS yang telah di sediakan oleh admin",
         },
         {
           icon: "verified-user",
-          text: "Konfirmasi dan verifikasi pembayaran",
+          text: "Jika pembayaran berhasil dilakukan, anda akan mendapatkan invoice",
         },
-        {
-          icon: "check-circle",
-          text: "Tunggu konfirmasi pembayaran berhasil",
-        },
+        // {
+        //   icon: "check-circle",
+        //   text: "Tunggu konfirmasi pembayaran berhasil",
+        // },
       ],
     },
   ];
@@ -106,80 +106,94 @@ export default function Pembayaran() {
         }}
       />
       <View style={styles.container}>
-        <ScrollView 
+        <ScrollView
           className="flex-col"
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={[]}>
-
           {/* Header Section with Gradient */}
-        <View className="min-h-[100px] relative shadow-lg z-10 mb-16"
-        style={{ backgroundColor: Colors.brand }}>
-          <View style={styles.welcomeCard}>
-          <View style={styles.headerSection}>
-            <Text className="text-center" style={styles.headerTitle}>Pembayaran</Text>
-            <Text className="text-center" style={styles.headerSubtitle}>
-              {new Date().toLocaleDateString("id-ID", {
-                weekday: "long",
-                year: "numeric",
-                month: "long",
-                day: "numeric",
-              })}
-            </Text>
-          </View>
-          </View>
-        </View>
-
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
-          <View style={styles.guideContainer}>
-            {paymentGuides[0].steps.map((step, index) => (
-              <View key={index} style={styles.guideStep}>
-                <View style={styles.stepNumberContainer}>
-                  <Text style={styles.stepNumber}>{index + 1}</Text>
-                </View>
-                <View style={styles.stepContent}>
-                  <MaterialIcons name={step.icon} size={24} color="#666" />
-                  <Text style={styles.stepText}>{step.text}</Text>
-                </View>
+          <View
+            className="min-h-[100px] relative shadow-lg z-10 mb-16"
+            style={{ backgroundColor: Colors.brand }}>
+            <View style={styles.welcomeCard}>
+              <View style={styles.headerSection}>
+                <Text className="text-center" style={styles.headerTitle}>
+                  Pembayaran
+                </Text>
+                <Text className="text-center" style={styles.headerSubtitle}>
+                  {new Date().toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </Text>
               </View>
-            ))}
+            </View>
           </View>
 
-          <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
-          <View style={styles.menuGrid}>
-            {paymentMenus.map((menu, index) => (
-              <TouchableOpacity
-              key={index}
-              style={styles.menuCard}
-              onPress={() => navigation.navigate(menu.screen)}>
-                <View style={[styles.menuIconContainer, { backgroundColor: menu.color }]}>
-                  <MaterialIcons name={menu.icon} size={32} color="white" />
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
+            <View style={styles.guideContainer}>
+              {paymentGuides[0].steps.map((step, index) => (
+                <View key={index} style={styles.guideStep}>
+                  <View style={styles.stepNumberContainer}>
+                    <Text style={styles.stepNumber}>{index + 1}</Text>
+                  </View>
+                  <View style={styles.stepContent}>
+                    <MaterialIcons name={step.icon} size={24} color="#666" />
+                    <Text style={styles.stepText}>{step.text}</Text>
+                  </View>
                 </View>
-                <Text style={styles.menuTitle}>{menu.title}</Text>
-                <Text style={styles.menuDescription}>{menu.description}</Text>
-              </TouchableOpacity>
-            ))}
-          </View>
+              ))}
+            </View>
 
-          {/* Payment Information Cards */}
+            <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
+            <View style={styles.menuGrid}>
+              {paymentMenus.map((menu, index) => (
+                <TouchableOpacity
+                  key={index}
+                  style={styles.menuCard}
+                  onPress={() => navigation.navigate(menu.screen)}>
+                  <View
+                    style={[
+                      styles.menuIconContainer,
+                      { backgroundColor: menu.color },
+                    ]}>
+                    <MaterialIcons name={menu.icon} size={32} color="white" />
+                  </View>
+                  <Text style={styles.menuTitle}>{menu.title}</Text>
+                  <Text style={styles.menuDescription}>{menu.description}</Text>
+                </TouchableOpacity>
+              ))}
+            </View>
 
-          <View style={styles.infoSection}>
-            {paymentInfo.features.map((feature, index) => (
-              <View key={index} style={styles.featureCard}>
-                <View style={[styles.featureIconContainer, { backgroundColor: feature.color }]}>
-                  <MaterialIcons name={feature.icon} size={24} color="white" />
+            {/* Payment Information Cards */}
+
+            <View style={styles.infoSection}>
+              {paymentInfo.features.map((feature, index) => (
+                <View key={index} style={styles.featureCard}>
+                  <View
+                    style={[
+                      styles.featureIconContainer,
+                      { backgroundColor: feature.color },
+                    ]}>
+                    <MaterialIcons
+                      name={feature.icon}
+                      size={24}
+                      color="white"
+                    />
+                  </View>
+                  <Text style={styles.featureText}>{feature.text}</Text>
                 </View>
-                <Text style={styles.featureText}>{feature.text}</Text>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
 
-          {/* Payment Methods */}
+            {/* Payment Methods */}
 
-          {/* Payment Guide Section */}
+            {/* Payment Guide Section */}
 
-          {/* Special Offers Section */}
-          {/* <Text style={styles.sectionTitle}>Promo Spesial</Text>
+            {/* Special Offers Section */}
+            {/* <Text style={styles.sectionTitle}>Promo Spesial</Text>
           <ScrollView 
           horizontal 
           showsHorizontalScrollIndicator={false}
@@ -195,7 +209,7 @@ export default function Pembayaran() {
               </View>
               ))}
               </ScrollView> */}
-        </ScrollView>
+          </ScrollView>
         </ScrollView>
       </View>
     </>
@@ -246,12 +260,11 @@ const styles = StyleSheet.create({
   },
   infoSection: {
     marginBottom: 24,
-    
   },
   featureCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'white',
+    flexDirection: "row",
+    alignItems: "center",
+    backgroundColor: "white",
     padding: 16,
     borderRadius: 12,
     marginBottom: 12,
@@ -261,33 +274,33 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
   },
   featureText: {
     flex: 1,
     fontSize: 16,
-    color: '#333',
-    fontFamily: 'Poppins-Medium',
+    color: "#333",
+    fontFamily: "Poppins-Medium",
   },
   sectionTitle: {
     fontSize: 20,
-    color: '#333',
-    fontFamily: 'Poppins-SemiBold',
+    color: "#333",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 16,
   },
   menuGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    flexWrap: "wrap",
+    justifyContent: "space-between",
     marginBottom: 24,
   },
   menuCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
-    width: '48%',
+    width: "48%",
     marginBottom: 16,
     elevation: 3,
   },
@@ -295,65 +308,65 @@ const styles = StyleSheet.create({
     width: 56,
     height: 56,
     borderRadius: 28,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 12,
   },
   menuTitle: {
     fontSize: 17,
-    color: '#333',
-    fontFamily: 'Poppins-SemiBold',
+    color: "#333",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 8,
   },
   menuDescription: {
     fontSize: 13,
-    color: '#666',
-    fontFamily: 'Poppins-Regular',
+    color: "#666",
+    fontFamily: "Poppins-Regular",
     lineHeight: 18,
   },
   guideContainer: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
     elevation: 2,
   },
   guideStep: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 16,
+    flexDirection: "row",
+    alignItems: "center",
+    marginVertical: 10,
   },
   stepNumberContainer: {
     width: 32,
     height: 32,
     borderRadius: 16,
     backgroundColor: Colors.brand,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginRight: 16,
   },
   stepNumber: {
-    color: 'white',
+    color: "white",
     fontSize: 16,
-    fontFamily: 'Poppins-SemiBold',
+    fontFamily: "Poppins-SemiBold",
   },
   stepContent: {
     flex: 1,
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
   },
   stepText: {
     marginLeft: 12,
     fontSize: 14,
-    color: '#333',
-    fontFamily: 'Poppins-Regular',
+    color: "#333",
+    fontFamily: "Poppins-Regular",
     flex: 1,
   },
   offersContainer: {
     paddingBottom: 16,
   },
   offerCard: {
-    backgroundColor: 'white',
+    backgroundColor: "white",
     borderRadius: 16,
     padding: 16,
     marginRight: 16,
@@ -364,26 +377,26 @@ const styles = StyleSheet.create({
     width: 48,
     height: 48,
     borderRadius: 24,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginBottom: 12,
   },
   offerTitle: {
     fontSize: 18,
-    color: '#333',
-    fontFamily: 'Poppins-SemiBold',
+    color: "#333",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 8,
   },
   offerDescription: {
     fontSize: 14,
-    color: '#666',
-    fontFamily: 'Poppins-Regular',
+    color: "#666",
+    fontFamily: "Poppins-Regular",
     marginBottom: 8,
     lineHeight: 20,
   },
   offerValidity: {
     fontSize: 12,
-    color: '#999',
-    fontFamily: 'Poppins-Regular',
+    color: "#999",
+    fontFamily: "Poppins-Regular",
   },
 });
