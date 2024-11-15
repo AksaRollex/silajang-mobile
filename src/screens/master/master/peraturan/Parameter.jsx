@@ -32,7 +32,7 @@ export default memo (function Parameter({ route, navigation }) {
           <Text className="text-base font-poppins-medium text-black">{item.nama}</Text>
           <Text className="text-base font-poppins-medium text-black">{item.harga}</Text>
         </View>
-        <TouchableOpacity className="bg-blue-600 rounded-md p-2">
+        <TouchableOpacity className="bg-[#312e81] rounded-md p-2">
           <FontAwesome6Icon name="plus" size={18} color={"#fff"} />
         </TouchableOpacity>
       </View>

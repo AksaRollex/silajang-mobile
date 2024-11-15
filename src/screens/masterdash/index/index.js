@@ -35,6 +35,7 @@ import FormKecamatan from '../../master/wilayah/kecamatan/FormKecamatan'
 import Kelurahan from '../../master/wilayah/kelurahan/Kelurahan'
 import FormKelurahan from '../../master/wilayah/kelurahan/FormKelurahan'
 import FormUsers from '../../master/user/user/FormUsers'
+import ParameterUsers from '../../master/user/user/ParameterUsers'
 
 const Stack = createNativeStackNavigator()
 export default function MainScreen () {
@@ -68,6 +69,7 @@ export default function MainScreen () {
         <Stack.Screen name="Users" component={Users}/>
         <Stack.Screen name="FormJabatan" component={FormJabatan} />
         <Stack.Screen name="FormUsers" component={FormUsers} />
+        <Stack.Screen name="ParameterUsers" component={ParameterUsers} />
         <Stack.Screen name="KotaKab" component={KotaKab}/>
         <Stack.Screen name="Kecamatan" component={Kecamatan}/>
         <Stack.Screen name="Kelurahan" component={Kelurahan}/>

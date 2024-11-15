@@ -6,6 +6,8 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import IonIcon from "react-native-vector-icons/Ionicons";
+import Feather from "react-native-vector-icons/Feather";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import moment from 'moment';
@@ -151,30 +153,19 @@ const TrackingPengujian = ({ navigation }) => {
             </View>
           </View>
         </View>
-        <View style={{ width: "10%" }} className=" flex justify-start items-center">
-
-          <MenuView
-
-            title="Options"
-            actions={dropdownOptions.map(option => ({
-              ...option,
-            }))}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = dropdownOptions.find(
-                option => option.title === nativeEvent.event,
-              );
-              if (selectedOption) {
-                selectedOption.action(item);
-              }
-            }}
-            shouldOpenOnLongPress={false}>
-            <View>
-              <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-            </View>
-          </MenuView>
-        </View>
 
       </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+          
+          <View className="flex-row justify-end gap-2">
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("DetailTracking", { selected : item })}
+              className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
+            >
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Tracking </Text>
+              <Feather name="chevrons-right" size={14} color="#fff" />
+            </TouchableOpacity>
+          </View>
 
       {item.status < 0 && item.keterangan_revisi && (
         <View className="mt-3 bg-yellow-50 p-3 rounded-md">

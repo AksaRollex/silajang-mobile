@@ -1,13 +1,13 @@
 import { useDelete } from '@/src/hooks/useDelete';
 import Paginate from '@/src/screens/components/Paginate';
-import { MenuView } from "@react-native-menu/menu";
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import { rupiah } from '@/src/libs/utils';
 import Icon from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import BackButton from '@/src/screens/components/BackButton';
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
@@ -21,57 +21,52 @@ const Parameter = ({ navigation }) => {
     },
   });
 
-  const dropdownOptions = [
-    {
-      id: "Edit",
-      title: "Edit",
-      action: item => navigation.navigate("FormParameter", { uuid: item.uuid }),
-      icon: 'edit'
-    },
-    {
-      id: "Hapus",
-      title: "Hapus",
-      action: item => deleteParameter(`/master/parameter/${item.uuid}`),
-    },
-  ];
-
   const renderItem = ({ item }) => (
-    <View className="my-2 bg-[#f8f8f8] flex rounded-md 
-    border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
-      <View className="flex-row justify-between items-center">
+    <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" 
+      style={{ elevation: 4 }}>
+      <View>
+        <View className="flex items-end mb-2">
+          <Text className={`text-sm font-poppins-regular p-1 rounded-md ${
+            item.is_akreditasi ? 'bg-green-200 text-green-500' : 'bg-yellow-100 text-yellow-400'
+          }`}>
+            {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
+          </Text>
+        </View>
+
         <View className="flex-col space-y-4">
           <View className="flex-col justify-between">
             <Text className="text-lg font-poppins-bold text-black">{item.nama}</Text>
             <Text className="text-md font-poppins-semibold text-black">{item.metode}</Text>
           </View>
-          <View className="flex-col ">
+          <View className="flex-col">
             <Text className="text-md font-poppins-medium text-black">{item.satuan}</Text>
             <Text className="text-lg font-poppins-semibold text-black">{rupiah(item.harga)}</Text>
-            <Text className="text-md font-poppins-medium text-black" >{item.mdl}</Text>
+            <Text className="text-md font-poppins-medium text-black">{item.mdl}</Text>
           </View>
         </View>
-        <MenuView title="Menu"
-        actions={dropdownOptions.map(option => ({
-          ...option,
-        }))}
-        onPressAction={({ nativeEvent }) => {
-          const selectedOption = dropdownOptions.find(
-            option => option.title === nativeEvent.event,
-          );
-          if(selectedOption){
-            selectedOption.action(item);
-          }
-        }}
-        shouldOpenOnLongPress={false}>
-        <View className="flex-col gap-4 items-end">
-        <Text className={`text-sm font-poppins-regular p-1 rounded-md ${item.is_akreditasi ? 'bg-green-400' : 'bg-yellow-100'} 
-                ${item.is_akreditasi ? 'text-white' : 'text-yellow-400'} ${item.is_akreditasi ? 'mt-[-10px]' : ''}`}> {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'} </Text>
-          <Entypo name="dots-three-vertical" size={17} color="#312e81" style={{ marginTop: -30 }}/>
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+        
+        <View className="flex-row justify-end gap-2">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("FormParameter", { uuid: item.uuid })}
+            className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+          >
+            <IonIcon name="pencil" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => deleteParameter(`/master/parameter/${item.uuid}`)}
+            className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+          >
+            <IonIcon name="trash" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
+          </TouchableOpacity>
         </View>
-        </MenuView>
       </View>
     </View>
-  )
+  );
 
   return (
     <View className="bg-[#ececec] w-full h-full">
@@ -88,16 +83,15 @@ const Parameter = ({ navigation }) => {
         renderItem={renderItem}
       />
       <Icon
-      name="plus"
-      size={28}
-      color="#fff"
-      style={{ position: "absolute", bottom: 20, 
-      right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-      onPress={() => navigation.navigate("FormParameter")}
+        name="plus"
+        size={28}
+        color="#fff"
+        className="absolute bottom-5 right-5 bg-[#312e81] p-2 rounded-full"
+        onPress={() => navigation.navigate("FormParameter")}
       />
       <DeleteConfirmationModal/>
     </View>
-  )
-}
+  );
+};
 
-export default Parameter
+export default Parameter;

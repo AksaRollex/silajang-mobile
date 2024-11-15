@@ -125,7 +125,7 @@ export default memo(function Form({ route, navigation }) {
   }
 
   return (
-    <ScrollView className="bg-[#ececec] h-full">
+    <View className="bg-[#ececec] h-full">
       <View className="bg-white rounded m-3">
         <View className="flex-row justify-between mx-3 mt-4">
           <BackButton action={() => navigation.goBack()} size={26} />
@@ -216,6 +216,6 @@ export default memo(function Form({ route, navigation }) {
           />
         </View>
       </View>
-    </ScrollView>
+    </View>
   );  
 })

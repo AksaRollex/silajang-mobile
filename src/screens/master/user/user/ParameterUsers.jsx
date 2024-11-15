@@ -9,16 +9,14 @@ import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
 import { HorizontalAlignment } from 'react-native-ui-lib/src/components/gridListItem';
 import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
-import IndexMaster from '../../../masterdash/IndexMaster';
 
 
-const Users = ({ navigation, route }) => {
+const ParameterUsers = ({ navigation, route }) => {
     const Options = [
-        { id: 2, name: "Dinas Internal" },
-        { id: 1, name: "Customer" },
+        { id: 2, name: "Parameter Tersedia" },
+        { id: 1, name: "Parameter Yang Dipilih" },
       ];
 
-    const { golongan_id } = route.params || 2
     const [selectedMenu, setSelectedMenu] = useState(2);
     const paginateRef = useRef();
     const queryClient = useQueryClient();
@@ -96,14 +94,13 @@ const Users = ({ navigation, route }) => {
       );
     }
 
-
     return (
         <SafeAreaView className="flex-1 bg-[#ececec]">
             <View className="flex-row items-center justify-center mt-4 mb-2">
                 <View className="absolute left-4">
                    <BackButton action={() => navigation.goBack()} size={26} />
                 </View>
-                <Text className="text-[20px] font-poppins-semibold text-black">User</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Parameter User</Text>
             </View>
             <View className="flex-row justify-center">
           <View className="mt-3 ml-[-10] mr-2"> 
@@ -135,24 +132,13 @@ const Users = ({ navigation, route }) => {
         </View>
             <Paginate
                 ref={paginateRef}
-                url="/master/user"
+                url="/master/parameter"
                 payload={{
-                    golongan_id: golongan_id ?? selectedMenu,
-                    page: 1,
-                    per: 10,
                 }}
                 renderItem={renderItem}
             />
-            <Icon
-                name="plus"
-                size={28}
-                color="#fff"
-                style={{ position: "absolute", bottom: 20, padding: 10, right: 20, backgroundColor: "#312e81", borderRadius: 50 }}
-                onPress={() => navigation.navigate("FormUsers")}
-            />
-            <DeleteConfirmationModal />
         </SafeAreaView>
     )
 }
 
-export default Users
+export default ParameterUsers
