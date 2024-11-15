@@ -9,6 +9,7 @@ import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
 import {APP_URL} from "@env";
 import RNFetchBlob from 'rn-fetch-blob';
+import BackButton from "@/src/screens/components/BackButton";
 
 const RegistrasiSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -201,7 +202,8 @@ const RegistrasiSampel = ({ navigation }) => {
     <View className="flex-1 bg-gray-100">
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-between items-center mb-4">
-          <Text className="text-xl font-poppins-bold text-black">Registrasi Sampel</Text>
+          <BackButton action={() => navigation.goBack()} size={26} />
+          <Text className="text-lg font-poppins-bold text-black">Registrasi Sampel</Text>
           <TouchableOpacity
             onPress={handleDownloadExcel}
             disabled={isDownloading}
