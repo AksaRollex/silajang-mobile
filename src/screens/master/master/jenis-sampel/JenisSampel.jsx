@@ -1,10 +1,9 @@
-import { View, Text } from "react-native";
+import { View, Text, TouchableOpacity } from "react-native";
 import React, { useRef } from "react";
 import Paginate from "@/src/screens/components/Paginate";
 import { useQueryClient } from "@tanstack/react-query";
 import Icon from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
-import { MenuView } from "@react-native-menu/menu";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 
@@ -22,45 +21,35 @@ const JenisSampel = ({ navigation }) => {
     },
   });
 
-  const dropdownOptions = [
-    {
-      id: "Edit",
-      title: "Edit",
-      action: item =>
-        navigation.navigate("FormJenisSampel", { uuid: item.uuid }),
-    },
-    {
-      id: "Hapus",
-      title: "Hapus",
-      action: item => deleteJenisSampel(`/master/jenis-sampel/${item.uuid}`),
-    },
-  ];
-
   const renderItem = ({ item }) => (
     <View
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
-      <View className="flex-row justify-between items-center">
+      <View>
         <View className="flex-col space-y-2">
           <Text className="text-base font-poppins-semibold text-black">{item.nama}</Text>
           <Text className="text-base font-poppins-medium text-black">{item.kode}</Text>
         </View>
-        <MenuView
-          title="Menu Title"
-          actions={dropdownOptions.map(option => ({
-            ...option,
-          }))}
-          onPressAction={({ nativeEvent }) => {
-            const selectedOption = dropdownOptions.find(
-              option => option.title === nativeEvent.event,
-            );
-            if (selectedOption) {
-              selectedOption.action(item);
-            }
-          }}
-          shouldOpenOnLongPress={false}>
-        <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-        </MenuView>
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+        
+        <View className="flex-row justify-end gap-2">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("FormJenisSampel", { uuid: item.uuid })}
+            className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+          >
+            <IonIcon name="pencil" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => deleteJenisSampel(`/master/jenis-sampel/${item.uuid}`)}
+            className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+          >
+            <IonIcon name="trash" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
+          </TouchableOpacity>
+        </View>
       </View>
     </View>
   );

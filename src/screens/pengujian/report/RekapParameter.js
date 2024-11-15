@@ -285,15 +285,15 @@ const RekapParameter = ({ navigation }) => {
 
             <TouchableOpacity
                 onPress={() => handleDateSelection('start')}
-                className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg border border-gray-300">
-                <Text className="text-center font-poppins-semibold">
+                className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg border border-gray-300 ">
+                <Text className="text-center font-poppins-semibold text-black">
                     {`${dateRange.start} to ${dateRange.end}`}
                 </Text>
             </TouchableOpacity>
 
             <DateTimePickerModal
                 isVisible={showDatePicker}
-                mode="date"
+                mode="date" 
                 onConfirm={handleDateConfirm}
                 onCancel={() => setShowDatePicker(false)}
                 date={new Date(dateType === 'start' ? dateRange.start : dateRange.end)}

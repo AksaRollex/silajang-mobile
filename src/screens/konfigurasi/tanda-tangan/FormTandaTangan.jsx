@@ -169,5 +169,5 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                 </View>
             </View>
         </ScrollView>
-    );
-});
+    )
+})

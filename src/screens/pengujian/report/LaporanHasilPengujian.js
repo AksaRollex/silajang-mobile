@@ -488,7 +488,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     >
                         <View className="flex-row items-center p-2 bg-green-500 rounded-md mr-2">
                             <FontAwesome name="file-text-o" size={16} color="#fff" />
-                            <Text className="ml-2 text-white text-[13px] font-poppins-semibold">TTE</Text>
+                            <Text className="ml-2 text-white text-[13px] font-poppins-semibold">TTE</Text> 
                         </View>
                     </MenuView>
     
