@@ -1,7 +1,8 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import IonIcon from "react-native-vector-icons/Ionicons";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather"
@@ -26,14 +27,6 @@ const TandaTangan = ({ navigation }) => {
     },
   });
 
-  const dropdownOptions = [
-    {
-      id: "Edit",
-      title: "Edit",
-      action: item => navigation.navigate("FormTandaTangan", { uuid: item.uuid }),
-      icon: 'edit'
-    },
-  ];
 
   const CardTandaTangan = ({ item }) => (
     <View
@@ -47,25 +40,18 @@ const TandaTangan = ({ navigation }) => {
         <Text className="text-sm font-poppins-medium text-black">NIK : {item.user?.nik}</Text>
         <Text className="text-sm font-poppins-medium text-black">Jabatan : {item.user?.role?.full_name}</Text>
         </View>
-        <MenuView
-          title="Menu Title"
-          actions={dropdownOptions.map(option => ({
-            ...option,
-          }))}
-          onPressAction={({ nativeEvent }) => {
-            const selectedOption = dropdownOptions.find(
-              option => option.title === nativeEvent.event,
-            );
-            if (selectedOption) {
-              selectedOption.action(item);
-            }
-          }}
-          shouldOpenOnLongPress={false}>
-          <View>
-            <Entypo name="dots-three-vertical" size={15} color="#312e81" />
-          </View>
-        </MenuView>
       </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+          
+          <View className="flex-row justify-end gap-2">
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("FormTandaTangan", { uuid: item.uuid })}
+              className="flex-row items-center bg-blue-600 px-2 py-2 rounded"
+            >
+              <IonIcon name="pencil" size={14} color="#fff" />
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+            </TouchableOpacity>
+          </View>
     </View>
   );
 

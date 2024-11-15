@@ -118,8 +118,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter nama"
-                                />
+                                                             />
                             )}
                         />
                         {errors.nama && (
@@ -137,8 +136,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter NIP"
-                                />
+                                                            />
                             )}
                         />
                     </View>
@@ -153,8 +151,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter NIK"
-                                />
+                                                            />
                             )}
                         />
                     </View>
@@ -176,8 +173,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter email"
-                                    keyboardType="email-address"
+                                                                  keyboardType="email-address"
                                 />
                             )}
                         />
@@ -203,7 +199,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter phone number"
+                                    
                                     keyboardType="phone-pad"
                                 />
                             )}
@@ -228,8 +224,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter instansi"
-                                />
+                                                                 />
                             )}
                         />
                     </View>
@@ -244,8 +239,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter pimpinan"
-                                />
+                                                                 />
                             )}
                         />
                     </View>
@@ -260,8 +254,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={styles.input}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter PJ Mutu"
-                                />
+                                                                />
                             )}
                         />
                     </View>
@@ -282,8 +275,7 @@ export default memo(function Form({ route, navigation }) {
                                         style={styles.input}
                                         value={value}
                                         onChangeText={onChange}
-                                        placeholder="Enter latitude"
-                                        keyboardType="numeric"
+                                                                             keyboardType="numeric"
                                     />
                                 )}
                             />
@@ -298,8 +290,7 @@ export default memo(function Form({ route, navigation }) {
                                         style={styles.input}
                                         value={value}
                                         onChangeText={onChange}
-                                        placeholder="Enter longitude"
-                                        keyboardType="numeric"
+                                                                              keyboardType="numeric"
                                     />
                                 )}
                             />
@@ -316,8 +307,7 @@ export default memo(function Form({ route, navigation }) {
                                     style={[styles.input, styles.textArea]}
                                     value={value}
                                     onChangeText={onChange}
-                                    placeholder="Enter alamat"
-                                    multiline
+                                                                   multiline
                                     numberOfLines={3}
                                 />
                             )}
