@@ -297,6 +297,7 @@ export default function Pengujian() {
                 </View>
                 )}
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("KendaliMutu")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>

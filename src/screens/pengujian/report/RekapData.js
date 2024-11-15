@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Platform, PermissionsAndroid } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Platform, Modal } from 'react-native';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import moment from 'moment';
@@ -9,7 +9,12 @@ import DateTimePickerModal from "react-native-modal-datetime-picker";
 import Paginate from "@/src/screens/components/Paginate";
 import { APP_URL } from "@env";
 import BackButton from "@/src/screens/components/BackButton";
-import Pdf from "react-native-pdf";
+import Pdf from 'react-native-pdf';
+import RNFS from 'react-native-fs';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import Toast from 'react-native-toast-message';
+import Feather from "react-native-vector-icons/Feather";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
 const RekapData = ({navigation}) => {
   const queryClient = useQueryClient();
@@ -19,6 +24,7 @@ const RekapData = ({navigation}) => {
   const [dateType, setDateType] = useState('start'); 
   const [modalVisible, setModalVisible] = useState(false);
   const [mode, setMode] = useState('sampel-permohonan'); 
+  const [reportUrl, setReportUrl] = useState('');
   const [selectedDate, setSelectedDate] = useState({
     start: moment().startOf('month').format('YYYY-MM-DD'),
     end: moment().format('YYYY-MM-DD')
@@ -66,87 +72,66 @@ const RekapData = ({navigation}) => {
     }
   };
 
-  const handleReport = async (mode) => {
-    const authToken = await AsyncStorage.getItem("@auth-token");
-    
-    if (isPreviewMode) {
-      const url = `${APP_URL}/api/v1/report/rekap?token=${authToken}&start=${startDate}&end=${endDate}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`;
-      setReportUrl(url);
-      setModalVisible(true);
-    } else {
+  const handlePreviewPDF = async () => {
       try {
-        const response = await fetch(
-          `${APP_URL}/report/rekap?start=${startDate}&end=${endDate}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`,
-          {
-            headers: {
-              Authorization: `Bearer ${authToken}`
-            }
-          }
-        );
-        
-        if (!response.ok) {
-          throw new Error('Download failed');
-        }
-  
-        const blob = await response.blob();
-        const filePath = `${RNFS.DocumentDirectoryPath}/report_${Date.now()}.pdf`;
-        await RNFS.writeFile(filePath, blob, 'base64');
-        
-        Alert.alert('Success', 'Report downloaded successfully');
+          const authToken = await AsyncStorage.getItem('@auth-token');
+          // Preview URL menggunakan full path dengan /api/v1 dan membutuhkan token
+          setReportUrl(`${APP_URL}/api/v1/report/rekap?token=${authToken}&start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`);
+          setModalVisible(true);
       } catch (error) {
-        console.error('Download error:', error);
-        Alert.alert('Error', 'Failed to download report');
+          console.error('Preview error:', error);
+          Toast.show({
+              type: 'error',  
+              text1: 'Error',
+              text2: 'Gagal memuat preview PDF',
+          });
       }
-    }
   };
 
-  const downloadPdf = async (url, params) => {
-    try {
-      if (Platform.OS === 'android') {
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
-        );
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          throw new Error('Storage permission denied');
-        }
+  const handleDownloadPDF = async () => {
+      try {
+          const authToken = await AsyncStorage.getItem('@auth-token');
+          const fileName = `RekapParameter_${Date.now()}.pdf`;
+          const downloadPath = Platform.OS === 'ios'
+              ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+              : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+          // Download URL menggunakan path yang lebih pendek tanpa /api/v1
+          const downloadUrl = `${APP_URL}/report/rekap?start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`;
+
+          const options = {
+              fromUrl: downloadUrl,
+              toFile: downloadPath,
+              headers: {
+                  'Authorization': `Bearer ${authToken}`,
+              },
+          };
+
+          setIsDownloading(true);
+          const result = await RNFS.downloadFile(options).promise;
+          setIsDownloading(false);
+
+          if (result.statusCode === 200) {
+              if (Platform.OS === 'android') {
+                  await RNFS.scanFile(downloadPath);
+              }
+              Toast.show({
+                  type: 'success',
+                  text1: 'Success',
+                  text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'File tersimpan di Files app.' : `File tersimpan sebagai ${fileName} di folder Downloads.`}`,
+              });
+          } else {
+              throw new Error('Download failed');
+          }
+      } catch (error) {
+          setIsDownloading(false);
+          console.error('Download error:', error);
+          Toast.show({
+              type: 'error',
+              text1: 'Error',
+              text2: `PDF gagal diunduh: ${error.message}`,
+          });
       }
-
-      const queryString = Object.keys(params)
-        .map(key => `${key}=${params[key]}`)
-        .join('&');
-      
-      const fullUrl = `${APP_URL}${url}?${queryString}`;
-      const timestamp = new Date().getTime();
-      const filename = `report_${timestamp}.pdf`;
-
-      const { dirs } = RNFetchBlob.fs;
-      const dirToSave = Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
-      const filePath = `${dirToSave}/${filename}`;
-
-      const response = await RNFetchBlob.config({
-        fileCache: true,
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: true,
-          path: filePath,
-          description: 'Downloading PDF Report',
-          mime: 'application/pdf',
-        },
-        path: filePath
-      }).fetch('GET', fullUrl, {
-        'Content-Type': 'application/json',
-        'Accept': 'application/pdf',
-      });
-
-      if (Platform.OS === 'ios') {
-        RNFetchBlob.ios.openDocument(response.path());
-      }
-
-      return response.path();
-    } catch (error) {
-      console.error('Download error:', error);
-      throw error;
-    }
   };
 
   const getTipeMandirisActions = () => {
@@ -235,21 +220,14 @@ const RekapData = ({navigation}) => {
         <View className="flex-row justify-between items-center mb-4">
           <BackButton action={() => navigation.goBack()} size={26} />
           <Text className="text-lg font-poppins-bold text-black ml-16 self-center">Rekap Data</Text>
-          <TouchableOpacity
-            onPress={handleReport}
-            disabled={isDownloading}
-            className={`flex-row space-x-2 ${
-              isDownloading ? 'bg-gray-100' : 'bg-red-50'
-            } px-4 py-2 rounded-md`}>
-            {isDownloading ? (
-              <ActivityIndicator size="small" color="#dc2626" />
-            ) : (
-              <MaterialIcons name="file-download" size={20} color="#dc2626" />
-            )}
-            <Text className="text-red-600 font-poppins-semibold">
-              {isDownloading ? 'Downloading...' : 'Cetak'}
-            </Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+                className="bg-red-100 py-2 px-4 rounded-lg"
+            >
+                <View className="flex-row">
+                <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{marginRight: 5}}/>
+                <Text className="font-poppins-semibold text-red-500" onPress={handlePreviewPDF}>Cetak</Text>
+                </View>
+            </TouchableOpacity>
         </View>
 
         <TouchableOpacity
@@ -342,6 +320,44 @@ const RekapData = ({navigation}) => {
         onCancel={() => setShowDatePicker(false)}
         date={new Date(dateType === 'start' ? selectedDate.start : selectedDate.end)}
       />
+      
+      <Modal
+                transparent={true}
+                animationType="slide"
+                visible={modalVisible}
+                onRequestClose={() => setModalVisible(false)}
+            >
+                <View className="flex-1 justify-center items-center bg-black bg-black/50">
+                    <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+                        <View className="flex-row justify-between items-center p-4">
+                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    handleDownloadPDF();
+                                    setModalVisible(false);
+                                }}
+                                className="p-2 rounded flex-row items-center"
+                            >
+                                <Feather name="download" size={21} color="black" />
+                            </TouchableOpacity>
+                        </View>
+                        <Pdf
+                            source={{ uri: reportUrl, cache: true }}
+                            style={{ flex: 1 }}
+                            trustAllCerts={false}
+                        />
+                        <View className="flex-row justify-between m-4">
+                            <TouchableOpacity
+                                onPress={() => setModalVisible(false)}
+                                className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
+                            >
+                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                            </TouchableOpacity>
+                        </View>
+                    </View>
+                </View>
+            </Modal>
+
     </View>
   );
 };

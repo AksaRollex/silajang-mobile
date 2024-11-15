@@ -32,6 +32,7 @@ import HasilUjis from "./verifikasi/Kortek/HasilUjis"
 import CetakLHU from "./verifikasi/CetakLHU"
 import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
 import LaporanHasilPengujian from "./report/LaporanHasilPengujian"
+import KendaliMutu from "./report/KendaliMutu";
 import RegistrasiSampel from "./report/RegistrasiSampel"
 import RekapData from "./report/RekapData"
 import RekapParameter from "./report/RekapParameter";
@@ -158,6 +159,11 @@ export default function MainScreen() {
       />
 
       <Stack.Screen
+        name="KendaliMutu"
+        component={KendaliMutu}
+      />
+
+      <Stack.Screen
         name="RegistrasiSampel"
         component={RegistrasiSampel}
       />
@@ -171,6 +177,7 @@ export default function MainScreen() {
         name="RekapParameter"
         component={RekapParameter}
       />
+
    </Stack.Navigator>
   );
 }
