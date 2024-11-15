@@ -188,6 +188,7 @@ export default function IndexMaster() {
               </View>
             )}
             {hasItemAccess('paket') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Paket</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -198,12 +199,12 @@ export default function IndexMaster() {
                 )}
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("Paket")}
-                
               />
-              
-
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('pengawetan') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Pengawetan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -216,9 +217,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("Pengawetan")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('jenis-sampel') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -231,9 +234,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("JenisSampel")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('jenis-wadah') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Wadah</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -246,9 +251,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("JenisWadah")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('jasa-pengambilan') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jasa Pengambilan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -261,9 +268,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("JasaPengambilan")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('radius-pengambilan') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Radius Pengambilan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -276,9 +285,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("RadiusPengambilan")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('libur-cuti') && (
+              <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Libur Cuti</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
@@ -291,9 +302,11 @@ export default function IndexMaster() {
                 onPress={() => navigation.navigate("LiburCuti")}
                 
               />
-              
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
             {hasItemAccess('kode-retribusi') && (
+              <View>
               <List.Item
                 style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kode Retribusi</Text>}
@@ -306,6 +319,8 @@ export default function IndexMaster() {
                 className='px-5 bg-[#f8f8f8] ml-3 mr-3'
                 onPress={() => navigation.navigate("KodeRetribusi")}
               />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
             )}
           </>
         )}
