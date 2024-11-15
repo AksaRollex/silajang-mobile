@@ -159,8 +159,8 @@ const TrackingPengujian = ({ navigation }) => {
           
           <View className="flex-row justify-end gap-2">
             <TouchableOpacity 
-              onPress={() => navigation.navigate("FormTandaTangan", { uuid: item.uuid })}
-              className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+              onPress={() => navigation.navigate("DetailTracking", { selected : item })}
+              className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
             >
               <Text className="text-white ml-1 text-xs font-poppins-medium">Tracking </Text>
               <Feather name="chevrons-right" size={14} color="#fff" />
