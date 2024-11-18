@@ -306,22 +306,22 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const getLocation = () => {
     setLoading(true);
-
+    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
+  
     Geolocation.getCurrentPosition(
       position => {
         const latitude = position.coords.latitude.toString();
         const longitude = position.coords.longitude.toString();
-
+  
         setLocation({
           latitude,
           longitude,
         });
-
+  
         setValue("south", latitude);
         setValue("east", longitude);
-
-        setModalVisible(true); // Tampilkan modal setelah mendapatkan lokasi
-        setLoading(false); // Selesai loading
+  
+        setLoading(false); // Selesai loading saat koordinat didapatkan
       },
       error => {
         console.log(error.code, error.message);
@@ -330,7 +330,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
-
+  
   const handleLocationPress = () => {
     if (Platform.OS === "android") {
       const permissionGranted = requestLocationPermission();

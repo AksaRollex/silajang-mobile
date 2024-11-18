@@ -45,7 +45,7 @@ const Perusahaan = () => {
 
   const [kelurahan, setKelurahan] = useState([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
 
@@ -76,24 +76,34 @@ const Perusahaan = () => {
     }
   };
   const getLocation = () => {
+    setLoading(true);
+    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
+  
     Geolocation.getCurrentPosition(
       position => {
+        const latitude = position.coords.latitude.toString();
+        const longitude = position.coords.longitude.toString();
+  
         setLocation({
-          lat: position.coords.latitude.toString(),
-          long: position.coords.longitude.toString(),
+          latitude,
+          longitude,
         });
-        Alert.alert(
-          "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
-        );
+  
+        setValue("south", latitude);
+        setValue("east", longitude);
+  
+        setLoading(false); // Selesai loading saat koordinat didapatkan
       },
       error => {
         console.log(error.code, error.message);
+        setLoading(false); // Selesai loading jika terjadi error
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
+
   const handleLocationPress = () => {
+    setLoading(true);
     if (Platform.OS === "android") {
       requestLocationPermission();
     } else {
@@ -396,7 +406,7 @@ const Perusahaan = () => {
                 borderRadius: 8,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
               Informasi Perusahaan
             </Text>
           </View>
@@ -457,6 +467,7 @@ const Perusahaan = () => {
                     <TextField
                       value={value}
                       enableErrors
+                      placeholder="Masukkan nama instansi"
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       onChangeText={onChange}
                     />
@@ -464,7 +475,9 @@ const Perusahaan = () => {
                 )}
               />
               {errors.instansi && (
-                <Text style={{ color: "red", }} className="bottom-5">{errors.instansi.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.instansi.message}
+                </Text>
               )}
 
               <Controller
@@ -480,16 +493,18 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan alamat industri"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
                     />
                   </View>
                 )}
-                  
-                />
+              />
               {errors.alamat && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.alamat.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.alamat.message}
+                </Text>
               )}
 
               <Controller
@@ -504,6 +519,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan nama pimpinan"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
@@ -511,7 +527,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pimpinan && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.pimpinan.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.pimpinan.message}
+                </Text>
               )}
 
               <Controller
@@ -526,6 +544,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan PJ Mutu"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
@@ -533,7 +552,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.pj_mutu && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.pj_mutu.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.pj_mutu.message}
+                </Text>
               )}
 
               <Controller
@@ -549,13 +570,16 @@ const Perusahaan = () => {
                       onChangeText={onChange}
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan No Telepon"
                       keyboardType="phone-pad"
                       value={value}
                     />
                   </View>
                 )}></Controller>
               {errors.telepon && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.telepon.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.telepon.message}
+                </Text>
               )}
 
               <Controller
@@ -570,6 +594,7 @@ const Perusahaan = () => {
                       onChangeText={onChange}
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan fax"
                       keyboardType="phone-pad"
                       value={value}
                     />
@@ -588,6 +613,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan email"
                       keyboardType="email-address"
                       onChangeText={onChange}
                       value={value}
@@ -595,7 +621,9 @@ const Perusahaan = () => {
                   </View>
                 )}></Controller>
               {errors.email && (
-                <Text style={{ color: "red" }} className="bottom-5">{errors.email.message}</Text>
+                <Text style={{ color: "red" }} className="bottom-5">
+                  {errors.email.message}
+                </Text>
               )}
 
               <Controller
@@ -610,6 +638,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan jenis kegiatan"
                       keyboardType="text-input"
                       onChangeText={onChange}
                       value={value}
@@ -645,7 +674,7 @@ const Perusahaan = () => {
                       </View>
                     )}
                   />
-                  
+
                   <Controller
                     control={control}
                     name="long"
@@ -670,17 +699,17 @@ const Perusahaan = () => {
                   />
                 </View>
                 <View className="flex-row">
-                {errors.lat && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.lat.message}
-                </Text>
-              )}
+                  {errors.lat && (
+                    <Text style={{ color: "red" }} className="bottom-5">
+                      {errors.lat.message}
+                    </Text>
+                  )}
                   {errors.long && (
-                <Text style={{ color: "red" }} className="bottom-5 ml-14">
-                  {errors.long.message}
-                </Text>
-              )}
-              </View>
+                    <Text style={{ color: "red" }} className="bottom-5 ml-14">
+                      {errors.long.message}
+                    </Text>
+                  )}
+                </View>
                 <TouchableOpacity
                   onPress={handleLocationPress}
                   className="w-full p-3 rounded-3xl bg-[#007AFF]">
@@ -697,26 +726,84 @@ const Perusahaan = () => {
                 </TouchableOpacity>
               </View>
 
-              <Modal
-                animationType="slide"
-                transparent={true}
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}>
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Anda Berada Pada :</Text>
-                    <Text style={styles.modalText}>
-                      Lintang: {location.lat}
-                    </Text>
-                    <Text style={styles.modalText}>Bujur: {location.long}</Text>
-                    {/* <TouchableOpacity
-                  style={styles.buttonModal}
-                  onPress={() => setModalVisible(false)}>
-                  <Text>Tutup</Text>
-                </TouchableOpacity> */}
+                <Modal
+                  transparent={true}
+                  visible={modalVisible}
+                  animationType="fade"
+                  onRequestClose={() => setModalVisible(false)}>
+                  <View
+                    style={{
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
+                    }}>
+                    <View
+                      style={{
+                        width: 300,
+                        padding: 20,
+                        backgroundColor: "white",
+                        borderRadius: 10,
+                        alignItems: "center",
+                      }}>
+                      <Text
+                        style={{
+                          fontSize: 18,
+                          fontWeight: "bold",
+                          marginBottom: 15,
+                          color: "black",
+                        }}>
+                        Koordinat Anda
+                      </Text>
+
+                      <View
+                        style={{
+                          width: "100%",
+                          borderBottomWidth: 1,
+                          borderBottomColor: "#dedede",
+                          marginBottom: 15,
+                        }}
+                      />
+
+                      {loading ? (
+                        <ActivityIndicator size="large" style={{ marginBottom: 15 }} color="#007AFF" />
+                      ) : (
+                        <>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              marginBottom: 10,
+                              color: "black",
+                            }}>
+                            Latitude: {location.latitude}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              marginBottom: 25,
+                              color: "black",
+                            }}>
+                            Longitude: {location.longitude}
+                          </Text>
+                        </>
+                      )}
+
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          onPress={() => setModalVisible(false)}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            backgroundColor: "#dedede",
+                            borderRadius: 5,
+                            marginRight: 10,
+                          }}>
+                          <Text style={{ color: "black" }}>Tutup</Text>
+                        </TouchableOpacity>
+                      </View>
+                    </View>
                   </View>
-                </View>
-              </Modal>
+                </Modal>
 
               <Controller
                 name="kab_kota_id"
@@ -869,7 +956,6 @@ const Perusahaan = () => {
 };
 
 const styles = StyleSheet.create({
-  
   modalContainer: {
     flex: 1,
     justifyContent: "center",

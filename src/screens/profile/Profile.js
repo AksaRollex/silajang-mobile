@@ -84,7 +84,9 @@ export default function Profile({ navigation }) {
               <View className="w-full items-center mt-28 justify-center">
                 {userData ? (
                   <TouchableOpacity
-                    onPress={() => openImageViewer(userData.photo)}>
+                    onPress={() => openImageViewer(userData.photo)}
+                    style={{ position: "absolute", zIndex: 10, top: "50%", alignSelf: "center" }}
+                    >
                     <FastImage
                       className="rounded-full w-28 h-28"
                       source={{
@@ -112,7 +114,7 @@ export default function Profile({ navigation }) {
           </View>
         )}
         <View className="h-full bottom-52">
-          <View className="rounded-3xl h-full bg-slate-200 ">
+          <View className="rounded-3xl h-full bg-slate-200">
             {userData ? (
               <>
                 <View className="flex-col align-center justify-center mx-2 mt-16">
@@ -190,7 +192,7 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-36 items-center justify-center flex-end">
+              <View className="top-32 items-center justify-center flex-end">
                 <Text className="flex-end">
                   <FooterText />
                 </Text>

@@ -193,7 +193,7 @@ const Akun = () => {
                 borderRadius: 8,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
               Informasi Personal
             </Text>
           </View>

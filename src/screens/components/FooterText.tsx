@@ -5,19 +5,16 @@ export default function FooterText() {
   return (
     <View style={styles.Container}>
       <View style={styles.footer}>
-        <View style={{  flexDirection : 'row' }}>
-
-
-        <Text style={styles.footerText}>
-          2024 © 
-        </Text>
-        <Text style={styles.footerTexts} >
-          SI-LAJANG 
-        </Text>
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text style={styles.footerText}>{new Date().getFullYear()} © SI-LAJANG v.3</Text>
+          <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
         </View>
-        <Text style={styles.footerText}>
-          Sistem Informasi Laboratorium Lingkungan Jombang
-        </Text>
+        <Text style={styles.footerText}>DINAS LINGKUNGAN HIDUP KAB.JOMBANG</Text>
       </View>
     </View>
   );
@@ -36,14 +33,14 @@ const styles = StyleSheet.create({
   },
   footerText: {
     alignSelf: "center",
-    color: "black",
-    fontSize: 12,
+    color: "grey",
+    fontSize: 10,
     fontFamily: "Poppins-Regular",
   },
   footerTexts: {
     alignSelf: "center",
-    color: "black",
-    fontSize: 12 ,
+    color: "grey",
+    fontSize: 10,
     fontFamily: "Poppins-Bold",
   },
 });

@@ -504,7 +504,7 @@ const styles = StyleSheet.create({
   welcomeText: {
     fontSize: 21,
     color: "#333",
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Bold",
   },
   dateText: {
     fontSize: 14,
