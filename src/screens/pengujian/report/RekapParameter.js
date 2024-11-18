@@ -276,7 +276,7 @@ const RekapParameter = ({ navigation }) => {
                     >
                         <View className="flex-row">
                         <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{marginRight: 5}}/>
-                        <Text className="font-poppins-semibold text-red-500" onPress={handlePreviewPDF}>Cetak</Text>
+                        <Text className="font-poppins-semibold text-red-500 text-[11px]" onPress={handlePreviewPDF}>Rekap Laporan</Text>
                         </View>
                     </TouchableOpacity>
                 </View>

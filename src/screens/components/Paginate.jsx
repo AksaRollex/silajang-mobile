@@ -89,7 +89,7 @@ const ListItemSkeleton = () => (
   </View>
 );
 
-// Search form component
+// Search form comkelponent
 const SearchForm = ({ control, onSubmit, isLoading }) => (
   <View className="flex-row mb-4 items-center">
     <Controller

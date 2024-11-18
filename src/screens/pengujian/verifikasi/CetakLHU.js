@@ -197,10 +197,10 @@ const HasilUjis = ({ navigation, route }) => {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">
+            <Text className="text-[17px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
             <Text className="text-[14px] text-black font-poppins-semibold mb-1">
               Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
             </Text>
