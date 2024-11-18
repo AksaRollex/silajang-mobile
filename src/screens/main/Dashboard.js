@@ -89,45 +89,44 @@ const Dashboard = () => {
 
     return (
       <>
-        <View className="px-4 py-2 w-full">
-      <View className="bg-white rounded-lg border border-gray-200" style={{ elevation: 8 }}>
-        <View className="p-4 flex-row justify-between">
-        <View className="flex-row gap-2 items-center">
-         <IonIcons 
-                name="calendar-clear" 
-                size={27} 
-                color={"#4d5b7a"}
-                />
-          <Text className="text-lg text-gray-600 font-poppins-bold" style={{ top: 3 }}>
-            Tahun
-          </Text>
-        </View>
-          
-          <TouchableOpacity
-            onPress={handleFilterPress}
-            className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg" >
-            <View className="flex-row items-center">
-             
-              <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
-                {tahun}
-              </Text>
-            </View>
-            <MaterialIcons 
-              name="keyboard-arrow-down" 
-              size={24} 
-              className="text-gray-600" 
-            />
-          </TouchableOpacity>
-        </View>
-      </View>
+        <View className="px-4 py-2 w-full mt-2">
+          <View
+            className="bg-white rounded-lg border border-gray-200"
+            style={{ elevation: 8 }}>
+            <View className="p-4 flex-row justify-between">
+              <View className="flex-row gap-2 items-center">
+                <IonIcons name="calendar-clear" size={27} color={"#4d5b7a"} />
+                <Text
+                  className="text-lg text-gray-600 font-poppins-bold"
+                  style={{ top: 3 }}>
+                  Tahun
+                </Text>
+              </View>
 
-      <YearPicker
-        visible={isYearPickerVisible}
-        onClose={() => setIsYearPickerVisible(false)}
-        onSelect={handleYearSelect}
-        selectedYear={tahun}
-      />
-    </View>
+              <TouchableOpacity
+                onPress={handleFilterPress}
+                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg">
+                <View className="flex-row items-center">
+                  <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
+                    {tahun}
+                  </Text>
+                </View>
+                <MaterialIcons
+                  name="keyboard-arrow-down"
+                  size={24}
+                  className="text-gray-600"
+                />
+              </TouchableOpacity>
+            </View>
+          </View>
+
+          <YearPicker
+            visible={isYearPickerVisible}
+            onClose={() => setIsYearPickerVisible(false)}
+            onSelect={handleYearSelect}
+            selectedYear={tahun}
+          />
+        </View>
       </>
     );
   };
@@ -185,95 +184,94 @@ const Dashboard = () => {
 
   return (
     <View style={styles.container}>
-    <ScrollView
-      className="flex-col"
-      showsVerticalScrollIndicator={false}
-      stickyHeaderIndices={[]}>
-        
-    <ImageBackground
-    source={require("../../../assets/images/background.png")}
-            style={{
-              flex: 1,
-              height: "68%", // Pastikan gambar menutupi area yang diinginkan
-              // borderBottomLeftRadius: 20,
-              // borderBottomRightRadius: 20,
-            }}>
-      <Header
-        navigate={() => {
-          navigation.navigate("Profile");
-        }}
-      />
-      <Filtah tahun={tahun} onYearChange={handleYearChange} />
-      {user.has_tagihan && (
-        <View style={styles.warningContainer}>
-          <View style={styles.warningContent}>
-            <FontAwesome6Icon
-              name="triangle-exclamation"
-              size={20}
-              color="#D97706"
-            />
-            <View style={styles.warningTextContainer}>
-              <Text style={styles.warningTitle}>
-                Tidak dapat membuat Permohonan Baru
-              </Text>
-              <Text style={styles.warningSubtitle}>
-                Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-              </Text>
-            </View>
-          </View>
-        </View>
-      )}
-      </ImageBackground>
-
       <ScrollView
-        contentContainerStyle={styles.scrollViewContainer}
-        showsVerticalScrollIndicator={false}>
-        <View style={styles.dashboardContainer}>
-          {dashboard ? (
-            <>
-              <DashboardCard
-                style={styles.cardNew}
-                number={dashboard.permohonanBaru}
-                text="Permohonan Baru"
-                icon="file-circle-plus"
-                iconColor="#6366F1"
-                gradientColors={["#EEF2FF", "#C7D2FE"]}
-              />
-              <DashboardCard
-                style={styles.cardProcess}
-                number={dashboard.permohonanDiproses}
-                text="Sedang Diproses"
-                icon="leaf"
-                iconColor="#EC4899"
-                gradientColors={["#FCE7F3", "#FBCFE8"]}
+        className="flex-col"
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[]}>
+        <ImageBackground
+          source={require("../../../assets/images/background.png")}
+          style={{
+            flex: 1,
+            height: "34%", // Pastikan gambar menutupi area yang diinginkan
+            // borderBottomLeftRadius: 20,
+            // borderBottomRightRadius: 20,
+          }}>
+          <Header
+            navigate={() => {
+              navigation.navigate("Profile");
+            }}
+          />
+          <Filtah tahun={tahun} onYearChange={handleYearChange} />
+          {user.has_tagihan && (
+            <View style={styles.warningContainer}>
+              <View style={styles.warningContent}>
+                <FontAwesome6Icon
+                  name="triangle-exclamation"
+                  size={20}
+                  color="#D97706"
                 />
-              <DashboardCard
-                style={styles.cardCompleted}
-                number={dashboard.permohonanSelesai}
-                text="Telah Selesai"
-                icon="clipboard-check"
-                iconColor="#10B981"
-                gradientColors={["#ECFDF5", "#A7F3D0"]}
-                />
-              <DashboardCard
-                style={styles.cardTotal}
-                className="mb-2"
-                number={dashboard.permohonanTotal}
-                text="Total Permohonan"
-                icon="chart-pie"
-                iconColor="#8B5CF6"
-                gradientColors={["#EDE9FE", "#DDD6FE"]}
-                />
-            </>
-          ) : (
-            <View style={styles.loadingContainer}>
-              <ActivityIndicator size="large" color="#6366F1" />
+                <View style={styles.warningTextContainer}>
+                  <Text style={styles.warningTitle}>
+                    Tidak dapat membuat Permohonan Baru
+                  </Text>
+                  <Text style={styles.warningSubtitle}>
+                    Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                  </Text>
+                </View>
+              </View>
             </View>
           )}
-        </View>
-        {/* <FooterText /> */}
+        </ImageBackground>
+
+        <ScrollView
+          contentContainerStyle={styles.scrollViewContainer}
+          showsVerticalScrollIndicator={false}>
+          <View style={styles.dashboardContainer}>
+            {dashboard ? (
+              <>
+                <DashboardCard
+                  style={styles.cardNew}
+                  number={dashboard.permohonanBaru}
+                  text="Permohonan Baru"
+                  icon="file-circle-plus"
+                  iconColor="#6366F1"
+                  gradientColors={["#EEF2FF", "#C7D2FE"]}
+                />
+                <DashboardCard
+                  style={styles.cardProcess}
+                  number={dashboard.permohonanDiproses}
+                  text="Sedang Diproses"
+                  icon="leaf"
+                  iconColor="#EC4899"
+                  gradientColors={["#FCE7F3", "#FBCFE8"]}
+                />
+                <DashboardCard
+                  style={styles.cardCompleted}
+                  number={dashboard.permohonanSelesai}
+                  text="Telah Selesai"
+                  icon="clipboard-check"
+                  iconColor="#10B981"
+                  gradientColors={["#ECFDF5", "#A7F3D0"]}
+                />
+                <DashboardCard
+                  style={styles.cardTotal}
+                  className="mb-2"
+                  number={dashboard.permohonanTotal}
+                  text="Total Permohonan"
+                  icon="chart-pie"
+                  iconColor="#8B5CF6"
+                  gradientColors={["#EDE9FE", "#DDD6FE"]}
+                />
+              </>
+            ) : (
+              <View style={styles.loadingContainer}>
+                <ActivityIndicator size="large" color="#6366F1" />
+              </View>
+            )}
+          </View>
+          {/* <FooterText /> */}
+        </ScrollView>
       </ScrollView>
-    </ScrollView>
     </View>
   );
 };
@@ -457,24 +455,24 @@ const styles = StyleSheet.create({
   yearSelectorContainer: {
     zIndex: 10,
     marginHorizontal: 35,
-    backgroundColor: '#FFFFFF',
+    backgroundColor: "#FFFFFF",
     borderRadius: 12,
     padding: 8,
-    position: 'absolute',
+    position: "absolute",
     top: 60,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.05,
     shadowRadius: 3,
     elevation: 10,
-    width: '80%',
+    width: "80%",
   },
   yearLabel: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 7,
     left: 6,
   },
