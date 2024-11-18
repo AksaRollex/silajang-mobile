@@ -37,7 +37,7 @@ const Persetujuan = ({ navigation }) => {
   const [selectedPengambil, setSelectedPengambil] = useState(0);
   const paginateRef = useRef();
   const queryClient = useQueryClient();
-  const [selectedCetak, setSelectedCetak] = useState(1);
+  const [selectedCetak, setSelectedCetak] = useState(1);  
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
 
@@ -117,24 +117,7 @@ const Persetujuan = ({ navigation }) => {
 
 
   const renderItem = ({ item }) => {
-    const isConfirmed = selectedPengambil === 1; // Telah Diambil
-
-    const dropdownOptions = isConfirmed
-      ? [
-        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
-        { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling({ uuid: item.uuid }) },
-        {
-          id: "Berita Acara",
-          title: "Berita Acara",
-          subactions: [
-            { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan", action: item => BeritaAcara({ uuid: item.uuid }) },
-            { id: "Data Pengambilan", title: "Data Pengambilan", action: item => DataPengambilan({ uuid: item.uuid }) },
-          ]
-        }
-      ]
-      : [
-        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) }
-      ];
+    const isConfirmed = selectedPengambil === 1; 
 
     return (
       <View
@@ -173,39 +156,55 @@ const Persetujuan = ({ navigation }) => {
                     : 'Menunggu'}
               </Text>
             )}
-            <View className="my-2 ml-10">
-              <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptions.map(option => ({
-                  ...option,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  const sub = dropdownOptions.find(
-                    option => option.subactions && option.subactions.some(
-                      suboption => suboption.title === nativeEvent.event
-                    )
-                  );
-                  if (selectedOption) {
-                    selectedOption.action(item);
-                  }
-                  if (sub) {
-                    const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                    if (selectedSub) {
-                      selectedSub.action(item);
-                    }
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-              >
-                <View>
-                  <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                </View>
-              </MenuView>
-            </View>
           </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2 my-1 ">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailPersetujuan", { uuid: item.uuid })}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </TouchableOpacity>
+
+          {isConfirmed && (
+            <TouchableOpacity 
+            onPress={() => CetakSampling({ uuid: item.uuid })}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Cetak Sampling</Text>
+          </TouchableOpacity>
+          )}
+           {isConfirmed && (
+          <MenuView
+            title="Berita Acara"
+            actions={[
+              {
+                id: "Berita Acara Pengambilan",
+                title: "Berita Acara Pengambilan",
+                action: () => BeritaAcara({ uuid: item.uuid }),
+              },
+              {
+                id: "Data Pengambilan",
+                title: "Data Pengambilan",
+                action: () => DataPengambilan({ uuid: item.uuid }),
+              },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = nativeEvent.event;
+              if (selectedOption === "Berita Acara Pengambilan") {
+                BeritaAcara({ uuid: item.uuid });
+              } else if (selectedOption === "Data Pengambilan") {
+                DataPengambilan({ uuid: item.uuid });
+              }
+            }}
+          >
+            <TouchableOpacity className="bg-indigo-900 px-4 py-2 rounded-md flex-row items-center">
+              <Text className="text-white font-poppins-medium text-[12px] mr-2">Berita Acara</Text>
+              <Feather name="chevron-down" size={14} color="#fff" />
+            </TouchableOpacity>
+          </MenuView>
+          )}
         </View>
       </View>
     );

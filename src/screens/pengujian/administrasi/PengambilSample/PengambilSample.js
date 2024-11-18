@@ -146,7 +146,6 @@ const PengambilSampel = ({ navigation }) => {
 
   const renderItem = ({ item }) => {
     const isDiterima = item.kesimpulan_permohonan;
-    const dropdownOptionsForItem = isDiterima ? dropdownOptions : dropdownOptions1;
 
   
     return (
@@ -186,43 +185,57 @@ const PengambilSampel = ({ navigation }) => {
               {item.kesimpulan_permohonan == 1 ? 'Diterima' 
                 : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
                 : 'Menunggu'}
-            </Text>           
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptionsForItem.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptionsForItem.find(
-                  option => option.title === nativeEvent.event,
-                );
-                const sub = dropdownOptionsForItem.find(
-                  option => option.subactions && option.subactions.some(
-                    suboption => suboption.title === nativeEvent.event
-                  )
-                )
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-
-                if(sub){
-                  const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                  if(selectedSub){
-                    selectedSub.action(item);
-                  }
-                }
-              
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-              </View>
-            </MenuView>
-
-            </View>
+            </Text>
           </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2 my-1 ">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </TouchableOpacity>
+
+          {isConfirmed && (
+            <TouchableOpacity 
+              onPress={() => handlePreviewPS({ uuid: item.uuid })}
+              className="bg-indigo-900 px-4 py-2 rounded-md"
+            >
+              <Text className="text-white font-poppins-medium text-[12px]">Cetak Sampling</Text>
+            </TouchableOpacity>
+          )}
+
+          {isConfirmed && (
+            <MenuView
+            title="Berita Acara"
+            actions={[
+              {
+                id: "Berita Acara Pengambilan",
+                title: "Berita Acara Pengambilan",
+                action: () => BeritaAcara({ uuid: item.uuid }),
+              },
+              {
+                id: "Data Pengambilan",
+                title: "Data Pengambilan",
+                action: () => DataPengambilan({ uuid: item.uuid }),
+              },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = nativeEvent.event;
+              if (selectedOption === "Berita Acara Pengambilan") {
+                BeritaAcara({ uuid: item.uuid });
+              } else if (selectedOption === "Data Pengambilan") {
+                DataPengambilan({ uuid: item.uuid });
+              }
+            }}
+            >
+              <TouchableOpacity className="bg-indigo-900 px-4 py-2 rounded-md flex-row items-center">
+                <Text className="text-white font-poppins-medium text-[12px] mr-2">Berita Acara</Text>
+                <Feather name="chevron-down" size={14} color="#fff" />
+              </TouchableOpacity>
+            </MenuView>
+          )}
         </View>
       </View>
     );
