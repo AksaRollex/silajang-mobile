@@ -235,7 +235,7 @@ export default function Pengujian() {
           </View>
           
           <View style={styles.infoRow}>
-            <MaterialIcons name="event" size={16} color="#666" />
+            <MaterialIcons name="event" size={16} color="#666" />         
             <Text style={styles.infoLabel}>Tanggal:</Text>
             <Text style={styles.infoValue}>
               {activity.tanggal}

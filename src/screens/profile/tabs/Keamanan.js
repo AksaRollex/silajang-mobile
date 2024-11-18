@@ -87,10 +87,7 @@ const Keamanan = () => {
             action={() => navigation.goBack()}
             className="mr-5 "
             style={{
-              borderWidth: 0.5,
               padding: 4,
-              borderColor: "black",
-              borderRadius: 8,
             }}
           />
           <Text className="font-poppins-semibold text-black text-2xl mt-1 ">

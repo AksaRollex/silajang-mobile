@@ -10,6 +10,7 @@ import {
   Linking,
   Dimensions,
   StyleSheet,
+  Image,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -20,7 +21,7 @@ import Toast from "react-native-toast-message";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
 import LottieView from "lottie-react-native";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -217,12 +218,22 @@ export default function Profile({ navigation }) {
                   alignItems: "center",
                 }}
                 className="w-10/12">
-                <LottieView
+                  <MaterialCommunityIcons
+                    name="exit-run"
+                    size={100}
+                    color="#ed5a5a"
+                    style={{ marginBottom: 15 }}
+                  />
+                  {/* <Image 
+                    source={require("@/assets/images/")}
+                    style={{ width: 170, height: 170 }}
+                  /> */}
+                {/* <LottieView
                   source={require("../../../assets/lottiefiles/logout-animation.json")}
                   autoPlay
                   loop={false}
                   style={{ width: 170, height: 170 }}
-                />
+                /> */}
                 <Text
                   style={{
                     fontSize: 16,

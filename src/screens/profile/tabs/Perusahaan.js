@@ -407,10 +407,7 @@ const Perusahaan = () => {
               action={() => navigation.goBack()}
               className="mr-5 "
               style={{
-                borderWidth: 0.5,
                 padding: 4,
-                borderColor: "black",
-                borderRadius: 8,
               }}
             />
             <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
@@ -757,7 +754,7 @@ const Perusahaan = () => {
                     </Text>
                     <View
                       style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl p-1">
+                      className="rounded-2xl">
                       <Select2
                         data={kotaKabupaten}
                         onSelect={value => {
@@ -789,7 +786,7 @@ const Perusahaan = () => {
                     </Text>
                     <View
                       style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl p-1">
+                      className="rounded-2xl">
                       <Select2
                         data={kecamatan}
                         onSelect={value => {
@@ -819,7 +816,7 @@ const Perusahaan = () => {
                     </Text>
                     <View
                       style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl p-1">
+                      className="rounded-2xl">
                       <Select2
                         data={kelurahan}
                         onSelect={value => {

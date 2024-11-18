@@ -149,7 +149,7 @@ const Permohonan = ({ navigation }) => {
   const filtah = () => {
     return (
       <>
-        <View className="flex-row justify-end">
+        <View className="flex-row justify-end ">
           <TouchableOpacity
             onPress={handleFilterPress} // Gunakan handler terpisah
             style={{
@@ -243,7 +243,7 @@ const Permohonan = ({ navigation }) => {
             Permohonan
           </Text>
         </View>
-        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
+        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md ">
           {user.has_tagihan ? (
             <View className="p-2">
               <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
