@@ -112,7 +112,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
         <Modal
             visible={visible}
             transparent={true}
-            animationType="slide"
+            animationType="fade"
             onRequestClose={onClose}
         >
             <View className="flex-1 justify-center items-center bg-black/50">
@@ -125,10 +125,10 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm font-poppins-bold mb-2">Tanda Tangan *</Text>
+                        <Text className="text-sm font-poppins-bold mb-2 text-black">Tanda Tangan<Text className="text-red-500">*</Text></Text>
                         {isLoading ? (
                             <View className="border border-gray-300 rounded-md p-3">
-                                <Text className="font-poppins-semibold">Loading TTD options...</Text>
+                                <Text className="font-poppins-semibold text-black">Loading TTD options...</Text>
                             </View>
                         ) : (
                             <MenuView
@@ -158,7 +158,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm font-poppins-bold mb-2">Passphrase *</Text>
+                        <Text className="text-sm text-black font-poppins-bold mb-2">Passphrase<Text className="text-red-500">*</Text></Text>
                         <TextInput
                             
                             className="border border-gray-300 rounded-md p-3 font-poppins-semibold"
@@ -295,7 +295,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
             };
 
             const response = await RNFS.downloadFile(options).promise;
-
+            
             if (response.statusCode === 200) {
                 if (Platform.OS === 'android') {
                     await RNFS.scanFile(downloadPath);
@@ -467,7 +467,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     </View>
     
                     <View className="flex-col items-end justify-between">
-                        <View className="bg-slate-50 rounded-md px-3 py-2 mb-3">
+                        <View className="bg-indigo-100 rounded-md px-3 py-2 mb-3">
                             <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" 
                                   numberOfLines={2} 
                                   ellipsizeMode="tail">
@@ -497,10 +497,10 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     {Boolean(item.file_lhu) && (
                         <TouchableOpacity 
                             onPress={handlePreviewLHU} 
-                            className="flex-row items-center p-2 bg-purple-100 rounded-md"
+                            className="flex-row items-center p-2 bg-indigo-100 rounded-md"
                         >
-                            <FontAwesome name="eye" size={16} color="purple" />
-                            <Text className="ml-2 text-purple-900 text-[13px] font-poppins-semibold"> Preview LHU</Text>
+                            <FontAwesome name="eye" size={16} color="#4f46e5" />
+                            <Text className="ml-2 text-indigo-600 text-[13px] font-poppins-semibold"> Preview LHU</Text>
                         </TouchableOpacity>
                     )}
     
@@ -662,4 +662,4 @@ const LaporanHasilPengujian = ({ navigation }) => {
     );
 };
 
-export default LaporanHasilPengujian;
+export default LaporanHasilPengujian;   

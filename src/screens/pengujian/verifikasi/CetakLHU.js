@@ -202,7 +202,7 @@ const HasilUjis = ({ navigation, route }) => {
             </Text>
             <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
             <Text className="text-[14px] text-black font-poppins-semibold mb-1">
-              Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
+              Titik Uji/Lokasi: <Text className="font-pooppins-semibold">{item.lokasi}</Text>
             </Text>
             <Text className="text-[14px] text-black font-poppins-semibold  mb-2">
               Tanggal Diterima:{" "}

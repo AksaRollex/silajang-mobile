@@ -227,7 +227,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
 
   // Invalidate query when data is empty
   useEffect(() => {
-    if (!data.data?.length) queryClient.invalidateQueries([url]);
+    if (!data?.data?.length) queryClient.invalidateQueries([url]);
   }, [data]);
 
   // Handle scroll events
