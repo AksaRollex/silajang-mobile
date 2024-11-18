@@ -76,13 +76,11 @@ const getTabBarStyle = route => {
     "ProfileMain",
   ];
 
-  // console.log('Current Route:', routeName);
-  
+  console.log("Current route name:", getFocusedRouteNameFromRoute(route));
   if (hideOnScreens.includes(routeName)) {
-    console.log('Hiding tab bar for route:', routeName); // Tambahkan ini
+    console.log("Hiding tab bar for route:", routeName); // Tambahkan ini
     return { display: "none" };
   }
-
 
   return {
     position: "absolute",
@@ -96,7 +94,34 @@ const getTabBarStyle = route => {
   };
 };
 
+// BUTTOM TAB BAR
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const route = state.routes[state.index];
+  const routeName = getFocusedRouteNameFromRoute(route) ?? "";
+
+  const hideOnScreens = [
+    "TrackingPengujian",
+    "TrackingList",
+    "Permohonan",
+    "EditPermohonan",
+    "TambahPermohonan",
+    "TitikUji",
+    "FormTitikUji",
+    "Parameter",
+    "PengujianPembayaran",
+    "PengujianDetail",
+    "Multipayment",
+    "MultipaymentDetail",
+    "Akun",
+    "Keamanan",
+    "Perusahaan",
+    "ProfileMain",
+  ];
+
+  if (hideOnScreens.includes(routeName)) {
+    return null;
+  }
+
   return (
     <View style={styles.tabBar}>
       {state.routes.map((route, index) => {
@@ -131,7 +156,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     : "person-sharp"
                 }
                 size={25}
-                color={isFocused ? Colors.brand : Colors.grey}
+                color={isFocused ? Colors.brand : '#5f5f5f'}
               />
               <Text
                 style={[styles.label, isFocused && styles.labelFocused]}
@@ -182,7 +207,11 @@ const PengujianStackNavigator = () => {
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
       <Stack.Screen name="PengujianMain" component={PengujianScreen} />
-      <Stack.Screen name="Permohonan" component={PermohonanScreen} />
+      <Stack.Screen
+        name="Permohonan"
+        component={PermohonanScreen}
+        options={{ tabBarStyle: { display: "none" } }}
+      />
       <Stack.Screen
         name="TrackingPengujian"
         component={TrackingPengujianScreen}
@@ -205,12 +234,65 @@ export default function MainScreen() {
         screenOptions={({ route }) => ({
           headerShown: false,
           tabBarShowLabel: false,
-          tabBarStyle: getTabBarStyle(route),
+          // Menggunakan options untuk mengontrol visibility
+          tabBarStyle: (() => {
+            const routeName = getFocusedRouteNameFromRoute(route);
+            const hideOnScreens = [
+              "TrackingPengujian",
+              "TrackingList",
+              "Permohonan",
+              "EditPermohonan",
+              "TambahPermohonan",
+              "TitikUji",
+              "FormTitikUji",
+              "Parameter",
+              "PengujianPembayaran",
+              "PengujianDetail",
+              "Multipayment",
+              "MultipaymentDetail",
+              "Akun",
+              "Keamanan",
+              "Perusahaan",
+              "ProfileMain",
+            ];
+
+            if (hideOnScreens.includes(routeName)) {
+              return {
+                display: "none",
+                height: 0, // Tambahkan ini
+                opacity: 0, // Tambahkan ini
+                position: "absolute",
+              };
+            }
+
+            return styles.tabBar;
+          })(),
         })}>
         <Tab.Screen name="Dashboard" component={Dashboard} />
-        <Tab.Screen name="Pengujian" component={PengujianStackNavigator} />
-        <Tab.Screen name="Pembayaran" component={PembayaranStackNavigator} />
-        <Tab.Screen name="Profile" component={ProfileStackNavigator} />
+        <Tab.Screen
+          name="Pengujian"
+          component={PengujianStackNavigator}
+          options={({ route }) => ({
+            tabBarVisible:
+              getFocusedRouteNameFromRoute(route) === "PengujianMain",
+          })}
+        />
+        <Tab.Screen
+          name="Pembayaran"
+          component={PembayaranStackNavigator}
+          options={({ route }) => ({
+            tabBarVisible:
+              getFocusedRouteNameFromRoute(route) === "PembayaranMain",
+          })}
+        />
+        <Tab.Screen
+          name="Profile"
+          component={ProfileStackNavigator}
+          options={({ route }) => ({
+            tabBarVisible:
+              getFocusedRouteNameFromRoute(route) === "ProfileMain",
+          })}
+        />
       </Tab.Navigator>
     </NavigationContainer>
   );

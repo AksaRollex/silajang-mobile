@@ -5,7 +5,7 @@ import {
   Modal,
   Dimensions,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
@@ -259,7 +259,6 @@ const Pengujian = ({ navigation }) => {
     );
   };
 
-
   const filtah = () => {
     return (
       <View className="flex-row justify-end gap-2 ">
@@ -326,10 +325,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Pilih Tahun dan Bulan</Text>
@@ -395,7 +391,7 @@ const Pengujian = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
@@ -407,10 +403,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
@@ -435,7 +428,7 @@ const Pengujian = ({ navigation }) => {
               ))}
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };

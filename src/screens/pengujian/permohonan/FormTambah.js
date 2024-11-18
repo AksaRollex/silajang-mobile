@@ -124,98 +124,109 @@ const TambahPermohonan = ({ navigation }) => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
-        <View className="w-full bg-[#f8f8f8] h-full rounded-md">
-          <View className="flex-row  p-3 justify-between">
-            <Back
-              size={24}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-2 "
-            />
-            <Text className="font-poppins-semibold text-black text-lg ">
-              Tambah Permohonan
+        <View className="flex-row  p-3 ">
+          <Back
+            size={30}
+            color={"black"}
+            action={() => navigation.goBack()}
+            className="mr-5 "
+            style={{
+              borderWidth: 0.5,
+              padding: 4,
+              borderColor: "black",
+              borderRadius: 8,
+            }}
+          />
+          <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            Tambah Permohonan
+          </Text>
+        </View>
+        <View className=" py-4 px-3">
+          <Controller
+            control={control}
+            name="industri"
+            rules={{ required: "Nama Industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1 text-black ">
+                  Nama Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholder="CV. PT. "
+                  onChangeText={onChange}
+                  placeholderTextColor="grey"
+                  className="p-3 bg-[#fff] rounded-2xl text-black border-stone-300 border font-poppins-regular"
+                  value={value}
+                />
+                {errors.industri && (
+                  <Text
+                    style={{ color: "red" }}
+                    className="-mt-5 mb-2 lowercase font-poppins-regular">
+                    {errors.industri.message}
+                  </Text>
+                )}
+              </View>
+            )}
+          />
+
+          <Controller
+            control={control}
+            name="alamat"
+            rules={{ required: "alamat industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1 text-black ">
+                  Alamat Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholderTextColor="grey"
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  onChangeText={onChange}
+                  placeholder="Masukkan Alamat Industri"
+                  value={value}
+                />
+              </View>
+            )}
+          />
+          {errors.alamat && (
+            <Text
+              style={{ color: "red" }}
+              className="-mt-5 mb-2 lowercase font-poppins-regular">
+              {errors.alamat.message}
             </Text>
-          </View>
-          <View className=" py-4 px-3">
-            <Controller
-              control={control}
-              name="industri"
-              rules={{ required: "Nama Industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-2 text-black ">
-                    Nama Industri
-                  </Text>
-                  <TextField
-                    enableErrors
-                    placeholder="CV. PT. "
-                    onChangeText={onChange}
-                    placeholderTextColor="grey"
-                    className="p-2 bg-[#fff] rounded-md text-black border-stone-300 border font-poppins-regular"
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.industri && (
-              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
-                {errors.industri.message}
-              </Text>
-            )}
+          )}
 
-            <Controller
-              control={control}
-              name="alamat"
-              rules={{ required: "alamat industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-2 text-black ">
-                    Alamat Industri
-                  </Text>
-                  <TextField
-                    enableErrors
-                    placeholderTextColor="grey"
-                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
-                    onChangeText={onChange}
-                    placeholder="Masukkan Alamat"
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.alamat && (
-              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
-                {errors.alamat.message}
-              </Text>
+          <Controller
+            control={control}
+            name="kegiatan"
+            rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1 text-black ">
+                  Kegiatan Industri
+                </Text>
+                <TextField
+                  enableErrors
+                  placeholderTextColor="grey"
+                  placeholder="Masukkan Kegiatan Industri"
+                  className="p-3 bg-[#fff] rounded-2xl  border-stone-300 border font-poppins-regular"
+                  onChangeText={onChange}
+                  value={value}
+                />
+              </View>
             )}
+          />
+          {errors.kegiatan && (
+            <Text
+              style={{ color: "red" }}
+              className="-mt-5 mb-2 lowercase font-poppins-regular">
+              {errors.kegiatan.message}
+            </Text>
+          )}
 
-            <Controller
-              control={control}
-              name="kegiatan"
-              rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-2 text-black ">
-                    Kegiatan Industri
-                  </Text>
-                  <TextField
-                    enableErrors
-                    placeholderTextColor="grey"
-                    placeholder="Masukkan Kegiatan Industri"
-                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
-                    onChangeText={onChange}
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.kegiatan && (
-              <Text style={{ color: "red" }} className="-mt-5 mb-2 lowercase">
-                {errors.kegiatan.message}
-              </Text>
-            )}
-
-            {/* <Controller
+          {/* <Controller
               control={control}
               name="keterangan"
               rules={{ required: "Keterangan tidak boleh kosong" }}
@@ -236,57 +247,58 @@ const TambahPermohonan = ({ navigation }) => {
                 </View>
               )}
             /> */}
-            <View>
-              <Text className="text-xl text-black mb-4 font-poppins-semibold text-center">
-                Cara Pengambilan
-              </Text>
+          <View>
+            <Text className="text-xl text-black mb-4 font-poppins-semibold text-center">
+              Cara Pengambilan
+            </Text>
 
-              <View style={styles.cardContainer}>
-                <TouchableOpacity
-                  style={[
-                    styles.cardPengambilan,
-                    selectedCara === "kirimMandiri" && styles.selectedCard,
-                  ]}
-                  onPress={() => handleSelectCara("kirimMandiri")}>
-                  <MaterialIcons name="transfer" size={40} color="black" />
-                  <Text className="text-lg font-poppins-semibold text-center text-black my-2">
-                    Kirim Mandiri
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  style={[
-                    styles.cardPengambilan,
-                    selectedCara === "ambilPetugas" && styles.selectedCard,
-                  ]}
-                  onPress={() => handleSelectCara("ambilPetugas")}>
-                  <MaterialIcons name="truck" size={40} color="black" />
-                  <Text className="text-lg text-center font-poppins-semibold text-black my-2">
-                    Ambil Petugas
-                  </Text>
-                </TouchableOpacity>
-              </View>
+            <View style={styles.cardContainer}>
+              <TouchableOpacity
+                className="rounded-2xl"
+                style={[
+                  styles.cardPengambilan,
+                  selectedCara === "kirimMandiri" && styles.selectedCard,
+                ]}
+                onPress={() => handleSelectCara("kirimMandiri")}>
+                <MaterialIcons name="transfer" size={40} color="black" />
+                {/* <Text className="text-lg font-poppins-semibold text-center text-black my-2">
+                  Kirim Mandiri
+                </Text> */}
+              </TouchableOpacity>
+              <TouchableOpacity
+                className="rounded-2xl"
+                style={[
+                  styles.cardPengambilan,
+                  selectedCara === "ambilPetugas" && styles.selectedCard,
+                ]}
+                onPress={() => handleSelectCara("ambilPetugas")}>
+                <MaterialIcons name="truck" size={40} color="black" />
+                {/* <Text className="text-lg text-center font-poppins-semibold text-black my-2">
+                  Ambil Petugas
+                </Text> */}
+              </TouchableOpacity>
             </View>
-            {selectedCara === "ambilPetugas" && (
-              <View className=" mb-4">
-                <Select2
-                  onSelect={value => {
-                    setSelectedJasaPengambilan(value);
-                  }}
-                  data={jasaPengambilan}
-                  placeholder="Pilih Jasa Pengambilan"
-                />
-              </View>
-            )}
-            <Button
-              backgroundColor={Colors.brand}
-              className="p-3 rounded-md "
-              onPress={handleSubmit(send)}
-              disabled={isLoading}>
-              <Text className="text-white text-center text-base font-bold font-sans">
-                SUBMIT
-              </Text>
-            </Button>
           </View>
+          {selectedCara === "ambilPetugas" && (
+            <View className=" mb-4">
+              <Select2
+                onSelect={value => {
+                  setSelectedJasaPengambilan(value);
+                }}
+                data={jasaPengambilan}
+                placeholder="Pilih Jasa Pengambilan"
+              />
+            </View>
+          )}
+          <Button
+            backgroundColor={Colors.brand}
+            className="p-3 mt-2 rounded-3xl "
+            onPress={handleSubmit(send)}
+            disabled={isLoading}>
+            <Text className="text-white text-center text-base font-bold font-sans">
+              SUBMIT
+            </Text>
+          </Button>
         </View>
       </View>
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
@@ -329,12 +341,13 @@ const styles = StyleSheet.create({
   },
   cardPengambilan: {
     flex: 1,
-    paddingVertical: 50,
+    paddingVertical: 30,
     paddingHorizontal: 10,
-    borderRadius: 7,
     alignItems: "center",
     marginHorizontal: 5,
     backgroundColor: "#fff",
+    borderWidth: 0.5,
+    borderColor: "#D6D3D1",
   },
   cardPembayaran: {
     flex: 1,

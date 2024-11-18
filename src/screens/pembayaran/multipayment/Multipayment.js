@@ -335,7 +335,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
+        <View
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={onClose}>
@@ -404,7 +404,7 @@ const Pengujian = ({ navigation }) => {
               </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
@@ -416,7 +416,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
+        <View
           style={styles.modalOverlay}
           activeOpacity={1}
           onPress={onClose}>
@@ -444,7 +444,7 @@ const Pengujian = ({ navigation }) => {
               ))}
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };

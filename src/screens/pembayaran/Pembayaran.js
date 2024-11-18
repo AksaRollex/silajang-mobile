@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -62,24 +63,35 @@ export default function Pembayaran() {
       steps: [
         {
           icon: "assignment",
-           // Tambahkan warna biru
-          text: "Pilih metode pembayaran yang tersedia",
+          text: "Tunggu data pembayaran di konfirmasi oleh pihak admin",
         },
         {
           icon: "receipt-long",
-           // Tambahkan warna hijau
-          text: "Isi detail pembayaran dengan teliti",
+          text: "Silahkan bayar dengan menggunakan kode VA / QRIS yang telah di sediakan oleh admin",
         },
         {
           icon: "verified-user",
-           // Tambahkan warna oranye
-          text: "Konfirmasi dan verifikasi pembayaran",
+          text: "Jika pembayaran berhasil dilakukan, anda akan mendapatkan invoice",
         },
-        {
-          icon: "check-circle",
-           // Tambahkan warna ungu
-          text: "Tunggu konfirmasi pembayaran berhasil",
-        },
+        // {
+        //   icon: "receipt-long",
+        //   color: "purple", // Tambahkan warna hijau
+        //   text: "Isi detail pembayaran dengan teliti",
+        // },
+        // {
+        //   icon: "verified-user",
+        //   color: "orange", // Tambahkan warna oranye
+        //   text: "Konfirmasi dan verifikasi pembayaran",
+        // },
+        // {
+        //   icon: "check-circle",
+        //   color: "green", // Tambahkan warna ungu
+        //   text: "Tunggu konfirmasi pembayaran berhasil",
+        // },
+        // {
+        //   icon: "check-circle",
+        //   text: "Tunggu konfirmasi pembayaran berhasil",
+        // },
       ],
     },
   ];
@@ -104,36 +116,48 @@ export default function Pembayaran() {
 
   return (
     <>
-      <Header
-        navigate={() => {
-          navigation.navigate("Profile");
-        }}
-      />
       <View style={styles.container}>
         <ScrollView
           className="flex-col"
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={[]}>
           {/* Header Section with Gradient */}
-          <View
-            className="min-h-[100px] relative shadow-lg z-10 mb-16"
-            style={{ backgroundColor: Colors.brand }}>
-            <View style={styles.welcomeCard}>
-              <View style={styles.headerSection}>
-                <Text className="text-center" style={styles.headerTitle}>
-                  Pembayaran
-                </Text>
-                <Text className="text-center" style={styles.headerSubtitle}>
-                  {new Date().toLocaleDateString("id-ID", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
+          <ImageBackground
+            source={require("../../../assets/images/background.png")}
+            style={{
+              flex: 1,
+              height: "70%", // Pastikan gambar menutupi area yang diinginkan
+              // borderBottomLeftRadius: 20,
+              // borderBottomRightRadius: 20,
+            }}
+            // imageStyle={{
+            //   borderBottomLeftRadius: 20,
+            //   borderBottomRightRadius: 20,
+            // }}
+          >
+            <Header
+              navigate={() => {
+                navigation.navigate("Profile");
+              }}
+            />
+            <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
+              <View style={styles.welcomeCard}>
+                <View style={styles.headerSection}>
+                  <Text className="text-center" style={styles.headerTitle}>
+                    Pembayaran
+                  </Text>
+                  <Text className="text-center" style={styles.headerSubtitle}>
+                    {new Date().toLocaleDateString("id-ID", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
+          </ImageBackground>
 
           <ScrollView contentContainerStyle={styles.scrollContent}>
             <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
@@ -213,10 +237,10 @@ export default function Pembayaran() {
             </View>
             <Text style={styles.offerTitle}>{offer.title}</Text>
             <Text style={styles.offerDescription}>{offer.description}</Text>
-                <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
-              </View>
-              ))}
-              </ScrollView> */}
+            <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
+            </View>
+            ))}
+            </ScrollView> */}
           </ScrollView>
         </ScrollView>
       </View>
@@ -342,7 +366,7 @@ const styles = StyleSheet.create({
   guideStep: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 16,
+    marginVertical: 10,
   },
   stepNumberContainer: {
     width: 32,

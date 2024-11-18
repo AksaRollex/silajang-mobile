@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
@@ -189,6 +190,14 @@ const Dashboard = () => {
       showsVerticalScrollIndicator={false}
       stickyHeaderIndices={[]}>
         
+    <ImageBackground
+    source={require("../../../assets/images/background.png")}
+            style={{
+              flex: 1,
+              height: "68%", // Pastikan gambar menutupi area yang diinginkan
+              // borderBottomLeftRadius: 20,
+              // borderBottomRightRadius: 20,
+            }}>
       <Header
         navigate={() => {
           navigation.navigate("Profile");
@@ -214,6 +223,7 @@ const Dashboard = () => {
           </View>
         </View>
       )}
+      </ImageBackground>
 
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}

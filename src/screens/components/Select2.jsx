@@ -17,8 +17,9 @@ const Select2 = ({ onSelect, data, value, placeholder, defaultValue }) => {
   }, [defaultValue, data]);
 
   return (
-    <View className="bg-[#fff] rounded-md font-poppins-regular">
+    <View className="rounded-sm font-poppins-regular">
       <SelectDropdown
+        buttonStyle={{ padding: 12 }}
         data={data}
         onSelect={selectedItem => {
           setSelectedValue(selectedItem);
@@ -85,10 +86,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     paddingHorizontal: 12,
-    paddingVertical: 8,
-    borderRadius: 6, 
-    borderWidth: 1, 
-    borderColor: "#E5E7EB",
+    paddingVertical: 12,
+    borderRadius : 16,
+    borderWidth: 1, // Tambahkan border jika diinginkan
+    borderColor: "#D6D3D1", // Warna border
     backgroundColor: "#FFFFFF",
   },
   dropdownButtonIconStyle: {
@@ -99,8 +100,8 @@ const styles = StyleSheet.create({
   dropdownButtonTxtStyle: {
     flex: 1,
     fontSize: 16,
-    color: 'black', // Warna teks hitam
-    fontFamily: 'Poppins-Regular',
+    color: "black", // Warna teks hitam
+    fontFamily: "Poppins-Regular",
   },
   dropdownButtonArrowStyle: {
     fontSize: 18,
@@ -125,9 +126,8 @@ const styles = StyleSheet.create({
   },
   dropdownItemTxtStyle: {
     fontSize: 17,
-    color: 'black', // Warna teks hitam
-    fontFamily: 'Poppins-Regular',
-    
+    color: "black", // Warna teks hitam
+    fontFamily: "Poppins-Regular",
   },
   searchInput: {
     borderBottomWidth: 1,

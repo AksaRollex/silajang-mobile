@@ -82,93 +82,121 @@ const EditPermohonan = ({ route, navigation }) => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
-        <View className="h-full w-full bg-[#f8f8f8]">
-          <View className="w-full">
-            <View className="flex-row mb-4 p-3 justify-between">
-              <Back
-                size={24}
-                color={"black"}
-                action={() => navigation.goBack()}
-                className="mr-2 "
-              />
-              <Text className="font-bold text-black text-lg ">
-                Edit Permohonan
-              </Text>
-            </View>
-          </View>
-          <View className="py-4 px-3 ">
-            <Controller
-              name="industri"
-              control={control}
-              rules={{ required: "Industri is required" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-2 text-black ">
-                    Nama industri
-                  </Text>
-                  <TextField
-                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                    placeholder="Masukkan Nama Industri"
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.industri?.message}
-                  />
-                </View>
-              )}
-            />
-
-            <Controller
-              name="alamat"
-              control={control}
-              rules={{ required: "Alamat is required" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold my-2 text-black">
-                    Alamat industri
-                  </Text>
-                  <TextField
-                    className="p-2 bg-[#fff] rounded-sm border-stone-300 border font-poppins-regular"
-                    placeholder="Alamat"
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.alamat?.message}
-                  />
-                </View>
-              )}
-            />
-
-            <Controller
-              name="kegiatan"
-              control={control}
-              rules={{ required: "Kegiatan is required" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold my-2 text-black">
-                    Kegiatan Industri
-                  </Text>
-                  <TextField
-                    className="p-2 bg-[#fff] rounded-md border-stone-300 border font-poppins-regular"
-                    placeholder="Kegiatan"
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.kegiatan?.message}
-                  />
-                </View>
-              )}
-            />
-
-            <Button
-              onPress={handleSubmit(onSubmit)}
-              isLoading={isUpdating}
-              className="p-3 rounded-md mt-4"
-              style={{ backgroundColor: Colors.brand }}>
-              <TouchableOpacity>
-                <Text className="text-white text-center text-base font-poppins-semibold">
-                  SIMPAN
+        <View className="flex-row  p-3 ">
+          <Back
+            size={30}
+            color={"black"}
+            action={() => navigation.goBack()}
+            className="mr-5 "
+            style={{
+              borderWidth: 0.5,
+              padding: 4,
+              borderColor: "black",
+              borderRadius: 8,
+            }}
+          />
+          <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            Edit Permohonan
+          </Text>
+        </View>
+        <View className="py-4 px-3 ">
+          <Controller
+            name="industri"
+            control={control}
+            rules={{ required: "Industri tidak boleh kosong" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1 text-black ">
+                  Nama industri
                 </Text>
-              </TouchableOpacity>
-            </Button>
-          </View>
+                <TextField
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  placeholder="Masukkan Nama Industri"
+                  placeholderTextColor={"grey"}
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.industri?.message}
+                />
+              </View>
+            )}
+          />
+          {errors.industri && (
+            <Text
+              style={{ color: "red" }}
+              className=" mb-2 lowercase font-poppins-regular">
+              {errors.industri.message}
+            </Text>
+          )}
+
+          <Controller
+            name="alamat"
+            control={control}
+            rules={{ required: "Alamat tidak boleh kosong" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1  text-black">
+                  Alamat industri
+                </Text>
+                <TextField
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  placeholder="Masukkan Alamat Industri"
+                  placeholderTextColor={"grey"}
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.alamat?.message}
+                />
+              </View>
+            )}
+          />
+           {errors.alamat && (
+            <Text
+              style={{ color: "red" }}
+              className="lowercase font-poppins-regular">
+              {errors.alamat.message}
+            </Text>
+          )}
+
+
+          <Controller
+            name="kegiatan"
+            control={control}
+            rules={{ required: "Kegiatan tidak boleh kosong" }}
+            render={({ field: { onChange, onBlur, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold mb-1  text-black">
+                  Kegiatan Industri
+                </Text>
+                <TextField
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  placeholder="Masukkan Kegiatan Industri"
+                  placeholderTextColor={"grey"}
+                  onChangeText={onChange}
+                  value={value}
+                  error={errors.kegiatan?.message}
+                />
+              </View>
+            )}
+          />
+           {errors.kegiatan && (
+            <Text
+              style={{ color: "red" }}
+              className=" lowercase font-poppins-regular">
+              {errors.kegiatan.message}
+            </Text>
+          )}
+
+
+          <Button
+            onPress={handleSubmit(onSubmit)}
+            isLoading={isUpdating}
+            className="p-3 rounded-2xl mt-4"
+            style={{ backgroundColor: Colors.brand }}>
+            <TouchableOpacity>
+              <Text className="text-white text-center text-base font-poppins-semibold">
+                SIMPAN
+              </Text>
+            </TouchableOpacity>
+          </Button>
         </View>
       </View>
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
@@ -180,7 +208,9 @@ const EditPermohonan = ({ route, navigation }) => {
               loop={false}
               style={styles.lottie}
             />
-            <Text style={styles.successTextTitle}>Data berhasil di perbarui</Text>
+            <Text style={styles.successTextTitle}>
+              Data berhasil di perbarui
+            </Text>
             <Text style={styles.successText}>
               Silahkan memastikan bahwa data yang anda kirim telah benar !
             </Text>
