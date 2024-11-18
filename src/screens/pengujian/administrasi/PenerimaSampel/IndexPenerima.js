@@ -1,14 +1,6 @@
 import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
-import {
-  FlatList,
-  Text,
-  View,
-  ActivityIndicator,
-  Modal,
-  Button,
-  Alert,
-  TouchableOpacity,
+import { FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -25,7 +17,6 @@ import Pdf from 'react-native-pdf';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS, { downloadFile } from 'react-native-fs';  
 import Toast from 'react-native-toast-message';
-
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -233,24 +224,44 @@ const PenerimaSampel = ({ navigation }) => {
                 {item.text_status}
               </Text>
             </View>
-            <View className="my-2 ml-10">
-            <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptions(item)}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions(item).find(option => option.title === nativeEvent.event);
-                  if (selectedOption) {
-                    selectedOption.action();
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-              >
-                <View>
-                  <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                </View>
-              </MenuView>
-            </View>
           </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2 my-1 ">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailPenerima", { uuid: item.uuid })}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity 
+            onPress={() => {
+              setSelectedItem(item);
+              setModalVisible(true);
+            }}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Revisi</Text>
+          </TouchableOpacity>
+
+          {selectedPengambil === 3 && ( // Only show these buttons when status is "Telah Konfirmasi"
+            <>
+              <TouchableOpacity 
+                onPress={() => handleShowPdf(item, 'tanda-terima')}
+                className="bg-indigo-900 px-4 py-2 rounded-md"
+              >
+                <Text className="text-white font-poppins-medium text-[12px]">Permohonan Pengujian</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity 
+                onPress={() => handleShowPdf(item, 'pengamanan-sampel')}
+                className="bg-indigo-900 px-4 py-2 rounded-md"
+              >
+                <Text className="text-white font-poppins-medium text-[12px]">Pengamanan Sampel</Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     );

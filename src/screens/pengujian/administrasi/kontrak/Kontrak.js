@@ -2,7 +2,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import React, { useState, useRef } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MenuView } from "@react-native-menu/menu";
@@ -29,9 +29,6 @@ const Kontrak = ({ navigation }) => {
   const paginateRef = useRef();
 
   const renderItem = ({ item }) => {
-    const dropdownOptions = [
-      { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailKontrak", { uuid: item.uuid }) }
-    ];
     
     return (
       <View
@@ -54,28 +51,16 @@ const Kontrak = ({ navigation }) => {
                   : item.kesimpulan_kontrak == 2 ? 'Ditolak' 
                   : 'Menunggu'}
               </Text>   
-              <View className="my-2 ml-10">
-                  <MenuView
-                    title="dropdownOptions"
-                    actions={dropdownOptions.map(option => ({
-                      ...option,
-                    }))}
-                    onPressAction={({ nativeEvent }) => {
-                      const selectedOption = dropdownOptions.find(
-                        option => option.title === nativeEvent.event,
-                      );
-                      if (selectedOption) {
-                        selectedOption.action(item);
-                      }
-                    }}
-                    shouldOpenOnLongPress={false}
-                  >
-                    <View>
-                      <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                    </View>
-                  </MenuView>
-              </View>
             </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2 my-1 ">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailKontrak", { uuid: item.uuid })}
+            className="bg-indigo-900 px-4 py-2 rounded-md"
+          >
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );

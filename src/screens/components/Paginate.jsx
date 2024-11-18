@@ -26,14 +26,14 @@ if (
 }
 
 // Skeleton loader component for reusability
-const SkeletonLoader = ({ width, height, style, circle = false }) => (
+const SkeletonLoader = ({ width, height, style, circle }) => (
   <Skeleton
     animation="wave"
     width={width}
     height={height}
     LinearGradientComponent={LinearGradient}
     style={style}
-    circle={circle}
+    circle={circle || false}
   />
 );
 
@@ -75,15 +75,7 @@ const ListItemSkeleton = () => (
           right: 0,
           top: "40%",
         }}
-      >
-        <SkeletonLoader width={6} height={6} circle />
-        <SkeletonLoader
-          width={6}
-          height={6}
-          circle
-          style={{ marginVertical: 3 }}
-        />
-        <SkeletonLoader width={6} height={6} circle />
+      >     
       </View>
     </View>
   </View>
@@ -174,7 +166,7 @@ const ListContent = ({
 };
 
 // Main Paginate component
-const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
+const Paginate = forwardRef((props, ref) => {
   const queryClient = useQueryClient();
   const [search, setSearch] = useState("");
   const [page, setPage] = useState(1);
@@ -185,30 +177,43 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
 
   // Query setup
   const { data, isFetching, refetch } = useQuery({
-    queryKey: [url, page, search],
+    queryKey: [props.url, page, search],
     queryFn: () =>
-      axios.post(url, { ...payload, page, search }).then((res) => res.data),
+      axios.post(props.url, { 
+        page, 
+        search,
+        ...(props.payload || {})
+      }).then((res) => res.data),
     placeholderData: { data: [] },
     onSuccess: (res) => {
       LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
       if (page === 1) {
         setDataList(res.data);
       } else {
-        setDataList((prevData) => [...prevData, ...res.data]);
+        setDataList((prevData) => {
+          const newData = [];
+          for (let i = 0; i < prevData.length; i++) {
+            newData[i] = prevData[i];
+          }
+          for (let i = 0; i < res.data.length; i++) {
+            newData[prevData.length + i] = res.data[i];
+          }
+          return newData;
+        });
       }
     },
   });
 
   // Expose refetch method through ref
   useImperativeHandle(ref, () => ({
-    refetch,
+    refetch: refetch
   }));
 
   // Reset page and refetch when search or payload changes
   useEffect(() => {
     setPage(1);
     refetch();
-  }, [search, payload]);
+  }, [search, props.payload]);
 
   // Handle loading more data
   const handleLoadMore = () => {
@@ -227,7 +232,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
 
   // Invalidate query when data is empty
   useEffect(() => {
-    if (!data?.data?.length) queryClient.invalidateQueries([url]);
+    if (!data.data?.length) queryClient.invalidateQueries([props.url]);
   }, [data]);
 
   // Handle scroll events
@@ -242,7 +247,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
   });
 
   return (
-    <View className="flex-1 p-4" {...props}>
+    <View className="flex-1 p-4" style={props.style}>
       <SearchForm
         control={control}
         onSubmit={onSearchSubmit}
@@ -252,7 +257,7 @@ const Paginate = forwardRef(({ url, payload, renderItem, ...props }, ref) => {
         isFetching={isFetching}
         page={page}
         dataList={dataList}
-        renderItem={renderItem}
+        renderItem={props.renderItem}
         handleLoadMore={handleLoadMore}
         handleScroll={handleScroll}
         cardData={cardData}
