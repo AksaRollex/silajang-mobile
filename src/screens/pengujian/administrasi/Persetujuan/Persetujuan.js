@@ -132,21 +132,31 @@ const Persetujuan = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-1 text-black">
+                <Text className="text-[18px] font-poppins-semibold mb-3 text-black">
                   {item.kode}
                 </Text>
-                <Text className="text-[15px] font-poppins-semibold mb-2 text-black">
+                <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-[15px] font-poppins-bold text-black mb-3">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-poppins-semibold mb-3 text-black">
+              <>  
+              <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text>            
+              <Text className="text-[15px] font-poppins-bold mb-3 text-black">
                 {item.permohonan.industri}
               </Text>
+              </>
+
             )}
-            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2 font-poppins-semibold text-black">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] font-poppins-semibold text-black">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-md text-gray-500 font-poppins-regular">TItik Uji/Lokasi</Text>
+            <Text className="text-[15px] mb-3 font-poppins-bold text-black">{item.lokasi}</Text>
+
+
+            <Text className="text-md text-gray-500 font-poppins-regular">Diambil Pada</Text>
+             <Text className="text-[15px] font-poppins-bold text-black mb-3">{item.tanggal_pengambilan}</Text>
+             <Text className="text-md text-gray-500 font-poppins-regular">Oleh</Text>
+             <Text className="text-[15px] font-poppins-bold text-black mb-3">{item.pengambil?.nama}</Text>
           </View>
           <View className="absolute right-1 flex-col items-center">
             {!isConfirmed && (
