@@ -377,11 +377,11 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
           {!titikPermohonans?.data?.length && !pivotData?.length && (
             <View className=" pt-5 px-5">
-              <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
-                <Text className="text-black mb-0 font-poppins-semibold">
+              <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+                <Text className="text-black text-xs mb-2 font-poppins-medium">
                   Silahkan Tambah Titik Lokasi Sampel Pengujian
                 </Text>
-                <Text className="text-black text-xs font-poppins-semibold">
+                <Text className="text-black text-xs  font-poppins-regular">
                   Anda belum memiliki Titik Lokasi Sampel satu pun.
                 </Text>
               </View>

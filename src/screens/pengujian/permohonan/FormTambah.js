@@ -329,7 +329,7 @@ const TambahPermohonan = ({ navigation }) => {
               source={require("@/assets/images/error.png")}
               style={styles.lottie}
               />
-              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+              <Text style={[styles.successTextTitle, styles.errortitle]}>
                 Gagal memperbarui data
               </Text>
               <Text style={[styles.successText, styles.errorText]}>
@@ -453,7 +453,7 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "black",
   },
-  errortitle: {
+  t: {
     color: '#FF4B4B',
   },
   errorText: {

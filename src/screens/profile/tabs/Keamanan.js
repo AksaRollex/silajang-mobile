@@ -238,6 +238,50 @@ const Keamanan = () => {
           </Text>
         </Button>
       </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <Image 
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            /> */}
+            <Text style={styles.successTextTitle}>
+              Data berhasil diperbarui
+            </Text>
+            <Text style={styles.successText}>
+              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errortitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
       </View>
     </>
   );
