@@ -9,6 +9,8 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
@@ -146,7 +148,6 @@ const PengambilSampel = ({ navigation }) => {
 
   const renderItem = ({ item }) => {
     const isDiterima = item.kesimpulan_permohonan;
-    const dropdownOptionsForItem = isDiterima ? dropdownOptions : dropdownOptions1;
 
   
     return (
@@ -160,21 +161,21 @@ const PengambilSampel = ({ navigation }) => {
 
           {isConfirmed ? (
               <>
-                <Text className="text-[18px] text-black font-poppins-semibold mb-1">
+                <Text className="text-[16px] text-black font-poppins-semibold mb-1">
                   {item.kode}
                 </Text>
-                <Text className="text-[18px] text-black font-poppins-semibold mb-2">
+                <Text className="text-[16px] text-black font-poppins-semibold mb-2">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-poppins-semibold text-black mb-3">
+              <Text className="text-[16px] font-poppins-semibold text-black mb-3">
                 {item.permohonan.industri}
               </Text>
             )}
 
             <Text className="text-[14px] font-poppins-semibold mb-2 text-black">{item.lokasi}</Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil : <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
             <Text className="text-[14px] font-poppins-semibold text-black mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
 
           </View>
@@ -186,43 +187,63 @@ const PengambilSampel = ({ navigation }) => {
               {item.kesimpulan_permohonan == 1 ? 'Diterima' 
                 : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
                 : 'Menunggu'}
-            </Text>           
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptionsForItem.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptionsForItem.find(
-                  option => option.title === nativeEvent.event,
-                );
-                const sub = dropdownOptionsForItem.find(
-                  option => option.subactions && option.subactions.some(
-                    suboption => suboption.title === nativeEvent.event
-                  )
-                )
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-
-                if(sub){
-                  const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                  if(selectedSub){
-                    selectedSub.action(item);
-                  }
-                }
-              
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-              </View>
-            </MenuView>
-
-            </View>
+            </Text>
           </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row justify-end items-center space-x-2 mr-[-10px]">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
+            className="bg-indigo-900 px-3 py-2 rounded-md"
+          >
+              <View className="flex-row">
+                <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+              </View>
+          </TouchableOpacity>
+
+          {isConfirmed && (
+            <TouchableOpacity 
+              onPress={() => handlePreviewPS({ uuid: item.uuid })}
+              className="bg-red-600 px-3 py-2 rounded-md"
+            >
+               <View className="flex-row">
+                  <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                  <Text className="text-white font-poppins-medium text-[11px]">Cetak Sampling</Text>
+                </View>
+            </TouchableOpacity>
+          )}
+
+          {isConfirmed && (
+            <MenuView
+            title="Berita Acara"
+            actions={[
+              {
+                id: "Berita Acara Pengambilan",
+                title: "Berita Acara Pengambilan",
+                action: () => BeritaAcara({ uuid: item.uuid }),
+              },
+              {
+                id: "Data Pengambilan",
+                title: "Data Pengambilan",
+                action: () => DataPengambilan({ uuid: item.uuid }),
+              },
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = nativeEvent.event;
+              if (selectedOption === "Berita Acara Pengambilan") {
+                BeritaAcara({ uuid: item.uuid });
+              } else if (selectedOption === "Data Pengambilan") {
+                DataPengambilan({ uuid: item.uuid });
+              }
+            }}
+            >
+              <TouchableOpacity className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
+                <Text className="text-red-500 font-poppins-medium text-[11px] mr-2">Berita Acara</Text>
+                <Feather name="chevron-down" size={14} color="#ef4444" />
+              </TouchableOpacity>
+            </MenuView>
+          )}
         </View>
       </View>
     );
@@ -245,7 +266,7 @@ const PengambilSampel = ({ navigation }) => {
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
-                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
+                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}

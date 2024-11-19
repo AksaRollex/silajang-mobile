@@ -1,6 +1,7 @@
 import { useDelete } from '@/src/hooks/useDelete';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
@@ -27,7 +28,7 @@ const generateYears = () => {
   return years;
 };
 
-const VerifikasiOptions = [
+const verifikasiOptions = [
   { id: 7, name: "Menunggu Verifikasi" },
   { id: 8, name: "Telah Diverifikasi/Disahkan" },
 ];
@@ -325,17 +326,12 @@ const VerifikasiLhu = ({ navigation }) => {
             </View>
   
             {/* Filters Section */}
-            <View className="flex-row justify-between items-center mt-2">
-              <View className="flex-1">
-                <HorizontalScrollMenu
-                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
-                  items={VerifikasiOptions}
+            <View className="flex-row justify-center">
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={verifikasiOptions}
                   selected={selectedVerifikasi}
-                  onPress={item => setSelectedVerifikasi(item.id)}
-                  itemWidth={200}
-                  scrollAreaStyle={{ height: 30 }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                  onPress={(item) => setSelectedVerifikasi(item.id)}
                 />
               </View>
   

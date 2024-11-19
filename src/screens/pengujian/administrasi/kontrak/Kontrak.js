@@ -1,11 +1,13 @@
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
+import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import React, { useState, useRef } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MenuView } from "@react-native-menu/menu";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -29,9 +31,6 @@ const Kontrak = ({ navigation }) => {
   const paginateRef = useRef();
 
   const renderItem = ({ item }) => {
-    const dropdownOptions = [
-      { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailKontrak", { uuid: item.uuid }) }
-    ];
     
     return (
       <View
@@ -54,28 +53,19 @@ const Kontrak = ({ navigation }) => {
                   : item.kesimpulan_kontrak == 2 ? 'Ditolak' 
                   : 'Menunggu'}
               </Text>   
-              <View className="my-2 ml-10">
-                  <MenuView
-                    title="dropdownOptions"
-                    actions={dropdownOptions.map(option => ({
-                      ...option,
-                    }))}
-                    onPressAction={({ nativeEvent }) => {
-                      const selectedOption = dropdownOptions.find(
-                        option => option.title === nativeEvent.event,
-                      );
-                      if (selectedOption) {
-                        selectedOption.action(item);
-                      }
-                    }}
-                    shouldOpenOnLongPress={false}
-                  >
-                    <View>
-                      <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                    </View>
-                  </MenuView>
-              </View>
             </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailKontrak", { uuid: item.uuid })}
+            className="bg-indigo-900 px-3 py-2 rounded-md"
+          >
+           <View className="flex-row">
+            <Ionicons name="eye-outline" size={17} color="white" style={{ marginRight: 5 }} />
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -94,19 +84,12 @@ const Kontrak = ({ navigation }) => {
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-12 mr-2">
-                <View>
-                  <HorizontalScrollMenu
-                    items={kesimpulanOptions}
-                    selected={selectedKesimpulan}
-                    onPress={item => setSelectedKesimpulan(item.id)} 
-                    itemWidth={170}
-                    scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                    activeBackgroundColor={"#312e81"}
-                    textStyle={{ fontFamily : "Poppins-SemiBold", fontSize: 12}}
-                    buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: 'white' }}
-                  />
-                </View>
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={kesimpulanOptions}
+                  selected={selectedKesimpulan}
+                  onPress={(item) => setSelectedKesimpulan(item.id)}
+                />
               </View>
 
               <MenuView
@@ -125,7 +108,7 @@ const Kontrak = ({ navigation }) => {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <View style={{ marginEnd: 50 }}>
+                <View >
                   <MaterialCommunityIcons 
                     name="filter-menu-outline" 
                     size={24} 

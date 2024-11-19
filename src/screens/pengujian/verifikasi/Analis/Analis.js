@@ -1,6 +1,7 @@
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
@@ -167,7 +168,7 @@ const Analis = ({ navigation }) => {
               uuid: item.uuid,
               status: item.status,
             })}
-            className="bg-indigo-900 px-2 py-2 rounded-md flex-row items-center">
+            className="bg-indigo-900 px-3 py-2 rounded-md flex-row items-center">
             <FontAwesome6Icon name="vial" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
               Hasil Uji
@@ -201,29 +202,11 @@ const Analis = ({ navigation }) => {
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
-                <HorizontalScrollMenu
-                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
                   items={analisOptions}
                   selected={selectedAnalis}
-                  onPress={item => {
-                    if (!initialRender) {
-                      setSelectedAnalis(item.id);
-                    }
-                  }}
-                  itemWidth={170}
-                  scrollAreaStyle={{ 
-                    height: 30, 
-                    justifyContent: "flex-start"
-                  }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{
-                    marginRight: 10,
-                    borderRadius: 20,
-                    backgroundColor: "white",
-                  }}
-                  initialIndex={0}
-                  disableInitialAnimation={true}
+                  onPress={(item) => setSelectedAnalis(item.id)}
                 />
               </View>
 
@@ -243,7 +226,7 @@ const Analis = ({ navigation }) => {
                   }
                 }}
                 shouldOpenOnLongPress={false}>
-                <View style={{ marginEnd: 60 }}>
+                <View>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}
