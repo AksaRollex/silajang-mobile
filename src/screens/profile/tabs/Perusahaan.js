@@ -430,7 +430,8 @@ const Perusahaan = () => {
   return (
     <>
       <ScrollView className="flex-1">
-        <View className="bg-[#f8f8f8] px-4 mb-6 flex-1">
+      <View className="bg-[#ececec] p-3  w-full h-full ">
+        <View className="bg-[#f8f8f8] px-4  rounded-3xl flex-1">
           <View className="flex-row py-5">
             <Back
               size={30}
@@ -935,7 +936,7 @@ const Perusahaan = () => {
               <Button
                 onPress={handleSubmit(updateUser)}
                 loading={isLoading}
-                className="p-3 rounded-3xl mt-10"
+                className="p-3 rounded-3xl mt-10 mb-5"
                 style={{ backgroundColor: Colors.brand }}>
                 <Text className="text-white text-center text-base font-bold font-poppins-regular">
                   SIMPAN
@@ -947,6 +948,7 @@ const Perusahaan = () => {
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
+        </View>
         </View>
       </ScrollView>
 
