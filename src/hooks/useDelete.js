@@ -21,18 +21,19 @@ const ConfirmationModal = ({
     onRequestClose={onCancel}>
     <View style={styles.centeredView}>
       <View style={[styles.modalView]}>
-        <View style={{ height: "100%" }}>
-          <View style={{ justifyContent: "center", flex: 1 }}>
-            <IonIcons name="trash" size={90} color="red" />
+        <View>
+          <View>
+            {/* <Image source={require("@/assets/images/sampah1.png")}
+              className="h-32 w-32 right-4 mb-5"
+              /> */}
+            {/* <IonIcons name="trash" size={80} color="red" /> */}
           </View>
         </View>
         <View
           style={{
             flexDirection: "column",
-            justifyContent: "center",
-            flex: 1,
             alignItems: "center",
-            marginLeft: rem(1.5),
+            flex: 1,
           }}>
           <View style={{ alignItems: "center" }}>
             <Text style={styles.modalTitle}>{title}</Text>

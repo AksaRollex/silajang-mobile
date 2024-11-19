@@ -267,7 +267,7 @@ const Keamanan = () => {
               source={require("@/assets/images/error.png")}
               style={styles.lottie}
               />
-              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+              <Text style={[styles.successTextTitle, styles.errortitle]}>
                 Gagal memperbarui data
               </Text>
               <Text style={[styles.successText, styles.errorText]}>
