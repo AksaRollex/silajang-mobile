@@ -33,8 +33,11 @@ const Paket = ({ navigation }) => {
         }}>
         <View>
           <View className="flex-row justify-between items-center">
-            <View className="flex-col space-y-3">
-              <Text className="text-[15px] font-poppins-semibold text-black">{item.nama}</Text>
+            <View className="flex-col space-y-1">
+              <Text className="text-md text-gray-500 font-poppins-regular">Nama</Text>
+              <Text className="text-[15px] font-poppins-semibold text-black mb-3">{item.nama}</Text>
+
+              <Text className="text-md text-gray-500 font-poppins-regular">Harga</Text>
               <Text className="text-12 font-semibold text-black">{rupiah(item.harga)}</Text>
             </View>
           </View>

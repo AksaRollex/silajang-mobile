@@ -30,7 +30,8 @@ const Metode = ({ navigation }) => {
           elevation: 4,
         }}>
         <View>
-          <Text className="text-[18px] font-poppins-semibold text-black mb-4">{item.nama}</Text>
+          <Text className="text-[13px] font-poppins-regular text-gray-500">Nama</Text>
+          <Text className="text-[15px] font-poppins-semibold text-black mb-2">{item.nama}</Text>
           
           <View className="h-[1px] bg-gray-300 my-3" />
           

@@ -29,10 +29,15 @@ const RadiusPengambilan = ({ navigation }) => {
         elevation: 4,
       }}
     >
-      <View className="flex-col space-y-3">
-        <Text className="text-[18px] font-poppins-semibold text-black">{item.radius} meter</Text>
-        <Text className="text-12 font-poppins-medium text-black">{item.nama}</Text>
-        <Text className="text-12 font-poppins-medium text-black">{rupiah(item.harga)}</Text>
+      <View className="flex-col space-y-1">
+        <Text className="text-xs font-poppins-regular text-gray-500">Radius</Text>
+        <Text className="text-md font-poppins-semibold text-black mb-3">{item.radius} meter</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+        <Text className="text-md font-poppins-medium text-black mb-3">{item.nama}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Harga</Text>
+        <Text className="text-md font-poppins-medium text-black">{rupiah(item.harga)}</Text>
       </View>
 
       {/* Separator line */}

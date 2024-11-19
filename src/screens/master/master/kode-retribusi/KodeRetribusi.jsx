@@ -30,9 +30,12 @@ const KodeRetribusi = ({ navigation }) => {
         }}
       >
         <View className="flex-row justify-between items-center">
-          <View className="flex-col space-y-3">
-            <Text className="text-[18px] font-poppins-semibold text-black">{item.kode}</Text>
-            <Text className="text-12 font-poppins-medium text-black">{item.nama}</Text>
+          <View className="flex-col space-y-1">
+            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-3">{item.kode}</Text>
+
+            <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+            <Text className="text-md font-poppins-medium text-black">{item.nama}</Text>
           </View>
         </View>
 

@@ -27,9 +27,12 @@ const JasaPengambilan = ({ navigation }) => {
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}
     >
-      <View className="flex-col space-y-2">
-        <Text className="text-base font-poppins-semibold text-black">{item.wilayah}</Text>
-        <Text className="text-base font-poppins-medium text-black">
+      <View className="flex-col space-y-1">
+        <Text className="text-xs font-poppins-regular text-gray-500">Wilayah</Text>
+        <Text className="text-md font-poppins-semibold text-black mb-3">{item.wilayah}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Harga</Text>
+        <Text className="text-md font-poppins-medium text-black">
           {item.harga === 0 ? `Rp. ${rupiah(item.harga)}` : rupiah(item.harga)}
         </Text>
       </View>
