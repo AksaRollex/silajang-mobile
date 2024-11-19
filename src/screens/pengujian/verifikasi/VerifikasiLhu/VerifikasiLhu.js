@@ -257,11 +257,12 @@ const VerifikasiLhu = ({ navigation }) => {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
         <View className="mb-4">
           <View className="flex-row justify-between items-center mb-1">
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+
+            <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
             
             <View className="flex-row items-center">
-              <View className="bg-slate-100 rounded-md px-2 py-2 mr-3">
-                <Text className="text-[12px] text-indigo-600 font-poppins-semibold">
+              <View className="bg-slate-100 rounded-md px-2 py-1">
+                <Text className="text-[11px] text-indigo-600 font-poppins-semibold">
                   {item.text_status}
                 </Text>
               </View>
@@ -287,12 +288,13 @@ const VerifikasiLhu = ({ navigation }) => {
               )}
             </View>
           </View>
-  
-          <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
-          <Text className="text-[14px] text-black mb-2 font-poppins-semibold ">{item.lokasi}</Text>
-          <Text className="text-[14px] text-black font-poppins-semibold">
-            PERATURAN: <Text className="font-normal">{item.peraturan?.nama || '-'}</Text>
-          </Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">{item.permohonan.user.nama}</Text>
+          <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">{item.lokasi}</Text>
+          <Text className="text-xs font-poppins-regular text-gray-500">Peraturan</Text>
+          <Text className="ftext-md font-poppins-semibold text-black">{item.peraturan?.nama || '-'}</Text>
         </View>
           
         <View className="h-[1px] bg-gray-300 my-3"/>

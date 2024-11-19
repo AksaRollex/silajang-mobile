@@ -164,47 +164,47 @@ const RekapData = ({navigation}) => {
         <View style={{ width: "90%" }}>
           <View className="flex-col space-y-2">
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Kode:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black">
+              <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+              <Text className="text-md font-poppins-semibold text-black">
                 {item.kode}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Pelanggan:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
+              <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+              <Text className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}>
                 {item.permohonan?.user?.nama}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Lokasi:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
+              <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+              <Text className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}>
                 {item.lokasi}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Status:</Text>
+              <Text className="text-xs font-poppins-regular text-gray-500">Status</Text>
               <View className="bg-indigo-100 px-2 py-1 rounded-md self-start">
-                <Text className="text-[12px] font-poppins-semibold text-indigo-600">
+                <Text className="text-[11px] font-poppins-semibold text-indigo-600">
                   {item.text_status}
                 </Text>
               </View>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Tanggal Diterima:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black">
+              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima</Text>
+              <Text className="text-md font-poppins-semibold text-black">
                 {item.tanggal_diterima}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Tanggal Selesai:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black">
+              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+              <Text className="text-md font-poppins-semibold text-black">
                 {item.tanggal_selesai || '-'}
               </Text>
             </View>
