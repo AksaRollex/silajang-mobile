@@ -22,33 +22,63 @@ const Parameter = ({ navigation }) => {
   });
 
   const renderItem = ({ item }) => (
-    <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" 
+    <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
       <View>
-        <View className="flex items-end mb-2">
-          <Text className={`text-sm font-poppins-regular p-1 rounded-md ${
-            item.is_akreditasi ? 'bg-green-200 text-green-500' : 'bg-yellow-100 text-yellow-400'
-          }`}>
-            {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
-          </Text>
+        <View className="flex-row items-center justify-between mb-3">
+          <View className="flex-row items-center">
+            {item.is_akreditasi ? (
+              <MaterialIcons name="verified" size={20} color="#16a34a" />
+            ) : null}
+          </View>
+          <View className={`rounded-md ${item.is_akreditasi ? 'bg-green-200' : 'bg-yellow-100'
+            }`}>
+            <Text className={`text-sm font-poppins-regular p-1 ${item.is_akreditasi ? 'text-green-500' : 'text-yellow-400'
+              }`}>
+              {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
+            </Text>
+          </View>
         </View>
 
-        <View className="flex-col space-y-4">
-          <View className="flex-col justify-between">
+        <View className="mb-4">
+          <View className="flex-row items-center flex-wrap mb-1">
             <Text className="text-lg font-poppins-bold text-black">{item.nama}</Text>
-            <Text className="text-md font-poppins-semibold text-black">{item.metode}</Text>
+            {item.keterangan ? (
+              <Text className="text-sm font-poppins-regular text-gray-600 ml-2">
+                ({item.keterangan})
+              </Text>
+            ) : null}
           </View>
-          <View className="flex-col">
-            <Text className="text-md font-poppins-medium text-black">{item.satuan}</Text>
-            <Text className="text-lg font-poppins-semibold text-black">{rupiah(item.harga)}</Text>
-            <Text className="text-md font-poppins-medium text-black">{item.mdl}</Text>
+          {item.jenis_parameter ? (
+            <Text className="text-sm font-poppins-regular text-gray-500">
+              {item.jenis_parameter.nama}
+            </Text>
+          ) : null}
+        </View>
+
+        <View className="flex-row flex-wrap mb-4">
+          <View className="w-1/2 mb-3 pr-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">Metode</Text>
+            <Text className="text-md font-poppins-semibold text-black mt-1">{item.metode}</Text>
+          </View>
+          <View className="w-1/2 mb-3 pl-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">Satuan</Text>
+            <Text className="text-md font-poppins-medium text-black mt-1">{item.satuan}</Text>
+          </View>
+          <View className="w-1/2 pr-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">Harga</Text>
+            <Text className="text-md font-poppins-semibold text-black mt-1">{rupiah(item.harga)}</Text>
+          </View>
+          <View className="w-1/2 pl-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">MDL</Text>
+            <Text className="text-md font-poppins-medium text-black mt-1">{item.mdl}</Text>
           </View>
         </View>
 
-        <View className="h-[1px] bg-gray-300 my-3" />
-        
-        <View className="flex-row justify-end gap-2">
-          <TouchableOpacity 
+        <View className="h-[1px] bg-gray-300" />
+
+        <View className="flex-row justify-end gap-2 mt-3">
+          <TouchableOpacity
             onPress={() => navigation.navigate("FormParameter", { uuid: item.uuid })}
             className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
           >
@@ -56,7 +86,7 @@ const Parameter = ({ navigation }) => {
             <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => deleteParameter(`/master/parameter/${item.uuid}`)}
             className="flex-row items-center bg-red-600 px-2 py-2 rounded"
           >
@@ -89,7 +119,7 @@ const Parameter = ({ navigation }) => {
         className="absolute bottom-5 right-5 bg-[#312e81] p-2 rounded-full"
         onPress={() => navigation.navigate("FormParameter")}
       />
-      <DeleteConfirmationModal/>
+      <DeleteConfirmationModal />
     </View>
   );
 };

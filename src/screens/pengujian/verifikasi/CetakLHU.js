@@ -18,6 +18,7 @@ import { MenuView } from "@react-native-menu/menu";
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 // import { APP_URL } from "@env";
@@ -197,10 +198,10 @@ const HasilUjis = ({ navigation, route }) => {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">
+            <Text className="text-[17px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
             <Text className="text-[14px] text-black font-poppins-semibold mb-1">
               Titik Uji/Lokasi: <Text className="font-pooppins-semibold">{item.lokasi}</Text>
             </Text>
@@ -284,17 +285,12 @@ const HasilUjis = ({ navigation, route }) => {
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
-                  <HorizontalScrollMenu
-                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
-                    items={cetakOptions}
-                    selected={selectedCetak}
-                    onPress={item => setSelectedCetak(item.id)}
-                    itemWidth={170}
-                    scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                    activeBackgroundColor={"#312e81"}
-                    buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-                  />
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={cetakOptions}
+                  selected={selectedCetak}
+                  onPress={(item) => setSelectedCetak(item.id)}
+                />
               </View>
 
               <MenuView
@@ -315,7 +311,7 @@ const HasilUjis = ({ navigation, route }) => {
                 shouldOpenOnLongPress={false}
                 
               >
-                <View style={{ marginEnd: 60 }}>
+                <View style={{ marginEnd: 5 }}>
                   <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
                 </View>
               </MenuView>

@@ -71,7 +71,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
         </View>
 
         <View style={styles.inputSection}>
-          <Text style={styles.label}>Hasil Uji *</Text>
+          <Text style={styles.label}>Hasil Uji <Text className="text-red-500">*</Text></Text>
           <TextInput
             style={styles.input}
             value={parameter.pivot.hasil_uji}
@@ -217,6 +217,7 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 15,
     elevation: 3,
+    marginBottom: 16,
   },
   headerRow: {
     flexDirection: "row",

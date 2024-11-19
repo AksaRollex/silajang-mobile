@@ -26,9 +26,12 @@ const LiburCuti = ({ navigation }) => {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" 
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between items-center">
-          <View className="flex-col space-y-3">
-            <Text className="text-[18px] font-poppins-semibold text-black">{item.tanggal}</Text>
-            <Text className="text-12 font-poppins-medium text-black">{item.keterangan}</Text>
+          <View className="flex-col space-y-1">
+            <Text className="text-xs font-poppins-regular text-gray-500">Tanggal</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-3">{item.tanggal}</Text>
+
+            <Text className="text-xs font-poppins-regular text-gray-500">Keterangan</Text>
+            <Text className="text-md font-poppins-medium text-black">{item.keterangan}</Text>
           </View>
         </View>
 

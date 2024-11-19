@@ -51,7 +51,7 @@ const screenOptions = {
 
 const Header = () => {
   return (
-    <View className="flex flex-row gap-2 items-center mx-4">
+    <View className="flex flex-row gap-2 items-center">
       <Text className="text-white text-xl font-poppins-bold" >SI-LAJANG</Text>
       <Image
         source={require("@/assets/images/logo.png")}
@@ -396,125 +396,7 @@ const DrawerContent = (props) => {
   const queryClient = useQueryClient();
 
   const { data: user } = useUser();
-
-  const Logout = () => {
-    const [modalVisible, setModalVisible] = useState(false);
-    const queryClient = useQueryClient();
-
-    const { mutate: logout } = useMutation(
-      () => axios.post("/auth/logout"),
-      {
-        onSuccess: async () => {
-          await AsyncStorage.removeItem("@auth-token");
-          Toast.show({
-            type: "success",
-            text1: "Logout Berhasil",
-          });
-          queryClient.invalidateQueries(["auth", "user"]);
-        },
-        onError: () => {
-          Toast.show({
-            type: "error",
-            text1: "Gagal Logout",
-          });
-        },
-      }
-    );
-
-    const handleLogout = () => {
-      setModalVisible(true);
-    };
-
-    const confirmLogout = () => {
-      setModalVisible(false);
-      logout();
-    };
-
-    return (
-      <View style={{ paddingHorizontal: 13, paddingBottom: 20 }}>
-        <View style={{
-          height: 1,
-          backgroundColor: '#d1d5db',
-          marginBottom: 10,
-        }}
-        />
-        <TouchableHighlight
-          onPress={handleLogout}
-          underlayColor="rgba(242, 65, 110, 0.2)"
-          style={{
-            borderRadius: 5,
-            paddingVertical: 10,
-          }}
-        >
-          <View style={{ flexDirection: 'row', alignItems: 'center' }} className="ml-2">
-            <IonIcons name="log-out" size={25} color="#f2416e" />
-            <Text className="font-poppins-semibold text-lg ml-2" style={{ color: "#f2416e" }}>
-              Logout
-            </Text>
-          </View>
-        </TouchableHighlight>
-
-        <Modal
-          transparent={true}
-          visible={modalVisible}
-          animationType="fade"
-          onRequestClose={() => setModalVisible(false)}
-        >
-          <View style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          }}>
-            <View style={{
-              width: 300,
-              padding: 20,
-              backgroundColor: 'white',
-              borderRadius: 10,
-              alignItems: 'center',
-            }}>
-              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
-
-              <View style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: '#dedede',
-                marginBottom: 15,
-              }} />
-
-              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
-              <View style={{ flexDirection: 'row' }}>
-                <TouchableOpacity
-                  onPress={() => setModalVisible(false)}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    backgroundColor: '#dedede',
-                    borderRadius: 5,
-                    marginRight: 10,
-                  }}
-                >
-                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  className="bg-red-100"
-                  onPress={confirmLogout}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    borderRadius: 5,
-                  }}
-                >
-                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
-                </TouchableOpacity>
-              </View>
-            </View>
-          </View>
-        </Modal>
-      </View>
-    );
-  };
-
+  
   const toggleSubMenu = useCallback((menuName) => {
     setExpandedMenus((prev) => ({
       ...prev,

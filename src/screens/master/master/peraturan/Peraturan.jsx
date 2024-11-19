@@ -31,10 +31,15 @@ const Peraturan = ({ navigation }) => {
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
       <View>
-        <View className="flex-col space-y-3">
-          <Text className="text-[15px] font-poppins-bold text-black">{item.nama}</Text>
-          <Text className="text-[15px] font-poppins-semibold text-black">{item.nomor}</Text>
-          <Text className="text-[14px] font-poppins-regular text-black">{item.tentang}</Text>
+        <View className="flex-col space-y-1">
+          <Text className="text-md text-gray-500 font-poppins-regular">Nama</Text>
+          <Text className="text-[15px] font-poppins-bold text-black mb-3">{item.nama}</Text>
+
+          <Text className="text-md text-gray-500 font-poppins-regular">Nomor</Text>
+          <Text className="text-[15px] font-poppins-semibold text-black mb-3">{item.nomor}</Text>
+
+          <Text className="text-md text-gray-500 font-poppins-regular">Tentang</Text>
+          <Text className="text-[15px] font-poppins-semibold text-black">{item.tentang}</Text>
         </View>
 
         <View className="h-[1px] bg-gray-300 my-3" />

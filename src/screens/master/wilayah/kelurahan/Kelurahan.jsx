@@ -25,9 +25,15 @@ const Kelurahan = ({ navigation }) => {
         return (
             <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
                 <View className="flex-row justify-between items-center">
-                    <View className="flex-col space-y-2">
-                        <Text className="text-[18px] font-poppins-semibold text-black">{item.nama}</Text>
-                        <Text className="text-[13px] font-poppins-medium text-black">{item.kecamatan.nama} - {item.kecamatan.kab_kota.nama} </Text>
+                    <View className="flex-col">
+                        <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+                        <Text className="text-md font-poppins-semibold text-black mb-4">{item.nama}</Text>
+
+                        <Text className="text-xs font-poppins-regular text-gray-500">Kecamatan</Text>
+                        <Text className="text-md font-poppins-medium text-black mb-4">{item.kecamatan.nama}</Text>
+
+                        <Text className="text-xs font-poppins-regular text-gray-500">Kota/Kabupaten</Text>
+                        <Text className="text-md font-poppins-medium text-black">{item.kecamatan.kab_kota.nama}</Text>
                     </View>
                 </View>
 

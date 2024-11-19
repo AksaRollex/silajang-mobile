@@ -30,8 +30,11 @@ const Jabatan = ({ navigation }) => {
         }}
       >
         <View className="flex-row justify-between items-center">
-          <Text className="text-[16px] font-poppins-medium text-black">{item.full_name}</Text>
+          <View className="flex-col space-y-1">
+            <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+          <Text className="text-md font-poppins-medium text-black">{item.full_name}</Text>
         </View>
+      </View>
 
         {/* Separator line above buttons */}
         <View className="h-[1px] bg-gray-300 my-3" />

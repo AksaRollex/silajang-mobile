@@ -1,6 +1,7 @@
 import { useDelete } from '@/src/hooks/useDelete';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
@@ -9,6 +10,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
@@ -26,7 +28,7 @@ const generateYears = () => {
   return years;
 };
 
-const VerifikasiOptions = [
+const verifikasiOptions = [
   { id: 7, name: "Menunggu Verifikasi" },
   { id: 8, name: "Telah Diverifikasi/Disahkan" },
 ];
@@ -233,105 +235,106 @@ const VerifikasiLhu = ({ navigation }) => {
   
 
 
-  const renderItem = ({ item }) => { 
-
+  const renderItem = ({ item }) => {
     const dropdownOptionsMenunggu = [
-      { id: "Preview", title: "Preview", action: (item) => PreviewVerifikasi(item) },
       { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => confirmationModal('verify', item.uuid) },
       { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => confirmationModal('reject', item.uuid) },
     ];
     
-    const dropdownOptionsTelah = [
-      { id: "Preview", title: "Preview", action: (item) => PreviewVerifikasi(item) },
-    ];
+    const dropdownOptionsTelah = [];
     if (item.status < 9 && item.status > 7) {
       dropdownOptionsTelah.push({
         id: "Rollback",
-        title: "Rollback",
+        title: "Rollback", 
         action: (item) => Rollback(item.uuid),
       });
     }
-
-
+  
     const dropdownOptionsForItem = item.status > 7 ? dropdownOptionsTelah : dropdownOptionsMenunggu;
     isConfirmed = item.text_status;
   
-
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
-        <View className="flex-row justify-between items-center p-4 relative">
-          <View className="flex-shrink mr-20">
-            {isConfirmed ? (
-              <>
-                <Text className="text-[18px] text-black font-poppins-semibold mb-1">{item.kode}</Text>
-                <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
-              </>
-            ) : (
-              <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
-            )}
-            <Text className="text-[14px] text-black font-poppins-semibold mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] text-black font-poppins-semibold mb-2">
-              PERATURAN : <Text className="font-normal">{item.peraturan?.nama}</Text>
-            </Text>
-          </View>
-          <View className="absolute right-1 flex-col items-center">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
-                {item.text_status}
-              </Text>
-            </View>
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptionsForItem}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptionsForItem.find(
-                  option => option.title === nativeEvent.event
-                );
-
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+        <View className="mb-4">
+          <View className="flex-row justify-between items-center mb-1">
+            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
+            
+            <View className="flex-row items-center">
+              <View className="bg-slate-100 rounded-md px-2 py-2 mr-3">
+                <Text className="text-[12px] text-indigo-600 font-poppins-semibold">
+                  {item.text_status}
+                </Text>
               </View>
-            </MenuView>
+              
+              {dropdownOptionsForItem.length > 0 && (
+                <MenuView
+                  title="dropdownOptions"
+                  actions={dropdownOptionsForItem}
+                  onPressAction={({ nativeEvent }) => {
+                    const selectedOption = dropdownOptionsForItem.find(
+                      option => option.title === nativeEvent.event
+                    );
+                    if (selectedOption) {
+                      selectedOption.action(item);
+                    }
+                  }}
+                  shouldOpenOnLongPress={false}
+                >
+                  <View>
+                    <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+                  </View>
+                </MenuView>
+              )}
             </View>
           </View>
+  
+          <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
+          <Text className="text-[14px] text-black mb-2 font-poppins-semibold ">{item.lokasi}</Text>
+          <Text className="text-[14px] text-black font-poppins-semibold">
+            PERATURAN: <Text className="font-normal">{item.peraturan?.nama || '-'}</Text>
+          </Text>
+        </View>
+          
+        <View className="h-[1px] bg-gray-300 my-3"/>
+  
+        <View className="flex-row justify-end mt-2">
+          <TouchableOpacity 
+            onPress={() => PreviewVerifikasi(item)}
+            className="flex-row items-center bg-red-600 px-2 py-2 rounded-md"
+          >
+            <FontAwesome5Icon name="file-pdf" size={16} color="white" style={{ marginRight: 8 }} />
+            <Text className="text-white font-poppins-medium text-xs">Preview LHU</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
   };
-
+  
   return (
     <View className="bg-[#ececec] w-full h-full">
+      {/* Header Section */}
       <View className="p-4">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold text-black">Verifikasi LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">
+                    Verifikasi LHU
+                </Text>
               </View>
             </View>
-
+  
+            {/* Filters Section */}
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2"> 
-                <HorizontalScrollMenu
-                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
-                  items={VerifikasiOptions}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={verifikasiOptions}
                   selected={selectedVerifikasi}
-                  onPress={item => setSelectedVerifikasi(item.id)}
-                  itemWidth={200}
-                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                  onPress={(item) => setSelectedVerifikasi(item.id)}
                 />
               </View>
-
+  
               <MenuView
                 title="filterOptions"
                 actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
@@ -343,7 +346,7 @@ const VerifikasiLhu = ({ navigation }) => {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <View style={{ marginEnd: 50 }}>
+                <View>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}
@@ -356,7 +359,8 @@ const VerifikasiLhu = ({ navigation }) => {
           </View>
         </View>
       </View>
-
+  
+      {/* List Section */}
       <Paginate
         ref={paginateRef}
         url="/verifikasi/kepala-upt"
@@ -369,7 +373,6 @@ const VerifikasiLhu = ({ navigation }) => {
         renderItem={renderItem}
         className="mb-14"
       />
-
       <Modal
         transparent={true}
         animationType="slide"

@@ -1,6 +1,7 @@
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
@@ -14,6 +15,9 @@ import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
+import Ionicons from "react-native-vector-icons/Ionicons"
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -28,6 +32,7 @@ const analisOptions = [
   { id: 3, name: "Menunggu Pengujian", index: 0 },
   { id: 4, name: "Telah diuji", index: 1 },
 ];
+
 const Analis = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
@@ -35,7 +40,6 @@ const Analis = ({ navigation }) => {
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
-  const isConfirmed = Analis === 4; // Telah Diambil
 
   const [initialRender, setInitialRender] = useState(true);
 
@@ -49,53 +53,10 @@ const Analis = ({ navigation }) => {
     },
   });
 
-  const dropdownOptions1 = [
-    {
-      id: "Hasil Uji",
-      title: "Hasil Uji",
-      action: item =>
-        navigation.navigate("DetailAnalis", {
-          uuid: item.uuid,
-          status: item.status,
-        }),
-    },
-  ];
-
-  const dropdownOptions = [
-    {
-      id: "Hasil Uji",
-      title: "Hasil Uji",
-      action: item =>
-        navigation.navigate("DetailAnalis", {
-          uuid: item.uuid,
-          status: item.status,
-        }),
-    },
-    {
-      id: "SPP",
-      title: "SPP",
-      action: item => handlePreviewSPP({ uuid: item.uuid }),
-    },
-  ];
-
-  const BeritaAcara = async item => {
-    const authToken = await AsyncStorage.getItem("@auth-token");
-    setReportUrl(
-      `${APP_URL}/api/v1/report/${item.uuid}/berita-acara?token=${authToken}`,
-    );
-    setModalVisible(true);
-  };
   const handlePreviewSPP = async item => {
     const authToken = await AsyncStorage.getItem("@auth-token");
     setReportUrl(
       `${APP_URL}/api/v1/report/${item.uuid}/spp?token=${authToken}`,
-    );
-    setModalVisible(true);
-  };
-  const DataPengambilan = async item => {
-    const authToken = await AsyncStorage.getItem("@auth-token");
-    setReportUrl(
-      `${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`,
     );
     setModalVisible(true);
   };
@@ -151,15 +112,16 @@ const Analis = ({ navigation }) => {
   };
 
   useEffect(() => {
+    if (!initialRender && paginateRef.current) {
+      paginateRef.current.refetch();
+    }
+  }, [selectedAnalis]);
+
+  useEffect(() => {
     setInitialRender(false);
   }, []);
 
-  const renderItem = ({ item }) => {
-    const isDiterima = item.text_status;
-    const dropdownOptionsForItem = isDiterima
-      ? dropdownOptions
-      : dropdownOptions1;
-
+ const renderItem = ({ item }) => {
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -168,13 +130,24 @@ const Analis = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-poppins-semibold text-black mb-4">{item.kode}</Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-3">
-              Diterima pada:{" "}
-              <Text className="font-poppins-semibold text-black ">{item.tanggal_diterima}</Text>
+            <Text className="text-[18px] font-poppins-semibold text-black mb-4">
+              {item.kode}
             </Text>
+          
+            <Text className="text-[14px] font-poppins-semibold text-black mb-3">
+              {item.lokasi}
+            </Text>
+            
+            {item.tanggal_diterima && (
+              <Text className="text-[14px] font-poppins-semibold text-black mb-3">
+                Diterima pada:{" "}
+                <Text className="font-poppins-semibold text-black">
+                  {item.tanggal_diterima}
+                </Text>
+              </Text>
+            )}
           </View>
+          
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
               <Text
@@ -184,47 +157,33 @@ const Analis = ({ navigation }) => {
                 {item.text_status}
               </Text>
             </View>
-            <View className="my-2 ml-10">
-              <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptionsForItem.map(option => ({
-                  ...option,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptionsForItem.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  const sub = dropdownOptionsForItem.find(
-                    option =>
-                      option.subactions &&
-                      option.subactions.some(
-                        suboption => suboption.title === nativeEvent.event,
-                      ),
-                  );
-                  if (selectedOption) {
-                    selectedOption.action(item);
-                  }
-
-                  if (sub) {
-                    const selectedSub = sub.subactions.find(
-                      sub => sub.title === nativeEvent.event,
-                    );
-                    if (selectedSub) {
-                      selectedSub.action(item);
-                    }
-                  }
-                }}
-                shouldOpenOnLongPress={false}>
-                <View>
-                  <Entypo
-                    name="dots-three-vertical"
-                    size={18}
-                    color="#312e81"
-                  />
-                </View>
-              </MenuView>
-            </View>
           </View>
+        </View>
+        
+        <View className="h-[1px] bg-gray-300 my-3"/>
+
+        <View className="flex-row justify-end mt-1 space-x-2">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("DetailAnalis", {
+              uuid: item.uuid,
+              status: item.status,
+            })}
+            className="bg-indigo-900 px-3 py-2 rounded-md flex-row items-center">
+            <FontAwesome6Icon name="vial" size={13} color="white" />
+            <Text className="text-white text-xs ml-1 font-poppins-medium">
+              Hasil Uji
+            </Text>
+          </TouchableOpacity>
+                
+            <TouchableOpacity
+              onPress={() => handlePreviewSPP({ uuid: item.uuid })}
+              className="bg-red-600 px-3 py-2 rounded-md flex-row items-center">
+              <FontAwesome5Icon name="file-pdf" size={16} color="white" />
+              <Text className="text-white text-xs ml-1 font-poppins-medium">
+                SPP
+              </Text>
+            </TouchableOpacity>
+
         </View>
       </View>
     );
@@ -243,29 +202,11 @@ const Analis = ({ navigation }) => {
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2">
-                <HorizontalScrollMenu
-                   textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
                   items={analisOptions}
                   selected={selectedAnalis}
-                  onPress={item => {
-                    if (!initialRender) {
-                      setSelectedAnalis(item.id);
-                    }
-                  }}
-                  itemWidth={170}
-                  scrollAreaStyle={{ 
-                    height: 30, 
-                    justifyContent: "flex-start"
-                  }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{
-                    marginRight: 10,
-                    borderRadius: 20,
-                    backgroundColor: "white",
-                  }}
-                  initialIndex={0}
-                  disableInitialAnimation={true}
+                  onPress={(item) => setSelectedAnalis(item.id)}
                 />
               </View>
 
@@ -285,7 +226,7 @@ const Analis = ({ navigation }) => {
                   }
                 }}
                 shouldOpenOnLongPress={false}>
-                <View style={{ marginEnd: 60 }}>
+                <View>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}
@@ -339,7 +280,7 @@ const Analis = ({ navigation }) => {
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
-            />
+            />  
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}

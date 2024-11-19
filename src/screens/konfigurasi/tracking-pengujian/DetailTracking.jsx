@@ -95,7 +95,7 @@ const DetailTracking = ({ route, navigation }) => {
               </View>
   
               <View className="flex-1">
-                <Text className="text-xs text-gray-400 mb-1 font-poppins">
+                <Text className="text-[11px] text-gray-400 mb-1 font-poppins-regular">
                   {moment(tracking.created_at).format('DD MMMM YYYY, HH:mm')}
                 </Text>
                 <Text className="text-base font-poppins-semibold text-black mb-2">
@@ -103,7 +103,7 @@ const DetailTracking = ({ route, navigation }) => {
                 </Text>
   
                 {tracking.status === 3 && selected.parameters && (
-                  <View className="mt-2">
+                  <View className="mt-2"> 
                     {selected.parameters
                       .filter(param => param.is_dapat_diuji)
                       .map(param => (

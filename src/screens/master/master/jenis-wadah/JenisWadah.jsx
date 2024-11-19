@@ -28,9 +28,11 @@ const renderJenisWadah = ({ item }) => (
       elevation: 4 
     }}>
     <View>
-      <View className="flex-col space-y-2">
-        <Text className="text-base font-poppins-semibold text-black">{item.nama}</Text>
-        <Text className="text-base font-poppins-medium text-black">{item.keterangan}</Text>
+      <View className="flex-col space-y-1">
+        <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+        <Text className="text-md font-poppins-semibold text-black mb-3">{item.nama}</Text>
+        <Text className="text-xs font-poppins-regular text-gray-500">Keterangan</Text>
+        <Text className="text-md font-poppins-medium text-black">{item.keterangan}</Text>
       </View>
 
       <View className="h-[1px] bg-gray-300 my-3" />

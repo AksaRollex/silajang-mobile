@@ -30,7 +30,8 @@ const KotaKab = ({ navigation }) => {
                 }}
             >
                 <View>
-                    <Text className="text-[18px] font-poppins-medium text-black">{item.nama}</Text>
+                    <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Nama</Text>
+                    <Text className="text-md font-poppins-medium text-black">{item.nama}</Text>
 
                     {/* Horizontal separator */}
                     <View className="h-[1px] bg-gray-300 my-3" />

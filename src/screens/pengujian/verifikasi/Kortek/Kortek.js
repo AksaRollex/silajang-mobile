@@ -1,6 +1,7 @@
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
@@ -246,20 +247,11 @@ const Kortek = ({ navigation }) => {
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-4 ml-[-20] mr-2">
-                <HorizontalScrollMenu
-                  textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
                   items={kortekOptions}
                   selected={selectedKortek}
-                  onPress={item => setSelectedKortek(item.id)}
-                  itemWidth={170}
-                  scrollAreaStyle={{ height: 30, justifyContent: "flex-start" }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{
-                    marginRight: 10,
-                    borderRadius: 20,
-                    backgroundColor: "white",
-                  }}
+                  onPress={(item) => setSelectedKortek(item.id)}
                 />
               </View>
 
@@ -279,7 +271,7 @@ const Kortek = ({ navigation }) => {
                   }
                 }}
                 shouldOpenOnLongPress={false}>
-                <View style={{ marginEnd: 60 }}>
+                <View style={{ marginEnd: 5 }}>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}

@@ -9,6 +9,8 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
@@ -159,21 +161,21 @@ const PengambilSampel = ({ navigation }) => {
 
           {isConfirmed ? (
               <>
-                <Text className="text-[18px] text-black font-poppins-semibold mb-1">
+                <Text className="text-[16px] text-black font-poppins-semibold mb-1">
                   {item.kode}
                 </Text>
-                <Text className="text-[18px] text-black font-poppins-semibold mb-2">
+                <Text className="text-[16px] text-black font-poppins-semibold mb-2">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-poppins-semibold text-black mb-3">
+              <Text className="text-[16px] font-poppins-semibold text-black mb-3">
                 {item.permohonan.industri}
               </Text>
             )}
 
             <Text className="text-[14px] font-poppins-semibold mb-2 text-black">{item.lokasi}</Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] font-poppins-semibold text-black mb-2">Diambil : <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
             <Text className="text-[14px] font-poppins-semibold text-black mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
 
           </View>
@@ -189,20 +191,26 @@ const PengambilSampel = ({ navigation }) => {
           </View>
         </View>
         <View className="h-[1px] bg-gray-300 my-3" />
-        <View className="flex-row flex-wrap justify-end gap-2 my-1 ">
+        <View className="flex-row justify-end items-center space-x-2 mr-[-10px]">
           <TouchableOpacity 
             onPress={() => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
-            className="bg-indigo-900 px-4 py-2 rounded-md"
+            className="bg-indigo-900 px-3 py-2 rounded-md"
           >
-            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+              <View className="flex-row">
+                <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+              </View>
           </TouchableOpacity>
 
           {isConfirmed && (
             <TouchableOpacity 
               onPress={() => handlePreviewPS({ uuid: item.uuid })}
-              className="bg-indigo-900 px-4 py-2 rounded-md"
+              className="bg-red-600 px-3 py-2 rounded-md"
             >
-              <Text className="text-white font-poppins-medium text-[12px]">Cetak Sampling</Text>
+               <View className="flex-row">
+                  <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                  <Text className="text-white font-poppins-medium text-[11px]">Cetak Sampling</Text>
+                </View>
             </TouchableOpacity>
           )}
 
@@ -230,9 +238,9 @@ const PengambilSampel = ({ navigation }) => {
               }
             }}
             >
-              <TouchableOpacity className="bg-indigo-900 px-4 py-2 rounded-md flex-row items-center">
-                <Text className="text-white font-poppins-medium text-[12px] mr-2">Berita Acara</Text>
-                <Feather name="chevron-down" size={14} color="#fff" />
+              <TouchableOpacity className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
+                <Text className="text-red-500 font-poppins-medium text-[11px] mr-2">Berita Acara</Text>
+                <Feather name="chevron-down" size={14} color="#ef4444" />
               </TouchableOpacity>
             </MenuView>
           )}
@@ -258,7 +266,7 @@ const PengambilSampel = ({ navigation }) => {
             <View className="flex-row justify-center">
               <View className="mt-3 ml-[-10]  mr-2">
                   <HorizontalScrollMenu
-                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 13 }}
+                    textStyle={{ fontFamily: 'Poppins-SemiBold', fontSize: 12 }}
                     items={pengambilOptions}
                     selected={selectedPengambil}
                     onPress={item => setSelectedPengambil(item.id)}
