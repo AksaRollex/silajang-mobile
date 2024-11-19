@@ -181,8 +181,7 @@ const Akun = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] p-3  w-full h-full ">
-        <View className="bg-[#f8f8f8] px-5 rounded-3xl h-full">
+      <View className="bg-[#ececec] px-5 w-full h-full ">
           <View className="flex-row  py-5 ">
             <Back
               size={30}
@@ -205,9 +204,7 @@ const Akun = () => {
                 name="photo"
                 render={({ field: { value } }) => (
                   <View className="mt-2">
-                    <Text
-                      className="font-poppins-semibold mb-1 text-md text-black "
-                      style={{ fontSize: 15 }}>
+                    <Text className="font-poppins-semibold mb-1 text-md text-black " style={{ fontSize: 15 }}>
                       Foto Profil
                     </Text>
                     <View className="p-[5px] bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular">
@@ -331,27 +328,52 @@ const Akun = () => {
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
-        </View>
-        <Modal animationType="fade" transparent={true} visible={modalVisible}>
-          <View style={styles.overlayView}>
-            <View style={styles.successContainer}>
-              <LottieView
-                source={require("../../../../assets/lottiefiles/success-animation.json")}
-                autoPlay
-                loop={false}
+      </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+              <Image
+                source={require("@/assets/images/cek.png")}
                 style={styles.lottie}
               />
-              <Text style={styles.successTextTitle}>
-                INformasi personal kamu berhasil di rubah
-              </Text>
-              <Text style={styles.successText}>
-                Pastikan informasi personal yang kamu gunakan saat ini sudah
-                benar !
-              </Text>
-            </View>
+            {/* <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            /> */}
+            <Text style={styles.successTextTitle}>
+              Informasi personal kamu berhasil di rubah
+            </Text>
+            <Text style={styles.successText}>
+              Pastikan informasi personal yang kamu gunakan saat ini sudah benar
+              !
+            </Text>
           </View>
-        </Modal>
-      </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errortitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
