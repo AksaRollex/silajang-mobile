@@ -32,11 +32,13 @@ import LottieView from "lottie-react-native";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { color } from "@rneui/base";
+import TitikUji from "./TitikUji";
 
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [modalKintud, setModalKintud] = useState(false);
+  const [modalParam, setModalParam] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -47,7 +49,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [jenisWadah, setJenisWadah] = useState([]);
   const [selectedJenisWadah, setSelectedJenisWadah] = useState(null);
   const [openJenisWadah, setOpenJenisWadah] = useState(false);
-
+  const [titikUji, setTitikUji] = useState(null);
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
@@ -195,7 +197,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     setPaymentTypeError(null);
   };
   const { mutate: createOrUpdate, isLoading } = useMutation(
-    data => {
+    async data => {
       if (!selectedPayment) {
         Toast.show({
           type: "error",
@@ -221,20 +223,19 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           delete requestData[key],
       );
 
-      return axios.post(
+      // Kirim data ke API
+      const response = await axios.post(
         uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
         requestData,
       );
+
+      return response.data; // Pastikan API mengembalikan data yang relevan
     },
     {
-      onSuccess: () => {
-        setModalKintud(true); // Tampilkan modal dulu
-        queryClient.invalidateQueries(["/permohonan/titik"]);
-
-        setTimeout(() => {
-          setModalKintud(false);
-          navigation.navigate("TitikUji", { uuid: permohonan.uuid });
-        }, 2000);
+      onSuccess: data => {
+        setTitikUji(data); // Simpan data titik uji di state
+        setModalParam(true); // Tampilkan modal
+        queryClient.invalidateQueries(["/permohonan/titik"]); // Refresh data
       },
       onError: error => {
         if (error.message !== "Silahkan pilih metode pembayaran") {
@@ -1070,6 +1071,70 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           </View>
         )}
       />
+
+      <Modal animationType="fade" transparent={true} visible={modalParam}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <View>
+              <Image
+                source={require("@/assets/images/cek.png")}
+                style={styles.lottie}
+              />
+            </View>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
+              }}>
+              <Text
+                className="font-poppins-bold"
+                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
+                Titik Uji sukses dibuat
+              </Text>
+              <Text
+                className="font-poppins-regular"
+                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
+                Lanjutkan Untuk mengisi Parameter
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalParam(false);
+                  navigation.navigate("TitikUji", { uuid: permohonan.uuid });
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
+                <Text style={{ color: "black" }}>Tutup</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalParam(false);
+                  if (titikUji) {
+                    navigation.navigate("Parameter", { uuid: titikUji?.data?.uuid });
+                  }
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
+                <Text style={{ color: "black" }}>Lanjut</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Modal animationType="fade" transparent={true} visible={modalKintud}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
