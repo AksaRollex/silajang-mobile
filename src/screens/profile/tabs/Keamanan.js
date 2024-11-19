@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Modal } from "react-native";
+import { View, StyleSheet, Text, Modal, Image } from "react-native";
 import { TextInput } from "react-native-paper";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
@@ -32,6 +32,9 @@ const Keamanan = () => {
   const [isPasswordVisible, setPasswordVisible] = useState(false);
   const [isPasswordVisible2, setPasswordVisible2] = useState(false);
   const [isPasswordVisible3, setPasswordVisible3] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const togglePasswordVisibility = () => {
     setPasswordVisible(!isPasswordVisible);
@@ -49,19 +52,20 @@ const Keamanan = () => {
     data => axios.post("/user/security", data),
     {
       onSuccess: () => {
-        Toast.show({
-          type: "success",
-          text1: "Password berhasil diperbarui",
-        });
+       setModalVisible(true);
         queryClient.invalidateQueries("/auth");
-        navigation.navigate("IndexProfile");
-      },
+
+        setTimeout(() => {
+          setModalVisible(false);
+          navigation.navigate("IndexProfile");
+        }, 2000);
+      },  
       onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message || "Gagal memperbarui password",
-        });
+        setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+        setErrorModalVisible(true);
+        setTimeout(() => {
+          setErrorModalVisible(false);
+        }, 2000);
       },
     },
   );
@@ -79,7 +83,8 @@ const Keamanan = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] w-full h-full px-4 py-4 ">
+      <View className="bg-[#ececec] w-full h-full p-3">
+      <View className="bg-[#f8f8f8] rounded-3xl px-4 py-4 h-full">
         <View className="flex-row mb-6">
           <Back
             size={30}
@@ -87,13 +92,10 @@ const Keamanan = () => {
             action={() => navigation.goBack()}
             className="mr-5 "
             style={{
-              borderWidth: 0.5,
               padding: 4,
-              borderColor: "black",
-              borderRadius: 8,
             }}
           />
-          <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+          <Text className="font-poppins-semibold text-black text-xl mt-1 ">
             Ganti Password
           </Text>
         </View>
@@ -236,10 +238,98 @@ const Keamanan = () => {
           </Text>
         </Button>
       </View>
+      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <Image 
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            /> */}
+            <Text style={styles.successTextTitle}>
+              Data berhasil diperbarui
+            </Text>
+            <Text style={styles.successText}>
+              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errortitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
+      </View>
     </>
   );
 };
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    paddingVertical: 30,
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+    fontSize: rem(1.5),
+    fontFamily: "Poppins-Bold",
+    marginBottom: rem(1.5),
+    marginTop: rem(1),
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
+  },
+  errorContainer: {
+  },
+  errortitle: {
+    color: '#FF4B4B',
+  },
+  errorText: {
+    color: '#666',
+  },
+});
 
 export default Keamanan;

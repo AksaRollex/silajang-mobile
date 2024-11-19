@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
   Modal,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -30,6 +31,8 @@ const TambahPermohonan = ({ navigation }) => {
   const [modalPercuy, setModalPercuy] = useState(false);
 
   console.log("percuy", percuy);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     axios
@@ -113,13 +116,6 @@ const TambahPermohonan = ({ navigation }) => {
         setPercuy(data);
         setModalPercuy(true);
         queryClient.invalidateQueries(["/permohonan"]);
-        Toast.show({
-          type: "success",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          topOffset: 40,
-        });
         // setTimeout(() => {
         //   navigation.navigate("FormTitikUji", {
         //     uuid: data.uuid,
@@ -131,15 +127,13 @@ const TambahPermohonan = ({ navigation }) => {
         // }, 4000);
       },
       onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.response?.data?.message || "Terjadi kesalahan",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          topOffset: 40,
-        });
+        setErrorMessage(
+          error.response?.data?.message || "Gagal memperbarui data",
+        );
+        setErrorModalVisible(true);
+        setTimeout(() => {
+          setErrorModalVisible(false);
+        }, 2000);
       },
     },
   );
@@ -356,10 +350,8 @@ const TambahPermohonan = ({ navigation }) => {
       <Modal animationType="fade" transparent={true} visible={modalPercuy}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
+            <Image
+              source={require("@/assets/images/cek.png")}
               style={styles.lottie}
             />
             <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
@@ -416,12 +408,16 @@ const TambahPermohonan = ({ navigation }) => {
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <LottieView
+            <Image
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
-            />
+            /> */}
             <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
             <Text style={styles.successText}>
               Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu
@@ -430,7 +426,31 @@ const TambahPermohonan = ({ navigation }) => {
           </View>
         </View>
       </Modal>
-      <Toast config={toastConfig} />
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+            />
+            <Text style={[styles.successTextTitle, styles.errortitle]}>
+              Gagal memperbarui data
+            </Text>
+            <Text style={[styles.successText, styles.errorText]}>
+              {errorMessage}
+            </Text>
+            {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -517,6 +537,8 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     padding: 20,
+    width: "90%",
+    paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
@@ -539,57 +561,11 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "black",
   },
-  toastContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginTop: 8,
-    padding: 16,
-    minHeight: 64,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  errortitle: {
+    color: "#FF4B4B",
   },
-  contentContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#4CAF50",
-    marginBottom: 4,
-    fontFamily: "Poppins-SemiBold",
-  },
-  message: {
-    fontSize: 12,
-    color: "#666666",
-    fontFamily: "Poppins-Regular",
-  },
-  iconContainer: {
-    width: 24,
-    height: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorContainer: {
-    borderLeftColor: "#FF4444",
-  },
-  errorTitle: {
-    color: "#FF4444",
-  },
-  errorMessage: {
-    color: "#666666",
+  errorText: {
+    color: "#666",
   },
 });
 

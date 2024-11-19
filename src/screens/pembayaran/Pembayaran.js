@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   Dimensions,
+  ImageBackground,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -115,59 +116,69 @@ export default function Pembayaran() {
 
   return (
     <>
-      <Header
-        navigate={() => {
-          navigation.navigate("Profile");
-        }}
-      />
       <View style={styles.container}>
         <ScrollView
           className="flex-col"
           showsVerticalScrollIndicator={false}
           stickyHeaderIndices={[]}>
           {/* Header Section with Gradient */}
-          <View
-            className="min-h-[100px] relative shadow-lg z-10 mb-16"
-            style={{ backgroundColor: Colors.brand }}>
-            <View style={styles.welcomeCard}>
-              <View style={styles.headerSection}>
-                <Text className="text-center" style={styles.headerTitle}>
-                  Pembayaran
-                </Text>
-                <Text className="text-center" style={styles.headerSubtitle}>
-                  {new Date().toLocaleDateString("id-ID", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
+          <ImageBackground
+            source={require("../../../assets/images/background.png")}
+            style={{
+              flex: 1,
+              height: "70%", // Pastikan gambar menutupi area yang diinginkan
+              // borderBottomLeftRadius: 20,
+              // borderBottomRightRadius: 20,
+            }}
+            // imageStyle={{
+            //   borderBottomLeftRadius: 20,
+            //   borderBottomRightRadius: 20,
+            // }}
+          >
+            <Header
+              navigate={() => {
+                navigation.navigate("Profile");
+              }}
+            />
+            <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
+              <View style={styles.welcomeCard}>
+                <View style={styles.headerSection}>
+                  <Text className="text-center" style={styles.headerTitle}>
+                    Pembayaran
+                  </Text>
+                  <Text className="text-center" style={styles.headerSubtitle}>
+                    {new Date().toLocaleDateString("id-ID", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                </View>
               </View>
             </View>
-          </View>
-        </ScrollView>
+          </ImageBackground>
 
-        <ScrollView contentContainerStyle={styles.scrollContent}>
-          <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
-          <View style={styles.guideContainer}>
-            {paymentGuides[0].steps.map((step, index) => (
-              <View key={index} style={styles.guideStep}>
-                <View style={styles.stepNumberContainer}>
-                  <Text style={styles.stepNumber}>{index + 1}</Text>
+          <ScrollView contentContainerStyle={styles.scrollContent}>
+            <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
+            <View style={styles.guideContainer}>
+              {paymentGuides[0].steps.map((step, index) => (
+                <View key={index} style={styles.guideStep}>
+                  <View style={styles.stepNumberContainer}>
+                    <Text style={styles.stepNumber}>{index + 1}</Text>
+                  </View>
+                  <View style={styles.stepContent}>
+                    <MaterialIcons
+                      name={step.icon}
+                      size={24}
+                      color={step.color || "#666"}
+                    />
+                    <Text style={styles.stepText}>{step.text}</Text>
+                  </View>
                 </View>
-                <View style={styles.stepContent}>
-                  <MaterialIcons
-                    name={step.icon}
-                    size={24}
-                    color={step.color || "#666"}
-                  />
-                  <Text style={styles.stepText}>{step.text}</Text>
-                </View>
-              </View>
-            ))}
-          </View>
+              ))}
+            </View>
 
-          <View>
             <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
             <View style={styles.menuGrid}>
               {paymentMenus.map((menu, index) => (
@@ -226,11 +237,11 @@ export default function Pembayaran() {
             </View>
             <Text style={styles.offerTitle}>{offer.title}</Text>
             <Text style={styles.offerDescription}>{offer.description}</Text>
-                <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
-              </View>
-              ))}
-              </ScrollView> */}
-          </View>
+            <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
+            </View>
+            ))}
+            </ScrollView> */}
+          </ScrollView>
         </ScrollView>
       </View>
     </>
@@ -246,7 +257,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   headerSection: {
-    marginBottom: 14,
+    // marginBottom: 14,
   },
   welcomeCard: {
     backgroundColor: "#FFFFFF",

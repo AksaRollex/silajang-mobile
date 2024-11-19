@@ -356,24 +356,26 @@ const TitikUji = ({ navigation, route, status, callback }) => {
 
   return (
     <>
-      <View className="p-3 bg-[#ececec]">
-        <View className="w-full h-full rounded-3xl bg-[#f8f8f8]">
-          <View className="flex-row p-3  justify-between ">
-            <BackButton
-              size={24}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-2 "
-            />
-            {permohonan ? (
-              <Text className="font-poppins-semibold text-black   ">
-                {permohonan?.industri} : Titik Pengujian
-              </Text>
-            ) : (
-              <Text></Text>
-            )}
+      <View className="w-full h-full bg-[#ececec] p-3">
+        <View className="w-full h-full rounded-3xl">
+          <View className="w-full">
+            <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
+              <BackButton
+                size={24}
+                color={"black"}
+                action={() => navigation.goBack()}
+                className="mr-2 "
+              />
+              {permohonan ? (
+                <Text className="font-poppins-semibold text-black   ">
+                  {permohonan?.industri} : Titik Pengujian
+                </Text>
+              ) : (
+                <Text></Text>
+              )}
+            </View>
           </View>
-          <View className=" w-full h-full rounded-b-md">
+          <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
             {!titikPermohonans?.data?.length && !pivotData?.length && (
               <View className=" pt-5 px-5">
                 <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
@@ -416,7 +418,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
           />
         </View>
-
         <DeleteConfirmationModal />
       </View>
     </>

@@ -10,6 +10,8 @@ import {
   Linking,
   Dimensions,
   StyleSheet,
+  Image,
+  ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -20,11 +22,12 @@ import Toast from "react-native-toast-message";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
 import LottieView from "lottie-react-native";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FooterText from "../components/FooterText";
+import { black } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
@@ -71,16 +74,47 @@ export default function Profile({ navigation }) {
     setImageViewerVisible(true);
   };
   return (
-    <View style={{ backgroundColor: Colors.brand }}>
+    <ImageBackground
+    source={require('../../../assets/images/background.png')}
+      style={{ flex: 1, height: "30%" }} // Pastikan gambar menutupi seluruh layar
+      imageStyle={{
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+      }}
+    >
       <>
-        {userData ? (
+      {userData ? (
           <View className="z-10 bottom-20">
             <View
-              className="w-full py-5 rounded-b-2xl"
-              style={{ backgroundColor: Colors.brand, height: "32%" }}>
-              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
+              className="w-full py-5 rounded-b-2xl">
+              <Text className="text-white text-xl font-poppins-bold mx-6 top-24">
                 Profil Saya
               </Text>
+              <View className="w-full items-center mt-40 justify-center">
+                {userData ? (
+                  <TouchableOpacity
+                    onPress={() => openImageViewer(userData.photo)}
+                    style={{ position: "absolute", zIndex: 10, top: "50%", alignSelf: "center" }}
+                    >
+                    <FastImage
+                      className="rounded-full w-28 h-28"
+                      source={{
+                        uri: userData?.photo
+                          ? `${process.env.APP_URL}${userData.photo}`
+                          : "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg",
+                        priority: FastImage.priority.high,
+                      }}
+                      style={{
+                        borderWidth: 3,
+                        borderColor: "#E2E8F0",
+                      }}
+                      resizeMode={FastImage.resizeMode.cover}
+                    />
+                  </TouchableOpacity>
+                ) : (
+                  <View></View>
+                )}
+              </View>
             </View>
           </View>
         ) : (
@@ -88,38 +122,17 @@ export default function Profile({ navigation }) {
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
         )}
-        <View className="h-full bottom-52">
-          <View className="rounded-3xl h-full bg-slate-200 ">
+        <View className="h-full bottom-11">
+          <View className="rounded-3xl h-full bg-slate-200">
             {userData ? (
               <>
-                <View className="flex-row mx-2 ">
-                  <View className="flex-row justify-between">
-                    <TouchableOpacity
-                      onPress={() => openImageViewer(userData.photo)}>
-                      <FastImage
-                        className="rounded-full w-28 h-28 "
-                        source={{
-                          uri: userData?.photo
-                            ? `${process.env.APP_URL}${userData.photo}`
-                            : "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg",
-                          priority: FastImage.priority.high,
-                        }}
-                        style={{
-                          borderWidth: 3,
-                          borderColor: "#E2E8F0",
-                        }}
-                        resizeMode={FastImage.resizeMode.cover}
-                      />
-                    </TouchableOpacity>
-                    <View className="flex-col justify-center items-center">
-                      <Text className="text-base text-black font-poppins-bold my-1 text-center ">
-                        {userData?.nama}
-                      </Text>
-                      <Text className="text-base text-black font-poppins-semibold text-center ">
-                        {userData?.email}
-                      </Text>
-                    </View>
-                  </View>
+                <View className="flex-col align-center justify-center mx-2 mt-16">
+                  <Text className="text-base text-black font-poppins-bold my-1 text-center ">
+                    {userData?.nama}
+                  </Text>
+                  <Text className="text-base text-black font-poppins-semibold text-center ">
+                    {userData?.email}
+                  </Text>
                 </View>
                 <View className="w-full h-px bg-gray-300 mt-3" />
               </>
@@ -188,7 +201,7 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-36 items-center justify-center flex-end">
+              <View className="top-20 items-center justify-center flex-end">
                 <Text className="flex-end">
                   <FooterText />
                 </Text>
@@ -196,116 +209,125 @@ export default function Profile({ navigation }) {
             </View>
             {/* Modal Logout */}
             <Modal
-              transparent={true}
-              visible={modalVisible}
-              animationType="fade"
-              onRequestClose={() => setModalVisible(false)}>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                }}>
-                <View
-                  style={{
-                    padding: 20,
-                    backgroundColor: "white",
-                    borderRadius: 10,
-                    alignItems: "center",
-                  }}
-                  className="w-10/12">
-                  <LottieView
-                    source={require("../../../assets/lottiefiles/logout-animation.json")}
-                    autoPlay
-                    loop={false}
-                    style={{ width: 170, height: 170 }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      marginBottom: 15,
-                      fontFamily: "Poppins-SemiBold",
-                      color: "black",
-                    }}>
-                    Apakah anda yakin ingin keluar?
-                  </Text>
+  transparent={true}
+  visible={modalVisible}
+  animationType="fade"
+  onRequestClose={() => setModalVisible(false)}>
+  <View
+    style={{
+      flex: 1,
+      justifyContent: "center",
+      alignItems: "center",
+      backgroundColor: "rgba(0, 0, 0, 0.5)",
+    }}>
+    <View
+      style={{
+        padding: 20,
+        backgroundColor: "white",
+        borderRadius: 10,
+        alignItems: "center",
+      }}
+      className="w-10/12">
+      <Image
+        source={require('../../../assets/icons/arrowRed.png')} // Ganti dengan path ke gambar Anda
+        style={{
+          width: 95, // Sesuaikan ukuran gambar
+          height: 100, // Sesuaikan ukuran gambar
+          marginBottom: 15,
+        }}
+      />
 
-                  <View
-                    style={{
-                      width: "100%",
-                      // borderBottomWidth: 1,
-                      // borderBottomColor: "#dedede",
-                      marginBottom: 15,
-                    }}
-                  />
+      <Text
+        style={{
+          fontSize: 16,
+          marginBottom: 7,
+          fontFamily: "Poppins-Bold",
+          color: "black",
+        }}>
+        Logout
+      </Text>
+      <Text
+        style={{
+          fontSize: 16,
+          marginBottom: 7,
+          fontFamily: "Poppins-SemiBold",
+          color: "black",
+        }}>
+        Yakin ingin keluar?
+      </Text>
 
-                  {/* <Text style={{ fontSize: 16, marginBottom: 25, color: "black", fontFamily : "Poppins-Regular" }}>
-              Apakah Anda yakin ingin keluar?
-            </Text> */}
-                  <View style={{ flexDirection: "row" }}>
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ececec",
-                        borderRadius: 5,
-                        marginRight: 10,
-                      }}>
-                      <Text
-                        style={{
-                          color: "#4f4f4f",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
-                        Batal
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={confirmLogout}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ffcbd1",
-                        borderRadius: 5,
-                      }}>
-                      <Text
-                        style={{
-                          color: "#de0a26",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
-                        Ya, Keluar
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
-              </View>
-            </Modal>
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={imageViewerVisible}
-              onRequestClose={() => setImageViewerVisible(false)}>
-              <View style={styles.imageViewerContainer}>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setImageViewerVisible(false)}>
-                  <IonIcons name="close" size={40} color="white" />
-                </TouchableOpacity>
-                <FastImage
-                  style={styles.fullScreenImage}
-                  source={{
-                    uri: selectedImage,
-                    priority: FastImage.priority.high,
-                  }}
-                  resizeMode={FastImage.resizeMode.contain}
-                />
-              </View>
-            </Modal>
+      <View
+        style={{
+          width: "100%",
+          marginBottom: 15,
+        }}
+      />
+
+      <View style={{ flexDirection: "row" }}>
+        <TouchableOpacity
+          onPress={() => setModalVisible(false)}
+          style={{
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+            backgroundColor: "#ececec",
+            borderRadius: 5,
+            marginRight: 10,
+          }}>
+          <Text
+            style={{
+              color: "#4f4f4f",
+              fontFamily: "Poppins-SemiBold",
+            }}>
+            Batal
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          onPress={confirmLogout}
+          style={{
+            paddingVertical: 10,
+            paddingHorizontal: 20,
+            backgroundColor: "#ffcbd1",
+            borderRadius: 5,
+          }}>
+          <Text
+            style={{
+              color: "#de0a26",
+              fontFamily: "Poppins-SemiBold",
+            }}>
+            Ya, Keluar
+          </Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  </View>
+</Modal>
+
+          <Modal
+            animationType="fade"
+            transparent={true}
+            visible={imageViewerVisible}
+            onRequestClose={() => setImageViewerVisible(false)}>
+            <View style={styles.imageViewerContainer}>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setImageViewerVisible(false)}>
+                <IonIcons name="close" size={40} color="white" />
+              </TouchableOpacity>
+              <FastImage
+                style={styles.fullScreenImage}
+                source={{
+                  uri: selectedImage,
+                  priority: FastImage.priority.high,
+                }}
+                resizeMode={FastImage.resizeMode.contain}
+              />
+            </View>
+          </Modal>
           </View>
         </View>
+
       </>
-    </View>
+    </ImageBackground>
   );
 }
 

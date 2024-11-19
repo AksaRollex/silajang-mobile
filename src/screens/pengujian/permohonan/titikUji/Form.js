@@ -19,6 +19,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
+  Image,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MultiSelect from "react-native-multiple-select";
@@ -31,11 +32,16 @@ import LottieView from "lottie-react-native";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import { color } from "@rneui/base";
+import TitikUji from "./TitikUji";
 
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [modalVisible, setModalVisible] = useState(false);
-  const [modalLoading, setModalLoading] = useState(false);
+  const [modalKintud, setModalKintud] = useState(false);
+  const [modalParam, setModalParam] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
+
   const [sampelData, setSampelData] = useState([]);
   const [selectedSampel, setSelectedSampel] = useState(null);
   const [openSampel, setOpenSampel] = useState(false);
@@ -43,7 +49,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [jenisWadah, setJenisWadah] = useState([]);
   const [selectedJenisWadah, setSelectedJenisWadah] = useState(null);
   const [openJenisWadah, setOpenJenisWadah] = useState(false);
-
+  const [titikUji, setTitikUji] = useState(null);
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
   const [openMetode, setOpenMetode] = useState(false);
@@ -62,41 +68,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   useEffect(() => {
     setTanggalJam(new Date());
   }, []);
-
-  const toastConfig = {
-    success: () => (
-      <>
-        <View className="relative">
-          <View className="bg-[#dddddd] mx-6 p-4 rounded-xl min-h-16 shadow-md">
-            <View className="flex-1 pr-8">
-              <Text className="text-green-500 text-sm font-poppins-semibold mb-1">
-                Data Berhasil Disimpan !
-              </Text>
-              <Text className="text-gray-600 text-xs font-poppins-regular">
-                Silahkan Untuk Melanjutkan Parameter Lainnya Di Dalam Halaman
-                Parameter !
-              </Text>
-            </View>
-          </View>
-          <View className="absolute right-1 top-1/4 -translate-y-1/2">
-            <MaterialIcons name="check-circle" size={50} color="#22C55E" />
-          </View>
-        </View>
-      </>
-    ),
-
-    error: ({ text2 }) => (
-      <View className="bg-white mx-4 mt-2 p-4 rounded-xl min-h-16 flex-row items-center justify-between shadow-md">
-        <View className="flex-1 mr-3">
-          <Text className="text-red-500 text-sm font-semibold mb-1">Error</Text>
-          <Text className="text-gray-600 text-xs">{text2}</Text>
-        </View>
-        <View className="w-6 h-6 justify-center items-center">
-          <MaterialIcons name="close-circle" size={24} color="#EF4444" />
-        </View>
-      </View>
-    ),
-  };
 
   const handleDateChange = (event, selectedDate) => {
     if (event.type === "set") {
@@ -135,9 +106,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     } catch (error) {}
   };
 
-  const { uuid, tipePengambilan } = route.params || {};
-  console.log("anjay", route.params);
-  const isMandiri = tipePengambilan?.is_mandiri; // Nilai 1 atau 0
+  const { uuid } = route.params || {};
   const { permohonan } = route.params || {};
   const queryClient = useQueryClient();
 
@@ -225,12 +194,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const handleSelectedPayment = cara => {
     setSelectedPayment(cara);
-    console.log(cara);
     setPaymentTypeError(null);
   };
-
   const { mutate: createOrUpdate, isLoading } = useMutation(
-    data => {
+    async data => {
       if (!selectedPayment) {
         Toast.show({
           type: "error",
@@ -256,45 +223,29 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           delete requestData[key],
       );
 
-      return axios.post(
+      // Kirim data ke API
+      const response = await axios.post(
         uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
         requestData,
       );
+
+      return response.data; // Pastikan API mengembalikan data yang relevan
     },
     {
-      onSuccess: () => {
-        setModalVisible(true); // Tampilkan modal dulu
-        queryClient.invalidateQueries(["/permohonan/titik"]);
-        Toast.show({
-          type: "success",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          topOffset: 40,
-        });
-
-        setTimeout(() => {
-          navigation.navigate("TitikUji", { uuid: permohonan.uuid });
-        }, 2000);
+      onSuccess: data => {
+        setTitikUji(data); // Simpan data titik uji di state
+        setModalParam(true); // Tampilkan modal
+        queryClient.invalidateQueries(["/permohonan/titik"]); // Refresh data
       },
       onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.response?.data?.message || "Terjadi kesalahan",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          topOffset: 40,
-        });
         if (error.message !== "Silahkan pilih metode pembayaran") {
-          Toast.show({
-            type: "error",
-            text1: "Error",
-            text2:
-              error.message?.data?.message ||
-              "Silahkan memilih metode pembayaran",
-          });
+          setErrorMessage(
+            error.response?.data?.message || "Gagal memperbarui data",
+          );
+          setErrorModalVisible(true);
+          setTimeout(() => {
+            setErrorModalVisible(false);
+          }, 2000);
         }
       },
     },
@@ -362,7 +313,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const getLocation = () => {
     setLoading(true);
-    setModalLoading(true); // Langsung tampilkan modal setelah klik tombol
+    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
 
     Geolocation.getCurrentPosition(
       position => {
@@ -415,20 +366,17 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         </Text>
       )}
       <FlatList
-        className="bg-[#ececec] w-full h-full  p-3"
+        className=" h-full rounded-lg"
         data={[{ key: "from" }]}
         renderItem={() => (
-          <View className="bg-[#ececec] w-full h-full ">
-            <View className="bg-[#f8f8f8] w-full h-full rounded-3xl">
+          <View className="bg-[#ececec] w-full h-full p-3 ">
+            <View className="w-full h-full rounded-3xl bg-[#f8f8f8]">
               <View className="flex-row p-3 ">
                 <BackButton
                   action={() => navigation.goBack()}
                   size={30}
                   style={{
-                    borderWidth: 0.5,
                     padding: 4,
-                    borderColor: "#f8f8f8",
-                    borderRadius: 8,
                   }}
                   className="mr-2"
                   color={"black"}
@@ -657,7 +605,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   />
                 </View>
 
-                {(permohonan && permohonan?.is_mandiri) || isMandiri === 1 ? (
+                {permohonan && permohonan?.is_mandiri ? (
                   <>
                     <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
                       <Text className="text-base font-poppins-bold text-center  text-black mb-4">
@@ -754,6 +702,89 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       />
                     </View>
                     <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
+                      <Modal
+                        transparent={true}
+                        visible={modalVisible}
+                        animationType="fade"
+                        onRequestClose={() => setModalVisible(false)}>
+                        <View
+                          style={{
+                            flex: 1,
+                            justifyContent: "center",
+                            alignItems: "center",
+                            backgroundColor: "rgba(0, 0, 0, 0.5)",
+                          }}>
+                          <View
+                            style={{
+                              width: 300,
+                              padding: 20,
+                              backgroundColor: "white",
+                              borderRadius: 10,
+                              alignItems: "center",
+                            }}>
+                            <Text
+                              style={{
+                                fontSize: 18,
+                                fontWeight: "bold",
+                                marginBottom: 15,
+                                color: "black",
+                              }}>
+                              Koordinat Anda
+                            </Text>
+
+                            <View
+                              style={{
+                                width: "100%",
+                                borderBottomWidth: 1,
+                                borderBottomColor: "#dedede",
+                                marginBottom: 15,
+                              }}
+                            />
+
+                            {loading ? (
+                              <ActivityIndicator
+                                size="large"
+                                color="#007AFF"
+                                className="mb-5 justify-center"
+                              />
+                            ) : (
+                              <>
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    marginBottom: 10,
+                                    color: "black",
+                                  }}>
+                                  Latitude: {location.latitude}
+                                </Text>
+                                <Text
+                                  style={{
+                                    fontSize: 16,
+                                    marginBottom: 25,
+                                    color: "black",
+                                  }}>
+                                  Longitude: {location.longitude}
+                                </Text>
+                              </>
+                            )}
+
+                            <View style={{ flexDirection: "row" }}>
+                              <TouchableOpacity
+                                onPress={() => setModalVisible(false)}
+                                style={{
+                                  paddingVertical: 10,
+                                  paddingHorizontal: 20,
+                                  backgroundColor: "#dedede",
+                                  borderRadius: 5,
+                                  marginRight: 10,
+                                }}>
+                                <Text style={{ color: "black" }}>Tutup</Text>
+                              </TouchableOpacity>
+                            </View>
+                          </View>
+                        </View>
+                      </Modal>
+
                       <Text className="font-poppins-semibold text-base text-center mb-4 text-black">
                         Lokasi Pada Koordinat
                       </Text>
@@ -810,90 +841,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         </View>
                       </TouchableOpacity>
                     </View>
-
-                    <Modal
-                      transparent={true}
-                      visible={modalLoading}
-                      animationType="fade"
-                      onRequestClose={() => setModalLoading(false)}>
-                      <View
-                        style={{
-                          flex: 1,
-                          justifyContent: "center",
-                          alignItems: "center",
-                          backgroundColor: "rgba(0, 0, 0, 0.5)",
-                        }}>
-                        <View
-                          style={{
-                            width: 300,
-                            padding: 20,
-                            backgroundColor: "white",
-                            borderRadius: 10,
-                            alignItems: "center",
-                          }}>
-                          <Text
-                            style={{
-                              fontSize: 18,
-                              fontWeight: "bold",
-                              marginBottom: 15,
-                              color: "black",
-                            }}>
-                            Koordinat Anda
-                          </Text>
-
-                          <View
-                            style={{
-                              width: "100%",
-                              borderBottomWidth: 1,
-                              borderBottomColor: "#dedede",
-                              marginBottom: 15,
-                            }}
-                          />
-
-                          {loading ? (
-                            <ActivityIndicator
-                              size="large"
-                              style={{ marginBottom: 15 }}
-                              color="#007AFF"
-                            />
-                          ) : (
-                            <>
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  marginBottom: 10,
-                                  color: "black",
-                                }}>
-                                Latitude: {location.latitude}
-                              </Text>
-                              <Text
-                                style={{
-                                  fontSize: 16,
-                                  marginBottom: 25,
-                                  color: "black",
-                                }}>
-                                Longitude: {location.longitude}
-                              </Text>
-                            </>
-                          )}
-
-                          <View style={{ flexDirection: "row" }}>
-                            <TouchableOpacity
-                              onPress={() => setModalLoading(false)}
-                              style={{
-                                paddingVertical: 10,
-                                paddingHorizontal: 20,
-                                backgroundColor: "#dedede",
-                                borderRadius: 5,
-                                marginRight: 10,
-                              }}>
-                              <Text style={{ color: "black" }}>Tutup</Text>
-                            </TouchableOpacity>
-                          </View>
-                        </View>
-                      </View>
-                    </Modal>
-
                     <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
                       <Text className="text-base font-poppins-semibold text-center mb-5 text-black">
                         Hasil Pengukuran Lapangan
@@ -1019,12 +966,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                             </View>
                           )}
                         />
-
+                      </View>
+                    </View>
+                    <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
+                      <Text className="text-base font-poppins-semibold text-center mt-5 mb-5 text-black">
+                        Kondisi Lingkungan
+                      </Text>
+                      <View className="flex-row flex-wrap">
                         <Controller
                           name="suhu_udara"
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <View className="w-1/2 pl-2">
+                            <View className="w-1/2 pr-2">
                               <Text className="font-poppins-semibold mb-2 text-black">
                                 Suhu Udara
                               </Text>
@@ -1042,7 +995,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           name="cuaca"
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <View className="w-1/2 pr-2">
+                            <View className="w-1/2 pl-2">
                               <Text className="font-poppins-semibold mb-2 text-black">
                                 Cuaca
                               </Text>
@@ -1060,7 +1013,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           name="arah_angin"
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <View className="w-1/2 pl-2">
+                            <View className="w-1/2 pr-2">
                               <Text className="font-poppins-semibold mb-2 text-black">
                                 Arah Angin
                               </Text>
@@ -1078,7 +1031,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           name="kelembapan"
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <View className="w-1/2 pr-2">
+                            <View className="w-1/2 pl-2">
                               <Text className="font-poppins-semibold mb-2 text-black">
                                 Kelembapan
                               </Text>
@@ -1096,7 +1049,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           name="kecepatan_angin"
                           control={control}
                           render={({ field: { onChange, value } }) => (
-                            <View className="w-1/2 pl-2">
+                            <View className="w-1/2 pr-2">
                               <Text className="font-poppins-semibold mb-2 text-black">
                                 Kecepatan Angin
                               </Text>
@@ -1111,25 +1064,132 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         />
                       </View>
                     </View>
+                    <Button
+                      onPress={handleSubmit(createOrUpdate)}
+                      loading={isLoading}
+                      className="p-3 rounded-3xl mt-4 mb-3"
+                      style={{ backgroundColor: Colors.brand }}>
+                      <Text className="text-white text-center text-base font-poppins-semibold">
+                        SUBMIT
+                      </Text>
+                    </Button>
                   </>
                 ) : (
                   <View></View>
                 )}
-                <Button
-                  onPress={handleSubmit(createOrUpdate)}
-                  loading={isLoading}
-                  className="p-3 rounded-2xl mt-4 mb-3"
-                  style={{ backgroundColor: Colors.brand }}>
-                  <Text className="text-white text-center text-base font-poppins-semibold">
-                    SUBMIT
-                  </Text>
-                </Button>
               </View>
             </View>
           </View>
         )}
       />
-      <Toast config={toastConfig} />
+
+      <Modal animationType="fade" transparent={true} visible={modalParam}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <View>
+              <Image
+                source={require("@/assets/images/cek.png")}
+                style={styles.lottie}
+              />
+            </View>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                marginBottom: 20,
+              }}>
+              <Text
+                className="font-poppins-bold"
+                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
+                Titik Uji sukses dibuat
+              </Text>
+              <Text
+                className="font-poppins-regular"
+                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
+                Lanjutkan Untuk mengisi Parameter
+              </Text>
+            </View>
+
+            <View style={{ flexDirection: "row" }}>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalParam(false);
+                  navigation.navigate("TitikUji", { uuid: permohonan.uuid });
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
+                <Text style={{ color: "black" }}>Tutup</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setModalParam(false);
+                  if (titikUji) {
+                    navigation.navigate("Parameter", {
+                      uuid: titikUji?.data?.uuid,
+                    });
+                  }
+                }}
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
+                <Text style={{ color: "black" }}>Lanjut</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={modalKintud}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <Image
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
+              source={require("../../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+            /> */}
+            <Text style={styles.successTextTitle}>
+              {uuid ? "Data berhasil di perbarui" : "Data berhasil ditambahkan"}
+            </Text>
+            <Text style={styles.successText}>
+              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+            />
+            <Text style={[styles.successTextTitle, styles.errortitle]}>
+              {uuid ? "Data gagal di perbarui" : "Data gagal ditambahkan"}
+            </Text>
+            <Text style={[styles.successText, styles.errorText]}>
+              {errorMessage}
+            </Text>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -1197,7 +1257,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     width: "90%",
-    height: "35%",
+    paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
@@ -1209,7 +1269,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginBottom: rem(1.5),
     marginTop: rem(1),
     fontFamily: "Poppins-SemiBold",
@@ -1220,57 +1280,11 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
     color: "black",
   },
-  toastContainer: {
-    backgroundColor: "#FFFFFF",
-    borderRadius: 12,
-    marginHorizontal: 16,
-    marginTop: 8,
-    padding: 16,
-    minHeight: 64,
-    shadowColor: "#000",
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 3,
+  errortitle: {
+    color: "#FF4B4B",
   },
-  contentContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
-  },
-  textContainer: {
-    flex: 1,
-    marginRight: 12,
-  },
-  title: {
-    fontSize: 14,
-    fontWeight: "600",
-    color: "#4CAF50",
-    marginBottom: 4,
-    fontFamily: "Poppins-SemiBold",
-  },
-  message: {
-    fontSize: 12,
-    color: "#666666",
-    fontFamily: "Poppins-Regular",
-  },
-  iconContainer: {
-    width: 24,
-    height: 24,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  errorContainer: {
-    borderLeftColor: "#FF4444",
-  },
-  errorTitle: {
-    color: "#FF4444",
-  },
-  errorMessage: {
-    color: "#666666",
+  errorText: {
+    color: "#666",
   },
 });
 

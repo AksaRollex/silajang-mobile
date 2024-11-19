@@ -58,7 +58,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
           borderTopRightRadius: 20,
         }}>
         <View style={{ flex: 1 }} padding-20>
-          <Text h2 color={Colors.brand} marginB-5>
+          <Text color={Colors.brand} marginB-5 className="font-poppins-semibold text-[26px] right-1">
             Daftar Akun Baru
           </Text>
           <Text color={Colors.grey30} marginB-10>

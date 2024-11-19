@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { Modal, View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
 import axios from "../libs/axios";
 import LottieView from "lottie-react-native";
 import Toast from "react-native-toast-message";
@@ -21,18 +21,19 @@ const ConfirmationModal = ({
     onRequestClose={onCancel}>
     <View style={styles.centeredView}>
       <View style={[styles.modalView]}>
-        <View style={{ height: "100%" }}>
-          <View style={{ justifyContent: "center", flex: 1 }}>
-            <IonIcons name="trash" size={90} color="red" />
+        <View>
+          <View>
+            {/* <Image source={require("@/assets/images/sampah1.png")}
+              className="h-32 w-32 right-4 mb-5"
+              /> */}
+            {/* <IonIcons name="trash" size={80} color="red" /> */}
           </View>
         </View>
         <View
           style={{
             flexDirection: "column",
-            justifyContent: "center",
-            flex: 1,
             alignItems: "center",
-            marginLeft: rem(1.5),
+            flex: 1,
           }}>
           <View style={{ alignItems: "center" }}>
             <Text style={styles.modalTitle}>{title}</Text>
@@ -58,12 +59,16 @@ const SuccessOverlay = ({ visible, message }) => (
   <Modal animationType="fade" transparent={true} visible={visible}>
     <View style={styles.overlayView}>
       <View style={styles.successContainer}>
-        <LottieView
+        <Image 
+          source={require("@/assets/images/cek.png")}
+          style={styles.lottie}
+        />
+        {/* <LottieView
           source={require("../../assets/lottiefiles/success-animation.json")}
           autoPlay
           loop={false}
           style={styles.lottie}
-        />
+        /> */}
         <Text style={styles.successTextTitle}>Data berhasil di hapus</Text>
         <Text style={styles.successText}>
           Data yang telah di hapus sudah tidak dapat di kembalikan kembali !
@@ -239,9 +244,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     padding: 20,
-    width: rem(25),
-    height: rem(25),
+    width: "90%",
     borderRadius: 10,
+    paddingVertical: 30,
   },
   lottie: {
     width: 170,
@@ -252,16 +257,14 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontWeight: "bold",
     marginBottom: rem(1.5),
     marginTop: rem(1),
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Bold",
   },
   successText: {
-    fontSize: 14,
+    fontSize: 16,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-
     color: "black",
   },
   failedTextTitle: {

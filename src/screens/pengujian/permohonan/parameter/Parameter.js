@@ -362,6 +362,7 @@ const throttle = (func, limit) => {
 
 const Parameter = ({ route, navigation }) => {
   const { uuid } = route.params;
+  console.log("cihuy: ", uuid);
   const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
   const queryClient = useQueryClient();
   const [selectedView, setSelectedView] = useState("selected");
