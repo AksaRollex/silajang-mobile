@@ -147,22 +147,22 @@ const RegistrasiSampel = ({ navigation }) => {
         <View className="" style={{ width: "90%" }}>
           <View className="flex-col space-y-2">
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Tanggal Masuk:</Text>
-                <Text className="text-[12px] font-poppins-semibold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Masuk</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.tanggal_diterima || '-'}
                 </Text>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Tanggal Selesai:</Text>
-                <Text className="text-[12px] font-poppins-semibold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.tanggal_selesai || '-'}
                 </Text>
               </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Pelanggan:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
+              <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+              <Text className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}
                 style={{ flexWrap: 'wrap' }}>
                 {item.permohonan?.user?.nama}
@@ -170,24 +170,24 @@ const RegistrasiSampel = ({ navigation }) => {
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Alamat:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
-                numberOfLines={2}>
+              <Text className="text-xs font-poppins-regular text-gray-500">Alamat</Text>
+              <Text className="text-md font-poppins-semibold text-black"
+                numberOfLines={3}>
                 {item.permohonan?.user?.detail?.alamat}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Lokasi:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
-                numberOfLines={2}>
+              <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+              <Text className="text-md font-poppins-semibold text-black"
+                numberOfLines={3}>
                 {item.permohonan?.alamat}
               </Text>
             </View>
 
             <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Titik Sampling:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
+              <Text className="text-xs font-poppins-regular text-gray-500">Titik Sampling</Text>
+              <Text className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}>
                 {item.lokasi}
               </Text>

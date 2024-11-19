@@ -198,21 +198,26 @@ const HasilUjis = ({ navigation, route }) => {
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[17px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
+            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
+              {item.kode}
+            </Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[14px] text-black font-poppins-semibold mb-1">
-              Titik Uji/Lokasi: <Text className="font-pooppins-semibold">{item.lokasi}</Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
+              {item.lokasi}
             </Text>
-            <Text className="text-[14px] text-black font-poppins-semibold  mb-2">
-              Tanggal Diterima:{" "}
-              <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
-            </Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima:{" "}</Text>
+              <Text className="text-md font-poppins-semibold text-black mb-2">
+                {item.tanggal_diterima}
+              </Text>
           </View>
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right">
+            <View className="bg-slate-100 rounded-md px-2 py-1 max-w-[120px] mb-2">
+              <Text className="text-[11px] text-indigo-600 font-poppins-semibold text-right">
                 {item.text_status}
               </Text>
             </View>

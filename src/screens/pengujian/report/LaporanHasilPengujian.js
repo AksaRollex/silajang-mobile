@@ -22,14 +22,14 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 
 const CertificateBadge = ({ value }) => {
     return value ? (
-        <View className="bg-blue-50 rounded-md p-2 max-w-[150px] mb-2">
-            <Text className="text-blue-700 text-[12px] font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
+        <View className="bg-blue-50 rounded-md py-1 px-2 max-w-[150px] mb-2">
+            <Text className="text-blue-700 text-[10px] font-poppins-semibold text-right" numberOfLines={2} ellipsizeMode="tail">
                 {`Salinan ke-${value}`}
             </Text>
         </View>
     ) : (
-        <View className="bg-yellow-50 rounded-md p-2 max-w-[150px] mb-2">
-            <Text className="text-yellow-700 text-[12px] font-poppins-semibold text-right">
+        <View className="bg-yellow-50 rounded-md py-1 px-2 max-w-[150px] mb-2">
+            <Text className="text-yellow-700 text-[10px] font-poppins-semibold text-right">
                 Belum Dicetak
             </Text>
         </View>
@@ -108,6 +108,12 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
         onSubmit(formData);
     };
 
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
     return (
         <Modal
             visible={visible}
@@ -158,15 +164,28 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm text-black font-poppins-bold mb-2">Passphrase<Text className="text-red-500">*</Text></Text>
+                        <Text className="text-sm text-black font-poppins-bold mb-2">
+                        Passphrase<Text className="text-red-500">*</Text>
+                        </Text>
+                        <View className="relative">
                         <TextInput
-                            
-                            className="border border-gray-300 rounded-md p-3 font-poppins-semibold"
-                            secureTextEntry
+                            className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                            secureTextEntry={!showPassword}
                             value={formData.passphrase}
                             onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
                             placeholder="Masukkan passphrase"
                         />
+                        <TouchableOpacity 
+                            onPress={togglePasswordVisibility}
+                            className="absolute right-4 top-4"
+                        >
+                            {showPassword ? (
+                            <Ionicons name="eye-outline" size={20} color="grey" />
+                            ) : (
+                            <Ionicons name="eye-off-outline" size={20} color="grey"/>
+                            )}
+                        </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View className="flex-row justify-end space-x-2">
@@ -443,32 +462,34 @@ const LaporanHasilPengujian = ({ navigation }) => {
             }}>
                 <View className="border-b border-gray-100 pb-3 mb-3">
                     <View className="flex-row justify-between items-center mb-2">
-                        <Text className="text-[18px] font-poppins-semibold text-black">{item.kode}</Text>
+                        <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
                         <CertificateBadge value={item.sertifikat}/>
                     </View>
-                    <Text className="text-[15px] font-poppins-semibold text-black mb-1">{item.permohonan.user.nama}</Text>
+                    <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+                    <Text className="text-md font-poppins-semibold text-black mb-4">{item.permohonan.user.nama}</Text>
+                    <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
                     <Text className="text-[14px] font-poppins-semibold text-black">{item.lokasi}</Text>
                 </View>
     
                 <View className="flex-row justify-between mb-4">
                     <View className="flex-1">
                         <View className="mb-2">
-                            <Text className="text-[12px] font-poppins-semibold text-black mb-1">Tanggal Selesai</Text>
-                            <Text className="text-[13px] font-poppins-regular text-black">{item.tanggal_selesai}</Text>
+                            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Tanggal Selesai</Text>
+                            <Text className="text-md font-poppins-semibold text-black">{item.tanggal_selesai}</Text>
                         </View>
                         <View className="mb-2">
-                            <Text className="text-[12px] font-poppins-semibold text-black mb-1">Tanggal TTE</Text>
-                            <Text className="text-[13px] font-poppins-regular text-black">{item.tanggal_tte || '-'}</Text>
+                            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Tanggal TTE</Text>
+                            <Text className="text-md font-poppins-semibold text-black">{item.tanggal_tte || '-'}</Text>
                         </View>
                         <View className="flex-row items-center">
-                            <Text className="text-[12px] font-poppins-semibold text-black mr-2">Status TTE:</Text>
+                            <Text className="text-xs font-poppins-regular text-gray-500 mr-2">Status TTE:</Text>
                             <StatusTTEBadge status={item.status_tte} />
                         </View>
                     </View>
     
                     <View className="flex-col items-end justify-between">
-                        <View className="bg-indigo-100 rounded-md px-3 py-2 mb-3">
-                            <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right" 
+                        <View className="bg-indigo-100 rounded-md px-2 py-1 mb-3">
+                            <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right" 
                                   numberOfLines={2} 
                                   ellipsizeMode="tail">
                                 {item.text_status}

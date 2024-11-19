@@ -71,6 +71,12 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
     onSubmit(formData);
   };
 
+  const [showPassword, setShowPassword] = useState(false);
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showPassword);
+  };
+
   return (
     <Modal
       visible={visible}
@@ -121,16 +127,29 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
           </View>
 
           <View className="mb-4">
-            <Text className="text-sm text-black font-poppins-bold mb-2">Passphrase<Text className="text-red-500">*</Text></Text>
-            <TextInput
-                
-                className="border border-gray-300 rounded-md p-3 font-poppins-semibold"
-                secureTextEntry
+            <Text className="text-sm text-black font-poppins-bold mb-2">
+              Passphrase<Text className="text-red-500">*</Text>
+            </Text>
+            <View className="relative">
+              <TextInput
+                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                secureTextEntry={!showPassword}
                 value={formData.passphrase}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
                 placeholder="Masukkan passphrase"
-            />
-        </View>
+              />
+              <TouchableOpacity 
+                onPress={togglePasswordVisibility}
+                className="absolute right-4 top-4"
+              >
+                {showPassword ? ( 
+                  <Ionicons name="eye-outline" size={20} color="grey" />
+                ) : (
+                  <Ionicons name="eye-off-outline" size={20} color="grey"/>
+                )}
+              </TouchableOpacity>
+            </View>
+          </View>
 
           <View className="flex-row justify-end space-x-2">
             <TouchableOpacity 
@@ -282,11 +301,13 @@ const KendaliMutu = ({ navigation }) => {
             <View className="flex-col space-y-2">
 
               <View>
-                <Text className="text-[18px] font-poppins-bold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+                <Text className="text-md font-poppins-semibold text-black mb-2">
                   {item.kode || '-'}
                 </Text>
-          
-                <Text className="text-[16px] font-poppins-bold text-black"
+
+                <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold text-black"
                   numberOfLines={2}
                   style={{ flexWrap: 'wrap' }}>
                   {item.permohonan?.user?.nama || '-'}
@@ -294,30 +315,30 @@ const KendaliMutu = ({ navigation }) => {
               </View>
 
               <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Lokasi :</Text>
-                <Text className="text-[14px] font-poppins-semibold text-black">
+              <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.lokasi || '-'}
                 </Text>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Status :</Text>
-                <View className="bg-indigo-100 self-start rounded-md px-3 py-1">
-                  <Text className="text-[12px] font-poppins-semibold text-indigo-600">
+                <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
+                <View className="bg-indigo-100 self-start rounded-md px-2 py-1">
+                  <Text className="text-[11px] font-poppins-semibold text-indigo-600">
                     {item.text_status || '-'}
                   </Text>
                 </View>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Tanggal Selesai :</Text>
-                <Text className="text-[12px] font-poppins-semibold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.tanggal_selesai || '-'}
                 </Text>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Status TTE :</Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Status TTE</Text>
                 {item.status_tte_kendali_mutu === 1 ? (
                   <View className="bg-green-100 self-start rounded-full px-3 py-1">
                     <Text className="text-[12px] font-poppins-semibold text-green-800">Berhasil</Text>

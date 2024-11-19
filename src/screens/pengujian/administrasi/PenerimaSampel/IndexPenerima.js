@@ -1,4 +1,4 @@
-import axios from "@/src/libs/axios";
+  import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
 import {
   FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity,
@@ -175,14 +175,17 @@ const PenerimaSampel = ({ navigation }) => {
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] text-black font-poppins-semibold mb-2">{item.permohonan.user.nama}</Text>
-            <Text className="text-[15px] text-black font-poppins-semibold mb-2">{item.kode}</Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-2">
-              Titik Uji/Lokasi: <Text className="font-poppins-semibold">{item.lokasi}</Text>
-            </Text>
-            <Text className="text-[14px] font-poppins-semibold text-black mb-2">
-              Diterima pada: <Text className="font-poppins-semibold">{item.tanggal_diterima}</Text>
-            </Text>
+          <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text> 
+            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
+
+            <Text className="text-md text-gray-500 font-poppins-regular">Kode</Text> 
+            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.kode}</Text>
+
+            <Text className="text-md text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text> 
+            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
+
+            <Text className="text-md text-gray-500 font-poppins-regular">Oleh</Text> 
+            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.tanggal_diterima}</Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
