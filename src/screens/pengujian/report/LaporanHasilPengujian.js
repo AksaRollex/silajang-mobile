@@ -108,6 +108,12 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
         onSubmit(formData);
     };
 
+    const [showPassword, setShowPassword] = useState(false);
+
+    const togglePasswordVisibility = () => {
+      setShowPassword(!showPassword);
+    };
+
     return (
         <Modal
             visible={visible}
@@ -158,15 +164,28 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
                     </View>
 
                     <View className="mb-4">
-                        <Text className="text-sm text-black font-poppins-bold mb-2">Passphrase<Text className="text-red-500">*</Text></Text>
+                        <Text className="text-sm text-black font-poppins-bold mb-2">
+                        Passphrase<Text className="text-red-500">*</Text>
+                        </Text>
+                        <View className="relative">
                         <TextInput
-                            
-                            className="border border-gray-300 rounded-md p-3 font-poppins-semibold"
-                            secureTextEntry
+                            className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                            secureTextEntry={!showPassword}
                             value={formData.passphrase}
                             onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
                             placeholder="Masukkan passphrase"
                         />
+                        <TouchableOpacity 
+                            onPress={togglePasswordVisibility}
+                            className="absolute right-4 top-4"
+                        >
+                            {showPassword ? (
+                            <Ionicons name="eye-outline" size={20} color="grey" />
+                            ) : (
+                            <Ionicons name="eye-off-outline" size={20} color="grey"/>
+                            )}
+                        </TouchableOpacity>
+                        </View>
                     </View>
 
                     <View className="flex-row justify-end space-x-2">
