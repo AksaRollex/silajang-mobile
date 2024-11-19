@@ -356,42 +356,44 @@ const MultipaymentDetail = ({ route, navigation }) => {
 
   return (
     <>
-      <View className="p-2 w-full h-full bg-[#ececec]">
-        <View className="flex-row rounded-t-md p-3 justify-between bg-[#f8f8f8]">
-          <Back
-            size={24}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
+      <View className="p-3 w-full h-full bg-[#ececec]">
+        <View className="h-full w-full bg-[#f8f8f8] rounded-3xl">
+          <View className="flex-row items-center p-3 justify-between ">
+            <Back
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
 
-          {formData?.data?.kode ? (
-            <View>
-              <Text className="text-xl font-poppins-semibold text-black text-center">
-                {formData?.data?.kode}
-              </Text>
-            </View>
-          ) : (
-            <View className="text-end text-sm items-center justify-center">
-              <Text className="text-white font-poppins-regular">
-                Kode tidak tersedia
-              </Text>
-            </View>
-          )}
-        </View>
-        <ScrollView className="px-3 py-1 bg-[#f8f8f8] rounded-b-md">
-          <View className="py-4 px-3 rounded-lg ">
-            {renderPaymentStatus()}
-            {formData?.data && (
-              <>
-                {renderPaymentInfo()}
-                {renderPaymentCards()}
-                {renderSilahkan()}
-              </>
+            {formData?.data?.kode ? (
+              <View>
+                <Text className="text-xl font-poppins-semibold text-black text-center">
+                  {formData?.data?.kode}
+                </Text>
+              </View>
+            ) : (
+              <View className="text-end text-sm items-center justify-center">
+                <Text className="text-white font-poppins-regular">
+                  Kode tidak tersedia
+                </Text>
+              </View>
             )}
-            {renderPaymentButton()}
           </View>
-        </ScrollView>
+          <ScrollView className="px-3 py-1 rounded-b-md">
+            <View className="py-4 px-3 rounded-lg ">
+              {renderPaymentStatus()}
+              {formData?.data && (
+                <>
+                  {renderPaymentInfo()}
+                  {renderPaymentCards()}
+                  {renderSilahkan()}
+                </>
+              )}
+              {renderPaymentButton()}
+            </View>
+          </ScrollView>
+        </View>
       </View>
     </>
   );

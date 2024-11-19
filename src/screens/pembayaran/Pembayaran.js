@@ -167,22 +167,7 @@ export default function Pembayaran() {
             ))}
           </View>
 
-          <ScrollView contentContainerStyle={styles.scrollContent}>
-            <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
-            <View style={styles.guideContainer}>
-              {paymentGuides[0].steps.map((step, index) => (
-                <View key={index} style={styles.guideStep}>
-                  <View style={styles.stepNumberContainer}>
-                    <Text style={styles.stepNumber}>{index + 1}</Text>
-                  </View>
-                  <View style={styles.stepContent}>
-                    <MaterialIcons name={step.icon} size={24} color="#666" />
-                    <Text style={styles.stepText}>{step.text}</Text>
-                  </View>
-                </View>
-              ))}
-            </View>
-
+          <View>
             <Text style={styles.sectionTitle}>Metode Pembayaran</Text>
             <View style={styles.menuGrid}>
               {paymentMenus.map((menu, index) => (
@@ -245,7 +230,7 @@ export default function Pembayaran() {
               </View>
               ))}
               </ScrollView> */}
-          </ScrollView>
+          </View>
         </ScrollView>
       </View>
     </>

@@ -356,9 +356,9 @@ const TitikUji = ({ navigation, route, status, callback }) => {
 
   return (
     <>
-      <View className="p-2 bg-[#ececec]">
-        <View className="w-full">
-          <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
+      <View className="p-3 bg-[#ececec]">
+        <View className="w-full h-full rounded-3xl bg-[#f8f8f8]">
+          <View className="flex-row p-3  justify-between ">
             <BackButton
               size={24}
               color={"black"}
@@ -373,49 +373,50 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               <Text></Text>
             )}
           </View>
-        </View>
-        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
-          {!titikPermohonans?.data?.length && !pivotData?.length && (
-            <View className=" pt-5 px-5">
-              <View className="flex items-center w-full p-3 bg-indigo-100 border border-indigo-400 rounded-md">
-                <Text className="text-black mb-0 font-poppins-semibold">
-                  Silahkan Tambah Titik Lokasi Sampel Pengujian
-                </Text>
-                <Text className="text-black text-xs font-poppins-semibold">
-                  Anda belum memiliki Titik Lokasi Sampel satu pun.
-                </Text>
+          <View className=" w-full h-full rounded-b-md">
+            {!titikPermohonans?.data?.length && !pivotData?.length && (
+              <View className=" pt-5 px-5">
+                <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+                  <Text className="text-black text-xs mb-2 font-poppins-medium">
+                    Silahkan Tambah Titik Lokasi Sampel Pengujian
+                  </Text>
+                  <Text className="text-black text-xs  font-poppins-regular">
+                    Anda belum memiliki Titik Lokasi Sampel satu pun.
+                  </Text>
+                </View>
               </View>
-            </View>
-          )}
-          {user.has_tagihan ? (
-            <View className="p-2">
-              <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-                <Text className="text-black mb-0">
-                  Tidak dapat membuat Permohonan Baru
-                </Text>
-                <Text className="text-black text-xs">
-                  Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-                </Text>
+            )}
+            {user.has_tagihan ? (
+              <View className="p-2">
+                <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+                  <Text className="text-black mb-0">
+                    Tidak dapat membuat Permohonan Baru
+                  </Text>
+                  <Text className="text-black text-xs">
+                    Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                  </Text>
+                </View>
               </View>
-            </View>
-          ) : (
-            <>
-              <Paginate
-                ref={paginateRef}
-                payload={{ permohonan_uuid: { uuid } }}
-                url="/permohonan/titik"
-                className="mb-20"
-                renderItem={CardTitikUji}></Paginate>
-            </>
-          )}
+            ) : (
+              <>
+                <Paginate
+                  ref={paginateRef}
+                  payload={{ permohonan_uuid: { uuid } }}
+                  url="/permohonan/titik"
+                  className="mb-20"
+                  renderItem={CardTitikUji}></Paginate>
+              </>
+            )}
+          </View>
+          <Icons
+            name="plus"
+            size={28}
+            color="#fff"
+            style={styles.plusIcon}
+            onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+          />
         </View>
-        <Icons
-          name="plus"
-          size={28}
-          color="#fff"
-          style={styles.plusIcon}
-          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
-        />
+
         <DeleteConfirmationModal />
       </View>
     </>

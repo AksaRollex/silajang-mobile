@@ -231,48 +231,50 @@ const Permohonan = ({ navigation }) => {
 
   return (
     <>
-      <View className="p-2 bg-[#ececec]">
-        <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
-          <Back
-            size={24}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className=" text-black text-lg font-poppins-semibold">
-            Permohonan
-          </Text>
-        </View>
-        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md ">
-          {user.has_tagihan ? (
-            <View className="p-2">
-              <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
-                <Text className="text-black mb-0 text-sm font-poppins-semibold">
-                  Tidak dapat membuat Permohonan Baru
-                </Text>
-                <Text className="text-black text-xs font-poppins-semibold">
-                  Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-                </Text>
+      <View className="p-3 bg-[#ececec]">
+        <View className="rounded-3xl bg-[#f8f8f8] w-full h-full">
+          <View className="flex-row p-3  justify-between ">
+            <Back
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className=" text-black text-lg font-poppins-semibold">
+              Permohonan
+            </Text>
+          </View>
+          <View className="bg-[#f8f8f8] w-full h-full rounded-b-md ">
+            {user.has_tagihan ? (
+              <View className="p-2">
+                <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
+                  <Text className="text-black mb-0 text-sm font-poppins-semibold">
+                    Tidak dapat membuat Permohonan Baru
+                  </Text>
+                  <Text className="text-black text-xs font-poppins-semibold">
+                    Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                  </Text>
+                </View>
               </View>
-            </View>
-          ) : (
-            <></>
-          )}
-          <Paginate
-            className="mb-20"
-            ref={paginateRef}
-            url="/permohonan"
-            payload={{ tahun: tahun }}
-            Plugin={filtah}
-            renderItem={CardPermohonan}></Paginate>
+            ) : (
+              <></>
+            )}
+            <Paginate
+              className="mb-20"
+              ref={paginateRef}
+              url="/permohonan"
+              payload={{ tahun: tahun }}
+              Plugin={filtah}
+              renderItem={CardPermohonan}></Paginate>
+          </View>
+          <Icons
+            name="plus"
+            size={28}
+            color="#fff"
+            style={styles.plusIcon}
+            onPress={() => navigation.navigate("TambahPermohonan")}
+          />
         </View>
-        <Icons
-          name="plus"
-          size={28}
-          color="#fff"
-          style={styles.plusIcon}
-          onPress={() => navigation.navigate("TambahPermohonan")}
-        />
 
         <DeleteConfirmationModal />
         <SuccessOverlayModal />

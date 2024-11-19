@@ -62,7 +62,7 @@ const TrackingList = ({ route, onClose }) => {
     <View style={styles.container} className="w-full h-full p-3">
       <ScrollView
         style={styles.scrollView}
-        className="rounded-md w-full h-full ">
+        className="rounded-3xl w-full h-full ">
         <View style={[styles.header]}>
           <BackButton
             size={24}
