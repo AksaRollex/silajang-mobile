@@ -8,6 +8,7 @@ import {
   Dimensions,
   TouchableOpacity,
   Modal,
+  ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
@@ -93,7 +94,7 @@ const Dashboard = () => {
         <View className="p-4 flex-row justify-between">
         <View className="flex-row gap-2 items-center">
          <IonIcons 
-                name="calendar-clear" 
+                name="calendar" 
                 size={27} 
                 color={"#4d5b7a"}
                 />
@@ -189,6 +190,14 @@ const Dashboard = () => {
       showsVerticalScrollIndicator={false}
       stickyHeaderIndices={[]}>
         
+    <ImageBackground
+    source={require("../../../assets/images/background.png")}
+            style={{
+              flex: 1,
+              height: "68%", // Pastikan gambar menutupi area yang diinginkan
+              // borderBottomLeftRadius: 20,
+              // borderBottomRightRadius: 20,
+            }}>
       <Header
         navigate={() => {
           navigation.navigate("Profile");
@@ -214,6 +223,7 @@ const Dashboard = () => {
           </View>
         </View>
       )}
+      </ImageBackground>
 
       <ScrollView
         contentContainerStyle={styles.scrollViewContainer}

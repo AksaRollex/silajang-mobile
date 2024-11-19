@@ -19,7 +19,7 @@ import {
   TouchableOpacity,
   View,
   Modal,
-  Image, 
+  Image,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
 import MultiSelect from "react-native-multiple-select";
@@ -36,6 +36,7 @@ import { color } from "@rneui/base";
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalKintud, setModalKintud] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
 
@@ -221,23 +222,25 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       );
 
       return axios.post(
-        uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik",
+        uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
         requestData,
       );
     },
     {
       onSuccess: () => {
-        setModalVisible(true); // Tampilkan modal dulu
+        setModalKintud(true); // Tampilkan modal dulu
         queryClient.invalidateQueries(["/permohonan/titik"]);
 
         setTimeout(() => {
-          setModalVisible(false);
+          setModalKintud(false);
           navigation.navigate("TitikUji", { uuid: permohonan.uuid });
         }, 2000);
       },
       onError: error => {
         if (error.message !== "Silahkan pilih metode pembayaran") {
-          setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+          setErrorMessage(
+            error.response?.data?.message || "Gagal memperbarui data",
+          );
           setErrorModalVisible(true);
           setTimeout(() => {
             setErrorModalVisible(false);
@@ -309,6 +312,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const getLocation = () => {
     setLoading(true);
+    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
 
     Geolocation.getCurrentPosition(
       position => {
@@ -323,8 +327,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         setValue("south", latitude);
         setValue("east", longitude);
 
-        setModalVisible(true); // Tampilkan modal setelah mendapatkan lokasi
-        setLoading(false); // Selesai loading
+        setLoading(false); // Selesai loading saat koordinat didapatkan
       },
       error => {
         console.log(error.code, error.message);
@@ -688,6 +691,89 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                     />
                   </View>
                   <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
+                    <Modal
+                      transparent={true}
+                      visible={modalVisible}
+                      animationType="fade"
+                      onRequestClose={() => setModalVisible(false)}>
+                      <View
+                        style={{
+                          flex: 1,
+                          justifyContent: "center",
+                          alignItems: "center",
+                          backgroundColor: "rgba(0, 0, 0, 0.5)",
+                        }}>
+                        <View
+                          style={{
+                            width: 300,
+                            padding: 20,
+                            backgroundColor: "white",
+                            borderRadius: 10,
+                            alignItems: "center",
+                          }}>
+                          <Text
+                            style={{
+                              fontSize: 18,
+                              fontWeight: "bold",
+                              marginBottom: 15,
+                              color: "black",
+                            }}>
+                            Koordinat Anda
+                          </Text>
+
+                          <View
+                            style={{
+                              width: "100%",
+                              borderBottomWidth: 1,
+                              borderBottomColor: "#dedede",
+                              marginBottom: 15,
+                            }}
+                          />
+
+                          {loading ? (
+                            <ActivityIndicator
+                              size="large"
+                              color="#007AFF"
+                              className="mb-5 justify-center"
+                            />
+                          ) : (
+                            <>
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  marginBottom: 10,
+                                  color: "black",
+                                }}>
+                                Latitude: {location.latitude}
+                              </Text>
+                              <Text
+                                style={{
+                                  fontSize: 16,
+                                  marginBottom: 25,
+                                  color: "black",
+                                }}>
+                                Longitude: {location.longitude}
+                              </Text>
+                            </>
+                          )}
+
+                          <View style={{ flexDirection: "row" }}>
+                            <TouchableOpacity
+                              onPress={() => setModalVisible(false)}
+                              style={{
+                                paddingVertical: 10,
+                                paddingHorizontal: 20,
+                                backgroundColor: "#dedede",
+                                borderRadius: 5,
+                                marginRight: 10,
+                              }}>
+                              <Text style={{ color: "black" }}>Tutup</Text>
+                            </TouchableOpacity>
+                          </View>
+                        </View>
+                      </View>
+                    </Modal>
+
                     <Text className="font-poppins-semibold text-base text-center mb-4 text-black">
                       Lokasi Pada Koordinat
                     </Text>
@@ -869,12 +955,18 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                           </View>
                         )}
                       />
-
+                    </View>
+                  </View>
+                  <View className=" p-3 mt-5 border rounded-2xl border-stone-300">
+                    <Text className="text-base font-poppins-semibold text-center mt-5 mb-5 text-black">
+                      Kondisi Lingkungan
+                    </Text>
+                    <View className="flex-row flex-wrap">
                       <Controller
                         name="suhu_udara"
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                          <View className="w-1/2 pl-2">
+                          <View className="w-1/2 pr-2">
                             <Text className="font-poppins-semibold mb-2 text-black">
                               Suhu Udara
                             </Text>
@@ -892,7 +984,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         name="cuaca"
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                          <View className="w-1/2 pr-2">
+                          <View className="w-1/2 pl-2">
                             <Text className="font-poppins-semibold mb-2 text-black">
                               Cuaca
                             </Text>
@@ -910,7 +1002,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         name="arah_angin"
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                          <View className="w-1/2 pl-2">
+                          <View className="w-1/2 pr-2">
                             <Text className="font-poppins-semibold mb-2 text-black">
                               Arah Angin
                             </Text>
@@ -928,7 +1020,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         name="kelembapan"
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                          <View className="w-1/2 pr-2">
+                          <View className="w-1/2 pl-2">
                             <Text className="font-poppins-semibold mb-2 text-black">
                               Kelembapan
                             </Text>
@@ -946,7 +1038,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         name="kecepatan_angin"
                         control={control}
                         render={({ field: { onChange, value } }) => (
-                          <View className="w-1/2 pl-2">
+                          <View className="w-1/2 pr-2">
                             <Text className="font-poppins-semibold mb-2 text-black">
                               Kecepatan Angin
                             </Text>
@@ -964,7 +1056,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   <Button
                     onPress={handleSubmit(createOrUpdate)}
                     loading={isLoading}
-                    className="p-3 rounded-2xl mt-4 mb-3"
+                    className="p-3 rounded-3xl mt-4 mb-3"
                     style={{ backgroundColor: Colors.brand }}>
                     <Text className="text-white text-center text-base font-poppins-semibold">
                       SUBMIT
@@ -978,10 +1070,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           </View>
         )}
       />
-      <Modal animationType="fade" transparent={true} visible={modalVisible}>
+      <Modal animationType="fade" transparent={true} visible={modalKintud}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <Image 
+            <Image
               source={require("@/assets/images/cek.png")}
               style={styles.lottie}
             />
@@ -1001,14 +1093,17 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         </View>
       </Modal>
 
-      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}>
         <View style={styles.overlayView}>
           <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image 
+            <Image
               source={require("@/assets/images/error.png")}
               style={styles.lottie}
             />
-            <Text style={[styles.successTextTitle]}>
+            <Text style={[styles.successTextTitle, styles.errortitle]}>
               {uuid ? "Data gagal di perbarui" : "Data gagal ditambahkan"}
             </Text>
             <Text style={[styles.successText, styles.errorText]}>
@@ -1106,6 +1201,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Poppins-Regular",
     color: "black",
+  },
+  errortitle: {
+    color: "#FF4B4B",
+  },
+  errorText: {
+    color: "#666",
   },
 });
 

@@ -46,9 +46,12 @@ const Perusahaan = () => {
 
   const [kelurahan, setKelurahan] = useState([]);
   const [selectedKelurahan, setSelectedKelurahan] = useState(null);
-
+  const [loading, setLoading] = useState(false);
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [modalKintud, setModalKintud] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     handleSubmit,
@@ -89,24 +92,34 @@ const Perusahaan = () => {
     }
   };
   const getLocation = () => {
+    setLoading(true);
+    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
+
     Geolocation.getCurrentPosition(
       position => {
+        const latitude = position.coords.latitude.toString();
+        const longitude = position.coords.longitude.toString();
+
         setLocation({
-          lat: position.coords.latitude.toString(),
-          long: position.coords.longitude.toString(),
+          latitude,
+          longitude,
         });
-        Alert.alert(
-          "Lokasi Ditemukan",
-          `Latitude: ${position.coords.latitude}, Longitude: ${position.coords.longitude}`,
-        );
+
+        setValue("south", latitude);
+        setValue("east", longitude);
+
+        setLoading(false); // Selesai loading saat koordinat didapatkan
       },
       error => {
         console.log(error.code, error.message);
+        setLoading(false); // Selesai loading jika terjadi error
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
   };
+
   const handleLocationPress = () => {
+    setLoading(true);
     if (Platform.OS === "android") {
       requestLocationPermission();
     } else {
@@ -213,10 +226,10 @@ const Perusahaan = () => {
       setSelectedKotaKabupaten(null);
       setSelectedKecamatan(null);
       setSelectedKelurahan(null);
-      setKecamatan([])
-      setKelurahan([])
-    }
-  }, [])
+      setKecamatan([]);
+      setKelurahan([]);
+    };
+  }, []);
 
   // FETCH DATA TANDA TANGAN
   useEffect(() => {
@@ -288,8 +301,23 @@ const Perusahaan = () => {
         ...prevData,
         tanda_tangan: getValues("tanda_tangan"),
       }));
+      setModalKintud(true);
+      QueryClient.invalidateQueries("/auth");
+
+      setTimeout(() => {
+        setModalKintud(false);
+        navigation.navigate("IndexProfile");
+        setFile(null);
+        fetchUserData();
+      }, 2000);
     } catch (error) {
-      console.error("Update failed:", error.message);
+      setErrorMessage(
+        error.response?.data?.message || "Gagal memperbarui data.",
+      );
+      setErrorModalVisible(true);
+      setTimeout(() => {
+        setErrorModalVisible(false);
+      }, 2000);
     }
   };
 
@@ -320,21 +348,24 @@ const Perusahaan = () => {
   // RESPONSE SETELAH UPDATE
   const { mutate: update, isLoading } = useMutation(updateUser, {
     onSuccess: () => {
-      Toast.show({
-        type: "success",
-        text1: "Data Berhasil Di Kirim",
-      });
+      setModalKintud(true);
       QueryClient.invalidateQueries("/auth");
-      navigation.navigate("IndexProfile");
-      setFile(null);
-      fetchUserData();
+
+      setTimeout(() => {
+        setModalKintud(false);
+        navigation.navigate("IndexProfile");
+        setFile(null);
+        fetchUserData();
+      }, 2000);
     },
     onError: error => {
-      console.error(error.message);
-      Toast.show({
-        type: "error",
-        text1: error.message,
-      });
+      setErrorMessage(
+        error.response?.data?.message || "Gagal memperbarui data.",
+      );
+      setErrorModalVisible(true);
+      setTimeout(() => {
+        setErrorModalVisible(false);
+      }, 2000);
     },
   });
 
@@ -410,7 +441,7 @@ const Perusahaan = () => {
                 padding: 4,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
               Informasi Perusahaan
             </Text>
           </View>
@@ -471,6 +502,7 @@ const Perusahaan = () => {
                     <TextField
                       value={value}
                       enableErrors
+                      placeholder="Masukkan nama instansi"
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       onChangeText={onChange}
                     />
@@ -496,6 +528,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan alamat industri"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
@@ -521,6 +554,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan nama pimpinan"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
@@ -545,6 +579,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan PJ Mutu"
                       keyboardType="text-input"
                       value={value}
                       onChangeText={onChange}
@@ -570,6 +605,7 @@ const Perusahaan = () => {
                       onChangeText={onChange}
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan No Telepon"
                       keyboardType="phone-pad"
                       value={value}
                     />
@@ -593,6 +629,7 @@ const Perusahaan = () => {
                       onChangeText={onChange}
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan fax"
                       keyboardType="phone-pad"
                       value={value}
                     />
@@ -611,6 +648,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan email"
                       keyboardType="email-address"
                       onChangeText={onChange}
                       value={value}
@@ -635,6 +673,7 @@ const Perusahaan = () => {
                     <TextField
                       className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
                       enableErrors
+                      placeholder="Masukkan jenis kegiatan"
                       keyboardType="text-input"
                       onChangeText={onChange}
                       value={value}
@@ -723,22 +762,84 @@ const Perusahaan = () => {
               </View>
 
               <Modal
-                animationType="slide"
                 transparent={true}
                 visible={modalVisible}
+                animationType="fade"
                 onRequestClose={() => setModalVisible(false)}>
-                <View style={styles.modalContainer}>
-                  <View style={styles.modalContent}>
-                    <Text style={styles.modalTitle}>Anda Berada Pada :</Text>
-                    <Text style={styles.modalText}>
-                      Lintang: {location.lat}
+                <View
+                  style={{
+                    flex: 1,
+                    justifyContent: "center",
+                    alignItems: "center",
+                    backgroundColor: "rgba(0, 0, 0, 0.5)",
+                  }}>
+                  <View
+                    style={{
+                      width: 300,
+                      padding: 20,
+                      backgroundColor: "white",
+                      borderRadius: 10,
+                      alignItems: "center",
+                    }}>
+                    <Text
+                      style={{
+                        fontSize: 18,
+                        fontWeight: "bold",
+                        marginBottom: 15,
+                        color: "black",
+                      }}>
+                      Koordinat Anda
                     </Text>
-                    <Text style={styles.modalText}>Bujur: {location.long}</Text>
-                    {/* <TouchableOpacity
-                  style={styles.buttonModal}
-                  onPress={() => setModalVisible(false)}>
-                  <Text>Tutup</Text>
-                </TouchableOpacity> */}
+
+                    <View
+                      style={{
+                        width: "100%",
+                        borderBottomWidth: 1,
+                        borderBottomColor: "#dedede",
+                        marginBottom: 15,
+                      }}
+                    />
+
+                    {loading ? (
+                      <ActivityIndicator
+                        size="large"
+                        style={{ marginBottom: 15 }}
+                        color="#007AFF"
+                      />
+                    ) : (
+                      <>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginBottom: 10,
+                            color: "black",
+                          }}>
+                          Latitude: {location.latitude}
+                        </Text>
+                        <Text
+                          style={{
+                            fontSize: 16,
+                            marginBottom: 25,
+                            color: "black",
+                          }}>
+                          Longitude: {location.longitude}
+                        </Text>
+                      </>
+                    )}
+
+                    <View style={{ flexDirection: "row" }}>
+                      <TouchableOpacity
+                        onPress={() => setModalVisible(false)}
+                        style={{
+                          paddingVertical: 10,
+                          paddingHorizontal: 20,
+                          backgroundColor: "#dedede",
+                          borderRadius: 5,
+                          marginRight: 10,
+                        }}>
+                        <Text style={{ color: "black" }}>Tutup</Text>
+                      </TouchableOpacity>
+                    </View>
                   </View>
                 </View>
               </Modal>
@@ -832,7 +933,7 @@ const Perusahaan = () => {
                 )}
               />
               <Button
-                onPress={handleSubmit(update)}
+                onPress={handleSubmit(updateUser)}
                 loading={isLoading}
                 className="p-3 rounded-3xl mt-10"
                 style={{ backgroundColor: Colors.brand }}>
@@ -848,6 +949,54 @@ const Perusahaan = () => {
           )}
         </View>
       </ScrollView>
+
+        <Modal animationType="fade" transparent={true} visible={modalKintud}>
+          <View style={styles.overlayView}>
+            <View style={styles.successContainer}>
+              <Image
+                source={require("@/assets/images/cek.png")}
+                style={styles.lottie}
+              />
+              {/* <LottieView
+              source={require("../../../../assets/lottiefiles/success-animation.json")}
+              autoPlay
+              loop={false}
+              style={styles.lottie}
+              /> */}
+              <Text style={styles.successTextTitle}>
+                Data berhasil diperbarui
+              </Text>
+              <Text style={styles.successText}>
+                Silahkan memastikan bahwa data yang anda kirim telah benar !
+              </Text>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={errorModalVisible}>
+          <View style={styles.overlayView}>
+            <View style={[styles.successContainer, styles.errorContainer]}>
+              <Image
+                source={require("@/assets/images/error.png")}
+                style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                <Text style={styles.errorButtonText}>Tutup</Text>
+                </TouchableOpacity> */}
+            </View>
+          </View>
+        </Modal>
     </>
   );
 };
@@ -1052,6 +1201,47 @@ const styles = StyleSheet.create({
     color: "black",
     borderWidth: 1,
     borderColor: "#ccc",
+  },
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    paddingVertical: 30,
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+    fontSize: rem(1.5),
+    fontFamily: "Poppins-Bold",
+    marginBottom: rem(1.5),
+    marginTop: rem(1),
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
+  },
+  errorContainer: {},
+  errortitle: {
+    color: "#FF4B4B",
+  },
+  errorText: {
+    color: "#666",
   },
 });
 const pickerSelectStyles = StyleSheet.create({

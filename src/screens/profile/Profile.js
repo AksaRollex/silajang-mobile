@@ -11,6 +11,7 @@ import {
   Dimensions,
   StyleSheet,
   Image,
+  ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { Colors } from "react-native-ui-lib";
@@ -72,20 +73,28 @@ export default function Profile({ navigation }) {
     setImageViewerVisible(true);
   };
   return (
-    <View style={{ backgroundColor: Colors.brand }}>
+    <ImageBackground
+    source={require('../../../assets/images/background.png')}
+      style={{ flex: 1, height: "30%" }} // Pastikan gambar menutupi seluruh layar
+      imageStyle={{
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+      }}
+    >
       <>
       {userData ? (
           <View className="z-10 bottom-20">
             <View
-              className="w-full py-5 rounded-b-2xl"
-              style={{ backgroundColor: Colors.brand, height: "32%" }}>
-              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
+              className="w-full py-5 rounded-b-2xl">
+              <Text className="text-white text-xl font-poppins-bold mx-6 top-24">
                 Profil Saya
               </Text>
-              <View className="w-full items-center mt-28 justify-center">
+              <View className="w-full items-center mt-40 justify-center">
                 {userData ? (
                   <TouchableOpacity
-                    onPress={() => openImageViewer(userData.photo)}>
+                    onPress={() => openImageViewer(userData.photo)}
+                    style={{ position: "absolute", zIndex: 10, top: "50%", alignSelf: "center" }}
+                    >
                     <FastImage
                       className="rounded-full w-28 h-28"
                       source={{
@@ -112,8 +121,8 @@ export default function Profile({ navigation }) {
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
         )}
-        <View className="h-full bottom-52">
-          <View className="rounded-3xl h-full bg-slate-200 ">
+        <View className="h-full bottom-11">
+          <View className="rounded-3xl h-full bg-slate-200">
             {userData ? (
               <>
                 <View className="flex-col align-center justify-center mx-2 mt-16">
@@ -191,7 +200,7 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-36 items-center justify-center flex-end">
+              <View className="top-20 items-center justify-center flex-end">
                 <Text className="flex-end">
                   <FooterText />
                 </Text>
@@ -319,7 +328,7 @@ export default function Profile({ navigation }) {
         </View>
 
       </>
-    </View>
+    </ImageBackground>
   );
 }
 

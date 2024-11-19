@@ -29,6 +29,8 @@ const Akun = () => {
   const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const queryClient = useQueryClient();
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     handleSubmit,
@@ -141,11 +143,11 @@ const Akun = () => {
       }, 2000);
     },
     onError: error => {
-      console.error(error.message);
-      Toast.show({
-        type: "error",
-        text1: error.message,
-      });
+      setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+        setErrorModalVisible(true);
+        setTimeout(() => {
+          setErrorModalVisible(false);
+        }, 2000);
     },
   });
 
@@ -190,7 +192,7 @@ const Akun = () => {
                 padding: 4,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
               Informasi Personal
             </Text>
           </View>
@@ -330,19 +332,45 @@ const Akun = () => {
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <LottieView
+              <Image
+                source={require("@/assets/images/cek.png")}
+                style={styles.lottie}
+              />
+            {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
-            />
+            /> */}
             <Text style={styles.successTextTitle}>
-              INformasi personal kamu berhasil di rubah
+              Informasi personal kamu berhasil di rubah
             </Text>
             <Text style={styles.successText}>
               Pastikan informasi personal yang kamu gunakan saat ini sudah benar
               !
             </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -509,7 +537,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     width: "90%",
-    height: "35%",
+    paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
@@ -521,7 +549,6 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontWeight: "bold",
     marginBottom: rem(1.5),
     marginTop: rem(1),
     fontFamily: "Poppins-SemiBold",
@@ -531,6 +558,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Poppins-Regular",
     color: "black",
+  },
+  errortitle: {
+    color: '#FF4B4B',
+  },
+  errorText: {
+    color: '#666',
   },
 });
 
