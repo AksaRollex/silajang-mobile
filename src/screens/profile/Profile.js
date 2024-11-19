@@ -229,21 +229,31 @@ export default function Profile({ navigation }) {
       }}
       className="w-10/12">
       <Image
-        source={require('../../../assets/icons/logoutnew.png')} // Ganti dengan path ke gambar Anda
+        source={require('../../../assets/icons/arrowRed.png')} // Ganti dengan path ke gambar Anda
         style={{
           width: 95, // Sesuaikan ukuran gambar
-          height: 95, // Sesuaikan ukuran gambar
+          height: 100, // Sesuaikan ukuran gambar
           marginBottom: 15,
         }}
       />
+
       <Text
         style={{
           fontSize: 16,
-          marginBottom: 15,
+          marginBottom: 7,
+          fontFamily: "Poppins-Bold",
+          color: "black",
+        }}>
+        Logout
+      </Text>
+      <Text
+        style={{
+          fontSize: 16,
+          marginBottom: 7,
           fontFamily: "Poppins-SemiBold",
           color: "black",
         }}>
-        Apakah anda yakin ingin keluar?
+        Yakin ingin keluar?
       </Text>
 
       <View

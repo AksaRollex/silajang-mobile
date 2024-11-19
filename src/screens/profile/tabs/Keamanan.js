@@ -79,7 +79,8 @@ const Keamanan = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] w-full h-full px-4 py-4 ">
+      <View className="bg-[#ececec] w-full h-full p-3">
+      <View className="bg-[#f8f8f8] rounded-3xl px-4 py-4 h-full">
         <View className="flex-row mb-6">
           <Back
             size={30}
@@ -235,6 +236,7 @@ const Keamanan = () => {
             PERBARUI
           </Text>
         </Button>
+      </View>
       </View>
     </>
   );
