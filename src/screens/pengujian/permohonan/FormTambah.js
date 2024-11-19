@@ -366,15 +366,32 @@ const TambahPermohonan = ({ navigation }) => {
             <Text style={styles.successText}>
               Silahkan untuk melanjutkan dengan mengisi titik pengujian
             </Text>
-            <View className="flex-row justify-between">
-              <TouchableOpacity className="p-3 mt-2 rounded-3xl bg-[#676767]">
+            <View className="flex-row justify-between mt-3">
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
                 <Text
                   style={styles.successText}
-                  onPress={() => setModalPercuy(false)}>
+                  onPress={() => {
+                    setModalPercuy(false);
+                    navigation.goBack();
+                  }}>
                   Tutup
                 </Text>
               </TouchableOpacity>
-              <TouchableOpacity className="p-3 mt-2 rounded-3xl bg-[#676767]">
+              <TouchableOpacity
+                style={{
+                  paddingVertical: 10,
+                  paddingHorizontal: 20,
+                  backgroundColor: "#dedede",
+                  borderRadius: 5,
+                  marginRight: 10,
+                }}>
                 <Text
                   style={styles.successText}
                   onPress={() => {
@@ -500,8 +517,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "white",
     padding: 20,
-    width: "90%",
-    height: "35%",
     borderRadius: 10,
   },
   lottie: {
