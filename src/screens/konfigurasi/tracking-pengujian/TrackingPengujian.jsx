@@ -106,67 +106,95 @@ const TrackingPengujian = ({ navigation }) => {
     <View
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
-      <View className="flex-row items-center ">
+      
+      <View className="absolute top-4 right-2">
+        <View className={`py-1 px-3 rounded-full ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'}`}>
+          <Text 
+            className={`text-[12px] font-poppins-semibold ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'}`} 
+            numberOfLines={2}
+          >
+            {mapStatusPengujian(item.status)}
+          </Text>
+        </View>
+      </View>
+  
+      <View className="flex-row items-center">
         <View className="" style={{ width: "90%" }}>
           <View className="flex-col justify-between items-start mb-2">
-            <Text className="text-[17px] font-poppins-bold text-black">{item.kode}</Text>
-            <View className={` py-1 rounded-full  ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'
-              }`}>
-              <Text className={`text-[12px] font-poppins-semibold  text-right ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'
-                }`} numberOfLines={2}>
-                {mapStatusPengujian(item.status)}
-              </Text>
-            </View>
+            <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
+            <Text className="text-md font-poppins-bold text-black">{item.kode}</Text>
           </View>
-
+  
           <View className="flex-col space-y-2">
             <View>
-              <Text className="text-[12px] font-poppins-bold text-black">Pelanggan:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
+              <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+              <Text 
+                className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}
-                style={{ flexWrap: 'wrap' }}>
+                style={{ flexWrap: 'wrap' }}
+              >
                 {item.permohonan?.user?.nama}
               </Text>
             </View>
-
+  
             <View>
-              <Text className="text-[12px] font-poppins-bold text-black">Titik Uji/Lokasi:</Text>
-              <Text className="text-[12px] font-poppins-semibold text-black"
-                numberOfLines={2}>
+              <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi:</Text>
+              <Text 
+                className="text-md font-poppins-semibold text-black"
+                numberOfLines={2}
+              >
                 {item.lokasi}
               </Text>
             </View>
-
-            <View className="space-y-1">
-              <Text className="text-[11px] font-poppins-semibold text-black">
-                Tanggal Dibuat: {item.tanggal || '-'}
-              </Text>
-              <Text className="text-[11px] font-poppins-semibold text-black">
-                Tanggal Diterima: {item.tanggal_diterima || '-'}
-              </Text>
-              <Text className="text-[11px] font-poppins-semibold text-black">
-                Tanggal Selesai: {item.tanggal_selesai || '-'}
-              </Text>
-              <Text className="text-[11px] font-poppins-semibold text-black">
-                Tanggal Pengesahan LHU: {item.tracking_status_7 || '-'}
-              </Text>
+  
+            {/* Updated dates section with two columns */}
+            <View className="flex-row flex-wrap">
+              <View className="w-1/2 space-y-2">
+                <View>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Dibuat</Text>
+                  <Text className="text-[13px] font-poppins-semibold text-black">
+                    {item.tanggal || '-'}
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima</Text>
+                  <Text className="text-[13px] font-poppins-semibold text-black">
+                    {item.tanggal_diterima || '-'}
+                  </Text>
+                </View>
+              </View>
+              
+              <View className="w-1/2 space-y-2">
+                <View>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+                  <Text className="text-[13px] font-poppins-semibold text-black">
+                    {item.tanggal_selesai || '-'}
+                  </Text>
+                </View>
+                <View>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Pengesahan LHU</Text>
+                  <Text className="text-[13px] font-poppins-semibold text-black">
+                    {item.tracking_status_7 || '-'}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
-
       </View>
-        <View className="h-[1px] bg-gray-300 my-3" />
-          
-          <View className="flex-row justify-end gap-2">
-            <TouchableOpacity 
-              onPress={() => navigation.navigate("DetailTracking", { selected : item })}
-              className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
-            >
-              <Text className="text-white ml-1 text-xs font-poppins-medium">Tracking </Text>
-              <Feather name="chevrons-right" size={14} color="#fff" />
-            </TouchableOpacity>
-          </View>
-
+  
+      <View className="h-[1px] bg-gray-300 my-3" />
+      
+      <View className="flex-row justify-end gap-2">
+        <TouchableOpacity 
+          onPress={() => navigation.navigate("DetailTracking", { selected: item })}
+          className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
+        >
+          <Text className="text-white ml-1 text-xs font-poppins-medium">Tracking </Text>
+          <Feather name="chevrons-right" size={14} color="#fff" />
+        </TouchableOpacity>
+      </View>
+  
       {item.status < 0 && item.keterangan_revisi && (
         <View className="mt-3 bg-yellow-50 p-3 rounded-md">
           <Text className="text-[11px] text-yellow-800">
@@ -175,7 +203,6 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       )}
     </View>
-
   );
 
   return (

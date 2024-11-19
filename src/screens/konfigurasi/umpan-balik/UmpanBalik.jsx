@@ -19,7 +19,6 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import DocumentPicker from 'react-native-document-picker';
 
-
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
   { id: 1, name: "Tabel Umpan Balik" },
@@ -705,23 +704,29 @@ const handleImport = async () => {
 
   const renderPaginateItem = ({ item }) => (
     <View className="bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-5 mb-4" style={{ elevation: 4 }}>
-      <View className="flex-row justify-between">
-        <View className="flex-1 pr-4">
-          <Text className="text-[18px] font-poppins-semibold mb-5 text-black" style={{ textTransform: 'uppercase' }}>{item.kode}</Text>
-          <Text className="text-[14px] mb-3 font-poppins-medium text-black">{item.keterangan}</Text>
+      <View cla>
+        <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+        <Text className="text-md font-poppins-semibold mb-5 text-black" style={{ textTransform: 'uppercase' }}>{item.kode}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Keterangan</Text>
+        <Text className="text-md mb-3 font-poppins-medium text-black">{item.keterangan}</Text>
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex items-end">
+          <TouchableOpacity
+            onPress={() => {
+              setFormData({ uuid: item.uuid, kode: item.kode, keterangan: item.keterangan });
+              setModalVisible(true);
+            }}
+            className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+          >
+            <IonIcons name="pencil" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+          </TouchableOpacity>
         </View>
-        <TouchableOpacity
-          onPress={() => {
-            setFormData({ uuid: item.uuid, kode: item.kode, keterangan: item.keterangan });
-            setModalVisible(true);
-          }}
-          className="h-7 w-7 bg-[#f8f8f8] rounded-md items-center justify-center mt-5"
-        >
-          <MaterialCommunityIcons name="pencil-box-outline" size={25} color="#312e81" />
-        </TouchableOpacity>
       </View>
     </View>
-  );
+);
 
   const renderModal = () => (
     <Modal
