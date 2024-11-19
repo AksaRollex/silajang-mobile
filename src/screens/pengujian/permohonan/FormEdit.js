@@ -1,5 +1,5 @@
 import * as React from "react";
-import { View, StyleSheet, TouchableOpacity, Text, Modal } from "react-native";
+import { View, StyleSheet, TouchableOpacity, Text, Image, Modal } from "react-native";
 import axios from "@/src/libs/axios";
 import { useForm, Controller } from "react-hook-form";
 import { Button, Colors, TextField } from "react-native-ui-lib";
@@ -11,6 +11,8 @@ import { memo, useEffect, useState } from "react";
 
 const EditPermohonan = ({ route, navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
   const { uuid } = route.params || {};
   const {
     control,
@@ -64,12 +66,11 @@ const EditPermohonan = ({ route, navigation }) => {
         }, 2000);
       },
       onError: error => {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: error.response?.data?.message || "Failed to update data",
-        });
-        console.error(error.response?.data || error);
+        setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+        setErrorModalVisible(true);
+        setTimeout(() => {
+          setErrorModalVisible(false);
+        }, 2000);
       },
     },
   );
@@ -89,10 +90,7 @@ const EditPermohonan = ({ route, navigation }) => {
             action={() => navigation.goBack()}
             className="mr-5 "
             style={{
-              borderWidth: 0.5,
               padding: 4,
-              borderColor: "black",
-              borderRadius: 8,
             }}
           />
           <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
@@ -202,18 +200,44 @@ const EditPermohonan = ({ route, navigation }) => {
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <LottieView
+            <Image 
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
-            />
+            /> */}
             <Text style={styles.successTextTitle}>
-              Data berhasil di perbarui
+              Data berhasil diperbarui
             </Text>
             <Text style={styles.successText}>
               Silahkan memastikan bahwa data yang anda kirim telah benar !
             </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -278,7 +302,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     width: "90%",
-    height: "35%",
+    paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
@@ -290,7 +314,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontWeight: "bold",
+    fontFamily: "Poppins-Bold",
     marginBottom: rem(1.5),
     marginTop: rem(1),
     fontFamily: "Poppins-SemiBold",
@@ -300,6 +324,32 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Poppins-Regular",
     color: "black",
+  },
+  errorContainer: {
+  },
+  errortitle: {
+    color: '#FF4B4B',
+  },
+  errorText: {
+    color: '#666',
+  },
+  errorButton: {
+    backgroundColor: '#FF4B4B',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 10,
+    marginTop: 10,
+  },
+  errorButtonText: {
+    color: 'white',
+    fontFamily: 'Poppins-SemiBold',
+    fontSize: 15,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },  
+    shadowOpacity: 0.25,
+    shadowRadius: 4,
+    elevation: 5,
+    paddingHorizontal: 15,
   },
 });
 

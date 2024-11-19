@@ -183,7 +183,7 @@ export default function Pembayaran() {
             <View style={styles.menuGrid}>
               {paymentMenus.map((menu, index) => (
                 <TouchableOpacity
-                  key={index}
+                key={index}
                   style={styles.menuCard}
                   onPress={() => navigation.navigate(menu.screen)}>
                   <View
@@ -213,7 +213,7 @@ export default function Pembayaran() {
                       name={feature.icon}
                       size={24}
                       color="white"
-                    />
+                      />
                   </View>
                   <Text style={styles.featureText}>{feature.text}</Text>
                 </View>

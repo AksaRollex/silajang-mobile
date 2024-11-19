@@ -78,7 +78,6 @@ const getTabBarStyle = route => {
 
   console.log("Current route name:", getFocusedRouteNameFromRoute(route));
   if (hideOnScreens.includes(routeName)) {
-    console.log("Hiding tab bar for route:", routeName); // Tambahkan ini
     return { display: "none" };
   }
 

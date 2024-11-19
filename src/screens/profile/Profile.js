@@ -22,7 +22,7 @@ import Toast from "react-native-toast-message";
 import BackButton from "../components/Back";
 import FastImage from "react-native-fast-image";
 import LottieView from "lottie-react-native";
-
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
 import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";

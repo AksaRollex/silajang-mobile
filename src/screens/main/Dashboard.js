@@ -95,7 +95,7 @@ const Dashboard = () => {
             style={{ elevation: 8 }}>
             <View className="p-4 flex-row justify-between">
               <View className="flex-row gap-2 items-center">
-                <IonIcons name="calendar-clear" size={27} color={"#4d5b7a"} />
+                <IonIcons name="calendar" size={27} color={"#4d5b7a"} />
                 <Text
                   className="text-lg text-gray-600 font-poppins-bold"
                   style={{ top: 3 }}>

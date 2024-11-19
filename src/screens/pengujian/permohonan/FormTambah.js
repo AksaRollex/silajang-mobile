@@ -7,6 +7,7 @@ import {
   Text,
   ScrollView,
   Modal,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -26,6 +27,8 @@ const TambahPermohonan = ({ navigation }) => {
   const [selectedCara, setSelectedCara] = useState(null);
   const [selectedPembayaran, setSelectedPembayaran] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [errorModalVisible, setErrorModalVisible] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   useEffect(() => {
     axios
@@ -78,12 +81,11 @@ const TambahPermohonan = ({ navigation }) => {
       },
 
       onError: error => {
-        console.error(error.response.data);
-        Toast.show({
-          type: "error",
-          text1: error.response.data.message,
-        });
-        setSubmitted(false);
+        setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+        setErrorModalVisible(true);
+        setTimeout(() => {
+          setErrorModalVisible(false);
+        }, 2000);
       },
     },
   );
@@ -131,10 +133,7 @@ const TambahPermohonan = ({ navigation }) => {
             action={() => navigation.goBack()}
             className="mr-5 "
             style={{
-              borderWidth: 0.5,
               padding: 4,
-              borderColor: "black",
-              borderRadius: 8,
             }}
           />
           <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
@@ -304,17 +303,43 @@ const TambahPermohonan = ({ navigation }) => {
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
-            <LottieView
+            <Image 
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+              />
+            {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
-            />
+            /> */}
             <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
             <Text style={styles.successText}>
               Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu
               parameter !
             </Text>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image 
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+              />
+              <Text style={[styles.successTextTitle, styles.errorTitle]}>
+                Gagal memperbarui data
+              </Text>
+              <Text style={[styles.successText, styles.errorText]}>
+                {errorMessage}
+              </Text>
+              {/* <TouchableOpacity 
+                style={styles.errorButton}
+                onPress={() => setErrorModalVisible(false)}>
+                  <Text style={styles.errorButtonText}>Tutup</Text>
+              </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -405,7 +430,7 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     padding: 20,
     width: "90%",
-    height: "35%",
+    paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
@@ -427,6 +452,12 @@ const styles = StyleSheet.create({
     textAlign: "center",
     fontFamily: "Poppins-Regular",
     color: "black",
+  },
+  errortitle: {
+    color: '#FF4B4B',
+  },
+  errorText: {
+    color: '#666',
   },
 });
 
