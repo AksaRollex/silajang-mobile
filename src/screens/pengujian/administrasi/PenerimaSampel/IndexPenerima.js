@@ -175,21 +175,21 @@ const PenerimaSampel = ({ navigation }) => {
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-          <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text> 
-            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.kode}</Text>
 
-            <Text className="text-md text-gray-500 font-poppins-regular">Kode</Text> 
-            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.kode}</Text>
+          <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
 
-            <Text className="text-md text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text> 
-            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
 
-            <Text className="text-md text-gray-500 font-poppins-regular">Oleh</Text> 
-            <Text className="text-[15px] text-black font-poppins-semibold mb-3">{item.tanggal_diterima}</Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">Diterima Pada</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-1">{item.tanggal_diterima}</Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-poppins-semibold text-right">
+              <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right">
                 {item.text_status}
               </Text>
             </View>
@@ -265,7 +265,7 @@ const PenerimaSampel = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text> 
               </View>
             </View>
 

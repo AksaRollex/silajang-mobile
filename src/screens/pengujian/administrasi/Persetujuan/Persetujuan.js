@@ -128,37 +128,37 @@ const Persetujuan = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-4 relative">
+        <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-poppins-semibold mb-3 text-black">
+               <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
+                <Text className="text-md font-poppins-semibold mb-3 text-black">
                   {item.kode}
                 </Text>
-                <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text>
-                <Text className="text-[15px] font-poppins-bold text-black mb-3">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold text-black mb-3">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
               <>  
-              <Text className="text-md text-gray-500 font-poppins-regular">Pelanggan</Text>            
-              <Text className="text-[15px] font-poppins-bold mb-3 text-black">
+              <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>            
+              <Text className="text-md font-poppins-semibold mb-3 text-black">
                 {item.permohonan.industri}
               </Text>
               </>
 
             )}
-            <Text className="text-md text-gray-500 font-poppins-regular">TItik Uji/Lokasi</Text>
-            <Text className="text-[15px] mb-3 font-poppins-bold text-black">{item.lokasi}</Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">TItik Uji/Lokasi</Text>
+            <Text className="text-md mb-3 font-poppins-semibold text-black">{item.lokasi}</Text>
 
 
-            <Text className="text-md text-gray-500 font-poppins-regular">Diambil Pada</Text>
-             <Text className="text-[15px] font-poppins-bold text-black mb-3">{item.tanggal_pengambilan}</Text>
-             <Text className="text-md text-gray-500 font-poppins-regular">Oleh</Text>
-             <Text className="text-[15px] font-poppins-bold text-black mb-3">{item.pengambil?.nama}</Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">Detail Pengambilan</Text>
+             <Text className="text-md font-poppins-semibold text-black">Diambil Pada: {item.tanggal_pengambilan}</Text>
+             <Text className="text-md font-poppins-semibold text-black">Oleh: {item.pengambil?.nama}</Text>
           </View>
-          <View className="absolute right-1 flex-col items-center">
+          <View className="absolute right-0 flex-col items-center">
             {!isConfirmed && (
               <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
             ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'

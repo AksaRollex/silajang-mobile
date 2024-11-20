@@ -301,11 +301,13 @@ const KendaliMutu = ({ navigation }) => {
             <View className="flex-col space-y-2">
 
               <View>
-                <Text className="text-[18px] font-poppins-bold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+                <Text className="text-md font-poppins-semibold text-black mb-2">
                   {item.kode || '-'}
                 </Text>
-          
-                <Text className="text-[16px] font-poppins-bold text-black"
+
+                <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold text-black"
                   numberOfLines={2}
                   style={{ flexWrap: 'wrap' }}>
                   {item.permohonan?.user?.nama || '-'}
@@ -313,30 +315,30 @@ const KendaliMutu = ({ navigation }) => {
               </View>
 
               <View>
-              <Text className="text-[14px] font-poppins-bold text-black">Lokasi :</Text>
-                <Text className="text-[14px] font-poppins-semibold text-black">
+              <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.lokasi || '-'}
                 </Text>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Status :</Text>
-                <View className="bg-indigo-100 self-start rounded-md px-3 py-1">
-                  <Text className="text-[12px] font-poppins-semibold text-indigo-600">
+                <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
+                <View className="bg-indigo-100 self-start rounded-md px-2 py-1">
+                  <Text className="text-[11px] font-poppins-semibold text-indigo-600">
                     {item.text_status || '-'}
                   </Text>
                 </View>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Tanggal Selesai :</Text>
-                <Text className="text-[12px] font-poppins-semibold text-black">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+                <Text className="text-md font-poppins-semibold text-black">
                   {item.tanggal_selesai || '-'}
                 </Text>
               </View>
 
               <View>
-                <Text className="text-[14px] font-poppins-bold text-black">Status TTE :</Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Status TTE</Text>
                 {item.status_tte_kendali_mutu === 1 ? (
                   <View className="bg-green-100 self-start rounded-full px-3 py-1">
                     <Text className="text-[12px] font-poppins-semibold text-green-800">Berhasil</Text>

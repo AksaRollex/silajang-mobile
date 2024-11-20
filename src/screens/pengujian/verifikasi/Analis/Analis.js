@@ -130,18 +130,24 @@ const Analis = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-poppins-semibold text-black mb-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.kode}
             </Text>
-          
-            <Text className="text-[14px] font-poppins-semibold text-black mb-3">
+
+            <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+
+            <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.lokasi}
             </Text>
             
+            <Text className="text-xs font-poppins-regular text-gray-500">
+              Diterima pada
+            </Text>
+
             {item.tanggal_diterima && (
-              <Text className="text-[14px] font-poppins-semibold text-black mb-3">
-                Diterima pada:{" "}
-                <Text className="font-poppins-semibold text-black">
+              <Text >
+                <Text className="text-md font-poppins-semibold text-black mb-2">
                   {item.tanggal_diterima}
                 </Text>
               </Text>
@@ -149,9 +155,9 @@ const Analis = ({ navigation }) => {
           </View>
           
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
+            <View className="bg-slate-100 rounded-md px-2 py-1 max-w-[150px] mb-2">
               <Text
-                className="text-[12px] text-indigo-600 font-bold text-right"
+                className="text-[11px] text-indigo-600 font-bold text-right"
                 numberOfLines={2}
                 ellipsizeMode="tail">
                 {item.text_status}

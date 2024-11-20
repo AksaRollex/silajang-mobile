@@ -167,18 +167,21 @@ const Kortek = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-[16px] text-black font-poppins-semibold mb-3">{item.kode}</Text>
-            <Text className="text-[15px] text-black font-poppins-semibold mb-2">
+            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">{item.kode}</Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.permohonan.user.nama}
             </Text>
-            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">{item.lokasi}</Text>
-            <Text className="text-[14px]  font-poppins-semibold text-black mb-3">
-              Peraturan:{" "}
-              <Text className="font-poppins-semibold ">{item.peraturan?.nama}</Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">{item.lokasi}</Text>
+            <Text className="text-xs font-poppins-regular text-gray-500">
+              Peraturan{" "}
             </Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">{item.peraturan?.nama}</Text>
           </View>
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
+            <View className="bg-slate-100 rounded-md py-1 px-2 max-w-[150px] mb-2">
               <Text
                 className="text-[12px] text-indigo-600 font-poppins-semibold text-right"
                 numberOfLines={2}
