@@ -133,7 +133,7 @@ const EditPermohonan = ({ route, navigation }) => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
-        <View className="bg-[#f8f8f8] w-full h-full rounded-3xl">
+        <View className="bg-[#fff] w-full h-full rounded-3xl" style={{elevation: 5, shadowColor: 'rgba(0,0,0,0.1)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 2 }}>
           <View className="flex-row  p-3 ">
             <Back
               size={30}

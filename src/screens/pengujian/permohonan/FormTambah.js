@@ -174,7 +174,7 @@ const TambahPermohonan = ({ navigation }) => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full  p-3">
-        <View className="bg-[#f8f8f8] w-full h-full rounded-3xl">
+        <View className="bg-[#fff] w-full h-full rounded-3xl"  style={{elevation: 5, shadowColor: 'rgba(0,0,0,0.1)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 2 }}>
           <View className="flex-row  p-3 ">
             <Back
               size={30}
@@ -358,17 +358,17 @@ const TambahPermohonan = ({ navigation }) => {
             <Text style={styles.successText}>
               Silahkan untuk melanjutkan dengan mengisi titik pengujian
             </Text>
-            <View className="flex-row justify-between mt-3">
+            <View className="flex flex-row justify-center items-center space-x-3 w-full mt-3 ">
               <TouchableOpacity
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#dedede",
+                  backgroundColor: "#ffcbd1",
                   borderRadius: 5,
-                  marginRight: 10,
+                  marginTop: 10,
                 }}>
                 <Text
-                  style={styles.successText}
+                  className="text-[#de0a26] text-sm font-semibold mb-1"
                   onPress={() => {
                     setModalPercuy(false);
                     navigation.goBack();
@@ -380,12 +380,12 @@ const TambahPermohonan = ({ navigation }) => {
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#dedede",
+                  backgroundColor: "#ddead1",
                   borderRadius: 5,
-                  marginRight: 10,
+                  marginTop: 10,
                 }}>
                 <Text
-                  style={styles.successText}
+                  className="text-[#4b6043] text-sm font-semibold mb-1"
                   onPress={() => {
                     setModalPercuy(false);
                     if (percuy) {
@@ -550,8 +550,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontWeight: "bold",
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
     fontFamily: "Poppins-SemiBold",
   },
