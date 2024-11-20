@@ -91,7 +91,7 @@ const Dashboard = () => {
       <>
         <View className="px-4 py-2 w-full mt-2">
           <View
-            className="bg-white rounded-lg border border-gray-200"
+            className="bg-[#fff] rounded-lg border border-gray-200"
             style={{ elevation: 8 }}>
             <View className="p-4 flex-row justify-between">
               <View className="flex-row gap-2 items-center">

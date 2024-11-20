@@ -197,7 +197,7 @@ const TrackingPengujian = ({ navigation }) => {
   return (
     <>
       <View className="w-full h-full bg-[#ececec] p-3">
-        <View className="rounded-3xl bg-[#f8f8f8] w-full h-full">
+        <View className="rounded-3xl bg-[#fff] w-full h-full">
           <View className="flex-row p-3 justify-between">
             <Back
               size={24}
@@ -209,7 +209,7 @@ const TrackingPengujian = ({ navigation }) => {
               Tracking Pengujian
             </Text>
           </View>
-          <View className="w-full h-full bg-[#f8f8f8] rounded-t-md">
+          <View className="w-full h-full">
             <Paginate
               ref={paginateRef}
               url="/tracking"

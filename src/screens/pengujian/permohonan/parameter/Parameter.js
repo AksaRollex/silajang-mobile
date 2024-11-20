@@ -1052,7 +1052,7 @@ const Parameter = ({ route, navigation }) => {
             {titik?.lokasi} : Pilih Peraturan / Parameter
           </Text>
         </View>
-        <View className="h-full w-full bg-[#f8f8f8] pb-8 rounded-3xl">
+        <View className="pb-8 rounded-3xl">
           <FlatList
             data={[1]}
             renderItem={() => <View className="">{renderContent()}</View>}

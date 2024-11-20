@@ -232,7 +232,15 @@ const Permohonan = ({ navigation }) => {
   return (
     <>
       <View className="p-3 bg-[#ececec]">
-        <View className="rounded-3xl bg-[#f8f8f8] w-full h-full">
+        <View
+          className="rounded-3xl bg-[#fff] w-full h-full"
+          style={{
+            elevation: 5,
+            shadowColor: "rgba(0, 0, 0, 0.1)",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}>
           <View className="flex-row p-3  justify-between ">
             <Back
               size={24}
@@ -244,7 +252,7 @@ const Permohonan = ({ navigation }) => {
               Permohonan
             </Text>
           </View>
-          <View className="bg-[#f8f8f8] w-full h-full rounded-b-md ">
+          <View className="w-full h-full rounded-b-md ">
             {user.has_tagihan ? (
               <View className="p-2">
                 <View className="flex items-center bg-yellow-100 w-full p-3 border border-yellow-400 rounded-md ">
@@ -342,7 +350,6 @@ const styles = StyleSheet.create({
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,
-    marginBottom: rem(4),
     borderRadius: 50,
   },
   badge: {

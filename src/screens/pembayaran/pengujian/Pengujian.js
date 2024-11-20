@@ -436,7 +436,7 @@ const Pengujian = ({ navigation }) => {
   return (
     <>
       <View className="p-3 bg-[#ececec] w-full h-full">
-        <View className="rounded-3xl bg-[#f8f8f8]">
+        <View className="rounded-3xl bg-[#fff] w-full h-full">
           <View className="flex-row  p-3 justify-between">
             <BackButton
               size={24}
@@ -448,7 +448,7 @@ const Pengujian = ({ navigation }) => {
               Pengujian Pembayaran
             </Text>
           </View>
-          <View className=" w-full h-full bg-[#f8f8f8] ">
+          <View className=" w-full h-full  ">
             <Paginate
               key={refreshKey}
               className="mb-20"

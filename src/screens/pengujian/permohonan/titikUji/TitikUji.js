@@ -357,9 +357,9 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   return (
     <>
       <View className="w-full h-full bg-[#ececec] p-3">
-        <View className="w-full h-full rounded-3xl">
+        <View className="w-full h-full rounded-3xl bg-[#fff]">
           <View className="w-full">
-            <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
+            <View className="flex-row p-3  justify-between rounded-t-md">
               <BackButton
                 size={24}
                 color={"black"}
@@ -375,7 +375,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               )}
             </View>
           </View>
-          <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
+          <View className=" w-full h-full rounded-b-md">
             {!titikPermohonans?.data?.length && !pivotData?.length && (
               <View className=" pt-5 px-5">
                 <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
@@ -505,11 +505,10 @@ const styles = StyleSheet.create({
   },
   plusIcon: {
     position: "absolute",
-    bottom: 20,
+    bottom: 30,
     right: 20,
     backgroundColor: "#312e81",
     padding: 10,
-    marginBottom: rem(4),
     borderRadius: 50,
   },
 });
