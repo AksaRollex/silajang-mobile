@@ -431,7 +431,13 @@ const Perusahaan = () => {
     <>
       <ScrollView className="flex-1">
       <View className="bg-[#ececec] p-3  w-full h-full ">
-        <View className="bg-[#f8f8f8] px-4  rounded-3xl flex-1">
+        <View className="bg-[#fff] px-4  rounded-3xl flex-1" style={{
+            elevation: 5,
+            shadowColor: "rgba(0, 0, 0, 0.1)",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}>
           <View className="flex-row py-5">
             <Back
               size={30}
