@@ -110,7 +110,7 @@ const PengujianDetail = ({ route, navigation }) => {
   return (
     <>
       <View className="p-3 w-full h-full bg-[#ececec]">
-        <View className="w-full h-full bg-[#f8f8f8] rounded-md">
+        <View className="w-full h-full bg-[#f8f8f8] rounded-3xl">
           <View className=" p-2 ">
             <View className="flex-row  p-3 justify-between">
               <Back

@@ -29,6 +29,7 @@ import { useSendParameter } from "@/src/hooks/useSendParameter";
 import Icons from "react-native-vector-icons/Feather";
 import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
+import { debounce } from "lodash";
 import { Skeleton } from "@rneui/themed";
 
 // PAGINATE
@@ -80,6 +81,14 @@ const Paginates = forwardRef(
       if (!data.data?.length) queryClient.invalidateQueries([url]);
     }, [data]);
 
+    const debouncedSearch = useCallback(
+      debounce(value => {
+        setSearch(value);
+        setPage(1);
+      }, 800),
+      [],
+    );
+
     const pagination = useMemo(() => {
       const totalPages = data.last_page || 1;
       const currentPage = data.current_page || 1;
@@ -99,24 +108,31 @@ const Paginates = forwardRef(
     }, [data.current_page, data.last_page]);
     const ListHeader = () => (
       <>
-        <View className="flex-row mb-1 items-center">
+        <View className="mb-1">
           <Controller
             control={control}
             name="search"
             render={({ field: { onChange, value } }) => (
-              <TextInput
-                className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 text-black"
-                value={value}
-                onChangeText={onChange}
-                placeholder="Cari..."
-              />
+              <View className="relative flex-row items-center">
+                <TextInput
+                  className="w-full text-base border bg-white px-3 pr-12 border-gray-300 rounded-md text-black"
+                  value={value}
+                  placeholder="Cari..."
+                  placeholderTextColor={"grey"}
+                  onChangeText={text => {
+                    onChange(text);
+                    debouncedSearch(text);
+                  }}
+                />
+                <View className="absolute right-10 h-6 w-px bg-gray-300" />
+                <TouchableOpacity
+                  className="absolute right-2 p-2 rounded-md justify-center"
+                  activeOpacity={0.7}>
+                  <Icons name="search" size={18} color={"black"} />
+                </TouchableOpacity>
+              </View>
             )}
           />
-          <TouchableOpacity
-            className="bg-[#312e81] p-4 rounded-md justify-center"
-            onPress={handleSubmit(data => setSearch(data.search))}>
-            <Icons name="search" size={18} color={"white"} />
-          </TouchableOpacity>
         </View>
         <View>{Plugin && <Plugin />}</View>
       </>
@@ -172,17 +188,17 @@ const Paginates = forwardRef(
               <View className="flex-row flex justify-center items-center">
                 <Skeleton
                   animation="wave"
-                  width={290}
+                  width={350}
                   LinearGradientComponent={LinearGradient}
                   height={50}
                 />
-                <Skeleton
+                {/* <Skeleton
                   animation="wave"
                   width={50}
                   LinearGradientComponent={LinearGradient}
                   height={50}
                   style={{ marginLeft: 8 }}
-                />
+                /> */}
               </View>
             </View>
           </View>
@@ -246,7 +262,9 @@ const Paginates = forwardRef(
           keyExtractor={(item, index) => index.toString()}
           ListEmptyComponent={() => (
             <View className="flex-1 justify-center items-center mx-2">
-              <Text className="text-gray-500 font-poppins-regular">Data Tidak Tersedia</Text>
+              <Text className="text-gray-500 font-poppins-regular">
+                Data Tidak Tersedia
+              </Text>
             </View>
           )}
         />
@@ -902,7 +920,7 @@ const Parameter = ({ route, navigation }) => {
         {shouldRenderView("peraturan") && (
           <>
             <View
-              className="rounded-md m-4 bg-[#f8f8f8]"
+              className="rounded-3xl m-4 bg-[#ececec]"
               style={{
                 elevation: 5,
                 shadowColor: "#000",
@@ -910,7 +928,6 @@ const Parameter = ({ route, navigation }) => {
                 shadowOpacity: 0.8,
                 shadowRadius: 2,
               }}>
-              <View style={styles.roundedBackground}></View>
               <View className="">
                 {renderSectionHeader(
                   "Pilih Berdasarkan Peraturan",
@@ -928,7 +945,7 @@ const Parameter = ({ route, navigation }) => {
         {/* Render Paket Section */}
         {shouldRenderView("paket") && (
           <View
-            className="rounded-md m-4 bg-[#f8f8f8]"
+            className="rounded-3xl m-4 bg-[#ececec]"
             style={{
               elevation: 5,
               shadowColor: "#000",
@@ -936,7 +953,6 @@ const Parameter = ({ route, navigation }) => {
               shadowOpacity: 0.8,
               shadowRadius: 2,
             }}>
-            <View style={styles.roundedBackground} />
             <View>
               {renderSectionHeader(
                 "Paket Tersedia",
@@ -951,7 +967,7 @@ const Parameter = ({ route, navigation }) => {
         {/* Render Available Parameters Section */}
         {shouldRenderView("available") && (
           <View
-            className="rounded-md  m-4 bg-[#f8f8f8]"
+            className="rounded-3xl m-4 bg-[#ececec]"
             style={{
               elevation: 5,
               shadowColor: "#000",
@@ -959,8 +975,6 @@ const Parameter = ({ route, navigation }) => {
               shadowOpacity: 0.8,
               shadowRadius: 2,
             }}>
-            <View style={styles.roundedBackground}></View>
-
             <View className="">
               {renderSectionHeader(
                 "Parameter Tersedia",
@@ -981,7 +995,7 @@ const Parameter = ({ route, navigation }) => {
         {/* Render Selected Parameters Section */}
         {shouldRenderView("selected") && (
           <View
-            className="rounded-md bg-[#ececec] m-4"
+            className=" bg-[#ececec] m-4 rounded-3xl"
             style={{
               elevation: 5,
               shadowColor: "#000",
@@ -989,7 +1003,6 @@ const Parameter = ({ route, navigation }) => {
               shadowOpacity: 0.25,
               shadowRadius: 3.84,
             }}>
-            <View style={styles.roundedBackground}></View>
             <View>
               {renderSectionHeader("Parameter Yang Dipilih", "selected")}
               <Paginates
@@ -1002,7 +1015,7 @@ const Parameter = ({ route, navigation }) => {
               <View className="m-4">
                 {(!titik?.save_parameter || titik.status <= 1) && (
                   <TouchableOpacity
-                    className="rounded-md p-3 "
+                    className="rounded-3xl p-3 "
                     style={{
                       backgroundColor: Colors.brand,
                       alignItems: "center",
@@ -1022,10 +1035,10 @@ const Parameter = ({ route, navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-[#ececec] p-3">
-      <View className="bg-[#f8f8f8] w-full h-full rounded-md">
+    <View className="flex-1 bg-[#ececec] w-full h-full p-3">
+      <View className="bg-[#f8f8f8] w-full h-full rounded-3xl">
         <View
-          className=" px-2 pt-4 bg-[#f8f8f8] flex-row flex items-center justify-between flex-wrap "
+          className=" px-2 pt-4  flex-row flex items-center justify-between flex-wrap "
           // style={{ borderBottomWidth: 0.5 }}
         >
           <Back
@@ -1039,7 +1052,7 @@ const Parameter = ({ route, navigation }) => {
             {titik?.lokasi} : Pilih Peraturan / Parameter
           </Text>
         </View>
-        <View className="h-full w-full bg-[#f8f8f8] pb-8 rounded-md">
+        <View className="h-full w-full bg-[#f8f8f8] pb-8 rounded-3xl">
           <FlatList
             data={[1]}
             renderItem={() => <View className="">{renderContent()}</View>}

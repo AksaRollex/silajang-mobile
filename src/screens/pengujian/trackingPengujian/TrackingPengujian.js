@@ -196,27 +196,29 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <>
-      <View className="w-full h-full bg-[#ececec] p-2">
-        <View className="flex-row p-3 justify-between rounded-t-md bg-[#f8f8f8]">
-          <Back
-            size={24}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-poppins-semibold text-black text-lg ">
-            Tracking Pengujian
-          </Text>
-        </View>
-        <View className="w-full h-full bg-[#f8f8f8] rounded-t-md">
-          <Paginate
-            ref={paginateRef}
-            url="/tracking"
-            className="mb-20"
-            Plugin={filtah}
-            payload={{ tahun: tahun }}
-            renderItem={renderItem}
-          />
+      <View className="w-full h-full bg-[#ececec] p-3">
+        <View className="rounded-3xl bg-[#f8f8f8] w-full h-full">
+          <View className="flex-row p-3 justify-between">
+            <Back
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className="font-poppins-semibold text-black text-lg ">
+              Tracking Pengujian
+            </Text>
+          </View>
+          <View className="w-full h-full bg-[#f8f8f8] rounded-t-md">
+            <Paginate
+              ref={paginateRef}
+              url="/tracking"
+              className="mb-20"
+              Plugin={filtah}
+              payload={{ tahun: tahun }}
+              renderItem={renderItem}
+            />
+          </View>
         </View>
       </View>
     </>

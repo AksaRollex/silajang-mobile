@@ -435,28 +435,31 @@ const Pengujian = ({ navigation }) => {
 
   return (
     <>
-      <View className="p-2 bg-[#ececec] w-full h-full">
-        <View className="flex-row  p-3 justify-between bg-[#f8f8f8] rounded-t-md">
-          <BackButton
-            size={24}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-poppins-semibold text-black text-lg ">
-            Pengujian Pembayaran
-          </Text>
+      <View className="p-3 bg-[#ececec] w-full h-full">
+        <View className="rounded-3xl bg-[#f8f8f8]">
+          <View className="flex-row  p-3 justify-between">
+            <BackButton
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className="font-poppins-semibold text-black text-lg ">
+              Pengujian Pembayaran
+            </Text>
+          </View>
+          <View className=" w-full h-full bg-[#f8f8f8] ">
+            <Paginate
+              key={refreshKey}
+              className="mb-20"
+              url="/pembayaran/pengujian"
+              Plugin={filtah}
+              payload={{ tahun, bulan, type }}
+              renderItem={CardPembayaran}
+              ref={PaginateRef}></Paginate>
+          </View>
         </View>
-        <View className=" w-full h-full bg-[#f8f8f8] ">
-          <Paginate
-            key={refreshKey}
-            className="mb-20"
-            url="/pembayaran/pengujian"
-            Plugin={filtah}
-            payload={{ tahun, bulan, type }}
-            renderItem={CardPembayaran}
-            ref={PaginateRef}></Paginate>
-        </View>
+
         <DatePicker
           visible={isDatePickerVisible}
           onClose={() => setIsDatePickerVisible(false)}

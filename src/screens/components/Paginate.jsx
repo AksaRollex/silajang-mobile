@@ -16,14 +16,16 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
-import Icon from "react-native-vector-icons/Feather";
 import { Skeleton } from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
+import Icons from "react-native-vector-icons/Feather";
+
 // Aktivasi LayoutAnimation di Android
 if (
   Platform.OS === "android" &&
@@ -104,37 +106,38 @@ const Paginate = forwardRef(
 
     const ListHeader = () => (
       <>
-        <View className="flex-row mb-1 items-center">
+        <View className=" mb-1 ">
           <Controller
             control={control}
             name="search"
             render={({ field: { onChange, value } }) => (
-              <>
-                <TextInput
-                  className="flex-1 text-base border bg-white px-3 text-black border-gray-300 rounded-md "
-                  value={value}
-                  placeholderTextColor={"grey"}
-                  placeholder="Cari..."
-                  onChangeText={text => {
-                    onChange(text);
-                    debouncedSearch(text);
-                  }}
-                />
+              <View className="relative flex-row items-center">
+                <View className="flex-1 relative">
+                  <TextInput
+                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md "
+                    value={value}
+                    placeholderTextColor={"grey"}
+                    placeholder="Cari..."
+                    onChangeText={text => {
+                      onChange(text);
+                      debouncedSearch(text);
+                    }}
+                  />
+                  {/* Button Search */}
+                  <TouchableOpacity
+                    className="absolute right-2 top-2 -translate-y-1/2 p-2 rounded-md"
+                    activeOpacity={0.7}>
+                    <Icons name="search" size={18} color={"black"} />
+                  </TouchableOpacity>
+                </View>
+
+                {/* Plugin Section */}
                 <View style={Plugin ? { marginLeft: 12 } : {}}>
                   {Plugin && <Plugin />}
                 </View>
-              </>
+              </View>
             )}
           />
-
-          {/* <TouchableOpacity
-            className="bg-[#312e81] p-4 rounded-md justify-center"
-            onPress={handleSubmit(data => {
-              setSearch(data.search);
-              setPage(1);
-            })}>
-            <Icon name="search" size={18} color={"white"} />
-          </TouchableOpacity> */}
         </View>
       </>
     );
@@ -330,8 +333,12 @@ const Paginate = forwardRef(
           onEndReachedThreshold={0.5}
           ListFooterComponent={ListFooter}
           ListEmptyComponent={() => (
-            <View className="flex-1 justify-center items-center">
-              <Text className="text-gray-500 font-poppins-regular my-2">
+            <View className="flex-1 justify-center items-center mt-20">
+              <Image
+                source={require("@/assets/images/pulu.png")}
+                className="w-60 h-60 opacity-60 "
+              />
+              <Text className="text-gray-500 font-poppins-regular ">
                 Data Tidak Tersedia
               </Text>
             </View>

@@ -356,66 +356,68 @@ const TitikUji = ({ navigation, route, status, callback }) => {
 
   return (
     <>
-      <View className="p-2 bg-[#ececec]">
-        <View className="w-full">
-          <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
-            <BackButton
-              size={24}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-2 "
-            />
-            {permohonan ? (
-              <Text className="font-poppins-semibold text-black   ">
-                {permohonan?.industri} : Titik Pengujian
-              </Text>
+      <View className="w-full h-full bg-[#ececec] p-3">
+        <View className="w-full h-full rounded-3xl">
+          <View className="w-full">
+            <View className="flex-row p-3 bg-[#f8f8f8] justify-between rounded-t-md">
+              <BackButton
+                size={24}
+                color={"black"}
+                action={() => navigation.goBack()}
+                className="mr-2 "
+              />
+              {permohonan ? (
+                <Text className="font-poppins-semibold text-black   ">
+                  {permohonan?.industri} : Titik Pengujian
+                </Text>
+              ) : (
+                <Text></Text>
+              )}
+            </View>
+          </View>
+          <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
+            {!titikPermohonans?.data?.length && !pivotData?.length && (
+              <View className=" pt-5 px-5">
+                <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+                  <Text className="text-black text-xs mb-2 font-poppins-medium">
+                    Silahkan Tambah Titik Lokasi Sampel Pengujian
+                  </Text>
+                  <Text className="text-black text-xs  font-poppins-regular">
+                    Anda belum memiliki Titik Lokasi Sampel satu pun.
+                  </Text>
+                </View>
+              </View>
+            )}
+            {user.has_tagihan ? (
+              <View className="p-2">
+                <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+                  <Text className="text-black mb-0">
+                    Tidak dapat membuat Permohonan Baru
+                  </Text>
+                  <Text className="text-black text-xs">
+                    Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
+                  </Text>
+                </View>
+              </View>
             ) : (
-              <Text></Text>
+              <>
+                <Paginate
+                  ref={paginateRef}
+                  payload={{ permohonan_uuid: { uuid } }}
+                  url="/permohonan/titik"
+                  className="mb-20"
+                  renderItem={CardTitikUji}></Paginate>
+              </>
             )}
           </View>
+          <Icons
+            name="plus"
+            size={28}
+            color="#fff"
+            style={styles.plusIcon}
+            onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+          />
         </View>
-        <View className="bg-[#f8f8f8] w-full h-full rounded-b-md">
-          {!titikPermohonans?.data?.length && !pivotData?.length && (
-            <View className=" pt-5 px-5">
-              <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
-                <Text className="text-black text-xs mb-2 font-poppins-medium">
-                  Silahkan Tambah Titik Lokasi Sampel Pengujian
-                </Text>
-                <Text className="text-black text-xs  font-poppins-regular">
-                  Anda belum memiliki Titik Lokasi Sampel satu pun.
-                </Text>
-              </View>
-            </View>
-          )}
-          {user.has_tagihan ? (
-            <View className="p-2">
-              <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
-                <Text className="text-black mb-0">
-                  Tidak dapat membuat Permohonan Baru
-                </Text>
-                <Text className="text-black text-xs">
-                  Harap selesaikan tagihan pembayaran Anda terlebih dahulu.
-                </Text>
-              </View>
-            </View>
-          ) : (
-            <>
-              <Paginate
-                ref={paginateRef}
-                payload={{ permohonan_uuid: { uuid } }}
-                url="/permohonan/titik"
-                className="mb-20"
-                renderItem={CardTitikUji}></Paginate>
-            </>
-          )}
-        </View>
-        <Icons
-          name="plus"
-          size={28}
-          color="#fff"
-          style={styles.plusIcon}
-          onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
-        />
         <DeleteConfirmationModal />
       </View>
     </>

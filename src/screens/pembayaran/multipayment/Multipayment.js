@@ -5,7 +5,7 @@ import {
   Dimensions,
   Modal,
   TouchableOpacity,
-  ScrollView
+  ScrollView,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
@@ -335,10 +335,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <View
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Pilih Tahun dan Bulan</Text>
@@ -416,10 +413,7 @@ const Pengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <View
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
               <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
@@ -451,28 +445,31 @@ const Pengujian = ({ navigation }) => {
 
   return (
     <>
-      <View className="w-full h-full p-2 bg-[#ececec]">
-        <View className="flex-row p-3 justify-between bg-[#f8f8f8] rounded-t-md">
-          <BackButton
-            size={24}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-2 "
-          />
-          <Text className="font-poppins-semibold text-black text-lg ">
-            Multipayment
-          </Text>
+      <View className="w-full h-full p-3 bg-[#ececec]">
+        <View className="rounded-3xl w-full h-full bg-[#f8f8f8]">
+          <View className="flex-row p-3 justify-between ">
+            <BackButton
+              size={24}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-2 "
+            />
+            <Text className="font-poppins-semibold text-black text-lg ">
+              Multipayment
+            </Text>
+          </View>
+          <View className=" w-full h-full bg-[#f8f8f8] ">
+            <Paginate
+              key={refreshKey}
+              className="mb-20"
+              url="/pembayaran/multi-payment"
+              Plugin={filtah}
+              payload={{ tahun, bulan, type }}
+              renderItem={CardPembayaran}
+              ref={PaginateRef}></Paginate>
+          </View>
         </View>
-        <View className=" w-full h-full bg-[#f8f8f8] ">
-          <Paginate
-            key={refreshKey}
-            className="mb-20"
-            url="/pembayaran/multi-payment"
-            Plugin={filtah}
-            payload={{ tahun, bulan, type }}
-            renderItem={CardPembayaran}
-            ref={PaginateRef}></Paginate>
-        </View>
+
         <DatePicker
           visible={isDatePickerVisible}
           onClose={() => setIsDatePickerVisible(false)}
