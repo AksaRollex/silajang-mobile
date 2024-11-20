@@ -84,7 +84,14 @@ const Keamanan = () => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
-      <View className="bg-[#f8f8f8] rounded-3xl px-4 py-4 h-full">
+      <View className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+      style={{
+            elevation: 5,
+            shadowColor: "rgba(0, 0, 0, 0.1)",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}>
         <View className="flex-row mb-6">
           <Back
             size={30}

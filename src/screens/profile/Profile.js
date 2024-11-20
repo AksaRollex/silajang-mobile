@@ -123,7 +123,7 @@ export default function Profile({ navigation }) {
           </View>
         )}
         <View className="h-full bottom-11">
-          <View className="rounded-3xl h-full bg-slate-200">
+          <View className="rounded-3xl h-full bg-[#F9FAFB]">
             {userData ? (
               <>
                 <View className="flex-col align-center justify-center mx-2 mt-16">
