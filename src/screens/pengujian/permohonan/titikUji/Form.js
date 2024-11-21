@@ -370,7 +370,15 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         data={[{ key: "from" }]}
         renderItem={() => (
           <View className="bg-[#ececec] w-full h-full p-3 ">
-            <View className="w-full h-full rounded-3xl bg-[#f8f8f8]">
+            <View
+              className="w-full h-full rounded-3xl bg-[#fff]"
+              style={{
+                elevation: 5,
+                shadowColor: "rgba(0,0,0,0.1)",
+                shadowOffset: { width: 0, height: 0 },
+                shadowOpacity: 0.5,
+                shadowRadius: 2,
+              }}>
               <View className="flex-row p-3 ">
                 <BackButton
                   action={() => navigation.goBack()}
@@ -1110,7 +1118,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
               </Text>
             </View>
 
-            <View style={{ flexDirection: "row" }}>
+            <View
+              style={{ flexDirection: "row", justifyContent: "space-between" }}>
               <TouchableOpacity
                 onPress={() => {
                   setModalParam(false);
@@ -1119,11 +1128,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#dedede",
+                  backgroundColor: "#ffcbd1",
                   borderRadius: 5,
                   marginRight: 10,
                 }}>
-                <Text style={{ color: "black" }}>Tutup</Text>
+                <Text
+                  style={{ color: "#de0a26", fontFamily: "Poppins-SemiBold" }}>
+                  Tutup
+                </Text>
               </TouchableOpacity>
               <TouchableOpacity
                 onPress={() => {
@@ -1137,11 +1149,14 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 style={{
                   paddingVertical: 10,
                   paddingHorizontal: 20,
-                  backgroundColor: "#dedede",
+                  backgroundColor: "#ddead1",
                   borderRadius: 5,
                   marginRight: 10,
                 }}>
-                <Text style={{ color: "black" }}>Lanjut</Text>
+                <Text
+                  style={{ color: "#4b6043", fontFamily: "Poppins-SemiBold" }}>
+                  Lanjut
+                </Text>
               </TouchableOpacity>
             </View>
           </View>

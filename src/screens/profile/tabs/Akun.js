@@ -181,8 +181,16 @@ const Akun = () => {
 
   return (
     <>
-      <View className="bg-[#ececec] px-5 w-full h-full ">
-          <View className="flex-row  py-5 ">
+      <View className="bg-[#ececec] p-3 w-full h-full ">
+      <View className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+      style={{
+            elevation: 5,
+            shadowColor: "rgba(0, 0, 0, 0.1)",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}>
+          <View className="flex-row">
             <Back
               size={30}
               color={"black"}
@@ -203,7 +211,7 @@ const Akun = () => {
                 control={control}
                 name="photo"
                 render={({ field: { value } }) => (
-                  <View className="mt-2">
+                  <View className="mt-3">
                     <Text className="font-poppins-semibold mb-1 text-md text-black " style={{ fontSize: 15 }}>
                       Foto Profil
                     </Text>
@@ -313,7 +321,7 @@ const Akun = () => {
                 )}
               />
               <Button
-                className="p-3 rounded-3xl mt-3"
+                className="p-3 rounded-3xl mt-1"
                 backgroundColor={Colors.brand}
                 borderRadius={5}
                 onPress={handleSubmit(update)}
@@ -374,6 +382,7 @@ const Akun = () => {
           </View>
         </View>
       </Modal>
+      </View>
     </>
   );
 };
