@@ -4,7 +4,7 @@ import axios from '../libs/axios';
 
 const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => (
   <Modal
-    animationType="slide"
+    animationType="fade"
     transparent={true}
     visible={visible}
     onRequestClose={onCancel}

@@ -72,6 +72,27 @@ export default memo(function FormJenisSampel({ route, navigation }) {
           <Text className="text-base font-poppins-semibold">{data ? 'Edit Jenis Sampel' : 'Tambah Jenis Sampel'}</Text>
         </View>
         <View className="p-5">
+          <Text className="mb-3 text-lg font-poppins-semibold text-black">Kode</Text>
+          <Controller 
+            control={control}
+            name="kode"
+            rules={{ required: 'Kode is required' }}
+            render={({ field: { onChange, value } }) => (
+              <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
+              placeholder="Masukkan Kode Jenis Sampel"
+              enableErrors
+              className="py-3 px-5 rounded border-[1px] border-gray-700"
+              onChangeText={onChange}
+              value={value}
+              />
+            )}
+          />
+          {errors.kode && (
+            <Text className="text-red-500">
+              {errors.kode.message}
+            </Text>
+          )}
           <Text className="mb-3 text-lg font-poppins-semibold text-black">Nama</Text>
           <Controller 
             control={control}
@@ -91,27 +112,6 @@ export default memo(function FormJenisSampel({ route, navigation }) {
           {errors.nama && (
             <Text className="text-red-500">
               {errors.nama.message}
-            </Text>
-          )}
-          <Text className="mb-3 text-lg font-poppins-semibold text-black">Kode</Text>
-          <Controller 
-            control={control}
-            name="kode"
-            rules={{ required: 'Kode is required' }}
-            render={({ field: { onChange, value } }) => (
-              <TextField
-                style={{ fontFamily: "Poppins-Regular" }}
-                placeholder="Masukkan Kode Jenis Sampel"
-                enableErrors
-                className="py-3 px-5 rounded border-[1px] border-gray-700"
-                onChangeText={onChange}
-                value={value}
-              />
-            )}
-          />
-          {errors.kode && (
-            <Text className="text-red-500">
-              {errors.kode.message}
             </Text>
           )}
           <Button

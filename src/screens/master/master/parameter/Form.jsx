@@ -151,7 +151,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "nama is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
-                style={{ fontFamily: "Poppins-Regular" }}
+                  style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Nama Peraturan"
                   value={value}
                   onChangeText={onChange}
@@ -168,22 +168,18 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="keterangan"
-              rules={{ required: "Keterangan is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
-                style={{ fontFamily: "Poppins-Regular" }}
+                  style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Keterangan"
                   value={value}
                   onChangeText={onChange}
                   className="py-3 px-5 rounded border-[1px] border-gray-700"
                   onBlur={onBlur}
-                  error={errors?.keterangan?.message}
                 />
               )}
             />
-            {errors.keterangan && (
-              <Text className="text-red-500">{errors.keterangan.message}</Text>
-            )}
+        
             <Text className="text-md font-poppins-medium mt-2">
               Jenis Parameter
             </Text>
@@ -235,7 +231,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "Harga is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
-                  style={{ fontFamily: "Poppins-Regular"}}
+                  style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Harga"
                   value={value}
                   onChangeText={onChange}
@@ -247,6 +243,27 @@ export default memo(function Form({ route, navigation }) {
             />
             {errors.harga && (
               <Text className="text-red-500">{errors.harga.message}</Text>
+            )}
+
+            <Text className="text-md font-poppins-medium mb-2">Satuan</Text>
+            <Controller
+              control={control}
+              name="satuan"
+              rules={{ required: "Satuan is required" }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextField
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  placeholder="Masukkan Satuan"
+                  value={value}
+                  onChangeText={onChange}
+                  className="py-3 px-5 rounded border-[1px] border-gray-700"
+                  onBlur={onBlur}
+                  error={errors?.satuan?.message}
+                />
+              )}
+            />
+            {errors.satuan && (
+              <Text className="text-red-500">{errors.satuan.message}</Text>
             )}
 
             <Text className="text-md font-poppins-medium mb-2">Pengawetan</Text>
