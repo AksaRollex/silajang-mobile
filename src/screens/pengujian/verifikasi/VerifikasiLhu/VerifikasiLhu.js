@@ -1,6 +1,7 @@
 import { useDelete } from '@/src/hooks/useDelete';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
@@ -9,6 +10,7 @@ import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
@@ -26,7 +28,7 @@ const generateYears = () => {
   return years;
 };
 
-const VerifikasiOptions = [
+const verifikasiOptions = [
   { id: 7, name: "Menunggu Verifikasi" },
   { id: 8, name: "Telah Diverifikasi/Disahkan" },
 ];
@@ -38,6 +40,31 @@ const VerifikasiLhu = ({ navigation }) => {
   const queryClient = useQueryClient();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
+  const [confirmModalVisible, setConfirmModalVisible] = useState(false);
+  const [confirmAction, setConfirmAction] = useState(null);
+  const [selectedUuid, setSelectedUuid] = useState(null);
+
+  const confirmationModal = (action, uuid) => {
+    setConfirmAction(action);
+    setSelectedUuid(uuid);
+    setConfirmModalVisible(true);
+  };
+  
+  const handleConfirm = async () => {
+    try {
+      if (confirmAction === 'verify') {
+        await Verifikasi(selectedUuid);
+      } else if (confirmAction === 'reject') {
+        await TolakVerifikasi(selectedUuid);
+      }
+    } catch (error) {
+      console.error('Action error:', error);
+    } finally {
+      setConfirmModalVisible(false);
+      setConfirmAction(null);
+      setSelectedUuid(null);
+    }
+  };
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -208,104 +235,108 @@ const VerifikasiLhu = ({ navigation }) => {
   
 
 
-  const renderItem = ({ item }) => { 
-
+  const renderItem = ({ item }) => {
     const dropdownOptionsMenunggu = [
-      { id: "Preview", title: "Preview", action: (item) => PreviewVerifikasi(item) },
-      { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => Verifikasi(item.uuid) },
-      { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => TolakVerifikasi(item.uuid) },
+      { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => confirmationModal('verify', item.uuid) },
+      { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => confirmationModal('reject', item.uuid) },
     ];
     
-    const dropdownOptionsTelah = [
-      { id: "Preview", title: "Preview", action: (item) => PreviewVerifikasi(item) },
-    ];
+    const dropdownOptionsTelah = [];
     if (item.status < 9 && item.status > 7) {
       dropdownOptionsTelah.push({
         id: "Rollback",
-        title: "Rollback",
+        title: "Rollback", 
         action: (item) => Rollback(item.uuid),
       });
     }
-
-
+  
     const dropdownOptionsForItem = item.status > 7 ? dropdownOptionsTelah : dropdownOptionsMenunggu;
     isConfirmed = item.text_status;
   
-
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
-        <View className="flex-row justify-between items-center p-4 relative">
-          <View className="flex-shrink mr-20">
-            {isConfirmed ? (
-              <>
-                <Text className="text-[18px] font-extrabold mb-1">{item.kode}</Text>
-                <Text className="text-[15px] font-bold mb-2">{item.permohonan.user.nama}</Text>
-              </>
-            ) : (
-              <Text className="text-[15px] font-bold mb-2">{item.permohonan.user.nama}</Text>
-            )}
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] font-bold mb-2">
-              PERATURAN : <Text className="font-normal">{item.peraturan?.nama}</Text>
-            </Text>
-          </View>
-          <View className="absolute right-1 flex-col items-center">
-            <View className="bg-slate-100 rounded-md p-2 max-w-[150px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-bold text-right" numberOfLines={2} ellipsizeMode="tail">
-                {item.text_status}
-              </Text>
-            </View>
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptionsForItem}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptionsForItem.find(
-                  option => option.title === nativeEvent.event
-                );
+        <View className="mb-4">
+          <View className="flex-row justify-between items-center mb-1">
 
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+            <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+            
+            <View className="flex-row items-center">
+              <View className="bg-slate-100 rounded-md px-2 py-1">
+                <Text className="text-[11px] text-indigo-600 font-poppins-semibold">
+                  {item.text_status}
+                </Text>
               </View>
-            </MenuView>
+              
+              {dropdownOptionsForItem.length > 0 && (
+                <MenuView
+                  title="dropdownOptions"
+                  actions={dropdownOptionsForItem}
+                  onPressAction={({ nativeEvent }) => {
+                    const selectedOption = dropdownOptionsForItem.find(
+                      option => option.title === nativeEvent.event
+                    );
+                    if (selectedOption) {
+                      selectedOption.action(item);
+                    }
+                  }}
+                  shouldOpenOnLongPress={false}
+                >
+                  <View>
+                    <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+                  </View>
+                </MenuView>
+              )}
             </View>
           </View>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">{item.permohonan.user.nama}</Text>
+          <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">{item.lokasi}</Text>
+          <Text className="text-xs font-poppins-regular text-gray-500">Peraturan</Text>
+          <Text className="ftext-md font-poppins-semibold text-black">{item.peraturan?.nama || '-'}</Text>
+        </View>
+          
+        <View className="h-[1px] bg-gray-300 my-3"/>
+  
+        <View className="flex-row justify-end mt-2">
+          <TouchableOpacity 
+            onPress={() => PreviewVerifikasi(item)}
+            className="flex-row items-center bg-red-600 px-2 py-2 rounded-md"
+          >
+            <FontAwesome5Icon name="file-pdf" size={16} color="white" style={{ marginRight: 8 }} />
+            <Text className="text-white font-poppins-medium text-xs">Preview LHU</Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
   };
-
+  
   return (
     <View className="bg-[#ececec] w-full h-full">
+      {/* Header Section */}
       <View className="p-4">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Verifikasi LHU</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">
+                    Verifikasi LHU
+                </Text>
               </View>
             </View>
-
+  
+            {/* Filters Section */}
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-[-10] mr-2"> 
-                <HorizontalScrollMenu
-                  items={VerifikasiOptions}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={verifikasiOptions}
                   selected={selectedVerifikasi}
-                  onPress={item => setSelectedVerifikasi(item.id)}
-                  itemWidth={200}
-                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
+                  onPress={(item) => setSelectedVerifikasi(item.id)}
                 />
               </View>
-
+  
               <MenuView
                 title="filterOptions"
                 actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
@@ -317,7 +348,7 @@ const VerifikasiLhu = ({ navigation }) => {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <View style={{ marginEnd: 50 }}>
+                <View>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}
@@ -330,7 +361,8 @@ const VerifikasiLhu = ({ navigation }) => {
           </View>
         </View>
       </View>
-
+  
+      {/* List Section */}
       <Paginate
         ref={paginateRef}
         url="/verifikasi/kepala-upt"
@@ -343,7 +375,6 @@ const VerifikasiLhu = ({ navigation }) => {
         renderItem={renderItem}
         className="mb-14"
       />
-
       <Modal
         transparent={true}
         animationType="slide"
@@ -353,7 +384,7 @@ const VerifikasiLhu = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -368,12 +399,51 @@ const VerifikasiLhu = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
+
+      <Modal
+      transparent={true}
+      animationType="fade"
+      visible={confirmModalVisible}
+      onRequestClose={() => setConfirmModalVisible(false)}
+    >
+      <View className="flex-1 justify-center items-center bg-black/50">
+        <View className="bg-white rounded-lg w-[80%] p-4">
+          <Text className="text-lg font-poppins-semibold text-black mb-4">
+            {confirmAction === 'verify' 
+              ? 'Konfirmasi Verifikasi LHU'
+              : 'Konfirmasi Tolak Verifikasi'}
+          </Text>
+          
+          <Text className="text-black mb-4">
+            {confirmAction === 'verify'
+              ? 'Apakah Anda yakin ingin memverifikasi LHU ini?'
+              : 'Apakah Anda yakin ingin menolak verifikasi LHU ini?'}
+          </Text>
+
+          <View className="flex-row justify-end space-x-2">
+            <TouchableOpacity 
+              onPress={() => setConfirmModalVisible(false)}
+              className="bg-gray-200 p-2 rounded-md"
+            >
+              <Text className="text-black">Batal</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={handleConfirm}
+              className="bg-indigo-900 p-2 rounded-md"
+            >
+              <Text className="text-white">Ya, Lanjutkan</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
+    </Modal>
 
       <DeleteConfirmationModal />
     </View>

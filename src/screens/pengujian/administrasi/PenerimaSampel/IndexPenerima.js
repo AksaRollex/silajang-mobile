@@ -1,31 +1,26 @@
-import axios from "@/src/libs/axios";
+  import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  FlatList,
-  Text,
-  View,
-  ActivityIndicator,
-  Modal,
-  Button,
-  Alert,
-  TouchableOpacity,
+  FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MouseButton, TextInput } from "react-native-gesture-handler";
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import RNFS, { downloadFile } from 'react-native-fs';  
+import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
-
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -36,7 +31,7 @@ const generateYears = () => {
   return years;
 };
 
-const pengambilOptions = [
+const penerimaOptions = [
   { id: 1, name: "Menunggu Konfirmasi" },
   { id: 3, name: "Telah Konfirmasi" },
 ];
@@ -62,7 +57,7 @@ const PenerimaSampel = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const debouncedSearchQuery = useDebounce(searchInput, 300);
   const filterOptions = generateYears();
-  const [selectedPengambil, setSelectedPengambil] = useState(1);
+  const [selectedPenerima, setSelectedPenerima] = useState(1);
   const [modalVisible, setModalVisible] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -87,44 +82,6 @@ const PenerimaSampel = ({ navigation }) => {
     }
   };
 
-  const dropdownOptions = (item) => [
-    {
-      id: "Detail",
-      title: "Detail",
-      action: () => navigation.navigate("DetailPenerima", { uuid: item.uuid }),
-    },
-    {
-      id: "Revisi",
-      title: "Revisi",
-      action: () => {
-        setSelectedItem(item);
-        setModalVisible(true);
-      },
-    },
-    {
-      id: "Permohonan Pengujian",
-      title: "Permohonan Pengujian",
-      action: () => handleShowPdf(item, 'tanda-terima'),
-    },
-    {
-      id: "Pengamanan Sampel",
-      title: "Pengamanan Sampel",
-      action: () => handleShowPdf(item, 'pengamanan-sampel'),
-    },
-  ];
-
-  // const handleAction = (uuid) => {
-  //     if (previewReport) {
-  //       const url = `/api/v1/report/${uuid}/tanda-terima?token=${localStorage.getItem('auth_token')}`;
-  //       setReportUrl(url);
-  //       setModalVisible(true);
-  //     } else {
-  //       const downloadUrl = `/report/${uuid}/tanda-terima`;
-  //       console.log('Downloading report from: ', downloadUrl);
-  //     }
-    
-  // };
-
   const handleShowPdf = async (item, reportType) => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
@@ -140,7 +97,7 @@ const PenerimaSampel = ({ navigation }) => {
       Alert.alert('Error', 'Terjadi kesalahan saat membuka PDF.');
     }
   };
-  
+
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
@@ -217,40 +174,76 @@ const PenerimaSampel = ({ navigation }) => {
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
-        <View className="flex-1 pr-4">
-            <Text className="text-[18px] font-extrabold mb-2">{item.permohonan.user.nama}</Text>
-            <Text className="text-[18px] font-extrabold mb-2">{item.kode}</Text>
-            <Text className="text-[15px] mb-2">
-              Titik Uji/Lokasi: <Text className="font-bold">{item.lokasi}</Text>
-            </Text>
-            <Text className="text-[15px] mb-2">
-              Diterima pada: <Text className="font-bold">{item.tanggal_diterima}</Text>
-            </Text>
+          <View className="flex-1 pr-4">
+            <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.kode}</Text>
+
+          <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
+
+            <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
+
+            <Text className="text-xs text-gray-500 font-poppins-regular">Diterima Pada</Text> 
+            <Text className="text-md text-black font-poppins-semibold mb-1">{item.tanggal_diterima}</Text>
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
-              <Text className="text-[12px] text-indigo-600 font-bold text-right">
+              <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right">
                 {item.text_status}
               </Text>
             </View>
-            <View className="my-2 ml-10">
-            <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptions(item)}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions(item).find(option => option.title === nativeEvent.event);
-                  if (selectedOption) {
-                    selectedOption.action();
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-              >
-                <View>
-                  <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                </View>
-              </MenuView>
-            </View>
           </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap  justify-end gap-2">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("DetailPenerima", { uuid: item.uuid })}
+            className="bg-indigo-900 px-3 py-2 rounded-md"
+          >
+            <View className="flex-row">
+              <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
+              <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+            </View>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              setSelectedItem(item);
+              setModalVisible(true);
+            }}
+            className="bg-amber-500 px-3 py-2 rounded-md"
+          >
+            <View className="flex-row">
+              <Ionicons name="pencil" size={15} color="white" style={{ marginRight: 5 }} />
+              <Text className="text-white font-poppins-medium text-[11px]">Revisi</Text>
+            </View>
+          </TouchableOpacity>
+
+          {selectedPenerima === 3 && ( // "Telah Konfirmasi"
+            <TouchableOpacity
+              onPress={() => handleShowPdf(item, 'tanda-terima')}
+              className="bg-red-600 px-3 py-2 rounded-md"
+            >
+              <View className="flex-row">
+                <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Permohonan Pengujian</Text>
+              </View>
+            </TouchableOpacity>
+          )}
+          {selectedPenerima === 3 && ( // "Telah Konfirmasi"
+            <>
+              <TouchableOpacity
+                onPress={() => handleShowPdf(item, 'pengamanan-sampel')}
+                className="bg-red-600 px-3 py-2 rounded-md mt-2"
+              >
+                <View className="flex-row">
+                  <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                  <Text className="text-white font-poppins-medium text-[11px]">Pengaman Sampel</Text>
+                </View>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     );
@@ -266,17 +259,25 @@ const PenerimaSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="bg-white p-4">
+      <View className=" p-4">
         <View className="flex-row items-center space-x-2">
           <View className="flex-col w-full">
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Penerima Sampel</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text> 
               </View>
             </View>
 
-            <View className="flex-row justify-content-center">
+            <View className="flex-row justify-center">
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={penerimaOptions}
+                  selected={selectedPenerima}
+                  onPress={(item) => setSelectedPenerima(item.id)}
+                />
+              </View>
+
               <MenuView
                 title="filterOptions"
                 actions={filterOptions.map(option => ({
@@ -291,36 +292,17 @@ const PenerimaSampel = ({ navigation }) => {
                     setSelectedYear(selectedOption.title);
                   }
                 }}
-                shouldOpenOnLongPress={false}>
+                shouldOpenOnLongPress={false}
+              >
                 <View>
                   <MaterialCommunityIcons
                     name="filter-menu-outline"
                     size={24}
                     color="white"
-                    style={{
-                      backgroundColor: "#312e81",
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
+                    style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
                   />
                 </View>
               </MenuView>
-            </View>
-
-            <View className="flex-row items-start space-x-2 mt-4">
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={185}
-                scrollAreaStyle={{ height: 30, justifyContent: "flex-start" }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{
-                  marginRight: 10,
-                  borderRadius: 20,
-                  justifyContent: "flex-start",
-                }}
-              />
             </View>
           </View>
         </View>
@@ -330,7 +312,7 @@ const PenerimaSampel = ({ navigation }) => {
         ref={paginateRef}
         url="/administrasi/penerima-sample"
         payload={{
-          status: selectedPengambil,
+          status: selectedPenerima,
           tahun: selectedYear,
           page: 1,
           per: 10,
@@ -339,7 +321,7 @@ const PenerimaSampel = ({ navigation }) => {
         className="mb-14"
       />
 
-      
+
 
       {/* Modal for Revisi */}
       <Modal
@@ -349,8 +331,8 @@ const PenerimaSampel = ({ navigation }) => {
         onRequestClose={() => setModalVisible(false)}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
-            <Text className="text-lg font-bold">Revisi Data</Text>
-            <Text className="font-bold text-lg">
+            <Text className="text-lg font-poppins-semibold">Revisi Data</Text>
+            <Text className="font-poppins-semibold text-lg">
               {selectedItem ? selectedItem.kode : ""}
             </Text>
             <TextInput
@@ -373,7 +355,7 @@ const PenerimaSampel = ({ navigation }) => {
         </View>
       </Modal>
 
-        <Modal
+      <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -401,7 +383,7 @@ const PenerimaSampel = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview PDF</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview PDF</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -414,9 +396,9 @@ const PenerimaSampel = ({ navigation }) => {
               style={{ flex: 1 }}
               trustAllCerts={false}
             />
-              <View className="flex-row justify-between m-4">
+            <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setOpenModal(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

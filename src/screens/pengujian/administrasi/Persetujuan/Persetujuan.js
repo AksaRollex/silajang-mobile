@@ -7,8 +7,11 @@ import React, { useRef, useState } from "react";
 import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import Ionicons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { useQueryClient } from '@tanstack/react-query';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { APP_URL } from "@env";
@@ -29,6 +32,7 @@ const pengambilOptions = [
   { id: 0, name: "Menunggu Konfirmasi" },
   { id: 1, name: "Telah Diambil" },
 ];
+
 
 const Persetujuan = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
@@ -116,24 +120,7 @@ const Persetujuan = ({ navigation }) => {
 
 
   const renderItem = ({ item }) => {
-    const isConfirmed = selectedPengambil === 1; // Telah Diambil
-
-    const dropdownOptions = isConfirmed
-      ? [
-        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) },
-        { id: "Cetak Sampling", title: "Cetak Sampling", action: item => CetakSampling({ uuid: item.uuid }) },
-        {
-          id: "Berita Acara",
-          title: "Berita Acara",
-          subactions: [
-            { id: "Berita Acara Pengambilan", title: "Berita Acara Pengambilan", action: item => BeritaAcara({ uuid: item.uuid }) },
-            { id: "Data Pengambilan", title: "Data Pengambilan", action: item => DataPengambilan({ uuid: item.uuid }) },
-          ]
-        }
-      ]
-      : [
-        { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPersetujuan", { uuid: item.uuid }) }
-      ];
+    const isConfirmed = selectedPengambil === 1;
 
     return (
       <View
@@ -141,30 +128,40 @@ const Persetujuan = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-4 relative">
+        <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-                <Text className="text-[18px] font-extrabold mb-1">
+               <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
+                <Text className="text-md font-poppins-semibold mb-3 text-black">
                   {item.kode}
                 </Text>
-                <Text className="text-[15px] font-bold mb-2">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold text-black mb-3">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
-              <Text className="text-[18px] font-extrabold mb-3">
+              <>  
+              <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>            
+              <Text className="text-md font-poppins-semibold mb-3 text-black">
                 {item.permohonan.industri}
               </Text>
+              </>
+
             )}
-            <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-xs text-gray-500 font-poppins-regular">TItik Uji/Lokasi</Text>
+            <Text className="text-md mb-3 font-poppins-semibold text-black">{item.lokasi}</Text>
+
+
+            <Text className="text-xs text-gray-500 font-poppins-regular">Detail Pengambilan</Text>
+             <Text className="text-md font-poppins-semibold text-black">Diambil Pada: {item.tanggal_pengambilan}</Text>
+             <Text className="text-md font-poppins-semibold text-black">Oleh: {item.pengambil?.nama}</Text>
           </View>
-          <View className="absolute right-1 flex-col items-center">
+          <View className="absolute right-0 flex-col items-center">
             {!isConfirmed && (
-              <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
-              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
+              <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
+            ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
                   : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500'
                     : 'bg-indigo-100 text-indigo-500'}`}>
                 {item.kesimpulan_permohonan == 1 ? 'Diterima'
@@ -172,38 +169,62 @@ const Persetujuan = ({ navigation }) => {
                     : 'Menunggu'}
               </Text>
             )}
-            <View className="my-2 ml-10">
+          </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="w-full px-2">
+          <View className="flex-row justify-end items-center space-x-2 mr-[-17px]">
+            <TouchableOpacity
+              onPress={() => navigation.navigate("DetailPersetujuan", { uuid: item.uuid })}
+              className="bg-indigo-900 px-3 py-2 rounded-md"
+            >
+              <View className="flex-row">
+                <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+              </View>
+            </TouchableOpacity>
+
+            {isConfirmed && (
+              <TouchableOpacity
+                onPress={() => CetakSampling({ uuid: item.uuid })}
+                className="bg-red-600 px-3 py-2 rounded-md"
+              >
+                <View className="flex-row">
+                  <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                  <Text className="text-white font-poppins-medium text-[11px]">Cetak Sampling</Text>
+                </View>
+              </TouchableOpacity>
+            )}
+            {isConfirmed && (
               <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptions.map(option => ({
-                  ...option,
-                }))}
+                title="Berita Acara"
+                actions={[
+                  {
+                    id: "Berita Acara Pengambilan",
+                    title: "Berita Acara Pengambilan",
+                    action: () => BeritaAcara({ uuid: item.uuid }),
+                  },
+                  {
+                    id: "Data Pengambilan",
+                    title: "Data Pengambilan",
+                    action: () => DataPengambilan({ uuid: item.uuid }),
+                  },
+                ]}
                 onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  const sub = dropdownOptions.find(
-                    option => option.subactions && option.subactions.some(
-                      suboption => suboption.title === nativeEvent.event
-                    )
-                  );
-                  if (selectedOption) {
-                    selectedOption.action(item);
-                  }
-                  if (sub) {
-                    const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                    if (selectedSub) {
-                      selectedSub.action(item);
-                    }
+                  const selectedOption = nativeEvent.event;
+                  if (selectedOption === "Berita Acara Pengambilan") {
+                    BeritaAcara({ uuid: item.uuid });
+                  } else if (selectedOption === "Data Pengambilan") {
+                    DataPengambilan({ uuid: item.uuid });
                   }
                 }}
-                shouldOpenOnLongPress={false}
               >
-                <View>
-                  <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                </View>
+                <TouchableOpacity className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
+                  <Text className="text-red-500 font-poppins-semibold text-[11px] mr-2">Berita Acara</Text>
+                  <Feather name="chevron-down" size={14} color="#ef4444" />
+                </TouchableOpacity>
               </MenuView>
-            </View>
+            )}
           </View>
         </View>
       </View>
@@ -218,49 +239,45 @@ const Persetujuan = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold ">Persetujuan</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Persetujuan</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
-            <View className="mt-3 ml-[-10] mr-2"> 
-              <HorizontalScrollMenu
-                items={pengambilOptions}
-                selected={selectedPengambil}
-                onPress={item => setSelectedPengambil(item.id)}
-                itemWidth={170}
-                scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                activeBackgroundColor={"#312e81"}
-                buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              />
-            </View>
-
-            <MenuView
-              title="filterOptions"
-              actions={filterOptions.map(option => ({
-                id: option.id.toString(),
-                title: option.title,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = filterOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                if (selectedOption) {
-                  setSelectedYear(selectedOption.title);
-                }
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View style={{ marginEnd: 50 }}>
-                <MaterialCommunityIcons
-                  name="filter-menu-outline"
-                  size={24}
-                  color="white"
-                  style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={pengambilOptions}
+                  selected={selectedPengambil}
+                  onPress={(item) => setSelectedPengambil(item.id)}
                 />
               </View>
-            </MenuView>
-          </View>
+
+              <MenuView
+                title="filterOptions"
+                actions={filterOptions.map(option => ({
+                  id: option.id.toString(),
+                  title: option.title,
+                }))}
+                onPressAction={({ nativeEvent }) => {
+                  const selectedOption = filterOptions.find(
+                    option => option.title === nativeEvent.event,
+                  );
+                  if (selectedOption) {
+                    setSelectedYear(selectedOption.title);
+                  }
+                }}
+                shouldOpenOnLongPress={false}
+              >
+                <View>
+                  <MaterialCommunityIcons
+                    name="filter-menu-outline"
+                    size={24}
+                    color="white"
+                    style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
+                  />
+                </View>
+              </MenuView>
+            </View>
           </View>
         </View>
       </View>
@@ -287,7 +304,7 @@ const Persetujuan = ({ navigation }) => {
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-bold text-black">Preview Pdf</Text>
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {
                 handleDownloadPDF();
                 setModalVisible(false);
@@ -302,7 +319,7 @@ const Persetujuan = ({ navigation }) => {
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-bold text-center">Tutup</Text>
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
               </TouchableOpacity>
             </View>
           </View>

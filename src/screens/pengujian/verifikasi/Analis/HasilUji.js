@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   ScrollView,
   TextInput,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Icon from "react-native-vector-icons/Feather";
@@ -32,7 +33,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
       <View style={styles.parameterHeader}>
         <View style={styles.headerTitleContainer}>
           {parameter.pivot.acc_analis && (
-            <Icon name="check-circle" size={24} color="#0096FF" style={styles.checkIcon} />
+            <Icon name="check-circle" size={24} color="#312e81" style={styles.checkIcon} />
           )}
           <View>
             <Text style={styles.parameterTitle}>
@@ -63,7 +64,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
         </View>
 
         <View style={styles.inputSection}>
-          <Text style={styles.label}>Hasil Uji *</Text>
+          <Text style={styles.label}>Hasil Uji <Text className="text-red-500">*</Text></Text>
           <TextInput
             style={styles.input}
             value={parameter.pivot.hasil_uji}
@@ -139,9 +140,7 @@ export default function HasilUji({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
     );
   }
 

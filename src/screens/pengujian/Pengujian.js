@@ -16,6 +16,54 @@ export default function Pengujian() {
   const [activeComponent, setActiveComponent] = useState(null);
   const { data: user } = useUser();
 
+  const roleAccess = {
+    admin: {
+      sections: ['administrasi', 'verifikasi', 'report'],
+      items: ['kontrak', 'persetujuan', 'pengambil-sampel', 'penerima-sampel',
+        'analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+    'kepala-upt': {
+      sections: ['verifikasi', 'report'],
+      items: ['analis', 'koordinator-teknis', 'cetak-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+    'pengambil-sample': {
+      sections: ['administrasi',],
+      items: ['pengambil-sampel']
+    },
+    analis: {
+      sections: ['verifikasi',],
+      items: ['analis']
+    },
+    'koordinator-administrasi': {
+      sections: ['administrasi', 'verifikasi', 'report'],
+      items: ['persetujuan', 'penerima-sampel',
+        'analis', 'cetak-lhu',
+        'laporan-hasil', 'registrasi-sampel', 'rekap-parameter']
+    },
+    'koordinator-teknis': {
+      sections: ['verifikasi', 'report'],
+      items: ['analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu',
+        'laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    },
+  };
+  const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
+  const hasAccess = (section) => {
+    return userRoles.some(role =>
+      roleAccess[role]?.sections?.includes(section)
+    );
+  };
+  const hasItemAccess = (item) => {
+    return userRoles.some(role =>
+      roleAccess[role]?.items?.includes(item)
+    );
+  };
+
+  // Check if user is only a customer
+  const isCustomerOnly = () => {
+    return userRoles.length === 1 && userRoles[0] === 'customer';
+  };
   let RenderedComponent;
   switch (activeComponent) {
     case "Permohonan":
@@ -29,136 +77,282 @@ export default function Pengujian() {
       break;
   }
 
-  return (
-      user.role.name === 'customer' ? (
-        <View style={styles.container}>
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <View style={styles.headerContainer}>
-              <Image
-                source={require("@/assets/images/logo.png")}
-                style={styles.logo}
-              />
-              <Text style={styles.headerText}>SI - LAJANG</Text>
-            </View>
-            {/* Render the active component here */}
-            <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
-          </ScrollView>
-          <View style={styles.buttonContainer}>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setActiveComponent("Permohonan")}>
-              <Text style={styles.buttonText}>Permohonan</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={() => setActiveComponent("Tracking Pengujian")}>
-              <Text style={styles.buttonText}>Tracking Pengujian</Text>
-            </TouchableOpacity>
+  // Customer view
+  if (user?.role?.name?.toLowerCase() === 'customer') {
+    return (
+      <View style={styles.container}>
+        <ScrollView contentContainerStyle={styles.contentContainer}>
+          <View style={styles.headerContainer}>
+            <Image
+              source={require("@/assets/images/logo.png")}
+              style={styles.logo}
+            />
+            <Text style={styles.headerText}>SI - LAJANG</Text>
           </View>
-        <TextFooter/>
-
+          <View style={styles.activeComponentContainer}>{RenderedComponent}</View>
+        </ScrollView>
+        <View style={styles.buttonContainer}>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("Permohonan")}>
+            <Text style={styles.buttonText}>Permohonan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            style={styles.button}
+            onPress={() => setActiveComponent("Tracking Pengujian")}>
+            <Text style={styles.buttonText}>Tracking Pengujian</Text>
+          </TouchableOpacity>
         </View>
-      ) : (
-        <View className="bg-[#ececec] flex-1 flex-start">
-          <ScrollView contentContainerStyle={styles.contentContainer}>
-            <List.Accordion
-              title="Administrasi"
-              left={props => <FontAwesome6 {...props} name="computer" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Kontrak"
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Kontrak")}   
-              />
-              <List.Item 
-                title="Persetujuan" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("Persetujuan")}   
-              />
-              <List.Item 
-                title="Pengambil Sampel" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("PengambilSample")}    
-              />
-              <List.Item 
-                title="Penerima Sampel" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("IndexPenerima")}  
-              />
-              <List.Item 
-                title="Cetak LHU" 
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("CetakLHU")}    
-              />
-            </List.Accordion>
+        <TextFooter />
+      </View>
+    );
+  }
 
-            <List.Accordion
-              title="Verifikasi"
-              left={props => <Ionicons {...props} name="shield-checkmark" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Analis"
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
-                onPress={() => navigation.navigate("Analis")}    
+  return (
+    <View className="bg-[#ececec] flex-1 flex-start">
+      <ScrollView contentContainerStyle={styles.contentContainer}>
+        {hasAccess('administrasi') && (
+          <>
+            <View className=" mt-2 p-4 flex flex-row items-center ">
+              {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
+              <Text className="font-poppins-semibold text-black text-lg ml-2">Administrasi</Text>
+            </View>
+            
+            {hasItemAccess('kontrak') && (
+              <View>
 
-              />
-              <List.Item 
-                title="Koordinator Teknis" 
+                <List.Item
+                  
+                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                  title={<Text className="font-poppins-medium text-[15px]">Kontrak</Text>}
+                  left={() => (
+                    <View className="bg-blue-600 rounded-full">
+                      <Ionicons name="document-text" size={17} color={'white'} style={{padding: 5}}/>
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                  )}
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
+                  onPress={() => navigation.navigate("Kontrak")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+              
+            )}
+            {hasItemAccess('persetujuan') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <View className="bg-green-600 rounded-full">
+                  <Ionicons name="checkmark-done" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("Persetujuan")}
+              />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('pengambil-sampel') && (
+            <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                left={() => (
+                  <View className="bg-indigo-600 rounded-full">
+                  <Ionicons name="people" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("PengambilSample")}
+              />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('penerima-sampel') && (
+              <List.Item
+                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+                title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                left={() => (
+                  <View className="bg-cyan-600 rounded-full">
+                  <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("IndexPenerima")}
+              />
+            )}
+          </>
+        )}
+  
+        {hasAccess('verifikasi') && (
+          <>
+            <View className=" p-4 flex flex-row items-center mt-1">
+              {/* <Ionicons name="shield-checkmark" size={22} style={{ color: "black" }} /> */}
+              <Text className="font-poppins-semibold ml-2 text-black text-lg">Verifikasi</Text>
+            </View>
+            
+            {hasItemAccess('analis') && (
+              <View>
+              <List.Item
+              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                left={() => (
+                  <View className="bg-yellow-400 rounded-full">
+                  <Ionicons name="analytics" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("Analis")}
+              />
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('koordinator-teknis') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                left={() => (
+                  <View className="bg-red-600 rounded-full">
+                  <Ionicons name="settings" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
               />
-              <List.Item 
-                title="Verifikasi LHU" 
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('cetak-lhu') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
-                onPress={() => navigation.navigate("VerifikasiLhu")} 
+                left={() => (
+                  <View className="bg-sky-600 rounded-full">
+                  <Ionicons name="print" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("CetakLHU")}
               />
-            </List.Accordion>
-
-            <List.Accordion
-              title="Report"
-              left={props => <Ionicons {...props} name="document-text" size={22} />}
-              className='bg-[#ffffff]'
-            >
-              <List.Item 
-                title="Laporan Hasil Pengujian"
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('verifikasi-lhu') && (
+              <List.Item
+              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+                title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                left={() => (
+                  <View className="bg-amber-600 rounded-full">
+                  <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("VerifikasiLhu")}
               />
-              <List.Item 
-                title="Kendali Mutu" 
+            )}
+          </>
+        )}
+  
+        {hasAccess('report') && (
+          <>
+            <View className=" p-4 flex flex-row items-center mt-1">
+              {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
+              <Text className="font-poppins-semibold ml-2 text-black text-lg">Report</Text>
+            </View>
+            
+            {hasItemAccess('laporan-hasil') && (
+              <View>
+              <List.Item
+              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <View className="bg-rose-600 rounded-full">
+                  <Ionicons name="newspaper" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
-              <List.Item 
-                title="Registrasi Sampel" 
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('kendali-mutu') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                left={() => (
+                  <View className="bg-lime-600 rounded-full">
+                  <Ionicons name="create" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("KendaliMutu")}
               />
-              <List.Item 
-                title="Rekap Data" 
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('registrasi-sampel') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]'
+                left={() => (
+                  <View className="bg-teal-600 rounded-full">
+                  <Ionicons name="list" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("RegistrasiSampel")}
               />
-              <List.Item 
-                title="Rekap Parameter" 
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('rekap-data') && (
+              <View>
+              <List.Item
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
-                className='px-5 bg-[#f8f8f8]' 
+                left={() => (
+                  <View className="bg-fuchsia-500 rounded-full">
+                  <Ionicons name="reader" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress={() => navigation.navigate("RekapData")}
               />
-            </List.Accordion>
-            <TextFooter/>
-          </ScrollView>
-        </View>
-      )
+              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+            )}
+            {hasItemAccess('rekap-parameter') && (
+              <List.Item
+              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                left={() => (
+                  <View className="bg-emerald-500 rounded-full">
+                  <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+                )}
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
+                onPress = {() => navigation.navigate("RekapParameter")}
+              />
+            )}
+          </>
+        )}
+        <TextFooter />
+      </ScrollView>
+    </View>
   );
 }
 

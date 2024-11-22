@@ -105,22 +105,22 @@ const PengambilSampel = ({ navigation }) => {
 
             {isDiterima ? (
               <>
-              <Text className="text-[18px] font-extrabold mb-3">{item.kode}</Text>   
-              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.user.nama}</Text>  
+              <Text className="text-[18px] font-poppins-semibold mb-3">{item.kode}</Text>   
+              <Text className="text-[18px] font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>  
               </> 
             ) 
               :
             (
-              <Text className="text-[18px] font-extrabold mb-3">{item.permohonan.industri}</Text>
+              <Text className="text-[18px] font-poppins-semibold mb-3">{item.permohonan.industri}</Text>
             )}
 
             <Text className="text-[14px] mb-2">{item.lokasi}</Text>
-            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-bold ">{item.tanggal_pengambilan}</Text></Text>
-            <Text className="text-[14px] mb-2">Oleh: <Text className="font-bold">{item.pengambil?.nama}</Text></Text>
+            <Text className="text-[14px] mb-2">Diambil pada: <Text className="font-poppins-semibold ">{item.tanggal_pengambilan}</Text></Text>
+            <Text className="text-[14px] mb-2">Oleh: <Text className="font-poppins-semibold">{item.pengambil?.nama}</Text></Text>
 
           </View>
           <View className="absolute right-1 flex-col items-center">
-            <Text className={`text-[12px] text-white font-bold px-2 py-1 rounded-sm mb-3 ${isDiterima == 1 ? 'bg-green-400' : isDiterima == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
+            <Text className={`text-[12px] text-white font-poppins-semibold px-2 py-1 rounded-sm mb-3 ${isDiterima == 1 ? 'bg-green-400' : isDiterima == 2 ? 'bg-red-500' : 'bg-purple-600'}`}>
               {isDiterima == 1 ? 'Diterima' : isDiterima == 2 ? 'Ditolak' : 'Menunggu'}
             </Text>
             <View className="my-2 ml-10">
@@ -164,7 +164,7 @@ const PengambilSampel = ({ navigation }) => {
             {/* <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-bold">Pengambil Sampel</Text>
+                <Text className="text-[20px] font-poppins-semibold">Pengambil Sampel</Text>
               </View>
             </View> */}
 

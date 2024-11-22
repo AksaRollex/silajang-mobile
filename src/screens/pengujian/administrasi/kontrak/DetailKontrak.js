@@ -1,9 +1,8 @@
 import React, { useEffect, useState , useMemo} from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
-import RNFS from "react-native-fs";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -11,6 +10,9 @@ import FontAwesome from "react-native-vector-icons/FontAwesome";
 import Octicons from "react-native-vector-icons/Octicons";
 import Foundation from "react-native-vector-icons/Foundation";
 import Feather from "react-native-vector-icons/Feather";
+import RNFS from "react-native-fs";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {APP_URL} from "@env";
 
 const bulans = [
     { id: 1, name: 'Januari' },
@@ -79,63 +81,51 @@ export default function DetailKontrak({ route, navigation }) {
         return '';
     }, [data])
 
-    const downloadFile = async () => {
-        if (!data.kontrak.dokumen_permohonan) {
+    const HandleDownloadFile = async () => {
+        if (data?.kontrak?.dokumen_permohonan) {
+            const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
+            const fileName = 'Dokumen Permohonan';
+            const fileExtension = fileUrl.split('.').pop();
+            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`;
+    
+            try {
+                const options = {
+                    fromUrl: fileUrl,
+                    toFile: localFilePath,
+                };
+    
+                const result = await RNFS.downloadFile(options).promise;
+    
+                if (result.statusCode === 200) {
+                    Toast.show({
+                        type: 'success',
+                        text1: 'Success',
+                        text2: 'File downloaded successfully',
+                    });
+                } else {
+                    throw new Error('Download failed');
+                }
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Failed to download the file',
+                });
+            }
+        } else {
             Toast.show({
                 type: 'error',
                 text1: 'Error',
-                text2: 'Dokumen Permohonan Tidak Ditemukan',
+                text2: 'Dokumen Permohonan tidak ditemukan',
             });
-        }
-
-        const fileName = "Dokumen Permohonan.pdf";
-        const fileDir = Platform.select({
-          ios: RNFS.DocumentDirectoryPath,
-          android: RNFS.DownloadDirectoryPath,
-        });
-        const filePath = `${fileDir}/${fileName}`;
-        
-        setLoading(true);
-    
-        try {
-          const options = {
-            fromUrl: `/storage/${data.kontrak.dokumen_permohonan}`,
-            toFile: filePath,
-            background: true,
-          };
-    
-          const response = await RNFS.downloadFile(options).promise;
-
-          if (response.statusCode === 200) {
-            Toast.show({
-                type: 'success',
-                text1: 'Success',
-                text2: 'Dokumen Permohonan Berhasil Diunduh',
-            })
-          } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Dokumen Permohonan Gagal Diunduh',
-            });
-          }
-    
-        } catch (error) {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Terjadi kesalahan saat mengunduh file',
-            });
-        } finally {
-          setLoading(false); 
         }
     };
+    
 
     if (loading) {
         return (
-            <View className="flex-1 justify-center items-center">
-                <Text>Loading...</Text>
-            </View>
+            <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
         )
     }
 
@@ -163,20 +153,20 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="arrow-left" size={20} color="white" />
                             </TouchableOpacity>
                             <View>
-                                <Text className="font-bold text-[23px] text-black ml-[20px] mt-[5px]">Detail Kontrak</Text>
+                                <Text className="font-poppins-semibold text-[23px] text-black ml-[20px] mt-[5px]">Detail Kontrak</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Informasi Pemohon</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Informasi Pemohon</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <View className="bg-[#e8fff3] p-[10px] rounded-[10px] mr-[10px]">
                                 <Feather name="user" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Customer</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.nama}</Text>
+                                <Text className="text-[14px] font-poppins text-[#666666] font-poppins-regular">Customer</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.nama}</Text>
                             </View>
                         </View>
 
@@ -185,8 +175,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="bank-outline" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Instansi</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.detail.instansi}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Instansi</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.instansi}</Text>
                             </View>
                         </View>
 
@@ -195,8 +185,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="map-search-outline" size={26} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Alamat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.detail.alamat}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Alamat</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.detail.alamat}</Text>
                             </View>
                         </View>
 
@@ -205,21 +195,21 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Feather name="phone" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">No. Telepon/WhatsApp</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.user.phone}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">No. Telepon/WhatsApp</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.user.phone}</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Detail Permohonan</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Detail Permohonan</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <View className="bg-[#e8fff3] p-[10px] rounded-[10px] mr-[10px]">
                                 <FontAwesome name="building-o" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Industri</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.industri}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Industri</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.industri}</Text>
                             </View>
                         </View>
 
@@ -228,8 +218,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="map-search-outline" size={26} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Alamat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.alamat}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Alamat</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.alamat}</Text>
                             </View>
                         </View>
 
@@ -238,8 +228,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Foundation name="clipboard-pencil" size={36} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Jenis Kegiatan Industri</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kegiatan}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Jenis Kegiatan Industri</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kegiatan}</Text>
                             </View>
                         </View>
 
@@ -248,8 +238,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="credit-card" size={28} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Jenis Pembayaran</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.pembayaran}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Jenis Pembayaran</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.pembayaran}</Text>
                             </View>
                         </View>
 
@@ -258,24 +248,24 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="date-range" size={29} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.tanggal}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Tanggal Permohonan</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.tanggal}</Text>
                             </View>
                         </View>
                     </View>
 
                     <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md mt-[10px] mb-[100px]">
-                        <Text className="text-[16px] font-bold mb-[10px] text-black">Detail Kontrak</Text>
+                        <Text className="text-[16px] font-poppins-semibold mb-[10px] text-black">Detail Kontrak</Text>
                         <View className="flex-row items-center mb-[15px]">
                             <TouchableOpacity 
                                 className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]" 
-                                onPress={() => downloadFile()}
+                                onPress={() => HandleDownloadFile()}
                             >
                                 <Octicons name="download" size={32} color="black" />
                             </TouchableOpacity>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Dokumen Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">Klik icon untuk download</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Dokumen Permohonan</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">Klik icon untuk download</Text>
                             </View>
                         </View>
 
@@ -284,8 +274,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialCommunityIcons name="clock-time-three-outline" size={30} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Masa Kontrak</Text>
-                                <Text className="text-[16px] font-bold text-black">{formattedBulan}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Masa Kontrak</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{formattedBulan}</Text>
                             </View>
                         </View>
 
@@ -294,8 +284,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <Foundation name="clipboard-pencil" size={36} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Perihal</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.perihal}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Perihal</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.perihal}</Text>
                             </View>
                         </View>
 
@@ -304,8 +294,8 @@ export default function DetailKontrak({ route, navigation }) {
                                 <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Nomor Surat</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.nomor_surat}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Nomor Surat</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.nomor_surat}</Text>
                             </View>
                         </View>
 
@@ -314,12 +304,12 @@ export default function DetailKontrak({ route, navigation }) {
                                 <MaterialIcons name="date-range" size={29} color="#50cc96" />
                             </View>
                             <View className="flex-1">
-                                <Text className="text-[14px] text-[#666666]">Tanggal Permohonan</Text>
-                                <Text className="text-[16px] font-bold text-black">{data.kontrak.tanggal}</Text>
+                                <Text className="text-[14px] text-[#666666] font-poppins-regular">Tanggal Permohonan</Text>
+                                <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.tanggal}</Text>
                             </View>
                         </View>
 
-                        <Text className="text-[16px] font-bold text-black">Kesimpulan Permohonan</Text>
+                        <Text className="text-[16px] font-poppins-semibold text-black">Kesimpulan Permohonan</Text>
 
                         <View className="flex-row justify-between my-[10px]">
                             <View className="flex-row items-center">
@@ -328,7 +318,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 0 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(0)}
                             />
-                            <Text className="text-[16px] text-black">Menunggu</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Menunggu</Text>
                             </View>
                             <View className="flex-row items-center">
                             <RadioButton
@@ -336,7 +326,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 1 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(1)}
                             />
-                            <Text className="text-[16px] text-black">Diterima</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Diterima</Text>
                             </View>
                             <View className="flex-row items-center">
                             <RadioButton
@@ -344,13 +334,13 @@ export default function DetailKontrak({ route, navigation }) {
                                 status={checked === 2 ? "checked" : "unchecked"}
                                 onPress={() => handleSave(2)}
                             />
-                            <Text className="text-[16px] text-black">Ditolak</Text>
+                            <Text className="text-[16px] text-black font-poppins-medium">Ditolak</Text>
                             </View>
                         </View>
                     </View>
                 </>
             ) : (
-                <Text>Loading...</Text>
+                <Text className="font-poppins-medium">Loading...</Text>
             )}
             </View>
         </ScrollView>

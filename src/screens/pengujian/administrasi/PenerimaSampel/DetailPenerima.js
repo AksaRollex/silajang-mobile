@@ -9,6 +9,7 @@ import {
   Platform,
   ScrollView,
   Modal,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -168,9 +169,7 @@ export default function Detail({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
     );
   }
 
@@ -341,7 +340,7 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data?.kode || ""}</Text>
+                  <Text  style={styles.kode}>{data?.kode || ""}</Text>
                 </View>
               </View>
             </View>
@@ -482,7 +481,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Kesimpulan Sampel</Text>
+              <Text className="mt-5" style={styles.value}>Kesimpulan Sampel</Text>
 
               <View style={styles.radioContainer}>
                 <View style={styles.radioItem}>
@@ -511,7 +510,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Pengawetan Dilakukan Oleh</Text>
+              <Text className="mt-3" style={styles.value}>Pengawetan Dilakukan Oleh</Text>
 
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
@@ -536,7 +535,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
+              <Text className="mt-3" style={styles.value}>Interpretasi Hasil Pengujian</Text>
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -556,7 +555,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Baku Mutu</Text>
+              <Text className="mt-3" style={styles.value}>Baku Mutu</Text>
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -576,7 +575,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text style={styles.value}>Tanggal Diterima</Text>
+              <Text className="mt-3" style={styles.value}>Tanggal Diterima</Text>
               <View>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                   <View style={styles.dateTimeButton}>
@@ -615,7 +614,7 @@ export default function Detail({ route, navigation }) {
                 )}
               </View>
 
-              <Text style={styles.mt}>Kondisi Sampel Saat Diterima</Text>
+              <Text className="font-poppins-semibold" style={styles.mt}>Kondisi Sampel Saat Diterima</Text>
               <View style={styles.switchContainer}>
                 <Text style={styles.value}>Abnormal</Text>
                 <Switch value={isAbnormal} onValueChange={handleSwitchChange} />
@@ -649,46 +648,62 @@ export default function Detail({ route, navigation }) {
                   </Text>
                 </View>
               </View>
-              <View style={styles.infoItem}>
-                <View style={styles.iconContainer}>
-                  <FontAwesome6 name="vial"size={30} color="#50cc96" />
-                </View>
-                <View style={styles.textContainer}>
-                  <Text style={styles.label}>Parameter</Text>
-                  <Text style={styles.value}>Nama</Text>
-                </View>
-                <View>
-                  <Text
-                    style={{
-                      fontsize: 30,
-                      fontWeight: "bold",
-                      marginTop: 23,
-                      color: Colors.black,
-                    }}>
-                    Harga
+              <View className="mt-4">
+                <View className="flex-row items-center">
+                  <View className="bg-[#e8fff3] p-2 rounded-lg mr-2">
+                    <FontAwesome6 name="vial" size={32} color="#50cc96" />
+                  </View>
+                  <Text style={styles.label} className="mb-2">
+                    Parameter
                   </Text>
                 </View>
-              </View>
-              <View>
+                <View className="flex-row justify-between mb-1">
+                  <Text className="text-base ml-14 font-poppins-semibold text-black">
+                    Nama
+                  </Text>
+                  <Text className="text-base font-poppins-semibold text-black">Harga</Text>
+                </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
-                    <View key={index} style={styles.paramContainer}>
-                      <View style={{ flexDirection: "row" }}>
-                        <Text style={styles.param}>{item.nama}</Text>
-                        <TouchableOpacity onPress={() => handleParameter(item, uuid)}>
+                    <View
+                      key={index}
+                      className="flex-row justify-between items-center py-2">
+                      <View className="flex-row items-center">
+                        <Text className="text-sm text-black ml-14 font-poppins-semibold">
+                          {item.nama}
+                        </Text>
+                        <TouchableOpacity
+                          onPress={() => handleParameter(item, uuid)}>
                           <EvilIcons
-                            style={{ marginLeft: 8, marginTop: 2 }}
                             name="pencil"
-                            size={30}
-                            color="#50cc96"
+                            size={20}
+                            color="black"
+                            style={{ marginLeft: 10 }}
                           />
                         </TouchableOpacity>
                       </View>
-                      <Text style={styles.param}>{rupiah(item.harga)}</Text>
+                      <Text className="text-sm text-black font-poppins-semibold">
+                        {rupiah(item.harga)}
+                      </Text>
+                      <View
+                        style={{
+                          position: "absolute",
+                          bottom: 0,
+                          left: 55,
+                          right: 0,
+                          height: 1,
+                          backgroundColor: "transparent",
+                          borderBottomWidth: 1,
+                          borderColor: "#e5e7eb",
+                          borderStyle: "dashed",
+                        }}
+                      />
                     </View>
                   ))
                 ) : (
-                  <Text>No parameters available</Text>
+                  <Text className="text-base text-gray-500 italic">
+                    No parameters available
+                  </Text>
                 )}
                 <Modal
                   animationType="slide"
@@ -824,6 +839,7 @@ const styles = StyleSheet.create({
   },
   param: {
     marginRight: 10,
+    fontFamily: "Poppins-SemiBold",
     fontSize: 16,
   },
   loadingContainer: {
@@ -832,9 +848,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   kode: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 23,
-    color: "balck",
+    color: "black",
     marginLeft: 20,
     marginTop: 5,
   },
@@ -881,7 +897,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 10,
     color: Colors.black,
   },
@@ -905,11 +921,12 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 14,
+    fontFamily: "Poppins-Regular",
     color: Colors.grey40,
   },
   value: {
     fontSize: 16,
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     color: Colors.black,
   },
   radioContainer: {
@@ -931,6 +948,7 @@ const styles = StyleSheet.create({
   radioLabel: {
     fontSize: 16,
     color: "black",
+    fontFamily: "Poppins-Medium",
   },
   inputContainerStyle: {
     alignItems: "flex-start",
@@ -983,8 +1001,7 @@ const styles = StyleSheet.create({
   },
   mt: {
     marginTop: 10,
-    fontSize: 16,
-    fontWeight: "bold",
+    fontSize: 14,
     color: Colors.black,
     justifyContent: "center",
     alignItems: "center",

@@ -366,7 +366,7 @@ const Perusahaan = () => {
             <BackButton action={() => navigation.goBack()} size={26}/>
               <View className="flex-row gap-2 items-center">
                 <FontAwesome5Icon name="briefcase" size={24} color="black" />
-                <Text className="text-xl font-extrabold me-10">Perusahaan</Text>
+                <Text className="text-xl font-poppins-semibold me-10">Perusahaan</Text>
               </View>
           </View>
           <Text style={{ color: "black" }}>Tanda Tangan</Text>

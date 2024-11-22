@@ -179,7 +179,7 @@ const DetailPengisian = ({ route, navigation }) => {
               <TouchableOpacity>
                 <Text 
                 onPress={handleCurrentLocation}
-                className="bg-blue-500 text-center text-white text-sm font-bold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
+                className="bg-blue-500 text-center text-white text-sm font-poppins-semibold py-3" style={{ width: 140, borderRadius: 8, marginLeft: 210 }}>Lokasi saat ini </Text>
               </TouchableOpacity>
             </View>
 
@@ -332,10 +332,10 @@ const DetailPengisian = ({ route, navigation }) => {
                       <View className="w-full mt-5" style={styles.infoItem}>
                       <TouchableOpacity>
                         <Text
-                        className="flex bg-blue-500 text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8, textAlign: 'center'}}>Simpan & Upload</Text>
+                        className="flex bg-blue-500 text-white text-base font-poppins-semibold py-3" style={{ width: 170, borderRadius: 8, textAlign: 'center'}}>Simpan & Upload</Text>
                       </TouchableOpacity>
                       <TouchableOpacity>
-                        <Text className="bg-blue-500 ml-3 text-center  text-white text-base font-bold py-3" style={{ width: 170, borderRadius: 8,}}>Konfirmasi {""}
+                        <Text className="bg-blue-500 ml-3 text-center  text-white text-base font-poppins-semibold py-3" style={{ width: 170, borderRadius: 8,}}>Konfirmasi {""}
                           <FontAwesome6 name="check" className="" size={23}></FontAwesome6>
                         </Text>
                       </TouchableOpacity>

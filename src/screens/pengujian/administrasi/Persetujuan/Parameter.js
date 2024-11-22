@@ -92,17 +92,17 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>
+      <Text style={styles.title} className="font-poppins-semibold">
         Hasil Kaji Ulang Parameter: {selectedParameter.nama}
       </Text>
 
       <TouchableOpacity style={styles.checkAllButton} onPress={checkAllSwitches}>
-        <Text style={styles.checkAllText}>Check Semua</Text>
+        <Text style={styles.checkAllText} className="font-poppins-semibold">Check Semua</Text>
       </TouchableOpacity>
 
       {/* Personel Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Personel (Mampu)</Text>
+        <Text style={styles.label} className="font-poppins-regular">Personel (Mampu)</Text>
         <Switch
             trackColor={{ false: "#767577", true: "#312e81" }}
             thumbColor={personel === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -113,7 +113,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
       {/* Metode Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Metode (Sesuai)</Text>
+        <Text style={styles.label} className="font-poppins-regular" >Metode (Sesuai)</Text>
         <Switch
             trackColor={{ false: "#767577", true: "#312e81" }}
             thumbColor={metode === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -124,7 +124,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
       {/* Peralatan Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Peralatan (Lengkap)</Text>
+        <Text style={styles.label}  className="font-poppins-regular">Peralatan (Lengkap)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
           thumbColor={peralatan === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -135,7 +135,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
       {/* Reagen Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Reagen (Lengkap)</Text>
+        <Text style={styles.label}  className="font-poppins-regular">Reagen (Lengkap)</Text>
         <Switch
             trackColor={{ false: "#767577", true: "#312e81" }}
             thumbColor={reagen === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -146,7 +146,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
       {/* Akomodasi Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Akomodasi (Baik)</Text>
+        <Text style={styles.label}  className="font-poppins-regular">Akomodasi (Baik)</Text>
         <Switch
            trackColor={{ false: "#767577", true: "#312e81" }}
            thumbColor={akomodasi === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -157,7 +157,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
 
       {/* Beban Kerja Switch */}
       <View style={styles.item}>
-        <Text style={styles.label}>Beban Kerja (Over)</Text>
+        <Text style={styles.label} className="font-poppins-regular" >Beban Kerja (Over)</Text>
         <Switch
            trackColor={{ false: "#767577", true: "#312e81" }}
            thumbColor={bebanKerja === 1 ? "#f4f3f4" : "#f4f3f4"}
@@ -175,14 +175,13 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
   },
   title: {
-    fontWeight: "bold",
     marginBottom: 20,
   },
   item: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginBottom: 20,
+    marginBottom: 18,
   },
   label: {
     fontSize: 14,
@@ -196,7 +195,7 @@ const styles = StyleSheet.create({
   },
   checkAllText: {
     color: "#312e81",
-    fontWeight: "bold",
+  
   },
 });
 

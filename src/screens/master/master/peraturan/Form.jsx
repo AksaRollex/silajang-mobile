@@ -125,7 +125,7 @@ export default memo(function Form({ route, navigation }) {
   }
 
   return (
-    <ScrollView className="bg-[#ececec] h-full">
+    <View className="bg-[#ececec] h-full">
       <View className="bg-white rounded m-3">
         <View className="flex-row justify-between mx-3 mt-4">
           <BackButton action={() => navigation.goBack()} size={26} />
@@ -141,6 +141,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "nama is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Nama Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -160,6 +161,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "Tentang is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Tentang Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -179,6 +181,7 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "nomor is required" }}
             render={({ field: { onChange, onBlur, value } }) => (
               <TextField
+              style={{ fontFamily: "Poppins-Regular" }}
                 placeholder="Masukkan Nomor Peraturan"
                 value={value}
                 onChangeText={onChange}
@@ -203,7 +206,6 @@ export default memo(function Form({ route, navigation }) {
             <Icon name="upload" size={20} color="white" />
           </TouchableOpacity>
 
-
           <Button
             label="Simpan"
             labelStyle={{ fontFamily: "Poppins-Medium" }} 
@@ -214,6 +216,6 @@ export default memo(function Form({ route, navigation }) {
           />
         </View>
       </View>
-    </ScrollView>
+    </View>
   );  
 })

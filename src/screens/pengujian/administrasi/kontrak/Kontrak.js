@@ -1,11 +1,13 @@
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
+import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import React, { useState, useRef } from "react";
-import { Text, View } from "react-native";
+import { Text, View, TouchableOpacity } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MenuView } from "@react-native-menu/menu";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -29,9 +31,6 @@ const Kontrak = ({ navigation }) => {
   const paginateRef = useRef();
 
   const renderItem = ({ item }) => {
-    const dropdownOptions = [
-      { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailKontrak", { uuid: item.uuid }) }
-    ];
     
     return (
       <View
@@ -39,14 +38,18 @@ const Kontrak = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-4 relative">
+        <View className="flex-row justify-between items-center p-2 relative">
             <View className="flex-shrink mr-20">
-                <Text className="text-[18px] font-extrabold mb-3">{item.industri}</Text>
-                <Text className="text-[14px] mb-2">Alamat: <Text className="font-bold">{item.alamat}</Text></Text>
-                <Text className="text-[14px] mb-2">Tanggal: <Text className="font-bold">{item.tanggal}</Text></Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Nama Industri</Text> 
+                <Text className="text-md font-poppins-semibold mb-3 text-black">{item.industri}</Text>
+
+                <Text className="text-xs text-gray-500 font-poppins-regular">Alamat</Text> 
+                <Text className="text-md font-poppins-semibold text-black mb-3">{item.alamat}</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Tanggal</Text>
+                <Text className="text-md font-poppins-semibold mb-1 text-black">{item.tanggal}</Text>
             </View>
             <View className="absolute right-1 flex-col items-center">
-              <Text className={`text-[12px] font-bold px-2 py-1 rounded-md mb-3
+              <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
                 ${item.kesimpulan_kontrak == 1 ? 'bg-green-100 text-green-500' 
                   : item.kesimpulan_kontrak == 2 ? 'bg-red-50 text-red-500' 
                   : 'bg-indigo-100 text-indigo-500'}`}>
@@ -54,28 +57,19 @@ const Kontrak = ({ navigation }) => {
                   : item.kesimpulan_kontrak == 2 ? 'Ditolak' 
                   : 'Menunggu'}
               </Text>   
-              <View className="my-2 ml-10">
-                  <MenuView
-                    title="dropdownOptions"
-                    actions={dropdownOptions.map(option => ({
-                      ...option,
-                    }))}
-                    onPressAction={({ nativeEvent }) => {
-                      const selectedOption = dropdownOptions.find(
-                        option => option.title === nativeEvent.event,
-                      );
-                      if (selectedOption) {
-                        selectedOption.action(item);
-                      }
-                    }}
-                    shouldOpenOnLongPress={false}
-                  >
-                    <View>
-                      <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-                    </View>
-                  </MenuView>
-              </View>
             </View>
+        </View>
+        <View className="h-[1px] bg-gray-300 my-3" />
+        <View className="flex-row flex-wrap justify-end gap-2">
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("DetailKontrak", { uuid: item.uuid })}
+            className="bg-indigo-900 px-3 py-2 rounded-md"
+          >
+           <View className="flex-row">
+            <Ionicons name="eye-outline" size={17} color="white" style={{ marginRight: 5 }} />
+            <Text className="text-white font-poppins-medium text-[12px]">Detail</Text>
+          </View>
+          </TouchableOpacity>
         </View>
       </View>
     );
@@ -89,23 +83,17 @@ const Kontrak = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-0 items-center">
-                <Text className="text-[20px] font-bold">Kontrak</Text>
+                <Text className="text-[20px] font-poppins-semibold text-black">Kontrak</Text>
               </View>
             </View>
 
             <View className="flex-row justify-center">
-              <View className="mt-3 ml-12 mr-2">
-                <View>
-                  <HorizontalScrollMenu
-                    items={kesimpulanOptions}
-                    selected={selectedKesimpulan}
-                    onPress={item => setSelectedKesimpulan(item.id)} 
-                    itemWidth={170}
-                    scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                    activeBackgroundColor={"#312e81"}
-                    buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: 'white' }}
-                  />
-                </View>
+              <View style={{ flex: 1, marginVertical: 8 }}>
+                <HorizontalFilterMenu
+                  items={kesimpulanOptions}
+                  selected={selectedKesimpulan}
+                  onPress={(item) => setSelectedKesimpulan(item.id)}
+                />
               </View>
 
               <MenuView
@@ -124,7 +112,7 @@ const Kontrak = ({ navigation }) => {
                 }}
                 shouldOpenOnLongPress={false}
               >
-                <View style={{ marginEnd: 50 }}>
+                <View >
                   <MaterialCommunityIcons 
                     name="filter-menu-outline" 
                     size={24} 

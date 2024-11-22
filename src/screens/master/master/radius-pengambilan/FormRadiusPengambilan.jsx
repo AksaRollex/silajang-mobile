@@ -67,22 +67,23 @@ export default memo(function form({ route, navigation }) {
     }
 
     return (
-        <ScrollView className="bg-[#ececec] h-full">
+        <View className="bg-[#ececec] h-full">
             <View className="bg-white rounded m-3">
                 <View className="flex-row justify-between mx-3 mt-4">
                     <BackButton action={() => navigation.goBack()} size={26} />
-                    <Text className="text-xl font-bold">
+                    <Text className="text-xl font-poppins-semibold">
                         {data ? "Edit Radius Pengambilan" : "Tambah Radius Pengambilan"}
                     </Text>
                 </View>
                 <View className="p-5 flex-col space-y-4">
-                    <Text className="text-lg mb-2 font-semibold">Radius</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Radius</Text>
                     <Controller
                         control={control}
                         name="radius"
                         rules={{ required: "radius harus diisi" }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Radius"
                                 value={value}
                                 onChangeText={onChange}
@@ -94,13 +95,14 @@ export default memo(function form({ route, navigation }) {
                     {errors.radius && (
                         <Text className="text-red-500">{errors.radius.message}</Text>
                     )}
-                    <Text className="text-lg mb-2 font-semibold">nama</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Nama</Text>
                     <Controller
                         control={control}
                         name="nama"
                         rules={{ required: "nama harus diisi" }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Nama"
                                 value={value}
                                 onChangeText={onChange}
@@ -112,13 +114,14 @@ export default memo(function form({ route, navigation }) {
                     {errors.nama && (
                         <Text className="text-red-500">{errors.nama.message}</Text>
                     )}
-                    <Text className="text-lg mb-2 font-semibold">Harga</Text>
+                    <Text className="text-lg mb-2 font-poppins-semibold">Harga</Text>
                     <Controller
                         control={control}
                         name="harga"
                         rules={{ required: "Harga harus diisi" }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
+                                style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Harga"
                                 value={value}
                                 onChangeText={onChange}
@@ -131,6 +134,7 @@ export default memo(function form({ route, navigation }) {
                         <Text className="text-red-500">{errors.harga.message}</Text>
                     )}
                     <Button
+                        labelStyle={{ fontFamily: "Poppins-SemiBold"}}
                         label="Simpan"
                         loading={isLoading}
                         onPress={handleSubmit(onSubmit)}
@@ -139,6 +143,6 @@ export default memo(function form({ route, navigation }) {
                     />
                 </View>
             </View>
-        </ScrollView>
+        </View>
     );
 });

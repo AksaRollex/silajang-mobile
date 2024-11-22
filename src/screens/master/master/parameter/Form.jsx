@@ -139,7 +139,7 @@ export default memo(function Form({ route, navigation }) {
         <View className="bg-white rounded m-3">
           <View className="flex-row justify-between mx-3 mt-4">
             <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-xl font-bold">
+            <Text className="text-xl font-poppins-semibold">
               {data ? "Edit Parameter" : "Tambah Parameter"}
             </Text>
           </View>
@@ -151,6 +151,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "nama is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Nama Peraturan"
                   value={value}
                   onChangeText={onChange}
@@ -170,6 +171,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "Keterangan is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
+                style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Keterangan"
                   value={value}
                   onChangeText={onChange}
@@ -213,6 +215,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "Metode is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
+                  style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Metode"
                   value={value}
                   onChangeText={onChange}
@@ -232,6 +235,7 @@ export default memo(function Form({ route, navigation }) {
               rules={{ required: "Harga is required" }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
+                  style={{ fontFamily: "Poppins-Regular"}}
                   placeholder="Masukkan Harga"
                   value={value}
                   onChangeText={onChange}
@@ -259,6 +263,7 @@ export default memo(function Form({ route, navigation }) {
                     onChange(items);
                     setSelectedPengawetan(items);
                   }}
+                  fontFamily="Poppins-Regular"
                   selectedItems={value || []}
                   selectText="Pilih pengawetan"
                   searchInputPlaceholderText="Cari pengawetan..."
@@ -327,6 +332,7 @@ export default memo(function Form({ route, navigation }) {
               )}
             </View>
             <Button
+              labelStyle={{ fontFamily: "Poppins-Medium" }}
               label="Simpan"
               loading={isLoading}
               onPress={handleSubmit(onSubmit)}

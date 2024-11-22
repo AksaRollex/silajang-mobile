@@ -1,11 +1,10 @@
 import { List } from "react-native-paper";
-import { View } from "react-native-ui-lib";
-
+import { View, Text } from "react-native";
 const AccordionItem = ({ title, right, left, style, onPress }) => {
     return (
         <View>
             <List.Item
-                title={title}
+                title={<Text className="font-poppins-medium">{title}</Text>}
                 right={right}
                 left={left}
                 onPress={onPress}

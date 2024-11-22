@@ -23,14 +23,21 @@ import DetailPenerima from "./administrasi/PenerimaSampel/DetailPenerima"
 import PengambilSample from "./administrasi/PengambilSample/PengambilSample"
 import DetailPengisian from "./administrasi/PengambilSample/DetailPengisian"
 import DetailPengambilSample from "./administrasi/PengambilSample/DetailPengambilSample"
-import CetakLHU from "./administrasi/CetakLHU"
 
 
 import Analis from "./verifikasi/Analis/Analis"
-import HasilUji from "./verifikasi/Analis/HasilUji"
+import DetailAnalis from "./verifikasi/Analis/DetailAnalis"
 import Kortek from "./verifikasi/Kortek/Kortek"
 import HasilUjis from "./verifikasi/Kortek/HasilUjis"
+import CetakLHU from "./verifikasi/CetakLHU"
 import VerifikasiLhu from "./verifikasi/VerifikasiLhu/VerifikasiLhu"
+import LaporanHasilPengujian from "./report/LaporanHasilPengujian"
+import KendaliMutu from "./report/KendaliMutu";
+import RegistrasiSampel from "./report/RegistrasiSampel"
+import RekapData from "./report/RekapData"
+import RekapParameter from "./report/RekapParameter";
+
+import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
 const screenOptions = {
@@ -129,8 +136,8 @@ export default function MainScreen() {
         component={Analis}
       />
       <Stack.Screen
-        name="HasilUji"
-        component={HasilUji}
+        name="DetailAnalis"
+        component={DetailAnalis}
       />
       <Stack.Screen
         name="Kortek"
@@ -145,6 +152,32 @@ export default function MainScreen() {
         name="VerifikasiLhu"
         component={VerifikasiLhu}
       />
-    </Stack.Navigator>
+
+      <Stack.Screen
+        name="LaporanHasilPengujian"
+        component={LaporanHasilPengujian}
+      />
+
+      <Stack.Screen
+        name="KendaliMutu"
+        component={KendaliMutu}
+      />
+
+      <Stack.Screen
+        name="RegistrasiSampel"
+        component={RegistrasiSampel}
+      />
+
+      <Stack.Screen
+        name="RekapData"
+        component={RekapData}
+      />
+
+      <Stack.Screen
+        name="RekapParameter"
+        component={RekapParameter}
+      />
+
+   </Stack.Navigator>
   );
 }

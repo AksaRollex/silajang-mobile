@@ -11,6 +11,7 @@ import {
   Modal,
   FlatList,
   Button,
+  ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -330,9 +331,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
-        <Text>Loading...</Text>
-      </View>
+      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
     );
   }
 
@@ -478,19 +477,19 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text style={styles.kode}>{data.kode}</Text>
+                  <Text className="font-poppins-semibold" style={styles.kode}>{data.kode}</Text>
                 </View>
               </View>
             </View>
             {/* Card Pertama */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Informasi Pemohon</Text>
+              <Text style={styles.title} className="font-poppins-semibold">Informasi Pemohon</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Customer</Text>
+                  <Text style={styles.label} className="font-poppins-regular" >Customer</Text>
                   <Text style={styles.value}>{data.permohonan.user.nama}</Text>
                 </View>
               </View>
@@ -500,7 +499,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Instansi</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Instansi</Text>
                   <Text style={styles.value}>
                     {data.permohonan.user.detail.instansi}
                   </Text>
@@ -516,7 +515,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Alamat</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Alamat</Text>
                   <Text style={styles.value}>
                     {data.permohonan.user.detail.alamat}
                   </Text>
@@ -528,7 +527,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Feather name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>No. Telepon/WhatsApp</Text>
+                  <Text style={styles.label} className="font-poppins-regular">No. Telepon/WhatsApp</Text>
                   <Text style={styles.value}>{data.permohonan.user.phone}</Text>
                 </View>
               </View>
@@ -536,13 +535,13 @@ export default function DetailPersetujuan({ route, navigation }) {
 
             {/* Card Kedua */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Detail Uji</Text>
+              <Text style={styles.title} className="font-poppins-semibold">Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather name="target" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Lokasi/Titik Uji</Text>
+                  <Text style={styles.label}className="font-poppins-regular">Lokasi/Titik Uji</Text>
                   <Text style={styles.value}>{data.lokasi}</Text>
                 </View>
               </View>
@@ -556,7 +555,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Nama Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Nama Industri</Text>
                   <Text style={styles.value}>{data.permohonan.industri}</Text>
                 </View>
               </View>
@@ -571,7 +570,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Alamat Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Alamat Industri</Text>
                   <Text style={styles.value}>{data.permohonan.alamat}</Text>
                 </View>
               </View>
@@ -586,7 +585,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Kegiatan Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Jenis Kegiatan Industri</Text>
                   <Text style={styles.value}>{data.permohonan.kegiatan}</Text>
                 </View>
               </View>
@@ -595,7 +594,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <AntDesign name="filter" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Sampel</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Jenis Sampel</Text>
                   <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View>
               </View>
@@ -612,24 +611,24 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View> */}
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Jenis Wadah</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Jenis Wadah</Text>
                   <Text style={styles.value}>{data.jenis_wadah?.nama}</Text>
                 </View>
               </View>
 
-              <Text style={styles.value}>Interpretasi Hasil Pengujian</Text>
+              <Text style={styles.value} className="font-poppins-semibold">Interpretasi Hasil Pengujian</Text>
               <View style={styles.switchContainer}>
-                <Text style={styles.optionText}>Tidak</Text>
+                <Text style={styles.optionText} className="font-poppins-regular">Tidak</Text>
                 <Switch
                   value={interpretasi === 1}
                   onValueChange={value => saveInterpretasi(value ? 1 : 0)}
                   trackColor={{ false: "#767577", true: "#312e81" }}
                   thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
                 />
-                <Text style={styles.optionText}>Ada</Text>
+                <Text style={styles.optionText} className="font-poppins-regular">Ada</Text>
               </View>
 
-              <Text style={styles.value}>Kesimpulan Permohonan</Text>
+              <Text style={styles.value} className="font-poppins-semibold">Kesimpulan Permohonan</Text>
 
               <View style={styles.radioContainer}>
                 <View style={styles.radioItem}>
@@ -638,7 +637,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 0 ? "checked" : "unchecked"}
                     onPress={() => handleSave(0)}
                   />
-                  <Text style={styles.radioLabel}>Menunggu</Text>
+                  <Text style={styles.radioLabel} className="font-poppins-medium">Menunggu</Text>
                 </View>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -646,7 +645,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 1 ? "checked" : "unchecked"}
                     onPress={() => handleSave(1)}
                   />
-                  <Text style={styles.radioLabel}>Diterima</Text>
+                  <Text style={styles.radioLabel} className="font-poppins-medium">Diterima</Text>
                 </View>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -654,7 +653,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 2 ? "checked" : "unchecked"}
                     onPress={() => handleSave(2)}
                   />
-                  <Text style={styles.radioLabel}>Ditolak</Text>
+                  <Text style={styles.radioLabel} className="font-poppins-medium">Ditolak</Text>
                 </View>
               </View>
 
@@ -679,13 +678,13 @@ export default function DetailPersetujuan({ route, navigation }) {
               )}
             </View>
             <View style={styles.cardContainer}>
-              <Text style={styles.title}>Peraturan/Parameter</Text>
+              <Text style={styles.title} className="font-poppins-semibold">Peraturan/Parameter</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}>Peraturan</Text>
+                  <Text style={styles.label} className="font-poppins-regular">Peraturan</Text>
                   <Text style={styles.value}>
                     {data?.peraturan?.nama || ""} -{" "}
                     {data?.peraturan?.nomor || ""}
@@ -697,15 +696,15 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <View className="bg-[#e8fff3] p-2 rounded-lg mr-2">
                     <FontAwesome6 name="vial" size={32} color="#50cc96" />
                   </View>
-                  <Text style={styles.label} className="mb-2">
+                  <Text style={styles.label} className="font-poppins-regular mb-2">
                     Parameter
                   </Text>
                 </View>
                 <View className="flex-row justify-between mb-1">
-                  <Text className="text-base ml-14 font-bold text-black">
+                  <Text className="text-base ml-14 font-poppins-semibold text-black">
                     Nama
                   </Text>
-                  <Text className="text-base font-bold text-black">Harga</Text>
+                  <Text className="text-base font-poppins-semibold text-black">Harga</Text>
                 </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
@@ -713,7 +712,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                       key={index}
                       className="flex-row justify-between items-center py-2">
                       <View className="flex-row items-center">
-                        <Text className="text-sm text-black ml-14 font-bold">
+                        <Text className="text-sm text-black ml-14 font-poppins-semibold">
                           {item.nama}
                         </Text>
                         <TouchableOpacity
@@ -726,7 +725,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                           />
                         </TouchableOpacity>
                       </View>
-                      <Text className="text-sm text-black font-bold">
+                      <Text className="text-sm text-black font-poppins-semibold">
                         {rupiah(item.harga)}
                       </Text>
                       <View
@@ -766,7 +765,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                       <TouchableOpacity
                         onPress={handleCloseModal}
                         style={styles.closeButton}>
-                        <Text style={styles.closeButtonText}>Close</Text>
+                        <Text style={styles.closeButtonText}  className="font-poppins-medium">Close</Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -777,11 +776,10 @@ export default function DetailPersetujuan({ route, navigation }) {
               <Text
                 style={{
                   fontSize: 15,
-                  fontWeight: "bold",
                   marginBottom: 20,
                   color: Colors.black,
-                }}>
-                Detail Pengambilan (Silahkan isi data di bawah ini)
+                }} className="font-poppins-semibold">
+                Detail Pengambilan
               </Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
@@ -842,13 +840,13 @@ export default function DetailPersetujuan({ route, navigation }) {
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
-                          fontSize: 13.5,
-                          fontWeight: "bold",
+                          fontSize: 12,
+                          fontFamily: "Poppins-Regular",
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontWeight: "bold",
-                          fontSize: 13.5,
+                          fontFamily: "Poppins-Regular",
+                          fontSize: 12,
                         },
                         iconContainer: {
                           top: 10,
@@ -913,6 +911,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                             });
                           }}
                           selectedItems={selectedPetugas}
+                          textStyle={{ fontFamily: "Poppins-Regular" }}
                           selectText="Pilih petugas"
                           searchInputPlaceholderText="Cari petugas..."
                           tagRemoveIconColor="#CED4DA"
@@ -1019,13 +1018,13 @@ export default function DetailPersetujuan({ route, navigation }) {
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
-                          fontWeight: "bold",
-                          fontSize: 13.5,
+                          fontFamily : 'Poppins-Medium',
+                          fontSize: 12,
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontWeight: "bold",
-                          fontSize: 13.5,
+                          fontFamily : 'Poppins-Medium',
+                          fontSize: 12,
                         },
                         iconContainer: {
                           top: 10,
@@ -1094,16 +1093,18 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
+    
   },
   closeButton: {
     marginTop: 20,
     padding: 10,
     backgroundColor: "#312e81",
     borderRadius: 5,
+    marginBottom: 15
   },
   closeButtonText: {
     color: "white",
-    fontWeight: "bold",
+
   },
   param: {
     marginRight: 10,
@@ -1120,7 +1121,6 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   kode: {
-    fontWeight: "bold",
     fontSize: 23,
     color: "black",
     marginLeft: 20,
@@ -1168,7 +1168,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: "bold",
     marginBottom: 10,
     color: Colors.black,
   },
@@ -1193,11 +1192,12 @@ const styles = StyleSheet.create({
   label: {
     fontSize: 14,
     color: Colors.grey40,
+    fontFamily: "Poppins-Regular",
   },
   value: {
     fontSize: 16,
-    fontWeight: "bold",
     color: Colors.black,
+    fontFamily: "Poppins-SemiBold",
   },
 
   radioContainer: {
@@ -1249,7 +1249,7 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     flex: 1,
     color: "black",
-    fontWeight: "bold",
+    fontFamily: "Poppins-Medium",
   },
   dateTimeIcon: {
     marginLeft: 8,
@@ -1313,7 +1313,7 @@ const styles = StyleSheet.create({
 
   inputStyle: {
     fontSize: 13.5,
-    fontWeight: "bold",
+    fontFamily : 'Poppins-Medium',
     paddingVertical: 8,
     paddingHorizontal: 15,
     color: "#333333",
