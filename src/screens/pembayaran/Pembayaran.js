@@ -35,12 +35,12 @@ const Pembayaran = () => {
 
       <View className=" p-4 flex flex-row items-center mt-2">
         {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
-        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
+        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pengujian</Text>
       </View>
         <View>
           <List.Item
           style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-          title={<Text className="font-poppins-medium text-[15px]">Pembayaran</Text>}
+          title={<Text className="font-poppins-medium text-[15px]">Pengujian</Text>}
           left={() => (
             <View className="bg-green-600 rounded-full ml-3">
             <Ionicons name="wallet" size={17} color={'white'} style={{padding: 5}}/>
@@ -55,7 +55,7 @@ const Pembayaran = () => {
 
         <View> 
           <List.Item
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Non Pengujian</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Non Pengujian</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="card" size={17} color={'white'} style={{padding: 5}}/>
@@ -71,7 +71,7 @@ const Pembayaran = () => {
           <View>
             <List.Item
             style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Global</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Global</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="globe" size={17} color={'white'} style={{padding: 5}}/>
