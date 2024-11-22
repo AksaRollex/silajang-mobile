@@ -192,7 +192,7 @@ const HasilUjis = ({ navigation, route }) => {
 
   const renderItem = ({ item }) => {
     const canUpload = selectedCetak === 0 && item.can_upload === 1;
-    const showPreview = selectedCetak !== 0 || item.status === 5;
+    const showPreview = selectedCetak !== 0 || item.status === 8;
 
     return (
       <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{ 
@@ -202,7 +202,6 @@ const HasilUjis = ({ navigation, route }) => {
         shadowOpacity: 0.1,
         shadowRadius: 4
       }}>
-        {/* Header Section */}
         <View className="border-b border-gray-100 pb-3 mb-3">
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
@@ -224,9 +223,6 @@ const HasilUjis = ({ navigation, route }) => {
           </Text>
         </View>
 
-        
-    
-        {/* Middle Section */}
         <View className="border-b border-gray-100 pb-3 mb-3">
           <View className="mb-2">
             <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima</Text>
@@ -236,9 +232,6 @@ const HasilUjis = ({ navigation, route }) => {
           </View>
         </View>
 
-        
-    
-        {/* Action Buttons */}
         <View className="flex-row justify-end pt-2">
           {canUpload && (
             <TouchableOpacity
@@ -262,25 +255,18 @@ const HasilUjis = ({ navigation, route }) => {
             >
               <FontIcon name="file-pdf" size={16} color="#fff" />
               <Text className="ml-2 text-white text-[13px] font-poppins-semibold">
-                Lihat PDF
+                Preview LHU
               </Text>
             </TouchableOpacity>
           )}
         </View>
-    
-        {/* Selected File Info */}
-        {selectedFile && canUpload && (
-          <Text className="text-xs text-gray-500 mt-2">
-            File terpilih: {selectedFile.name}
-          </Text>
-        )}
       </View>
     );
   };
 
   const payload = useMemo(() => {
     return {
-      status: selectedCetak === 0 ? [-1, 5] : 5,
+      status: selectedCetak === 0 ? [6, 7] : 8, // Updated to match web version status
       tahun: selectedYear,
       ...(selectedCetak === 0 && { can_upload: 1 }),
     };
@@ -318,20 +304,25 @@ const HasilUjis = ({ navigation, route }) => {
                     option => option.title === nativeEvent.event,
                   );
                   if (selectedOption) {
-                    setSelectedYear(selectedOption.title)
-                    // console.log(selectedOption.title)
+                    setSelectedYear(selectedOption.title);
                   }
                 }}
                 shouldOpenOnLongPress={false}
-                
               >
                 <View style={{ marginEnd: 5 }}>
-                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+                  <MaterialCommunityIcons 
+                    name="filter-menu-outline" 
+                    size={24} 
+                    color="white" 
+                    style={{ 
+                      backgroundColor: "#312e81", 
+                      padding: 12, 
+                      borderRadius: 8 
+                    }} 
+                  />
                 </View>
               </MenuView>
             </View>
-
-           
           </View>
         </View>
       </View>
