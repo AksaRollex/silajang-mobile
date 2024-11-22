@@ -31,14 +31,27 @@ const LogTte = ({ navigation }) => {
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
-        <View className="flex-col space-y-3">
-          <Text className="text-[17px] font-poppins-bold text-black">{item.titik_permohonan.kode}</Text>
-          <Text className="text-sm font-poppins-semibold text-black">NIK : {item.nik}</Text>
-          <Text className="text-sm font-poppins-medium text-black">Status : {item.status}</Text>
-          <Text className="text-sm font-poppins-medium text-black">Message : {item.message}</Text>
-          <Text className="text-sm font-poppins-medium text-black">Ip Address : {item.ip_address}</Text>
-          <Text className="text-sm font-poppins-medium text-black">User Agent : {item.user_agent}</Text>
-          <Text className="text-sm font-poppins-medium text-black">Waktu : {item.tanggal_indo}</Text>
+        <View className="flex-col">
+          <Text className="text-xs font-poppins-regular text-gray-500">Kode Sampel</Text>
+          <Text className="text-md font-poppins-bold text-black mb-3">{item.titik_permohonan.kode}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">NIK</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-3">{item.nik}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">Status</Text>
+          <Text className="text-md font-poppins-medium text-black mb-3">{item.status}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">Message</Text>
+          <Text className="text-md font-poppins-medium text-black mb-3">{item.message}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">IP Address</Text>
+          <Text className="text-md font-poppins-medium text-black mb-3">{item.ip_address}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">User Agent</Text>
+          <Text className="text-md font-poppins-medium text-black mb-3">{item.user_agent}</Text>
+
+          <Text className="text-xs font-poppins-regular text-gray-500">Waktu</Text>
+          <Text className="text-md font-poppins-medium text-black">{item.tanggal_indo}</Text>
         </View>
       </View>
     </View>

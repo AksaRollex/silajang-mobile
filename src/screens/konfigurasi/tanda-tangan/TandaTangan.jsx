@@ -33,12 +33,21 @@ const TandaTangan = ({ navigation }) => {
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
       <View className="flex-row justify-between items-center">
-        <View className="flex-col space-y-3">
-        <Text className="text-[15px] font-poppins-semibold text-black">{item.bagian}</Text>
-        <Text className="text-sm font-poppins-semibold text-black">Nama : {item.user?.nama}</Text>
-        <Text className="text-sm font-poppins-medium text-black">NIP : {item.user?.nip}</Text>
-        <Text className="text-sm font-poppins-medium text-black">NIK : {item.user?.nik}</Text>
-        <Text className="text-sm font-poppins-medium text-black">Jabatan : {item.user?.role?.full_name}</Text>
+        <View className="flex-col space-y-1">
+        <Text className="text-xs font-poppins-regular text-gray-500">Dokumen</Text>
+        <Text className="text-md font-poppins-semibold text-black mb-3">{item.bagian}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+        <Text className="text-md font-poppins-semibold text-black mb-3">{item.user?.nama}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">NIP</Text>
+        <Text className="text-md font-poppins-medium text-black mb-3">{item.user?.nip}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">NIK</Text>
+        <Text className="text-md font-poppins-medium text-black mb-3">{item.user?.nik}</Text>
+
+        <Text className="text-xs font-poppins-regular text-gray-500">Jabatan</Text>
+        <Text className="text-md font-poppins-medium text-black">{item.user?.role?.full_name}</Text>
         </View>
       </View>
         <View className="h-[1px] bg-gray-300 my-3" />

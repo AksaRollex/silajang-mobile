@@ -38,15 +38,15 @@ const Kontrak = ({ navigation }) => {
         style={{
           elevation: 4,
         }}>
-        <View className="flex-row justify-between items-center p-4 relative">
+        <View className="flex-row justify-between items-center p-2 relative">
             <View className="flex-shrink mr-20">
-                <Text className="text-md text-gray-500 font-poppins-regular">Nama Industri</Text> 
-                <Text className="text-[15px] font-poppins-semibold mb-3 text-black">{item.industri}</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Nama Industri</Text> 
+                <Text className="text-md font-poppins-semibold mb-3 text-black">{item.industri}</Text>
 
-                <Text className="text-md text-gray-500 font-poppins-regular">Alamat</Text> 
-                <Text className="text-[15px] font-poppins-semibold text-black mb-3">{item.alamat}</Text>
-                <Text className="text-md text-gray-500 font-poppins-regular">Tanggal</Text>
-                <Text className="text-[15px] font-poppins-semibold mb-3 text-black">{item.tanggal}</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Alamat</Text> 
+                <Text className="text-md font-poppins-semibold text-black mb-3">{item.alamat}</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Tanggal</Text>
+                <Text className="text-md font-poppins-semibold mb-1 text-black">{item.tanggal}</Text>
             </View>
             <View className="absolute right-1 flex-col items-center">
               <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
