@@ -11,6 +11,7 @@ import Detail from './Detail';
 import Pengujian from './Pengujian';
 import NonPengujian from './NonPengujian';
 import Global from './Global';
+import FormNonPengujian from './Form';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -35,7 +36,7 @@ export default function MainScreen() {
   
 
         <Tab.Screen
-          name="Pembayaran"
+          name="Pembayarans"
           component={Pembayaran}
           options={{
             tabBarIcon: ({ focused }) => (
@@ -73,6 +74,7 @@ export default function MainScreen() {
         <Stack.Screen name="Pengujian" component={Pengujian}/>
         <Stack.Screen name="NonPengujian" component={NonPengujian}/>
         <Stack.Screen name="Global" component={Global}/>
+        <Stack.Screen name="FormNonPengujian" component={FormNonPengujian}/>
       </Tab.Navigator>
   );
 }
