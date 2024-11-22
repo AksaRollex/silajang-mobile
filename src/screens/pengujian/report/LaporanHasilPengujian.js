@@ -402,7 +402,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
         
             Boolean(item.file_lhu) && {
                 id: "AjukanTTEManual",
-                title: "Ajukan TTE (Manual)",
+                title: "Ajukan TTE (Manual)",   
                 icon: () => <FontAwesome5Icon name="file-signature" size={16} color="#28a745" />,
                 action: () => {
                     setSelectedItem(item.uuid);

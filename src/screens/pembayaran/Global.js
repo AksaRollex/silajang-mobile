@@ -107,31 +107,42 @@ const Global = ({ navigation, isExpired }) => {
     return (
       <View style={styles.card}>
         <View style={styles.cards}>
-          <Text
-            style={[styles.badge, styles[statusStyle]]}
-            className={` bg-slate-100 ${getStatusStyle(item)} `}>
-            {statusText}
-          </Text>
-          <Text className="font-bold text-xl text-black my-1">
+          <View className="flex-row justify-between items-start">
+            <View>
+            <Text className="text-xs font-poppins-regular text-gray-500">Virtual Account</Text>
+            <Text className=" text-indigo-600 text-md font-poppins-semibold mb-2">
+              {item.va_number || "Nomor VA Kosong"}
+            </Text>
+            </View>
+            <Text
+              style={[styles.badge, styles[statusStyle]]}
+              className={`bg-slate-100 px-2 py-1 size-[10px] ${getStatusStyle(item)}`}>
+              {statusText}
+            </Text>
+          </View>
+          <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">
             {item?.nama || "-"}
           </Text>
-          <Text className=" text-indigo-600 text-xl font-bold">
-            {item.virtual_account || "Nomor VA Kosong"}
-          </Text>
-          <Text className="text-black text-xs font-bold">
+          <Text className="text-xs font-poppins-regular text-gray-500">Jumlah Nominal</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">
             {rupiah(item.jumlah)}
           </Text>
-          <Text className="text-black">
-            Tanggal Dibuat : {item.tanggal_dibuat}
+          <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Dibuat</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-2">
+            {item.tanggal_dibuat}
           </Text>
-          <View className="flex-row justify-between">
-            <Text className="text-black">
-              Tanggal Kedaluwarsa : {item.tanggal_exp_indo || " -"}
+          <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Kedaluwarsa</Text>
+          <View className="text-md">
+            <Text className="font-poppins-semibold text-black mb-1">
+              {item.tanggal_exp_indo || " -"}
             </Text>
             {isExpired && (
-              <Text className="text-red-500 text-xs font-bold">
-                Kedaluwarsa
-              </Text>
+              <View className="bg-yellow-100 rounded-md px-2 py-1 max-w-[87px]">
+                <Text className="text-yellow-500 text-xs font-bold">
+                  Kedaluwarsa
+                </Text>
+              </View>
             )}
           </View>
         </View>
@@ -235,7 +246,7 @@ const styles = StyleSheet.create({
     padding: rem(0.7),
     backgroundColor: "#fff",
     flexDirection: "row",
-    borderTopColor: Colors.brand,
+    borderTopColor: '#312e81',
     borderTopWidth: 7,
     marginVertical: 10,
   },
