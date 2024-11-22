@@ -4,7 +4,6 @@ import React, { useState, useEffect, useRef, useMemo } from "react";
 import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
-import Icon from "react-native-vector-icons/Feather";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useDelete } from "@/src/hooks/useDelete";
@@ -18,8 +17,9 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import { APP_URL } from "@env";
-import Feather from "react-native-vector-icons/Feather";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Feather from "react-native-vector-icons/Feather";
 
 const RekapParameter = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -206,58 +206,76 @@ const RekapParameter = ({ navigation }) => {
     const CardRekapParameter = useMemo(() => ({ item }) => (
         <View
             className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
-            style={{ elevation: 4 }}>
-            <View className="flex-row justify-between items-center">
-                <View className="flex-col space-y-3 flex-1 mr-3">
-                    <View>
-                        <Text className="text-[15px] font-poppins-bold text-black">
-                            {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
-                        </Text>
-
-                        <View className="flex-row items-center mt-1 flex-wrap">
-                            <View
-                                className={`px-2 py-1 rounded-md ${item.is_akreditasi ? 'bg-green-100' : 'bg-yellow-100'
-                                    }`}
-                            >
-                                <Text
-                                    className={`text-xs font-poppins-medium ${item.is_akreditasi ? 'text-green-500' : 'text-yellow-500'
-                                        }`}
-                                >
-                                    {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
-                                </Text>
-                            </View>
-
-                            {item.jenis_parameter?.nama && (
-                                <Text className="text-xs font-poppins-regular text-gray-500 ml-2">
-                                    {item.jenis_parameter.nama}
-                                </Text>
-                            )}
-                        </View>
+            style={{ elevation: 4 }}
+        >
+            <View>
+                <View className="flex-row items-center justify-between mb-3">
+                    <View className="flex-row items-center">
+                        {item.is_akreditasi ? (
+                            <MaterialIcons name="verified" size={20} color="#16a34a" />
+                        ) : null}
                     </View>
-
-                    <Text className="text-[15px] font-poppins-semibold text-black">{item.metode}</Text>
-                    <Text className="text-[14px] font-poppins-regular text-black">{item.satuan}</Text>
-                    <Text className="text-[14px] font-poppins-regular text-black">
-                        {item.titik_permohonans_count > 0 ? `${item.titik_permohonans_count} Titik Permohonan` : ''}
-                    </Text>
+                    <View className={`rounded-md ${item.is_akreditasi ? 'bg-green-200' : 'bg-yellow-100'}`}>
+                        <Text
+                            className={`text-xs font-poppins-medium px-1 py-1 ${item.is_akreditasi ? 'text-green-600' : 'text-yellow-400'
+                                }`}
+                        >
+                            {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
+                        </Text>
+                    </View>
                 </View>
 
-                <MenuView
-                    title="Menu Title"
-                    actions={dropdownOptions}
-                    onPressAction={({ nativeEvent }) => {
-                        const selectedOption = dropdownOptions.find(
-                            option => option.title === nativeEvent.event,
-                        );
-                        if (selectedOption) {
-                            selectedOption.action(item);
-                        }
-                    }}
-                    shouldOpenOnLongPress={false}>
-                    <View>
-                        <Entypo name="dots-three-vertical" size={18} color="#312e81" />
+                <View className="mb-4">
+                    <View className="flex-row items-center flex-wrap mb-1">
+                        <Text className="text-lg font-poppins-bold text-black">{item.nama}</Text>
+                        {item.keterangan ? (
+                            <Text className="text-sm font-poppins-regular text-gray-600 ml-2">
+                                ({item.keterangan})
+                            </Text>
+                        ) : null}
                     </View>
-                </MenuView>
+                    {item.jenis_parameter ? (
+                        <Text className="text-sm font-poppins-regular text-gray-500">
+                            {item.jenis_parameter.nama}
+                        </Text>
+                    ) : null}
+                </View>
+
+                <View className="flex-row flex-wrap mb-4">
+                    <View className="w-1/2 mb-3 pr-4">
+                        <Text className="text-xs font-poppins-regular text-gray-500">Metode</Text>
+                        <Text className="text-md font-poppins-semibold text-black mt-1">{item.metode}</Text>
+                    </View>
+                    <View className="w-1/2 mb-3 pl-4">
+                        <Text className="text-xs font-poppins-regular text-gray-500">Satuan</Text>
+                        <Text className="text-md font-poppins-medium text-black mt-1">{item.satuan}</Text>
+                    </View>
+                    <View className="w-1/2 pr-4">
+                        <Text className="text-xs font-poppins-regular text-gray-500">
+                            Titik Permohonan
+                        </Text>
+                        <Text className="text-md font-poppins-medium text-black mt-1">
+                            {item.titik_permohonans_count > 0 ? `${item.titik_permohonans_count} Titik` : '-'}
+                        </Text>
+                    </View>
+                </View>
+
+                <View className="h-[1px] bg-gray-300" />
+
+                <View className="flex-row justify-end gap-2 mt-3">
+                    <TouchableOpacity
+                        onPress={() => {
+                            setSelectedItem(item);
+                            setShowDetailModal(true);
+                        }}
+                        className="flex-row items-center bg-[#312e81] px-3 py-2 rounded"
+                    >
+                        <Text className="text-white ml-1 text-xs font-poppins-medium">
+                            Detail
+                        </Text>
+                        <Feather name="chevrons-right" size={15} color="#fff" />
+                    </TouchableOpacity>
+                </View>
             </View>
         </View>
     ), [dropdownOptions]);
@@ -275,8 +293,8 @@ const RekapParameter = ({ navigation }) => {
                         className="bg-red-100 py-2 px-4 rounded-lg"
                     >
                         <View className="flex-row">
-                        <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{marginRight: 5}}/>
-                        <Text className="font-poppins-semibold text-red-500 text-[11px]" onPress={handlePreviewPDF}>Rekap Laporan</Text>
+                            <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{ marginRight: 5 }} />
+                            <Text className="font-poppins-semibold text-red-500 text-[11px]" onPress={handlePreviewPDF}>Rekap Laporan</Text>
                         </View>
                     </TouchableOpacity>
                 </View>
@@ -293,7 +311,7 @@ const RekapParameter = ({ navigation }) => {
 
             <DateTimePickerModal
                 isVisible={showDatePicker}
-                mode="date" 
+                mode="date"
                 onConfirm={handleDateConfirm}
                 onCancel={() => setShowDatePicker(false)}
                 date={new Date(dateType === 'start' ? dateRange.start : dateRange.end)}

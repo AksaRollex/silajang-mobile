@@ -33,7 +33,7 @@ const Parameter = ({ navigation }) => {
           </View>
           <View className={`rounded-md ${item.is_akreditasi ? 'bg-green-200' : 'bg-yellow-100'
             }`}>
-            <Text className={`text-sm font-poppins-regular p-1 ${item.is_akreditasi ? 'text-green-500' : 'text-yellow-400'
+            <Text className={`text-xs font-poppins-medium px-1 py-1 ${item.is_akreditasi ? 'text-green-600' : 'text-yellow-400'
               }`}>
               {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
             </Text>

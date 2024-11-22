@@ -217,7 +217,7 @@ const Dashboard = () => {
 
     const getDisplayName = (fullName) => {
       if (!fullName) return '';
-      
+        
       const [nameBeforeComma] = fullName.split(',');
       const nameParts = nameBeforeComma.trim().split(' ');
       if (nameParts.length > 2) {

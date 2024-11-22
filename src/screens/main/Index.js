@@ -43,12 +43,13 @@ const screenOptions = {
     right: 0,
     left: 0,
     elevation: 0,
-    height: 70,
+    height: 65,
     backgroundColor: "#ffffff",
-    borderTopWidth: 0,
+    borderTopWidth: 0.5,
+    borderTopColor: "#E5E7EB",
+    paddingHorizontal: 10,
   },
 };
-
 const Header = () => {
   return (
     <View className="flex flex-row gap-2 items-center">
@@ -104,89 +105,85 @@ const TabNavigator = () => {
     return tabPermissions[tabName].includes(userRole);
   };
 
+  const TabIcon = ({ focused, iconName, label }) => (
+    <View 
+      className="items-center justify-center w-full"
+      style={{
+        height: 50,
+        position: 'relative',
+      }}
+    >
+      {focused && (
+        <View
+          style={{
+            width: 70,
+            height: 3.5,
+            backgroundColor: "#312e81",
+            borderBottomRightRadius: 999,
+            borderBottomLeftRadius: 999,
+            position: "absolute",
+            top: -7.5,
+          }}
+        />
+      )}
+      <View
+        className="items-center justify-center"
+        style={{
+          shadowColor: focused ? "#4338ca" : "transparent",
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: focused ? 0.3 : 0,
+          shadowRadius: 4,
+          elevation: focused ? 5 : 0,
+        }}
+      >
+        <IonIcons 
+          name={iconName} 
+          size={21} 
+          color={focused ? '#4338ca' : '#a1a1aa'} 
+        />
+        <Text
+          className={`text-[10px] mt-1 ${
+            focused 
+              ? 'text-[#312e81] font-poppins-semibold' 
+              : 'text-gray-400 font-poppins-semibold'
+          }`}
+        >
+          {label}
+        </Text>
+      </View>
+    </View>
+  );
+  
   return (
-    <Tab.Navigator screenOptions={screenOptions}>
+    <Tab.Navigator 
+      screenOptions={screenOptions}
+      initialRouteName="Dashboard"
+    >
       <Tab.Screen
         name="Dashboard"
         component={Dashboard}
         options={{
           tabBarIcon: ({ focused }) => (
-            <View
-              className="items-center"
-              style={{
-                shadowColor: focused ? "#4338ca" : "transparent",
-                shadowOffset: { width: 0, height: 4 },
-                shadowOpacity: focused ? 0.5 : 0,
-                shadowRadius: 6,
-                elevation: focused ? 10 : 0, // Shadow pada Android
-              }}
-            >
-              {focused && (
-                <View
-                  style={{
-                    width: 96, // 24 * 4 untuk lebarnya (sesuai dengan w-24 di Tailwind)
-                    height: 4, // Tinggi border
-                    backgroundColor: "#312e81",
-                    borderBottomLeftRadius: 999,
-                    borderBottomRightRadius: 999,
-                    position: "absolute",
-                    top: -14, // Posisikan border sedikit di atas ikon
-                  }}
-                />
-              )}
-              <IonIcons name="home" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-              <Text
-                className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
-                  }`}
-              >
-                Beranda
-              </Text>
-            </View>
+            <TabIcon 
+              focused={focused} 
+              iconName="home" 
+              label="Beranda" 
+            />
           ),
         }}
       />
-
+  
       {hasPermission('Pengujian') && (
         <Tab.Screen
           name="Pengujian"
           component={IndexPengujian}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View
-                className="items-center"
-                style={{
-                  shadowColor: focused ? "#4338ca" : "transparent",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: focused ? 0.5 : 0,
-                  shadowRadius: 6,
-                  elevation: focused ? 10 : 0,
-                }}
-              >
-                {focused && (
-                  <View
-                    style={{
-                      width: 96,
-                      height: 4,
-                      backgroundColor: "#312e81",
-                      borderBottomLeftRadius: 999,
-                      borderBottomRightRadius: 999,
-                      position: "absolute",
-                      top: -14,
-                    }}
-                  />
-                )}
-                <IonIcons
-                  name="document-text"
-                  size={25}
-                  color={focused ? '#4338ca' : '#a1a1aa'}
-                />
-                <Text
-                  className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
-                    }`}
-                >
-                  Pengujian
-                </Text>
-              </View>
+              <TabIcon 
+                focused={focused} 
+                iconName="document-text" 
+                label="Pengujian" 
+              />
             ),
           }}
           listeners={({ navigation }) => ({
@@ -202,85 +199,34 @@ const TabNavigator = () => {
           })}
         />
       )}
-
+  
       {hasPermission('Pembayaran') && (
         <Tab.Screen
           name="Pembayaran"
           component={IndexPembayaran}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View
-                className="items-center"
-                style={{
-                  shadowColor: focused ? "#4338ca" : "transparent",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: focused ? 0.5 : 0,
-                  shadowRadius: 6,
-                  elevation: focused ? 10 : 0,
-                }}
-              >
-                {focused && (
-                  <View
-                    style={{
-                      width: 96,
-                      height: 4,
-                      backgroundColor: "#312e81",
-                      borderBottomLeftRadius: 999,
-                      borderBottomRightRadius: 999,
-                      position: "absolute",
-                      top: -14,
-                    }}
-                  />
-                )}
-                <IonIcons name="wallet" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-                <Text
-                  className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
-                    }`}
-                >
-                  Pembayaran
-                </Text>
-              </View>
+              <TabIcon 
+                focused={focused} 
+                iconName="wallet" 
+                label="Pembayaran" 
+              />
             ),
           }}
         />
       )}
+  
       {hasPermission('Profile') && (
         <Tab.Screen
           name="Profile"
           component={Profile}
           options={{
             tabBarIcon: ({ focused }) => (
-              <View
-                className="items-center"
-                style={{
-                  shadowColor: focused ? "#4338ca" : "transparent",
-                  shadowOffset: { width: 0, height: 4 },
-                  shadowOpacity: focused ? 0.5 : 0,
-                  shadowRadius: 6,
-                  elevation: focused ? 10 : 0,
-                }}
-              >
-                {focused && (
-                  <View
-                    style={{
-                      width: 96,
-                      height: 4,
-                      backgroundColor: "#312e81",
-                      borderBottomLeftRadius: 999,
-                      borderBottomRightRadius: 999,
-                      position: "absolute",
-                      top: -14,
-                    }}
-                  />
-                )}
-                <IonIcons name="person" size={25} color={focused ? '#4338ca' : '#a1a1aa'} />
-                <Text
-                  className={`text-xs ${focused ? 'text-[#312e81] font-poppins-semibold' : 'text-gray-400 font-poppins-semibold'
-                    }`}
-                >
-                  Profile
-                </Text>
-              </View>
+              <TabIcon 
+                focused={focused} 
+                iconName="person" 
+                label="Profile" 
+              />
             ),
           }}
         />
