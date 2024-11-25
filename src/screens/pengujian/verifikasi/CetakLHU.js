@@ -192,86 +192,81 @@ const HasilUjis = ({ navigation, route }) => {
 
   const renderItem = ({ item }) => {
     const canUpload = selectedCetak === 0 && item.can_upload === 1;
-    const showPreview = selectedCetak !== 0 || item.status === 5;
+    const showPreview = selectedCetak !== 0 || item.status === 8;
 
     return (
-      <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
-        <View className="flex-row justify-between">
-          <View className="flex-1 pr-4">
-            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">
-              {item.kode}
-            </Text>
-            <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">
-              {item.permohonan.user.nama}
-            </Text>
-            <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">
-              {item.lokasi}
-            </Text>
-            <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima:{" "}</Text>
-              <Text className="text-md font-poppins-semibold text-black mb-2">
-                {item.tanggal_diterima}
-              </Text>
+      <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{ 
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4
+      }}>
+        <View className="border-b border-gray-100 pb-3 mb-3">
+          <View className="flex-row justify-between items-center mb-2">
+            <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+            <View className="flex-shrink-0 items-end">
+              <View className="bg-indigo-100 rounded-md px-2 py-1 max-w-[120px] mb-2">
+                <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right">
+                  {item.text_status}
+                </Text>
+              </View> 
+            </View>
           </View>
-          <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md px-2 py-1 max-w-[120px] mb-2">
-              <Text className="text-[11px] text-indigo-600 font-poppins-semibold text-right">
-                {item.text_status}
-              </Text>
-            </View>
-            <View className="my-2">
-              {canUpload && (
-                <TouchableOpacity
-                  onPress={() => {
-                    setCurrentItem(item);
-                    setUploadModalVisible(true);
-                  }}
-                  className="mb-2">
-                  <FontIcon
-                    name="file-upload"
-                    size={18}
-                    color="white"
-                    style={{
-                      backgroundColor: "blue",
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
-                  />
-                </TouchableOpacity>
-              )}
-              {showPreview && (
-                <TouchableOpacity
-                  onPress={() => handlePreviewLHU(item)}
-                  className="mb-2">
-                  <FontIcon
-                    name="file-pdf"
-                    size={18}
-                    color="white"
-                    style={{
-                      backgroundColor: "red",
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
-                  />
-                </TouchableOpacity>
-              )}
-            </View>
+          <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+          <Text className="text-md font-poppins-semibold text-black mb-4">
+            {item.permohonan.user.nama}
+          </Text>
+          <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
+          <Text className="text-[14px] font-poppins-semibold text-black">
+            {item.lokasi}
+          </Text>
+        </View>
+
+        <View className="border-b border-gray-100 pb-3 mb-3">
+          <View className="mb-2">
+            <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima</Text>
+            <Text className="text-md font-poppins-semibold text-black">
+              {item.tanggal_diterima}
+            </Text>
           </View>
         </View>
-        {selectedFile && canUpload && (
-          <Text className="text-[12px] mt-2">
-            Selected: {selectedFile.name}
-          </Text>
-        )}
+
+        <View className="flex-row justify-end pt-2">
+          {canUpload && (
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentItem(item);
+                setUploadModalVisible(true);
+              }}
+              className="flex-row items-center p-2 bg-indigo-100 rounded-md mr-2"
+            >
+              <FontIcon name="file-upload" size={16} color="#4f46e5" />
+              <Text className="ml-2 text-indigo-600 text-[13px] font-poppins-semibold">
+                Upload
+              </Text>
+            </TouchableOpacity>
+          )}
+    
+          {showPreview && (
+            <TouchableOpacity
+              onPress={() => handlePreviewLHU(item)}
+              className="flex-row items-center p-2 bg-red-500 rounded-md"
+            >
+              <FontIcon name="file-pdf" size={16} color="#fff" />
+              <Text className="ml-2 text-white text-[13px] font-poppins-semibold">
+                Preview LHU
+              </Text>
+            </TouchableOpacity>
+          )}
+        </View>
       </View>
     );
   };
 
   const payload = useMemo(() => {
     return {
-      status: selectedCetak === 0 ? [-1, 5] : 5,
+      status: selectedCetak === 0 ? [6, 7] : 8, // Updated to match web version status
       tahun: selectedYear,
       ...(selectedCetak === 0 && { can_upload: 1 }),
     };
@@ -309,20 +304,25 @@ const HasilUjis = ({ navigation, route }) => {
                     option => option.title === nativeEvent.event,
                   );
                   if (selectedOption) {
-                    setSelectedYear(selectedOption.title)
-                    // console.log(selectedOption.title)
+                    setSelectedYear(selectedOption.title);
                   }
                 }}
                 shouldOpenOnLongPress={false}
-                
               >
                 <View style={{ marginEnd: 5 }}>
-                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+                  <MaterialCommunityIcons 
+                    name="filter-menu-outline" 
+                    size={24} 
+                    color="white" 
+                    style={{ 
+                      backgroundColor: "#312e81", 
+                      padding: 12, 
+                      borderRadius: 8 
+                    }} 
+                  />
                 </View>
               </MenuView>
             </View>
-
-           
           </View>
         </View>
       </View>

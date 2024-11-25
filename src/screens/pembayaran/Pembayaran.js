@@ -1,95 +1,33 @@
-import React, { useState, useRef, useEffect } from "react";
+import React from "react";
 import axios from "@/src/libs/axios";
 import {
   View,
-  Text,
   ScrollView,
   StyleSheet,
-  TextInput,
-  Image,
-  Modal,
-  TouchableOpacity,
+  Text
 } from "react-native";
 import { Colors, Button } from "react-native-ui-lib";
-import { Picker } from "@react-native-picker/picker";
 import { useNavigation } from "@react-navigation/native";
-import SignatureScreen from "react-native-signature-canvas";
-import { Searchbar } from "react-native-paper";
 import { List } from "react-native-paper";
-import Pengujian from "./Pengujian";
-import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import { TextFooter } from "../components/TextFooter";
+import Ionicons from "react-native-vector-icons/Ionicons";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
-  const [search, setSearch] = useState("");
-  const [selectedYear, setSelectedYear] = useState("");
-  const [selectedMonth, setSelectedMonth] = useState("");
-  const [itemsPerPage, setItemsPerPage] = useState(10);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [pembayaranData, setPembayaranData] = useState([]);
 
-  // SEARCH BAR
-  const [searchQuery, setSearchQuery] = React.useState("");
-  // PREVIOUS
-  const handlePreviousPage = () => {
-    if (currentPage > 1) setCurrentPage(currentPage - 1);
-  };
-  // NEXT
-  const handleNextPage = () => {
-    if (currentPage < totalPages) setCurrentPage(currentPage + 1);
+  const Pengujian = () => {
+    navigation.navigate("Pengujian");
   };
 
-  useEffect(() => {
-    axios
-      .get("/pembayaran/pengujian")
-      .then(response => {
-        console.log("Response Data:", response.data);
-      })
-      .catch(error => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  const filteredCards = pembayaranData.filter(cardItem => {
-    const matchesSearch = cardItem.lokasi
-      .toLowerCase()
-      .includes(search.toLowerCase());
-    const matchesYear = selectedYear
-      ? cardItem.tanggal.startsWith(selectedYear)
-      : true;
-    const matchesMonth = selectedMonth
-      ? cardItem.tanggal.split("-")[1] === selectedMonth
-      : true;
-    return matchesSearch && matchesYear && matchesMonth;
-  });
-
-  const totalPages = Math.ceil(filteredCards.length / itemsPerPage);
-  const paginatedCards = filteredCards.slice(
-    (currentPage - 1) * itemsPerPage,
-    currentPage * itemsPerPage,
-  );
-
-  const ButtonDetail = () => {
-    navigation.navigate("Detail");
-  };
-  const PengambilanSampel = () => {
-    navigation.navigate("PengambilanSampel");
+  const NonPengujian = () => {
+    navigation.navigate("NonPengujian");
   };
 
-const Pengujian = () => {
-  navigation.navigate("Pengujian");
-};
-
-const NonPengujian = () => {
-  navigation.navigate("NonPengujian");
-};
-
-const Global = () => {
-  navigation.navigate("Global");
-};
+  const Global = () => {
+    navigation.navigate("Global");
+  };
 
   return (
     <View style={styles.container}>
@@ -97,12 +35,12 @@ const Global = () => {
 
       <View className=" p-4 flex flex-row items-center mt-2">
         {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
-        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
+        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pengujian</Text>
       </View>
         <View>
           <List.Item
           style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-          title={<Text className="font-poppins-medium text-[15px]">Pembayaran</Text>}
+          title={<Text className="font-poppins-medium text-[15px]">Pengujian</Text>}
           left={() => (
             <View className="bg-green-600 rounded-full ml-3">
             <Ionicons name="wallet" size={17} color={'white'} style={{padding: 5}}/>
@@ -117,7 +55,7 @@ const Global = () => {
 
         <View> 
           <List.Item
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Non Pengujian</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Non Pengujian</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="card" size={17} color={'white'} style={{padding: 5}}/>
@@ -133,7 +71,7 @@ const Global = () => {
           <View>
             <List.Item
             style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Global</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Global</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="globe" size={17} color={'white'} style={{padding: 5}}/>
@@ -164,4 +102,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default Pembayaran;
+export default Pembayaran
