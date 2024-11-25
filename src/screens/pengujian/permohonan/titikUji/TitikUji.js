@@ -73,7 +73,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   const [downloadComplete, setDownloadComplete] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  const { delete: deleteTitikUji, DeleteConfirmationModal } = useDelete({
+  const { delete: deleteTitikUji, DeleteConfirmationModal, SuccessOverlayModal, FailedOverlayModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["/permohonan/titik"]);
       navigation.navigate("TitikUji");
@@ -419,6 +419,8 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           />
         </View>
         <DeleteConfirmationModal />
+        <SuccessOverlayModal/>
+        <FailedOverlayModal/>
       </View>
     </>
   );
