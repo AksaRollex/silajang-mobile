@@ -106,7 +106,7 @@ export default function Profile({ navigation }) {
                       }}
                       style={{
                         borderWidth: 3,
-                        borderColor: "#E2E8F0",
+                        borderColor: "#f9fafb",
                       }}
                       resizeMode={FastImage.resizeMode.cover}
                     />

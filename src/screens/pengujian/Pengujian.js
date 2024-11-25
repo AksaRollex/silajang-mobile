@@ -382,7 +382,6 @@ const styles = StyleSheet.create({
   },
   activityContainer: {
     marginBottom: 24,
-    paddingHorizontal: 16,
   },
   activityCard: {
     backgroundColor: "#FFF",

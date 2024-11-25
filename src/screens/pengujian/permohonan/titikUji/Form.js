@@ -116,6 +116,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     handleSubmit,
     formState: { errors },
     setValue,
+    getValues,
     reset,
   } = useForm();
 
@@ -144,8 +145,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             jenis_wadahs_id: data.jenis_wadahs_id,
             keterangan: data.keterangan,
             nama_pengambil: data.nama_pengambil,
+            payment_type: data.payment_type,
+            tanggal_pengambilan: data.tanggal_pengambilan,
+            south: data.south,
             acuan_metode_id: data.acuan_metode_id,
             east: data.east,
+            
+            kecepatan_angin: data.kecepatan_angin,
             suhu_air: data.suhu_air,
             ph: data.ph,
             dhl: data.dhl,
@@ -157,10 +163,6 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             cuaca: data.cuaca,
             arah_angin: data.arah_angin,
             kelembapan: data.kelembapan,
-            kecepatan_angin: data.kecepatan_angin,
-            payment_type: data.payment_type,
-            tanggal_pengambilan: data.tanggal_pengambilan,
-            south: data.south,
           });
           [
             "suhu_air",
@@ -206,6 +208,22 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         });
         return Promise.reject(new Error("Silahkan pilih metode pembayaran"));
       }
+
+      const lapangan = {
+        suhu_air: data.suhu_air,
+        ph: data.ph,
+        dhl: data.dhl,
+        salinitas: data.salinitas,
+        do: data.do,
+        kekeruhan: data.kekeruhan,
+        klorin_bebas: data.klorin_bebas,
+        suhu_udara: data.suhu_udara,
+        cuaca: data.cuaca,
+        arah_angin: data.arah_angin,
+        kelembapan: data.kelembapan,
+        kecepatan_angin: data.kecepatan_angin,
+      };
+      
       const requestData = {
         ...data,
         payment_type: selectedPayment,
@@ -215,6 +233,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           : null,
         south: location.latitude || null,
         east: location.longitude || null,
+        lapangan, // Sertakan data lapangan
       };
 
       Object.keys(requestData).forEach(
@@ -229,6 +248,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         requestData,
       );
 
+      console.log(response.data);
       return response.data; // Pastikan API mengembalikan data yang relevan
     },
     {
