@@ -21,6 +21,9 @@ import { APP_URL } from "@env";
 import Back from "../../components/Back";
 import LottieView from "lottie-react-native";
 import Icons from "react-native-vector-icons/AntDesign";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 const Akun = () => {
   const [file, setFile] = React.useState(null);
@@ -143,11 +146,13 @@ const Akun = () => {
       }, 2000);
     },
     onError: error => {
-      setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
-        setErrorModalVisible(true);
-        setTimeout(() => {
-          setErrorModalVisible(false);
-        }, 2000);
+      setErrorMessage(
+        error.response?.data?.message || "Gagal memperbarui data",
+      );
+      setErrorModalVisible(true);
+      setTimeout(() => {
+        setErrorModalVisible(false);
+      }, 2000);
     },
   });
 
@@ -182,14 +187,15 @@ const Akun = () => {
   return (
     <>
       <View className="bg-[#ececec] p-3 w-full h-full ">
-      <View className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
-      style={{
+        <View
+          className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+          style={{
             elevation: 5,
             shadowColor: "rgba(0, 0, 0, 0.1)",
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.5,
-            shadowRadius: 2,
-          }}>
+            shadowRadius: 2,
+          }}>
           <View className="flex-row">
             <Back
               size={30}
@@ -212,45 +218,77 @@ const Akun = () => {
                 name="photo"
                 render={({ field: { value } }) => (
                   <View className="mt-3">
-                    <Text className="font-poppins-semibold mb-1 text-md text-black " style={{ fontSize: 15 }}>
+                    <Text
+                      className="font-poppins-semibold mb-2 text-md text-black"
+                      style={{ fontSize: 15 }}>
                       Foto Profil
                     </Text>
-                    <View className="p-[5px] bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular">
-                      <View className="bg-zinc-800 rounded-2xl p-2">
-                        {currentPhotoUrl || file ? (
-                          <View style={styles.imageContainer}>
-                            <Image
-                              source={{
-                                uri: file ? file.uri : currentPhotoUrl,
-                              }}
-                              style={styles.signaturePreview}
-                              onError={e =>
-                                console.log(
-                                  "Error loading image:",
-                                  e.nativeEvent.error,
-                                )
-                              }
-                            />
-                            <TouchableOpacity
-                              style={styles.deleteButton}
-                              className="absolute bg-red-600 rounded-full items-center justify-center  top-3 w-8 h-8 right-3  m-3"
-                              onPress={handleDeletePhoto}>
-                              <Icons
-                                name="close"
-                                size={18}
-                                color={"white"}></Icons>
-                            </TouchableOpacity>
-                          </View>
-                        ) : (
-                          <TouchableOpacity
-                            style={styles.addSignatureButton}
-                            onPress={handleChoosePhoto}>
-                            <Text style={styles.addSignatureText}>
-                              Tambah Foto
+                    <View className="rounded-2xl">
+                      {currentPhotoUrl || file ? (
+                        // State setelah upload foto
+                        <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                          <View className="items-center">
+                            <View className="relative">
+                              <Image
+                                source={{
+                                  uri: file ? file.uri : currentPhotoUrl,
+                                }}
+                                className="w-48 h-48 rounded-lg"
+                                onError={e =>
+                                  console.log(
+                                    "Error loading image:",
+                                    e.nativeEvent.error,
+                                  )
+                                }
+                              />
+
+                              {/* Overlay gradient */}
+                              <View className="absolute inset-0 rounded-full bg-black/5" />
+                              {/* Delete button */}
+                              <TouchableOpacity
+                                className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                                onPress={handleDeletePhoto}>
+                                <Icons name="close" size={18} color="#dc2626" />
+                              </TouchableOpacity>
+
+                              {/* Change photo button */}
+                              <TouchableOpacity
+                                className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                                onPress={handleChoosePhoto}>
+                                <Icons name="camera" size={20} color="white" />
+                              </TouchableOpacity>
+                            </View>
+
+                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
+                              Ketuk ikon kamera untuk mengubah foto
                             </Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
+                          </View>
+                        </View>
+                      ) : (
+                        // State sebelum upload foto
+                        <TouchableOpacity
+                          className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                          onPress={handleChoosePhoto}>
+                          <View className="items-center space-y-4">
+                            <View className="bg-indigo-100 rounded-full p-5">
+                              <SimpleLineIcons
+                                name="cloud-upload"
+                                size={40}
+                                color="#4f46e5"
+                              />
+                            </View>
+
+                            <View className="items-center">
+                              <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
+                                Unggah Foto Profil
+                              </Text>
+                              <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                                Klik atau sentuh area ini untuk memilih foto
+                              </Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      )}
                     </View>
                   </View>
                 )}
@@ -336,37 +374,40 @@ const Akun = () => {
               <ActivityIndicator size="large" color="#312e81" />
             </View>
           )}
-      </View>
-      <Modal animationType="fade" transparent={true} visible={modalVisible}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
+        </View>
+        <Modal animationType="fade" transparent={true} visible={modalVisible}>
+          <View style={styles.overlayView}>
+            <View style={styles.successContainer}>
               <Image
                 source={require("@/assets/images/cek.png")}
                 style={styles.lottie}
               />
-            {/* <LottieView
+              {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
             /> */}
-            <Text style={styles.successTextTitle}>
-              Informasi personal kamu berhasil di rubah
-            </Text>
-            <Text style={styles.successText}>
-              Pastikan informasi personal yang kamu gunakan saat ini sudah benar
-              !
-            </Text>
+              <Text style={styles.successTextTitle}>
+                Informasi personal kamu berhasil di rubah
+              </Text>
+              <Text style={styles.successText}>
+                Pastikan informasi personal yang kamu gunakan saat ini sudah
+                benar !
+              </Text>
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
 
-      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
-        <View style={styles.overlayView}>
-          <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image 
-              source={require("@/assets/images/error.png")}
-              style={styles.lottie}
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={errorModalVisible}>
+          <View style={styles.overlayView}>
+            <View style={[styles.successContainer, styles.errorContainer]}>
+              <Image
+                source={require("@/assets/images/error.png")}
+                style={styles.lottie}
               />
               <Text style={[styles.successTextTitle, styles.errortitle]}>
                 Gagal memperbarui data
@@ -379,9 +420,9 @@ const Akun = () => {
                 onPress={() => setErrorModalVisible(false)}>
                   <Text style={styles.errorButtonText}>Tutup</Text>
               </TouchableOpacity> */}
+            </View>
           </View>
-        </View>
-      </Modal>
+        </Modal>
       </View>
     </>
   );
@@ -441,23 +482,23 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
   },
-  deleteButton: {
-    position: "absolute",
-    right: 10,
-    top: 10,
-    backgroundColor: "red",
-    borderRadius: 50,
-    padding: 5,
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  deleteButtonText: {
-    color: "white",
-    fontSize: 14,
-    fontWeight: "bold",
-  },
+  // deleteButton: {
+  //   position: "absolute",
+  //   right: 10,
+  //   top: 10,
+  //   backgroundColor: "red",
+  //   borderRadius: 50,
+  //   padding: 5,
+  //   width: 30,
+  //   height: 30,
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  // },
+  // deleteButtonText: {
+  //   color: "white",
+  //   fontSize: 14,
+  //   fontWeight: "bold",
+  // },
   selectPhotoText: {
     color: "black",
   },
@@ -486,7 +527,7 @@ const styles = StyleSheet.create({
     position: "relative",
   },
   signaturePreview: {
-    width: 150,
+    width: 200,
     height: 200,
     resizeMode: "contain",
     borderRadius: 20,
@@ -505,14 +546,10 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     position: "absolute",
-    top: -10,
-    right: -10,
-    backgroundColor: "red",
+    top: 0,
+    right: 0,
     borderRadius: 15,
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#c30010",
   },
   deleteButtonText: {
     color: "white",
@@ -523,9 +560,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#EBF0FF",
     padding: 20,
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: "#5C85FF",
     borderStyle: "dashed",
     borderRadius: 8,
   },
@@ -569,10 +607,10 @@ const styles = StyleSheet.create({
     color: "black",
   },
   errortitle: {
-    color: '#FF4B4B',
+    color: "#FF4B4B",
   },
   errorText: {
-    color: '#666',
+    color: "#666",
   },
 });
 

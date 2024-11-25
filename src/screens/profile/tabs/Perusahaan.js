@@ -29,6 +29,8 @@ import Back from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import Select2 from "@/src/screens/components/Select2";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -430,581 +432,622 @@ const Perusahaan = () => {
   return (
     <>
       <ScrollView className="flex-1">
-      <View className="bg-[#ececec] p-3  w-full h-full ">
-        <View className="bg-[#fff] px-4  rounded-3xl flex-1" style={{
-            elevation: 5,
-            shadowColor: "rgba(0, 0, 0, 0.1)",
-            shadowOffset: { width: 0, height: 0 },
-            shadowOpacity: 0.5,
-            shadowRadius: 2,
-          }}>
-          <View className="flex-row py-5">
-            <Back
-              size={30}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-5 "
-              style={{
-                padding: 4,
-              }}
-            />
-            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
-              Informasi Perusahaan
-            </Text>
-          </View>
-          {userData ? (
-            <View>
-              <Controller
-                control={control}
-                name="tanda_tangan"
-                render={({ field: { value } }) => (
-                  <View className="mb-4">
-                    <Text className="font-poppins-semibold mb-2 text-black ">
-                      Tanda Tangan
-                    </Text>
+        <View className="bg-[#ececec] p-3  w-full h-full ">
+          <View
+            className="bg-[#fff] px-4  rounded-3xl flex-1"
+            style={{
+              elevation: 5,
+              shadowColor: "rgba(0, 0, 0, 0.1)",
+              shadowOffset: { width: 0, height: 0 },
+              shadowOpacity: 0.5,
+              shadowRadius: 2,
+            }}>
+            <View className="flex-row py-5">
+              <Back
+                size={30}
+                color={"black"}
+                action={() => navigation.goBack()}
+                className="mr-5 "
+                style={{
+                  padding: 4,
+                }}
+              />
+              <Text className="font-poppins-semibold text-black text-xl mt-1 ">
+                Informasi Perusahaan
+              </Text>
+            </View>
+            {userData ? (
+              <View>
+                <Controller
+                  control={control}
+                  name="tanda_tangan"
+                  render={({ field: { value } }) => (
+                    <View className="mb-4">
+                      <Text className="font-poppins-semibold mb-2 text-black ">
+                        Tanda Tangan
+                      </Text>
 
-                    <View className="p-[5px] bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular">
-                      <View className="bg-zinc-800 rounded-2xl p-2">
-                        {file || currentPhotoUrl ? (
-                          <View style={styles.imageContainer}>
-                            <ImageComponent />
-                            <TouchableOpacity
-                              style={styles.deleteButton}
-                              className="absolute bg-red-600 rounded-full items-center justify-center top-3 w-8 h-8 right-3  m-3"
-                              onPress={handleDeletePhoto}>
-                              <Icons
-                                name="close"
-                                size={18}
-                                color={"white"}></Icons>
-                            </TouchableOpacity>
-                          </View>
-                        ) : (
-                          <TouchableOpacity
-                            style={styles.addSignatureButton}
-                            onPress={handleChoosePhoto}>
-                            <Text
-                              style={styles.addSignatureText}
-                              className="font-poppins-semibold">
-                              Tambah Tanda Tangan
+                      <View className="rounded-2xl">
+                      {currentPhotoUrl || file ? (
+                        // State setelah upload foto
+                        <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                          <View className="items-center">
+                            <View className="relative">
+                              <Image
+                                source={{
+                                  uri: file ? file.uri : currentPhotoUrl,
+                                }}
+                                className="w-48 h-48 rounded-lg"
+                                onError={e =>
+                                  console.log(
+                                    "Error loading image:",
+                                    e.nativeEvent.error,
+                                  )
+                                }
+                              />
+
+                              {/* Overlay gradient */}
+                              <View className="absolute inset-0 rounded-full bg-black/5" />
+                              {/* Delete button */}
+                              <TouchableOpacity
+                                className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                                onPress={handleDeletePhoto}>
+                                <Icons name="close" size={18} color="#dc2626" />
+                              </TouchableOpacity>
+
+                              {/* Change photo button */}
+                              <TouchableOpacity
+                                className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                                onPress={handleChoosePhoto}>
+                                <Icons name="camera" size={20} color="white" />
+                              </TouchableOpacity>
+                            </View>
+
+                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
+                              Ketuk ikon kamera untuk mengubah foto
                             </Text>
-                          </TouchableOpacity>
-                        )}
-                      </View>
+                          </View>
+                        </View>
+                      ) : (
+                        // State sebelum upload foto
+                        <TouchableOpacity
+                          className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                          onPress={handleChoosePhoto}>
+                          <View className="items-center space-y-4">
+                            <View className="bg-indigo-100 rounded-full p-5">
+                              <SimpleLineIcons
+                                name="cloud-upload"
+                                size={40}
+                                color="#4f46e5"
+                              />
+                            </View>
+
+                            <View className="items-center">
+                              <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
+                                Unggah Tanda Tangan 
+                              </Text>
+                              <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                                Klik atau sentuh area ini untuk memilih foto
+                              </Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      )}
                     </View>
-                  </View>
-                )}
-              />
-
-              <Controller
-                control={control}
-                name="instansi"
-                rules={{ required: "Instansi Tidak Boleh Kosong" }}
-                defaultValue={userData.instansi}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Instansi
-                    </Text>
-
-                    <TextField
-                      value={value}
-                      enableErrors
-                      placeholder="Masukkan nama instansi"
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}
-              />
-              {errors.instansi && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.instansi.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="alamat"
-                defaultValue={userData.alamat}
-                rules={{ required: "Alamat Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View>
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Alamat Industri
-                    </Text>
-                    <TextField
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan alamat industri"
-                      keyboardType="text-input"
-                      value={value}
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}
-              />
-              {errors.alamat && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.alamat.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="pimpinan"
-                rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Pimpinan
-                    </Text>
-                    <TextField
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan nama pimpinan"
-                      keyboardType="text-input"
-                      value={value}
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}></Controller>
-              {errors.pimpinan && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.pimpinan.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="pj_mutu"
-                rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      PJ Mutu
-                    </Text>
-                    <TextField
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan PJ Mutu"
-                      keyboardType="text-input"
-                      value={value}
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}></Controller>
-              {errors.pj_mutu && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.pj_mutu.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="telepon"
-                rules={{ required: "Telepon Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Nomor Telepon
-                    </Text>
-                    <TextField
-                      onChangeText={onChange}
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan No Telepon"
-                      keyboardType="phone-pad"
-                      value={value}
-                    />
-                  </View>
-                )}></Controller>
-              {errors.telepon && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.telepon.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="fax"
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Fax
-                    </Text>
-                    <TextField
-                      onChangeText={onChange}
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan fax"
-                      keyboardType="phone-pad"
-                      value={value}
-                    />
-                  </View>
-                )}></Controller>
-
-              <Controller
-                control={control}
-                name="email"
-                rules={{ required: "Email Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Email
-                    </Text>
-                    <TextField
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan email"
-                      keyboardType="email-address"
-                      onChangeText={onChange}
-                      value={value}
-                    />
-                  </View>
-                )}></Controller>
-              {errors.email && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.email.message}
-                </Text>
-              )}
-
-              <Controller
-                control={control}
-                name="jenis_kegiatan"
-                rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Jenis Kegiatan
-                    </Text>
-                    <TextField
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      placeholder="Masukkan jenis kegiatan"
-                      keyboardType="text-input"
-                      onChangeText={onChange}
-                      value={value}
-                    />
-                  </View>
-                )}></Controller>
-              {errors.jenis_kegiatan && (
-                <Text style={{ color: "red" }} className="bottom-5">
-                  {errors.jenis_kegiatan.message}
-                </Text>
-              )}
-              <View className="rounded-2xl p-3 bottom-1 ">
-                <View className="flex-row justify-between">
-                  <Controller
-                    control={control}
-                    name="lat"
-                    rules={{ required: "Tidak Boleh Kosong" }}
-                    render={({ field: { onChange, value } }) => (
-                      <View className="w-1/2 pr-2">
-                        <Text className="font-poppins-semibold mb-2 text-black">
-                          Selatan
-                        </Text>
-
-                        <TextField
-                          className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                          enableErrors
-                          keyboardType="numeric"
-                          onChangeText={onChange}
-                          value={value || location.lat}
-                          placeholderTextColor="gray"
-                          placeholder={userData.lat}
-                        />
-                      </View>
-                    )}
-                  />
-
-                  <Controller
-                    control={control}
-                    name="long"
-                    rules={{ required: "Tidak Boleh Kosong" }}
-                    render={({ field: { onChange, value } }) => (
-                      <View className="w-1/2 pl-2">
-                        <Text className="font-poppins-semibold mb-2 text-black text-end">
-                          Timur
-                        </Text>
-
-                        <TextField
-                          className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                          keyboardType="numeric"
-                          onChangeText={onChange}
-                          enableErrors
-                          value={value || location.long}
-                          placeholderTextColor="gray"
-                          placeholder={userData.long}
-                        />
-                      </View>
-                    )}
-                  />
-                </View>
-                <View className="flex-row">
-                  {errors.lat && (
-                    <Text style={{ color: "red" }} className="bottom-5">
-                      {errors.lat.message}
-                    </Text>
+                    </View>
                   )}
-                  {errors.long && (
-                    <Text style={{ color: "red" }} className="bottom-5 ml-14">
-                      {errors.long.message}
-                    </Text>
-                  )}
-                </View>
-                <TouchableOpacity
-                  onPress={handleLocationPress}
-                  className="w-full p-3 rounded-3xl bg-[#007AFF]">
-                  <View className="flex-row gap-4 justify-center">
-                    <MaterialIcons
-                      name="location-searching"
-                      size={24}
-                      color={"white"}
-                    />
-                    <Text className="text-white font-poppins-semibold text-center">
-                      Tekan Untuk Mendapatkan Lokasi
-                    </Text>
-                  </View>
-                </TouchableOpacity>
-              </View>
+                />
 
-              <Modal
-                transparent={true}
-                visible={modalVisible}
-                animationType="fade"
-                onRequestClose={() => setModalVisible(false)}>
-                <View
-                  style={{
-                    flex: 1,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    backgroundColor: "rgba(0, 0, 0, 0.5)",
-                  }}>
+                <Controller
+                  control={control}
+                  name="instansi"
+                  rules={{ required: "Instansi Tidak Boleh Kosong" }}
+                  defaultValue={userData.instansi}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Instansi
+                      </Text>
+
+                      <TextField
+                        value={value}
+                        enableErrors
+                        placeholder="Masukkan nama instansi"
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  )}
+                />
+                {errors.instansi && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.instansi.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="alamat"
+                  defaultValue={userData.alamat}
+                  rules={{ required: "Alamat Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Alamat Industri
+                      </Text>
+                      <TextField
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan alamat industri"
+                        keyboardType="text-input"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  )}
+                />
+                {errors.alamat && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.alamat.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="pimpinan"
+                  rules={{ required: "Pimpinan Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Pimpinan
+                      </Text>
+                      <TextField
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan nama pimpinan"
+                        keyboardType="text-input"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  )}></Controller>
+                {errors.pimpinan && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.pimpinan.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="pj_mutu"
+                  rules={{ required: "PJ MUTU Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        PJ Mutu
+                      </Text>
+                      <TextField
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan PJ Mutu"
+                        keyboardType="text-input"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  )}></Controller>
+                {errors.pj_mutu && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.pj_mutu.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="telepon"
+                  rules={{ required: "Telepon Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Nomor Telepon
+                      </Text>
+                      <TextField
+                        onChangeText={onChange}
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan No Telepon"
+                        keyboardType="phone-pad"
+                        value={value}
+                      />
+                    </View>
+                  )}></Controller>
+                {errors.telepon && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.telepon.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="fax"
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Fax
+                      </Text>
+                      <TextField
+                        onChangeText={onChange}
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan fax"
+                        keyboardType="phone-pad"
+                        value={value}
+                      />
+                    </View>
+                  )}></Controller>
+
+                <Controller
+                  control={control}
+                  name="email"
+                  rules={{ required: "Email Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Email
+                      </Text>
+                      <TextField
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan email"
+                        keyboardType="email-address"
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    </View>
+                  )}></Controller>
+                {errors.email && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.email.message}
+                  </Text>
+                )}
+
+                <Controller
+                  control={control}
+                  name="jenis_kegiatan"
+                  rules={{ required: "Jenis Kegiatan Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Jenis Kegiatan
+                      </Text>
+                      <TextField
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        placeholder="Masukkan jenis kegiatan"
+                        keyboardType="text-input"
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    </View>
+                  )}></Controller>
+                {errors.jenis_kegiatan && (
+                  <Text style={{ color: "red" }} className="bottom-5">
+                    {errors.jenis_kegiatan.message}
+                  </Text>
+                )}
+                <View className="rounded-2xl p-3 bottom-1 ">
+                  <View className="flex-row justify-between">
+                    <Controller
+                      control={control}
+                      name="lat"
+                      rules={{ required: "Tidak Boleh Kosong" }}
+                      render={({ field: { onChange, value } }) => (
+                        <View className="w-1/2 pr-2">
+                          <Text className="font-poppins-semibold mb-2 text-black">
+                            Selatan
+                          </Text>
+
+                          <TextField
+                            className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                            enableErrors
+                            keyboardType="numeric"
+                            onChangeText={onChange}
+                            value={value || location.lat}
+                            placeholderTextColor="gray"
+                            placeholder={userData.lat}
+                          />
+                        </View>
+                      )}
+                    />
+
+                    <Controller
+                      control={control}
+                      name="long"
+                      rules={{ required: "Tidak Boleh Kosong" }}
+                      render={({ field: { onChange, value } }) => (
+                        <View className="w-1/2 pl-2">
+                          <Text className="font-poppins-semibold mb-2 text-black text-end">
+                            Timur
+                          </Text>
+
+                          <TextField
+                            className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                            keyboardType="numeric"
+                            onChangeText={onChange}
+                            enableErrors
+                            value={value || location.long}
+                            placeholderTextColor="gray"
+                            placeholder={userData.long}
+                          />
+                        </View>
+                      )}
+                    />
+                  </View>
+                  <View className="flex-row">
+                    {errors.lat && (
+                      <Text style={{ color: "red" }} className="bottom-5">
+                        {errors.lat.message}
+                      </Text>
+                    )}
+                    {errors.long && (
+                      <Text style={{ color: "red" }} className="bottom-5 ml-14">
+                        {errors.long.message}
+                      </Text>
+                    )}
+                  </View>
+                  <TouchableOpacity
+                    onPress={handleLocationPress}
+                    className="w-full p-3 rounded-3xl bg-[#007AFF]">
+                    <View className="flex-row gap-4 justify-center">
+                      <MaterialIcons
+                        name="location-searching"
+                        size={24}
+                        color={"white"}
+                      />
+                      <Text className="text-white font-poppins-semibold text-center">
+                        Tekan Untuk Mendapatkan Lokasi
+                      </Text>
+                    </View>
+                  </TouchableOpacity>
+                </View>
+
+                <Modal
+                  transparent={true}
+                  visible={modalVisible}
+                  animationType="fade"
+                  onRequestClose={() => setModalVisible(false)}>
                   <View
                     style={{
-                      width: 300,
-                      padding: 20,
-                      backgroundColor: "white",
-                      borderRadius: 10,
+                      flex: 1,
+                      justifyContent: "center",
                       alignItems: "center",
+                      backgroundColor: "rgba(0, 0, 0, 0.5)",
                     }}>
-                    <Text
+                    <View
                       style={{
-                        fontSize: 18,
-                        fontWeight: "bold",
-                        marginBottom: 15,
-                        color: "black",
+                        width: 300,
+                        padding: 20,
+                        backgroundColor: "white",
+                        borderRadius: 10,
+                        alignItems: "center",
                       }}>
-                      Koordinat Anda
-                    </Text>
-
-                    <View
-                      style={{
-                        width: "100%",
-                        borderBottomWidth: 1,
-                        borderBottomColor: "#dedede",
-                        marginBottom: 15,
-                      }}
-                    />
-
-                    {loading ? (
-                      <ActivityIndicator
-                        size="large"
-                        style={{ marginBottom: 15 }}
-                        color="#007AFF"
-                      />
-                    ) : (
-                      <>
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            marginBottom: 10,
-                            color: "black",
-                          }}>
-                          Latitude: {location.latitude}
-                        </Text>
-                        <Text
-                          style={{
-                            fontSize: 16,
-                            marginBottom: 25,
-                            color: "black",
-                          }}>
-                          Longitude: {location.longitude}
-                        </Text>
-                      </>
-                    )}
-
-                    <View style={{ flexDirection: "row" }}>
-                      <TouchableOpacity
-                        onPress={() => setModalVisible(false)}
+                      <Text
                         style={{
-                          paddingVertical: 10,
-                          paddingHorizontal: 20,
-                          backgroundColor: "#dedede",
-                          borderRadius: 5,
-                          marginRight: 10,
+                          fontSize: 18,
+                          fontWeight: "bold",
+                          marginBottom: 15,
+                          color: "black",
                         }}>
-                        <Text style={{ color: "black" }}>Tutup</Text>
-                      </TouchableOpacity>
-                    </View>
-                  </View>
-                </View>
-              </Modal>
+                        Koordinat Anda
+                      </Text>
 
-              <Controller
-                name="kab_kota_id"
-                control={control}
-                rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-5">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Kabupaten / Kota
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kotaKabupaten}
-                        onSelect={value => {
-                          onChange(value);
-                          setSelectedKotaKabupaten(value);
-                          setSelectedKecamatan(null); // Reset Kecamatan
-                          setSelectedKelurahan(null); // Reset Kelurahan
-                          setValue("kecamatan_id", null); // Clear Kecamatan field
-                          setValue("kelurahan_id", null); // Clear Kelurahan field
-                          setKecamatan([]);
-                          setKelurahan([]);
+                      <View
+                        style={{
+                          width: "100%",
+                          borderBottomWidth: 1,
+                          borderBottomColor: "#dedede",
+                          marginBottom: 15,
                         }}
-                        defaultValue={watch("kab_kota_id")}
-                        placeholder={"Pilih Kabupaten/Kota"}
                       />
-                    </View>
-                  </View>
-                )}
-              />
 
-              <Controller
-                name="kecamatan_id"
-                control={control}
-                rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-4">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Kecamatan
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kecamatan}
-                        onSelect={value => {
-                          onChange(value);
-                          setSelectedKecamatan(value);
-                          setSelectedKelurahan(null); // Reset Kelurahan when Kecamatan changes
-                          setValue("kelurahan_id", null); // Clear Kelurahan field
-                          setKelurahan([]);
-                        }}
-                        defaultValue={selectedKecamatan} // Use local state to reset
-                        placeholder={"Pilih Kecamatan"}
-                        disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
-                      />
-                    </View>
-                  </View>
-                )}
-              />
+                      {loading ? (
+                        <ActivityIndicator
+                          size="large"
+                          style={{ marginBottom: 15 }}
+                          color="#007AFF"
+                        />
+                      ) : (
+                        <>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              marginBottom: 10,
+                              color: "black",
+                            }}>
+                            Latitude: {location.latitude}
+                          </Text>
+                          <Text
+                            style={{
+                              fontSize: 16,
+                              marginBottom: 25,
+                              color: "black",
+                            }}>
+                            Longitude: {location.longitude}
+                          </Text>
+                        </>
+                      )}
 
-              <Controller
-                name="kelurahan_id"
-                control={control}
-                rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-4">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Kelurahan
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kelurahan}
-                        onSelect={value => {
-                          onChange(value);
-                          setSelectedKelurahan(value);
-                        }}
-                        defaultValue={selectedKelurahan} // Use local state to reset
-                        placeholder={"Pilih Kelurahan"}
-                        disabled={!selectedKecamatan} // Disable if Kecamatan not selected
-                      />
+                      <View style={{ flexDirection: "row" }}>
+                        <TouchableOpacity
+                          onPress={() => setModalVisible(false)}
+                          style={{
+                            paddingVertical: 10,
+                            paddingHorizontal: 20,
+                            backgroundColor: "#dedede",
+                            borderRadius: 5,
+                            marginRight: 10,
+                          }}>
+                          <Text style={{ color: "black" }}>Tutup</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                   </View>
-                )}
-              />
-              <Button
-                onPress={handleSubmit(updateUser)}
-                loading={isLoading}
-                className="p-3 rounded-3xl mt-10 mb-5"
-                style={{ backgroundColor: Colors.brand }}>
-                <Text className="text-white text-center text-base font-bold font-poppins-regular">
-                  SIMPAN
-                </Text>
-              </Button>
-            </View>
-          ) : (
-            <View className="flex-1 justify-center items-center my-4">
-              <ActivityIndicator size="large" color="#312e81" />
-            </View>
-          )}
-        </View>
+                </Modal>
+
+                <Controller
+                  name="kab_kota_id"
+                  control={control}
+                  rules={{ required: "Kabupaten Kota Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-5">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Kabupaten / Kota
+                      </Text>
+                      <View
+                        style={{ borderColor: "black", borderWidth: 0.5 }}
+                        className="rounded-2xl">
+                        <Select2
+                          data={kotaKabupaten}
+                          onSelect={value => {
+                            onChange(value);
+                            setSelectedKotaKabupaten(value);
+                            setSelectedKecamatan(null); // Reset Kecamatan
+                            setSelectedKelurahan(null); // Reset Kelurahan
+                            setValue("kecamatan_id", null); // Clear Kecamatan field
+                            setValue("kelurahan_id", null); // Clear Kelurahan field
+                            setKecamatan([]);
+                            setKelurahan([]);
+                          }}
+                          defaultValue={watch("kab_kota_id")}
+                          placeholder={"Pilih Kabupaten/Kota"}
+                        />
+                      </View>
+                    </View>
+                  )}
+                />
+
+                <Controller
+                  name="kecamatan_id"
+                  control={control}
+                  rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-4">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Kecamatan
+                      </Text>
+                      <View
+                        style={{ borderColor: "black", borderWidth: 0.5 }}
+                        className="rounded-2xl">
+                        <Select2
+                          data={kecamatan}
+                          onSelect={value => {
+                            onChange(value);
+                            setSelectedKecamatan(value);
+                            setSelectedKelurahan(null); // Reset Kelurahan when Kecamatan changes
+                            setValue("kelurahan_id", null); // Clear Kelurahan field
+                            setKelurahan([]);
+                          }}
+                          defaultValue={selectedKecamatan} // Use local state to reset
+                          placeholder={"Pilih Kecamatan"}
+                          disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
+                        />
+                      </View>
+                    </View>
+                  )}
+                />
+
+                <Controller
+                  name="kelurahan_id"
+                  control={control}
+                  rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-4">
+                      <Text className="font-poppins-semibold mb-2 text-black">
+                        Kelurahan
+                      </Text>
+                      <View
+                        style={{ borderColor: "black", borderWidth: 0.5 }}
+                        className="rounded-2xl">
+                        <Select2
+                          data={kelurahan}
+                          onSelect={value => {
+                            onChange(value);
+                            setSelectedKelurahan(value);
+                          }}
+                          defaultValue={selectedKelurahan} // Use local state to reset
+                          placeholder={"Pilih Kelurahan"}
+                          disabled={!selectedKecamatan} // Disable if Kecamatan not selected
+                        />
+                      </View>
+                    </View>
+                  )}
+                />
+                <Button
+                  onPress={handleSubmit(updateUser)}
+                  loading={isLoading}
+                  className="p-3 rounded-3xl mt-10 mb-5"
+                  style={{ backgroundColor: Colors.brand }}>
+                  <Text className="text-white text-center text-base font-bold font-poppins-regular">
+                    SIMPAN
+                  </Text>
+                </Button>
+              </View>
+            ) : (
+              <View className="flex-1 justify-center items-center my-4">
+                <ActivityIndicator size="large" color="#312e81" />
+              </View>
+            )}
+          </View>
         </View>
       </ScrollView>
 
-        <Modal animationType="fade" transparent={true} visible={modalKintud}>
-          <View style={styles.overlayView}>
-            <View style={styles.successContainer}>
-              <Image
-                source={require("@/assets/images/cek.png")}
-                style={styles.lottie}
-              />
-              {/* <LottieView
+      <Modal animationType="fade" transparent={true} visible={modalKintud}>
+        <View style={styles.overlayView}>
+          <View style={styles.successContainer}>
+            <Image
+              source={require("@/assets/images/cek.png")}
+              style={styles.lottie}
+            />
+            {/* <LottieView
               source={require("../../../../assets/lottiefiles/success-animation.json")}
               autoPlay
               loop={false}
               style={styles.lottie}
               /> */}
-              <Text style={styles.successTextTitle}>
-                Data berhasil diperbarui
-              </Text>
-              <Text style={styles.successText}>
-                Silahkan memastikan bahwa data yang anda kirim telah benar !
-              </Text>
-            </View>
+            <Text style={styles.successTextTitle}>
+              Data berhasil diperbarui
+            </Text>
+            <Text style={styles.successText}>
+              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            </Text>
           </View>
-        </Modal>
+        </View>
+      </Modal>
 
-        <Modal
-          animationType="fade"
-          transparent={true}
-          visible={errorModalVisible}>
-          <View style={styles.overlayView}>
-            <View style={[styles.successContainer, styles.errorContainer]}>
-              <Image
-                source={require("@/assets/images/error.png")}
-                style={styles.lottie}
-              />
-              <Text style={[styles.successTextTitle, styles.errortitle]}>
-                Gagal memperbarui data
-              </Text>
-              <Text style={[styles.successText, styles.errorText]}>
-                {errorMessage}
-              </Text>
-              {/* <TouchableOpacity 
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}>
+        <View style={styles.overlayView}>
+          <View style={[styles.successContainer, styles.errorContainer]}>
+            <Image
+              source={require("@/assets/images/error.png")}
+              style={styles.lottie}
+            />
+            <Text style={[styles.successTextTitle, styles.errortitle]}>
+              Gagal memperbarui data
+            </Text>
+            <Text style={[styles.successText, styles.errorText]}>
+              {errorMessage}
+            </Text>
+            {/* <TouchableOpacity 
                 style={styles.errorButton}
                 onPress={() => setErrorModalVisible(false)}>
                 <Text style={styles.errorButtonText}>Tutup</Text>
                 </TouchableOpacity> */}
-            </View>
           </View>
-        </Modal>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -1112,11 +1155,6 @@ const styles = StyleSheet.create({
     marginBottom: 16,
     borderRadius: 10,
   },
-  deleteButton: {},
-  deleteButtonText: {
-    color: "red",
-    marginBottom: 15,
-  },
   selectPhotoText: {
     color: "black",
   },
@@ -1172,14 +1210,10 @@ const styles = StyleSheet.create({
   },
   deleteButton: {
     position: "absolute",
-    top: -10,
-    right: -10,
-    backgroundColor: "red",
+    top: 0,
+    right: 0,
     borderRadius: 15,
-    width: 30,
-    height: 30,
-    justifyContent: "center",
-    alignItems: "center",
+    backgroundColor: "#c30010",
   },
   deleteButtonText: {
     color: "white",
@@ -1190,9 +1224,10 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
+    backgroundColor: "#ebf0ff",
     padding: 20,
     borderWidth: 2,
-    borderColor: "#fff",
+    borderColor: "#5c85ff",
     borderStyle: "dashed",
     borderRadius: 8,
   },
