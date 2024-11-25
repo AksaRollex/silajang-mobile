@@ -27,7 +27,7 @@ const Dashboard = () => {
     { label: "Total Permohonan", value: "total" },
   ];
   const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [tahuns, setTahuns] = useState([]); 
+  const [tahuns, setTahuns] = useState([]);
   const { data: user } = useUser();
   const navigation = useNavigation();
   const paginateRef = useRef();
@@ -187,14 +187,14 @@ const Dashboard = () => {
     const { data: user } = useUser();
     const [modalVisible, setModalVisible] = useState(false);
     const queryClient = useQueryClient();
-  
+
     const getFontSize = (text, defaultSize) => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
-  
+
     const isSimplifiedView = ['pengambil-sample', 'analis'].includes(user.role.name);
     const isAdmin = user.role.name === 'admin';
-  
+
     const { mutate: logout } = useMutation(
       () => axios.post("/auth/logout"),
       {
@@ -217,35 +217,35 @@ const Dashboard = () => {
 
     const getDisplayName = (fullName) => {
       if (!fullName) return '';
-        
+
       const [nameBeforeComma] = fullName.split(',');
       const nameParts = nameBeforeComma.trim().split(' ');
       if (nameParts.length > 2) {
         return `${nameParts[0]} ${nameParts[1]}`;
       }
-      
+
       return nameBeforeComma.trim();
     };
-  
+
     const displayName = getDisplayName(user.nama);
-  
+
     const handleLogout = () => {
       setModalVisible(true);
     };
-  
+
     const confirmLogout = () => {
       setModalVisible(false);
       logout();
     };
-  
+
     return (
-      <View 
-        className="absolute left-0 right-0 px-4" 
-        style={{ 
+      <View
+        className="absolute left-0 right-0 px-4"
+        style={{
           top: isSimplifiedView ? '70%' : '20%',
         }}
       >
-        <View 
+        <View
           className="bg-white rounded-lg shadow-lg"
           style={{
             shadowColor: '#000',
@@ -289,14 +289,14 @@ const Dashboard = () => {
               </TouchableOpacity>
             </View>
           </View>
-  
+
           {!isSimplifiedView && (
             <View className="p-5">
               {isAdmin ? (
                 // Admin view dengan 2 menu
                 <View className="flex flex-row justify-center gap-16">
                   <View className="items-center">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
                       onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
                     >
@@ -306,7 +306,7 @@ const Dashboard = () => {
                   </View>
                   <View className="h-18 w-[2px] bg-gray-100" />
                   <View className="items-center">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                       className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
                       onPress={() => navigation.navigate("IndexKonfigurasi")}
                     >
@@ -318,7 +318,7 @@ const Dashboard = () => {
               ) : (
                 // pengambil-sample & analis view
                 <View className="px-2 py-1 bg-indigo-50 rounded-lg border border-indigo-100">
-                  <TouchableOpacity 
+                  <TouchableOpacity
                     className="bg-gradient-to-r from-indigo-100 to-blue-50 rounded-xl p-1 flex-row items-center justify-between"
                     onPress={() => navigation.navigate("IndexKonfigurasi")}
                   >
@@ -338,7 +338,7 @@ const Dashboard = () => {
             </View>
           )}
         </View>
-  
+
         <Modal
           transparent={true}
           visible={modalVisible}
@@ -359,14 +359,14 @@ const Dashboard = () => {
               alignItems: 'center',
             }}>
               <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
-  
+
               <View style={{
                 width: '100%',
                 borderBottomWidth: 1,
                 borderBottomColor: '#dedede',
                 marginBottom: 15,
               }} />
-  
+
               <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
               <View style={{ flexDirection: 'row' }}>
                 <TouchableOpacity
@@ -398,11 +398,11 @@ const Dashboard = () => {
         </Modal>
       </View>
     );
-};
-  
+  };
+
 
   return (
-    <SafeAreaView className="flex-1 bg-slate-100">
+    <SafeAreaView className="flex-1 mb-14">
       <ScrollView
         className="flex-1"
         showsVerticalScrollIndicator={false}
@@ -534,7 +534,7 @@ const Dashboard = () => {
                     Data Dashboard
                   </Text>
                 </View>
-                <View className="w-full bg-indigo-50 mt-3 pt-3 pb-2">
+                <View className="w-full bg-slate-100 mt-3 pt-3 pb-2">
 
                   <ScrollView
                     horizontal
@@ -854,8 +854,8 @@ const Dashboard = () => {
                     <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
 
                   </View>
-
                 </View>
+              <TextFooter className="top-1"/>
 
               </>
             )}

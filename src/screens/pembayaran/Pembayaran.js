@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // alignItems: "center",
-    backgroundColor: "#ececec",
+    // backgroundColor: "#f1f5f9",
     justifyContent: "flex-start", // Ensure content starts from the top
   },
  
