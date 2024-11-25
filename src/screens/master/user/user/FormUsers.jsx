@@ -1,15 +1,17 @@
 import { View, Text, Button } from "react-native-ui-lib";
-import React, { memo } from "react";
+import React, { memo, useState } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivityIndicator, ScrollView, StyleSheet, TextInput } from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity,  } from "react-native";
 import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
+import { launchImageLibrary } from "react-native-image-picker";
 import BackButton from "@/src/screens/components/BackButton";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 export default memo(function Form({ route, navigation }) {
     const { uuid } = route.params || {};
+    const [photos, setPhotos] = useState([]);
     const { handleSubmit, control, formState: { errors }, setValue } = useForm({
         defaultValues: {
             nama: '',
@@ -92,6 +94,29 @@ export default memo(function Form({ route, navigation }) {
         createOrUpdate(data);
     };
 
+    const handleChoosePhoto = () => {
+        const options = {
+          mediaType: 'photo',
+          quality: 1,
+        };
+    
+        launchImageLibrary(options, (response) => {
+          if (response.didCancel) {
+            console.log('User cancelled image picker');
+          } else if (response.error) {
+            console.log('ImagePicker Error: ', response.error);
+          } else {
+            const newPhoto = { uri: response.assets[0].uri };
+            setPhotos((prevPhotos) => [...prevPhotos, newPhoto]); // Tambahkan foto baru ke array
+          }
+        });
+      };
+    
+      const handleDeletePhoto = (index) => {
+        setPhotos((prevPhotos) => prevPhotos.filter((_, i) => i !== index)); // Hapus foto berdasarkan index
+      };
+
+
     if (isLoadingData && uuid) {
         return (
             <View className="h-full flex justify-center">
@@ -105,7 +130,52 @@ export default memo(function Form({ route, navigation }) {
             <View style={styles.container}>
                 {/* Personal Information */}
                 <View style={styles.cardContainer}>
-                    <Text style={styles.sectionTitle}>Personal Information</Text>
+
+                <View className="info-item">
+                    <Controller
+                        control={control}
+                        name="photos"
+                        render={({ field: { onChange } }) => (
+                        <View className="w-full flex items-center justify-center">
+                            {photos.length > 0 ? (
+                            <View className="relative">
+                                {/* Foto Bundar */}
+                                <Image
+                                source={{ uri: photos[0].uri }} // Ambil foto pertama
+                                className="w-36 h-36 rounded-full border-2 border-gray-300"
+                                />
+                                {/* Icon Pensil */}
+                                <TouchableOpacity
+                                onPress={handleChoosePhoto}
+                                className="absolute top-0 right-0 bg-white p-1 rounded-full border border-gray-300"
+                                >
+                                <Text className="text-xs text-gray-700">✏️</Text>
+                                </TouchableOpacity>
+                            </View>
+                            ) : (
+                            <View className="relative">
+                                <TouchableOpacity
+                                onPress={handleChoosePhoto}
+                                className="w-36 h-36 rounded-full bg-gray-200 flex items-center justify-center"
+                                >
+                                <Text className="text-gray-500 text-xs font-semibold">Tambah Foto</Text>
+                                </TouchableOpacity>
+                                {/* Icon Pensil */}
+                                {/* <TouchableOpacity
+                                onPress={handleChoosePhoto}
+                                className="absolute top-0 right-0 bg-white p-1 rounded-full border border-gray-300"
+                                >
+                                <Text className="text-xs">✏️</Text>
+                                </TouchableOpacity> */}
+                            </View>
+                            )}
+                        </View>
+                        )}
+                    />
+                    </View>
+
+
+
                     
                     <View style={styles.fieldContainer}>
                         <Text style={styles.label}>Nama</Text>
@@ -383,5 +453,15 @@ const styles = StyleSheet.create({
         padding: 16,
         borderRadius: 8,
         marginVertical: 16
-    }
+    },
+    infoItem: {
+        flexDirection: "row",
+        alignItems: "center",
+        marginBottom: 15,
+      },
+      signaturePreview: {
+        height: 100,
+        resizeMode: "contain",
+        marginBottom: 10,
+      },
 });
