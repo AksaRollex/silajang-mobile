@@ -172,7 +172,7 @@ export default memo(function Form({ route, navigation }) {
                                                 onPress={handleChoosePhoto}
                                                 className="w-36 h-36 rounded-full bg-gray-200 flex items-center justify-center"
                                             >
-                                                <Text className="text-gray-500 text-xs font-semibold">Tanda Tangan</Text>
+                                                <Text className="text-gray-500 text-xs font-semibold">Tambah Foto</Text>
                                             </TouchableOpacity>
                                             {/* Icon Pensil */}
                                             {/* <TouchableOpacity
