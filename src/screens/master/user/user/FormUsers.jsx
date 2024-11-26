@@ -20,11 +20,10 @@ export default memo(function Form({ route, navigation }) {
     const [showPassword, setShowPassword] = useState(false);
     const [formData, setFormData] = useState({
         tanda_tangan_id: '',
-        passphrase: '',
     });
     const togglePasswordVisibility = () => {
         setShowPassword(!showPassword);
-      };
+    };
 
     const { handleSubmit, control, formState: { errors }, setValue } = useForm({
         defaultValues: {
@@ -569,45 +568,45 @@ export default memo(function Form({ route, navigation }) {
                     )}
 
                     <View className="mb-4">
-                    <Text style={styles.label}>Password</Text>
+                        <Text style={styles.label}>Password</Text>
                         <View className="relative">
-                        <TextInput
-                            className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
-                            secureTextEntry={!showPassword}
-                            value={formData.passphrase}
-                            onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
-                        />
-                        <TouchableOpacity 
-                            onPress={togglePasswordVisibility}
-                            className="absolute right-4 top-4"
-                        >
-                            {showPassword ? (
-                            <Ionicons name="eye-outline" size={20} color="grey" />
-                            ) : (
-                            <Ionicons name="eye-off-outline" size={20} color="grey"/>
-                            )}
-                        </TouchableOpacity>
+                            <TextInput
+                                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                                secureTextEntry={!showPassword}
+                                value={formData.passphrase}
+                                onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
+                            />
+                            <TouchableOpacity
+                                onPress={togglePasswordVisibility}
+                                className="absolute right-4 top-4"
+                            >
+                                {showPassword ? (
+                                    <Ionicons name="eye-outline" size={20} color="grey" />
+                                ) : (
+                                    <Ionicons name="eye-off-outline" size={20} color="grey" />
+                                )}
+                            </TouchableOpacity>
                         </View>
                     </View>
                     <View className="mb-4">
                         <Text style={styles.label}>Konfirmasi Password</Text>
                         <View className="relative">
-                        <TextInput
-                            className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
-                            secureTextEntry={!showPassword}
-                            value={formData.passphrase}
-                            onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
-                        />
-                        <TouchableOpacity 
-                            onPress={togglePasswordVisibility}
-                            className="absolute right-4 top-4"
-                        >
-                            {showPassword ? (
-                            <Ionicons name="eye-outline" size={20} color="grey" />
-                            ) : (
-                            <Ionicons name="eye-off-outline" size={20} color="grey"/>
-                            )}
-                        </TouchableOpacity>
+                            <TextInput
+                                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                                secureTextEntry={!showPassword}
+                                value={formData.passphrase}
+                                onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
+                            />
+                            <TouchableOpacity
+                                onPress={togglePasswordVisibility}
+                                className="absolute right-4 top-4"
+                            >
+                                {showPassword ? (
+                                    <Ionicons name="eye-outline" size={20} color="grey" />
+                                ) : (
+                                    <Ionicons name="eye-off-outline" size={20} color="grey" />
+                                )}
+                            </TouchableOpacity>
                         </View>
                     </View>
                 </View>
