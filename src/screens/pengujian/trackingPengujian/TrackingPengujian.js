@@ -44,7 +44,7 @@ const TrackingPengujian = ({ navigation }) => {
     <View style={styles.card}>
       <View style={styles.roundedBackground} className="rounded-br-full" />
 
-      <View style={styles.cardWrapper}>
+      <TouchableOpacity onPress={() => navigation.navigate("TrackingList", { selected: item })} style={styles.cardWrapper}>
         {/* Left section with rounded background */}
         <View style={styles.leftSection}>
           <View style={styles.cardContent}>
@@ -85,7 +85,7 @@ const TrackingPengujian = ({ navigation }) => {
           </Text>
         </View>
 
-        {/* Right section (dots menu) */}
+        {/* Right section (dots menu)
         <View style={styles.cardActions} className="mb-4 ">
           <MenuView
             actions={[
@@ -100,8 +100,8 @@ const TrackingPengujian = ({ navigation }) => {
             }}>
             <Entypo name="dots-three-vertical" size={20} color="#312e81" />
           </MenuView>
-        </View>
-      </View>
+        </View> */}
+      </TouchableOpacity>
     </View>
   );
 

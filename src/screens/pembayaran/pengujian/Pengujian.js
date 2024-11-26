@@ -184,7 +184,11 @@ const Pengujian = ({ navigation }) => {
       <View style={styles.card}>
         <View style={styles.roundedBackground} className="rounded-br-full" />
 
-        <View style={styles.cardWrapper}>
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("PengujianDetail", { uuid: item.uuid })
+          }
+          style={styles.cardWrapper}>
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
@@ -233,7 +237,7 @@ const Pengujian = ({ navigation }) => {
             </Text>
           </View>
 
-          {/* Right section (dots menu) */}
+          {/* Right section (dots menu)
           <View style={styles.cardActions} className="mb-4 ">
             <MenuView
               title="Menu Title"
@@ -253,8 +257,8 @@ const Pengujian = ({ navigation }) => {
                 <Entypo name="dots-three-vertical" size={16} color="#312e81" />
               </View>
             </MenuView>
-          </View>
-        </View>
+          </View> */}
+        </TouchableOpacity>
       </View>
     );
   };

@@ -134,11 +134,11 @@ const TitikUji = ({ navigation, route, status, callback }) => {
         },
       ],
     },
-    {
-      id: "Parameter",
-      title: "Parameter",
-      action: item => navigation.navigate("Parameter", { uuid: item.uuid }),
-    },
+    // {
+    //   id: "Parameter",
+    //   title: "Parameter",
+    //   action: item => navigation.navigate("Parameter", { uuid: item.uuid }),
+    // },
     {
       id: "Edit",
       title: "Edit",
@@ -255,7 +255,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
     <View style={styles.card}>
       <View style={styles.roundedBackground} className="rounded-br-full" />
 
-      <View style={styles.cardWrapper}>
+      <TouchableOpacity style={styles.cardWrapper} onPress={() => navigation.navigate("Parameter", { uuid: item.uuid })}>
         {/* Left section with rounded background */}
         <View style={styles.leftSection}>
           <View style={styles.cardContent}>
@@ -329,8 +329,9 @@ const TitikUji = ({ navigation, route, status, callback }) => {
           </Text>
         </View>
 
+      </TouchableOpacity>
         {/* Right section (dots menu) */}
-        <View style={styles.cardActions} className="mb-4 ">
+        <View style={styles.cardActions} className="mb-4 flex-end jusitfy-end items-end ml-80">
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
@@ -350,7 +351,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             </View>
           </MenuView>
         </View>
-      </View>
     </View>
   );
 

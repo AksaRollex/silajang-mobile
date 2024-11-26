@@ -48,11 +48,11 @@ export default function Pembayaran() {
       description: "Klik untuk membayar pengujian",
     },
     {
-      title: "Multi Payment",
+      title: "Multipayment",
       icon: "payments",
       screen: "Multipayment",
       color: "#4CAF50",
-      description: "Klik untuk membayar multipayment",
+      description: "Klik untuk menggunakan multipayment",
     },
   ];
 
