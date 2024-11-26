@@ -35,7 +35,7 @@ const Pembayaran = () => {
 
       <View className=" p-4 flex flex-row items-center mt-2">
         {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
-        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pengujian</Text>
+        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
       </View>
         <View>
           <List.Item
