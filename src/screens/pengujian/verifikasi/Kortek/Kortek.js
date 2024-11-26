@@ -9,6 +9,8 @@ import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
@@ -154,11 +156,8 @@ const Kortek = ({ navigation }) => {
   };
 
   const renderItem = ({ item }) => {
-    const isDiterima = item.text_status;
-    const dropdownOptionsForItem = isDiterima
-      ? dropdownOptions
-      : dropdownOptions1;
-
+    const isMenungguKonfirmasi = selectedKortek === 5;
+  
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -168,18 +167,26 @@ const Kortek = ({ navigation }) => {
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
             <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">{item.kode}</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
+              {item.kode}
+            </Text>
+            
             <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.permohonan.user.nama}
             </Text>
+  
             <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">{item.lokasi}</Text>
-            <Text className="text-xs font-poppins-regular text-gray-500">
-              Peraturan{" "}
+            <Text className="text-md font-poppins-semibold text-black mb-2">
+              {item.lokasi}
             </Text>
-            <Text className="text-md font-poppins-semibold text-black mb-2">{item.peraturan?.nama}</Text>
+  
+            <Text className="text-xs font-poppins-regular text-gray-500">Peraturan</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-2">
+              {item.peraturan?.nama}
+            </Text>
           </View>
+  
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md py-1 px-2 max-w-[120px] mb-2">
               <Text
@@ -189,52 +196,49 @@ const Kortek = ({ navigation }) => {
                 {item.text_status}
               </Text>
             </View>
-            <View className="my-2 ml-10">
-              <MenuView
-                title="dropdownOptions"
-                actions={dropdownOptionsForItem.map(option => ({
-                  ...option,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = dropdownOptionsForItem.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  const sub = dropdownOptionsForItem.find(
-                    option =>
-                      option.subactions &&
-                      option.subactions.some(
-                        suboption => suboption.title === nativeEvent.event,
-                      ),
-                  );
-                  if (selectedOption) {
-                    selectedOption.action(item);
-                  }
-
-                  if (sub) {
-                    const selectedSub = sub.subactions.find(
-                      sub => sub.title === nativeEvent.event,
-                    );
-                    if (selectedSub) {
-                      selectedSub.action(item);
-                    }
-                  }
-                }}
-                shouldOpenOnLongPress={false}>
-                <View>
-                  <Entypo
-                    name="dots-three-vertical"
-                    size={18}
-                    color="#312e81"
-                  />
-                </View>
-              </MenuView>
-            </View>
           </View>
+        </View>
+  
+        <View className="h-[1px] bg-gray-300 my-3" />
+  
+        <View className="flex-row justify-end mt-1 space-x-2">
+          <TouchableOpacity
+            onPress={() => navigation.navigate("HasilUjis", {
+              uuid: item.uuid,
+              status: item.status,
+            })}
+            className="bg-indigo-900 px-3 py-2 rounded-md flex-row items-center mr-1">
+             <FontAwesome6Icon name="vial" size={13} color="white" />
+            <Text className="text-white text-xs ml-1 font-poppins-medium">
+              Hasil Uji
+            </Text>
+          </TouchableOpacity>
+  
+          {!isMenungguKonfirmasi && (
+            <>
+              <TouchableOpacity
+                onPress={() => handlePreviewRDPS({ uuid: item.uuid })}
+                className="bg-red-600 px-3 py-2 rounded-md flex-row items-center mr-1">
+                   <FontAwesome5Icon name="file-pdf" size={16} color="white" />
+                <Text className="text-white text-xs ml-1 font-poppins-medium">
+                  RDPS
+                </Text>
+              </TouchableOpacity>
+  
+              <TouchableOpacity
+                onPress={() => handlePreviewLhu({ uuid: item.uuid })}
+                className="bg-red-600 px-3 py-2 rounded-md flex-row items-center">
+                    <FontAwesome5Icon name="file-pdf" size={16} color="white" />
+                <Text className="text-white text-xs ml-1 font-poppins-medium">
+                  Preview LHU
+                </Text>
+              </TouchableOpacity>
+            </>
+          )}
         </View>
       </View>
     );
   };
-
   return (
     <View className="bg-[#ececec] w-full h-full">
       <View className=" p-3">
@@ -305,13 +309,6 @@ const Kortek = ({ navigation }) => {
         className="mb-12"
       />
 
-      {/* <AntDesign
-        name="plus"
-        size={28}
-        color="white"
-        style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-      onPress={() => navigation.navigate("FormMetode")}
-      /> */}
       <DeleteConfirmationModal />
       <Modal
         transparent={true}

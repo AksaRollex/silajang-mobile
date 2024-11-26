@@ -3,13 +3,16 @@ import React, {useRef, useState} from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
 import { MenuView } from "@react-native-menu/menu";
-import { useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
 import { HorizontalAlignment } from 'react-native-ui-lib/src/components/gridListItem';
 import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
 import IndexMaster from '../../../masterdash/IndexMaster';
+import IonIcon from "react-native-vector-icons/Ionicons";
+import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
+import axios from '@/src/libs/axios';
 
 
 const Users = ({ navigation, route }) => {
@@ -22,7 +25,7 @@ const Users = ({ navigation, route }) => {
     const [selectedMenu, setSelectedMenu] = useState(2);
     const paginateRef = useRef();
     const queryClient = useQueryClient();
-    const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
+    const { delete: deleteUser, DeleteConfirmationModal } = useDelete({
         onSuccess: () => {
           queryClient.invalidateQueries(['/master/user']);
           paginateRef.current?.refetch()
@@ -36,11 +39,27 @@ const Users = ({ navigation, route }) => {
         setSelectedMenu(golongan_id ?? 2);
       }, [golongan_id])
 
-    const dropdownOptions = [
-        { id: "Parameter", title: "Parameter", action: item => navigation.navigate("ParameterUsers", { uuid: item.uuid })},
-        { id: "Edit", title: "Edit", action: item => navigation.navigate("FormUsers", { uuid: item.uuid })},
-        { id: "Delete", title: "Delete", action: item => deleteMetode(`/master/user/${item.uuid}`)},
-    ]
+      const handleConfirmToggle = (uuid, currentConfirmed) => {
+        confirmMutation.mutate({ 
+            uuid, 
+            confirmed: !currentConfirmed 
+        });
+    };
+
+    const confirmMutation = useMutation(
+      (data) => axios.post(`/master/user/${data.uuid}/confirm`, { confirmed: data.confirmed }),
+      {
+          onSuccess: () => {
+              // Refetch the data after successful confirmation
+              paginateRef.current?.refetch();
+              queryClient.invalidateQueries(['/master/user']);
+          },
+          onError: (error) => {
+              console.error('Confirmation error:', error);
+              Alert.alert('Error', 'Failed to update user confirmation status');
+          }
+      }
+  );
 
     const renderItem = ({ item }) => {
       return (
@@ -48,57 +67,99 @@ const Users = ({ navigation, route }) => {
           className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"  
           style={{ elevation: 4 }}
         >
+          
           <View className="flex-row justify-between">
-            <View>
-              <Text className="text-[16px] font-poppins-semibold text-black">{item.nama}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.email}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black mb-2">{item.phone}</Text>
-              <Text className="text-[16px] font-poppins-semibold text-black">{item.detail?.instansi}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.role?.full_name}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.golongan?.nama}</Text>
-            </View>
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                const sub = dropdownOptions.find(
-                  option => option.subactions && option.subactions.some(
-                    suboption => suboption.title === nativeEvent.event
-                  )
-                )
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
+  {/* Bagian Data Utama */}
+  <View className="flex-1">
+    <View className="flex-row justify-between mb-3">
+      <View className="flex-1 mr-2">
+        <Text className="text-xs text-gray-500 font-poppins-regular">Nama</Text>
+        <Text className="text-md text-black font-poppins-semibold">{item.nama}</Text>
+      </View>
+      <View className="flex-1 mr-2">
+        <Text className="text-xs text-gray-500 font-poppins-regular">No. Telepon</Text>
+        <Text className="text-md text-black font-poppins-semibold">{item.phone}</Text>
+      </View>
+    </View>
 
-                if(sub){
-                  const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                  if(selectedSub){
-                    selectedSub.action(item);
-                  }
-                }
-              
-              }}
-              shouldOpenOnLongPress={false}
+    <View className="flex-row justify-between mb-3">
+      
+      <View className="flex-1">
+        <Text className="text-xs text-gray-500 font-poppins-regular">Email</Text>
+        <Text className="text-md text-black font-poppins-semibold">{item.email}</Text>
+      </View>
+      <View className="flex-1">
+        <Text className="text-xs text-gray-500 font-poppins-regular">Perusahaan</Text>
+        <Text className="text-md text-black font-poppins-semibold">
+          {item.detail?.instansi ?? "-"}
+        </Text>
+      </View>
+    </View>
+
+    <View className="flex-row justify-between mb-3">
+      <View className="flex-1 mr-2">
+        <Text className="text-xs text-gray-500 font-poppins-regular">Jabatan</Text>
+        <Text className="text-md text-black font-poppins-semibold">
+          {item.role?.full_name}
+        </Text>
+      </View>
+      <View className="flex-1">
+        <Text className="text-xs text-gray-500 font-poppins-regular">Jenis</Text>
+        <Text className="text-md text-black font-poppins-semibold">
+          {item.golongan?.nama}
+        </Text>
+      </View>
+    </View>
+  </View>
+
+  {/* Switch Bagian Kanan */}
+  <View className="items-center justify-center">
+
+      <Text className="text-xs text-black font-poppins-semibold mb-2">Konfirmasi</Text>
+      <Switch
+        value={item.confirmed === 1}
+        onValueChange={() => handleConfirmToggle(item.uuid, item.confirmed === 1)}
+        trackColor={{ false: "#767577", true: "#312e81" }}
+        thumbColor={item.confirmed === 1 ? "#f4f3f4" : "#f4f3f4"}
+      />
+  </View>
+</View>
+
+
+          <View className="h-[1px] bg-gray-300 my-3" />
+          
+          <View className="flex-row justify-end gap-2">
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("ParameterUsers", { uuid: item.uuid })}
+              className="flex-row items-center bg-green-600 px-2 py-2 rounded"
             >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-              </View>
-            </MenuView>
-            </View>
-          </View> 
+              <IonIcon name="filter" size={14} color="#fff" />
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={() => navigation.navigate("FormUsers", { uuid: item.uuid })}
+              className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+            >
+              <IonIcon name="pencil" size={14} color="#fff" />
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity 
+              onPress={() => deleteUser(`/master/user/${item.uuid}`)}
+              className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+            >
+              <IonIcon name="trash" size={14} color="#fff" />
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       );
     }
 
 
     return (
-        <SafeAreaView className="flex-1 bg-[#ececec]">
+        <GestureHandlerRootView className="flex-1 bg-[#ececec]">
             <View className="flex-row items-center justify-center mt-4 mb-2">
                 <View className="absolute left-4">
                    <BackButton action={() => navigation.goBack()} size={26} />
@@ -151,7 +212,7 @@ const Users = ({ navigation, route }) => {
                 onPress={() => navigation.navigate("FormUsers")}
             />
             <DeleteConfirmationModal />
-        </SafeAreaView>
+        </GestureHandlerRootView>
     )
 }
 

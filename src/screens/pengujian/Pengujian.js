@@ -364,6 +364,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
+    // backgroundColor: "#f1f5f9"
   },
   headerContainer: {
     width: "100%",

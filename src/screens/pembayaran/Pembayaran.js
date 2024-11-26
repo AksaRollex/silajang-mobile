@@ -40,7 +40,7 @@ const Pembayaran = () => {
         <View>
           <List.Item
           style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-          title={<Text className="font-poppins-medium text-[15px]">Pembayaran</Text>}
+          title={<Text className="font-poppins-medium text-[15px]">Pengujian</Text>}
           left={() => (
             <View className="bg-green-600 rounded-full ml-3">
             <Ionicons name="wallet" size={17} color={'white'} style={{padding: 5}}/>
@@ -55,7 +55,7 @@ const Pembayaran = () => {
 
         <View> 
           <List.Item
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Non Pengujian</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Non Pengujian</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="card" size={17} color={'white'} style={{padding: 5}}/>
@@ -71,7 +71,7 @@ const Pembayaran = () => {
           <View>
             <List.Item
             style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-            title={<Text className="font-poppins-medium text-[15px]">Pembayaran Global</Text>}
+            title={<Text className="font-poppins-medium text-[15px]">Global</Text>}
             left={() => (
               <View className="bg-green-600 rounded-full ml-3">
               <Ionicons name="globe" size={17} color={'white'} style={{padding: 5}}/>
@@ -92,7 +92,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     // alignItems: "center",
-    backgroundColor: "#ececec",
+    // backgroundColor: "#f1f5f9",
     justifyContent: "flex-start", // Ensure content starts from the top
   },
  
