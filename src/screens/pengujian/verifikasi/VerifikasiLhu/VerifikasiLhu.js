@@ -256,9 +256,11 @@ const VerifikasiLhu = ({ navigation }) => {
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
         <View className="mb-4">
-          <View className="flex-row justify-between items-center mb-1">
-
-            <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+          <View className="flex-row justify-between items-center mb-2">
+            <View>
+              <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+              <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+            </View>
             
             <View className="flex-row items-center">
               <View className="bg-slate-100 rounded-md px-2 py-1">
