@@ -72,6 +72,7 @@ export default function Pengujian() {
     queryKey: ["history"],
     queryFn: async () =>
       await axios.get("/dashboard/history").then(res => res.data.data),
+
     onSuccess: data => {
       console.log(data);
       setData(data);
@@ -155,21 +156,21 @@ export default function Pengujian() {
             />
             {/* Welcome Section */}
             <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
-            <View style={styles.welcomeCard}>
-              <View style={styles.welcomeSection}>
-                <Text className="text-center" style={styles.welcomeText}>
-                  Pengujian
-                </Text>
-                <Text className="text-center" style={styles.dateText}>
-                  {new Date().toLocaleDateString("id-ID", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
+              <View style={styles.welcomeCard}>
+                <View style={styles.welcomeSection}>
+                  <Text className="text-center" style={styles.welcomeText}>
+                    Pengujian
+                  </Text>
+                  <Text className="text-center" style={styles.dateText}>
+                    {new Date().toLocaleDateString("id-ID", {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    })}
+                  </Text>
+                </View>
               </View>
-            </View>
             </View>
           </ImageBackground>
 

@@ -1,5 +1,3 @@
-// profil
-
 import React, { useState } from "react";
 import {
   View,
@@ -7,27 +5,21 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   Modal,
-  Linking,
   Dimensions,
   StyleSheet,
   Image,
   ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
-import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-import BackButton from "../components/Back";
-import FastImage from "react-native-fast-image";
-import LottieView from "lottie-react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
-import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FooterText from "../components/FooterText";
-import { black } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
+
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import FastImage from "react-native-fast-image";
 
 const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
@@ -36,8 +28,14 @@ const baseRem = 16;
 export default function Profile({ navigation }) {
   const [modalVisible, setModalVisible] = useState(false);
   const queryClient = useQueryClient();
+
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
+
+  const openImageViewer = imageUrl => {
+    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
+    setImageViewerVisible(true);
+  };
 
   const { data: userData, isLoading } = useUser();
 
@@ -69,10 +67,6 @@ export default function Profile({ navigation }) {
     },
   });
 
-  const openImageViewer = imageUrl => {
-    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
-    setImageViewerVisible(true);
-  };
   return (
     <ImageBackground
       source={require("../../../assets/images/background.png")}
