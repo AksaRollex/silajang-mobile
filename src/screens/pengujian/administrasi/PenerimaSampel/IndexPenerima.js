@@ -1,7 +1,7 @@
   import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity,
+  FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity, TextInput,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -15,7 +15,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
-import { MouseButton, TextInput } from "react-native-gesture-handler";
+import { MouseButton } from "react-native-gesture-handler";
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -65,20 +65,47 @@ const PenerimaSampel = ({ navigation }) => {
   const paginateRef = useRef();
   const [previewReport, setPreviewReport] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
+  const [revisionModalVisible, setRevisionModalVisible] = useState(false);
+  const [revisionNote, setRevisionNote] = useState("");
+  const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
 
   const kembali = () => {
-    simpanRevisi();
     setModalVisible(false);
   };
 
-  const simpanRevisi = async () => {
-    if (selectedItem && selectedItem.uuid) {
+  const handleRevision = async () => {
+    try {
+      if (!revisionNote.trim()) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Keterangan revisi tidak boleh kosong",
+        });
+        return;
+      }
+
       const response = await axios.post(
-        `/administrasi/penerima-sample/${selectedItem.uuid}/revisi`,
-        {
-          keterangan_revisi: deskripsi,
-        },
+        `/administrasi/penerima-sample/${selectedRevisionItem.uuid}/revisi`,
+        { keterangan_revisi: revisionNote }
       );
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Berhasil menyimpan revisi",
+      });
+
+      setRevisionModalVisible(false);
+      setRevisionNote("");
+      setSelectedRevisionItem(null);
+      paginateRef.current?.refetch();
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.response?.data?.message || "Gagal menyimpan revisi",
+      });
     }
   };
 
@@ -209,8 +236,8 @@ const PenerimaSampel = ({ navigation }) => {
 
           <TouchableOpacity
             onPress={() => {
-              setSelectedItem(item);
-              setModalVisible(true);
+              setSelectedRevisionItem(item);
+              setRevisionModalVisible(true);
             }}
             className="bg-amber-500 px-3 py-2 rounded-md"
           >
@@ -321,40 +348,6 @@ const PenerimaSampel = ({ navigation }) => {
         className="mb-14"
       />
 
-
-
-      {/* Modal for Revisi */}
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={modalVisible}
-        onRequestClose={() => setModalVisible(false)}>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <Text className="text-lg font-poppins-semibold">Revisi Data</Text>
-            <Text className="font-poppins-semibold text-lg">
-              {selectedItem ? selectedItem.kode : ""}
-            </Text>
-            <TextInput
-              style={styles.longInput}
-              placeholder="Masukkan Revisi"
-              value={deskripsi}
-              onChangeText={setDeskripsi}
-              multiline={true} // Mengaktifkan input untuk beberapa baris
-              numberOfLines={4} // Mengatur tinggi input untuk 4 baris
-            />
-            <TouchableOpacity
-              style={[
-                styles.button,
-                { backgroundColor: '#fbbf24', borderRadius: 10 },
-              ]}
-              onPress={kembali}>
-              <Text style={styles.buttonText}>Kirim Revisi</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      </Modal>
-
       <Modal
         animationType="slide"
         transparent={true}
@@ -370,6 +363,66 @@ const PenerimaSampel = ({ navigation }) => {
               onPress={() => setModalVisible(false)}>
               <Text style={styles.buttonText}>Close Modal</Text>
             </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={revisionModalVisible}
+        onRequestClose={() => {
+          setRevisionModalVisible(false);
+          setRevisionNote("");
+          setSelectedRevisionItem(null);
+        }}>
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Revisi LHU
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setRevisionModalVisible(false);
+                  setRevisionNote("");
+                  setSelectedRevisionItem(null);
+                }}>
+                <AntDesign name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm mb-2 text-gray-600">
+                Keterangan Revisi
+              </Text>
+              <TextInput
+                multiline
+                numberOfLines={4}
+                value={revisionNote}
+                onChangeText={setRevisionNote}
+                className="border border-gray-300 rounded-lg p-3 text-sm"
+                placeholder="Masukkan keterangan revisi..."
+                textAlignVertical="top"
+              />
+            </View>
+
+            <View className="flex-row justify-end space-x-2">
+              <TouchableOpacity
+                onPress={() => {
+                  setRevisionModalVisible(false);
+                  setRevisionNote("");
+                  setSelectedRevisionItem(null);
+                }}
+                className="bg-gray-200 px-4 py-2 rounded">
+                <Text className="text-gray-800 font-poppins-semibold">Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleRevision}
+                className="bg-yellow-500 px-4 py-2 rounded">
+                <Text className="text-white font-poppins-semibold">Simpan</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
       </Modal>
