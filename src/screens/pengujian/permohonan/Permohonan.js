@@ -62,11 +62,11 @@ const Permohonan = ({ navigation }) => {
   });
 
   const dropdownOptions = [
-    {
-      id: "TitikUji",
-      title: "TitikUji",
-      action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
-    },
+    // {
+    //   id: "TitikUji",
+    //   title: "TitikUji",
+    //   action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
+    // },
     {
       id: "Edit",
       title: "Edit",
@@ -86,7 +86,9 @@ const Permohonan = ({ navigation }) => {
       <View style={styles.card}>
         <View style={styles.roundedBackground} className="rounded-br-full" />
 
-        <View style={styles.cardWrapper}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TitikUji", { uuid: item.uuid })}
+          style={styles.cardWrapper}>
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
@@ -121,26 +123,28 @@ const Permohonan = ({ navigation }) => {
           </View>
 
           {/* Right section (dots menu) */}
-          <View style={styles.cardActions} className="mb-4">
-            <MenuView
-              title="Menu Title"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}>
-              <View>
-                <Entypo name="dots-three-vertical" size={20} color="#312e81" />
-              </View>
-            </MenuView>
-          </View>
+        </TouchableOpacity>
+        <View
+          style={styles.cardActions}
+          className="mb-4 flex-end jusitfy-end items-end mr-2">
+          <MenuView
+            title="Menu Title"
+            actions={dropdownOptions.map(option => ({
+              ...option,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = dropdownOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                selectedOption.action(item);
+              }
+            }}
+            shouldOpenOnLongPress={false}>
+            <View>
+              <Entypo name="dots-three-vertical" size={20} color="#312e81" />
+            </View>
+          </MenuView>
         </View>
       </View>
     );
@@ -299,10 +303,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 0.5 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
     overflow: "hidden",
+    display: "flex",
     position: "relative", // Added to position the background
   },
   roundedBackground: {
@@ -329,12 +334,11 @@ const styles = StyleSheet.create({
     width: "45%",
     paddingTop: 12,
   },
-  cardActions: {
-    width: "10%",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    zIndex: 4,
-  },
+  // cardActions: {
+  //   alignItems: "flex-end",
+  //   justifyContent: "flex-end",
+  //   zIndex: 4,
+  // },
   picker: {
     flex: 1,
     marginHorizontal: 4,
