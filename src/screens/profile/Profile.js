@@ -75,18 +75,16 @@ export default function Profile({ navigation }) {
   };
   return (
     <ImageBackground
-    source={require('../../../assets/images/background.png')}
+      source={require("../../../assets/images/background.png")}
       style={{ flex: 1, height: "30%" }} // Pastikan gambar menutupi seluruh layar
       imageStyle={{
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
-      }}
-    >
+      }}>
       <>
-      {userData ? (
+        {userData ? (
           <View className="z-10 bottom-20">
-            <View
-              className="w-full py-5 rounded-b-2xl">
+            <View className="w-full py-5 rounded-b-2xl">
               <Text className="text-white text-xl font-poppins-bold mx-6 top-24">
                 Profil Saya
               </Text>
@@ -94,8 +92,12 @@ export default function Profile({ navigation }) {
                 {userData ? (
                   <TouchableOpacity
                     onPress={() => openImageViewer(userData.photo)}
-                    style={{ position: "absolute", zIndex: 10, top: "50%", alignSelf: "center" }}
-                    >
+                    style={{
+                      position: "absolute",
+                      zIndex: 10,
+                      top: "50%",
+                      alignSelf: "center",
+                    }}>
                     <FastImage
                       className="rounded-full w-28 h-28"
                       source={{
@@ -209,123 +211,121 @@ export default function Profile({ navigation }) {
             </View>
             {/* Modal Logout */}
             <Modal
-  transparent={true}
-  visible={modalVisible}
-  animationType="fade"
-  onRequestClose={() => setModalVisible(false)}>
-  <View
-    style={{
-      flex: 1,
-      justifyContent: "center",
-      alignItems: "center",
-      backgroundColor: "rgba(0, 0, 0, 0.5)",
-    }}>
-    <View
-      style={{
-        padding: 20,
-        backgroundColor: "white",
-        borderRadius: 10,
-        alignItems: "center",
-      }}
-      className="w-10/12">
-      <Image
-        source={require('../../../assets/icons/arrowRed.png')} // Ganti dengan path ke gambar Anda
-        style={{
-          width: 95, // Sesuaikan ukuran gambar
-          height: 100, // Sesuaikan ukuran gambar
-          marginBottom: 15,
-        }}
-      />
+              transparent={true}
+              visible={modalVisible}
+              animationType="fade"
+              onRequestClose={() => setModalVisible(false)}>
+              <View
+                style={{
+                  flex: 1,
+                  justifyContent: "center",
+                  alignItems: "center",
+                  backgroundColor: "rgba(0, 0, 0, 0.5)",
+                }}>
+                <View
+                  style={{
+                    padding: 20,
+                    backgroundColor: "white",
+                    borderRadius: 15,
+                    alignItems: "center",
+                    width: "90%",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 5,
+                  }}>
+                  <Icon
+                    name="log-out"
+                    size={50}
+                    color="red"
+                    style={{ marginBottom: 15 }}
+                  />
+                  <Text
+                    style={{
+                      fontSize: 18,
+                      marginBottom: 5,
+                      fontFamily: "Poppins-Bold",
+                      color: "#333",
+                    }}>
+                    Logout
+                  </Text>
+                  <Text
+                    style={{
+                      fontSize: 14,
+                      marginBottom: 15,
+                      fontFamily: "Poppins-SemiBold",
+                      color: "#666",
+                      textAlign: "center",
+                    }}>
+                    Yakin ingin keluar dari aplikasi ini?
+                  </Text>
+                  <View
+                    style={{
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}>
+                    <TouchableOpacity
+                      onPress={() => setModalVisible(false)}
+                      style={{
+                        paddingVertical: 12,
+                        paddingHorizontal: 25,
+                        backgroundColor: "red",
+                        borderRadius: 8,
+                        marginRight: 10,
+                      }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontFamily: "Poppins-SemiBold",
+                        }}>
+                        Batal
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={confirmLogout}
+                      style={{
+                        paddingVertical: 12,
+                        paddingHorizontal: 25,
+                        backgroundColor: "green",
+                        borderRadius: 8,
+                      }}>
+                      <Text
+                        style={{
+                          color: "#fff",
+                          fontFamily: "Poppins-SemiBold",
+                        }}>
+                        Ya, Keluar
+                      </Text>
+                    </TouchableOpacity>
+                  </View>
+                </View>
+              </View>
+            </Modal>
 
-      <Text
-        style={{
-          fontSize: 16,
-          marginBottom: 7,
-          fontFamily: "Poppins-Bold",
-          color: "black",
-        }}>
-        Logout
-      </Text>
-      <Text
-        style={{
-          fontSize: 16,
-          marginBottom: 7,
-          fontFamily: "Poppins-SemiBold",
-          color: "black",
-        }}>
-        Yakin ingin keluar?
-      </Text>
-
-      <View
-        style={{
-          width: "100%",
-          marginBottom: 15,
-        }}
-      />
-
-      <View style={{ flexDirection: "row" }}>
-        <TouchableOpacity
-          onPress={() => setModalVisible(false)}
-          style={{
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            backgroundColor: "#ececec",
-            borderRadius: 5,
-            marginRight: 10,
-          }}>
-          <Text
-            style={{
-              color: "#4f4f4f",
-              fontFamily: "Poppins-SemiBold",
-            }}>
-            Batal
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={confirmLogout}
-          style={{
-            paddingVertical: 10,
-            paddingHorizontal: 20,
-            backgroundColor: "#ffcbd1",
-            borderRadius: 5,
-          }}>
-          <Text
-            style={{
-              color: "#de0a26",
-              fontFamily: "Poppins-SemiBold",
-            }}>
-            Ya, Keluar
-          </Text>
-        </TouchableOpacity>
-      </View>
-    </View>
-  </View>
-</Modal>
-
-          <Modal
-            animationType="fade"
-            transparent={true}
-            visible={imageViewerVisible}
-            onRequestClose={() => setImageViewerVisible(false)}>
-            <View style={styles.imageViewerContainer}>
-              <TouchableOpacity
-                style={styles.closeButton}
-                onPress={() => setImageViewerVisible(false)}>
-                <IonIcons name="close" size={40} color="white" />
-              </TouchableOpacity>
-              <FastImage
-                style={styles.fullScreenImage}
-                source={{
-                  uri: selectedImage,
-                  priority: FastImage.priority.high,
-                }}
-                resizeMode={FastImage.resizeMode.contain}
-              />
-            </View>
-          </Modal>
+            <Modal
+              animationType="fade"
+              transparent={true}
+              visible={imageViewerVisible}
+              onRequestClose={() => setImageViewerVisible(false)}>
+              <View style={styles.imageViewerContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setImageViewerVisible(false)}>
+                  <IonIcons name="close" size={40} color="white" />
+                </TouchableOpacity>
+                <FastImage
+                  style={styles.fullScreenImage}
+                  source={{
+                    uri: selectedImage,
+                    priority: FastImage.priority.high,
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+              </View>
+            </Modal>
           </View>
         </View>
-
       </>
     </ImageBackground>
   );

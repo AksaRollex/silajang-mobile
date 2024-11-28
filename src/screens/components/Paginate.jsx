@@ -35,7 +35,7 @@ if (
 }
 
 const Paginate = forwardRef(
-  ({ url, payload, renderItem, Plugin, ...props }, ref) => {
+  ({ url, payload, renderItem, Plugin, isExternalLoading = false, ...props }, ref) => {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -44,8 +44,8 @@ const Paginate = forwardRef(
     const { control, handleSubmit } = useForm();
     const cardData = [1, 2, 3, 4];
 
-    const { data, isFetching, refetch } = useQuery({
-      queryKey: [url, page, search],
+    const { data, isFetching, refetch, isLoading } = useQuery({
+      queryKey: [url, page, search, payload],
       queryFn: () =>
         axios.post(url, { ...payload, page, search }).then(res => res.data),
       placeholderData: { data: [] },
@@ -68,8 +68,9 @@ const Paginate = forwardRef(
     }));
 
     useEffect(() => {
-      setPage(1);
-      refetch();
+      if (page === 1) {
+        refetch();
+      }
     }, [search, payload]);
 
     const handleLoadMore = () => {
@@ -92,10 +93,6 @@ const Paginate = forwardRef(
         refetch().finally(() => setIsFetchingMore(false));
       }
     }, [isFetchingMore]);
-
-    // useEffect(() => {
-    //   if(!data.data?.length) queryClient.invalidateQueries([url]);
-    // }, [data])
 
     const handleScroll = event => {
       const scrollOffset = event.nativeEvent.contentOffset.y;
@@ -158,7 +155,10 @@ const Paginate = forwardRef(
       </View>
     );
 
-    if (isFetching && page === 1) {
+    // Combine external loading state with internal loading state
+    const shouldShowLoading = isExternalLoading || (isFetching && page === 1);
+
+    if (shouldShowLoading) {
       return (
         <View className="mt-5 items-center">
           <View
