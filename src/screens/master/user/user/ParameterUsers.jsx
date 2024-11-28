@@ -1,144 +1,166 @@
-import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import React, {useRef, useState} from "react";
-import { useDelete } from "@/src/hooks/useDelete";
-import Paginate from "@/src/screens/components/Paginate";
-import { MenuView } from "@react-native-menu/menu";
-import { useQueryClient } from "@tanstack/react-query";
-import Icon from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
+import React, { useRef, useState } from "react";
+import {  View,  Text,  TouchableOpacity,  SafeAreaView,  ScrollView
+} from 'react-native';
+import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
+import axios from 'axios'; // Ensure you have axios configured
+import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import BackButton from "@/src/screens/components/BackButton";
-import { HorizontalAlignment } from 'react-native-ui-lib/src/components/gridListItem';
-import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
+import Paginate from "@/src/screens/components/Paginate";
 
-
-const ParameterUsers = ({ navigation, route }) => {
-    const Options = [
-        { id: 2, name: "Parameter Tersedia" },
-        { id: 1, name: "Parameter Yang Dipilih" },
-      ];
-
-    const [selectedMenu, setSelectedMenu] = useState(2);
-    const paginateRef = useRef();
-    const queryClient = useQueryClient();
-    const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
-        onSuccess: () => {
-          queryClient.invalidateQueries(['/master/user']);
-          paginateRef.current?.refetch()
-        },
-        onError: (error) => {
-          console.error('Delete error:', error);
-        }
-      });
-
-      React.useEffect(() => {
-        setSelectedMenu(golongan_id ?? 2);
-      }, [golongan_id])
-
-    const dropdownOptions = [
-        { id: "Parameter", title: "Parameter", action: item => navigation.navigate("ParameterUsers", { uuid: item.uuid })},
-        { id: "Edit", title: "Edit", action: item => navigation.navigate("FormUsers", { uuid: item.uuid })},
-        { id: "Delete", title: "Delete", action: item => deleteMetode(`/master/user/${item.uuid}`)},
-    ]
-
-    const renderItem = ({ item }) => {
-      return (
-        <View
-          className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"  
-          style={{ elevation: 4 }}
-        >
-          <View className="flex-row justify-between">
-            <View>
-              <Text className="text-[16px] font-poppins-semibold text-black">{item.nama}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.email}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black mb-2">{item.phone}</Text>
-              <Text className="text-[16px] font-poppins-semibold text-black">{item.detail?.instansi}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.role?.full_name}</Text>
-              <Text className="text-[14px] font-poppins-medium text-black">{item.golongan?.nama}</Text>
-            </View>
-            <View className="my-2 ml-10">
-            <MenuView
-              title="dropdownOptions"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                const sub = dropdownOptions.find(
-                  option => option.subactions && option.subactions.some(
-                    suboption => suboption.title === nativeEvent.event
-                  )
-                )
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-
-                if(sub){
-                  const selectedSub = sub.subactions.find(sub => sub.title === nativeEvent.event);
-                  if(selectedSub){
-                    selectedSub.action(item);
-                  }
-                }
-              
-              }}
-              shouldOpenOnLongPress={false}
-            >
-              <View>
-                <Entypo name="dots-three-vertical" size={18} color="#312e81" />
-              </View>
-            </MenuView>
-            </View>
-          </View> 
-        </View>
-      );
-    }
-
-    return (
-        <SafeAreaView className="flex-1 bg-[#ececec]">
-            <View className="flex-row items-center justify-center mt-4 mb-2">
-                <View className="absolute left-4">
-                   <BackButton action={() => navigation.goBack()} size={26} />
-                </View>
-                <Text className="text-[20px] font-poppins-semibold text-black">Parameter User</Text>
-            </View>
-            <View className="flex-row justify-center">
-          <View className="mt-3 ml-[-10] mr-2"> 
-          <HorizontalScrollMenu
-              textStyle={{ fontFamily: 'Poppins-Medium', fontSize: 12 }}
-              items={Options}
-              selected={selectedMenu}
-              onPress={(item) => setSelectedMenu(item.id)}
-              itemWidth={190}
-                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              itemRender={(item) => (
-                <View
-                  style={{
-                    borderColor: '#312e81',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 12,
-                    }}>
-                    {item.name}
-                  </Text>
-                </View>
-              )}
-            />
-          </View>
-        </View>
-            <Paginate
-                ref={paginateRef}
-                url="/master/parameter"
-                payload={{
-                }}
-                renderItem={renderItem}
-            />
-        </SafeAreaView>
-    )
+interface Parameter {
+  uuid: string;
+  nama: string;
+  metode: string;
+  harga: number;
+  satuan: string;
+  jenis_parameter: {
+    nama: string;
+  };
 }
 
-export default ParameterUsers
+const ParameterUsers = ({ navigation, route }) => {
+  const { selected } = route.params;
+  const paginateParameterRef = useRef(null);
+  const paginateSelectedParameterRef = useRef(null);
+  const queryClient = useQueryClient();
+
+
+  const { data: selectedParameter, refetch: refetchSelectedParameter } = useQuery({
+    queryKey: ['selectedParameter', selected],
+    queryFn: () => axios.get(`/master/user/${selected}/parameter`).then(res => res.data.data),
+    cacheTime: 0,
+  });
+
+
+  const { mutate: addParameter } = useMutation(
+    (uuid: string) => axios.post(`/master/user/${selected}/parameter/store`, { uuid }),
+    {
+      onSuccess: () => {
+        refetchSelectedParameter();
+        paginateParameterRef.current?.refetch();
+        paginateSelectedParameterRef.current?.refetch();
+      },
+      onError: (error) => {
+        console.error('Add parameter error:', error);
+      }
+    }
+  );
+  
+  const { mutate: removeParameter } = useMutation(
+    (uuid: string) => axios.post(`/master/user/${selected}/parameter/destroy`, { uuid }),
+    {
+      onSuccess: () => {
+        refetchSelectedParameter();
+        paginateParameterRef.current?.refetch();
+        paginateSelectedParameterRef.current?.refetch();
+      },
+      onError: (error) => {
+        console.error('Remove parameter error:', error);
+      }
+    }
+  );
+
+  const renderAvailableItem = ({ item }: { item: Parameter }) => {
+    return (
+      <View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"  
+        style={{ elevation: 4 }}
+      >
+        <View className="flex-row justify-between items-center">
+          <View>
+            <Text className="text-base font-poppins-medium text-black">
+              {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
+            </Text>
+            <Text className="text-base text-muted font-poppins-medium">
+              {item.jenis_parameter.nama}
+            </Text>
+            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+          </View>
+          <TouchableOpacity 
+            className="bg-[#312e81] rounded-md p-2"
+            onPress={() => addParameter(item.uuid)}
+          >
+            <FontAwesome6Icon name="plus" size={18} color={"#fff"} />
+          </TouchableOpacity>
+        </View> 
+      </View>
+    );
+  }
+
+  const renderSelectedItem = ({ item }: { item: Parameter }) => {
+    return (
+      <View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"  
+        style={{ elevation: 4 }}
+      >
+        <View className="flex-row justify-between items-center">
+          <View>
+            <Text className="text-base font-poppins-medium text-black">
+              {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
+            </Text>
+            <Text className="text-base text-muted font-poppins-medium">
+              {item.jenis_parameter.nama}
+            </Text>
+            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+          </View>
+          <TouchableOpacity 
+            className="bg-[#dc2626] rounded-md p-2"
+            onPress={() => removeParameter(item.uuid)}
+          >
+            <FontAwesome6Icon name="trash" size={18} color={"#fff"} />
+          </TouchableOpacity>
+        </View> 
+      </View>
+    );
+  }
+
+  return (
+    <ScrollView className="flex-1 bg-[#ececec]">
+  <View className="items-center justify-center mt-4 mb-2">
+    <View className="absolute left-4">
+      <BackButton action={() => navigation.goBack()} size={26} />
+    </View>
+    <Text className="text-[20px] font-poppins-semibold text-black">Parameter User</Text>
+  </View>
+  
+  {/* Parameter yang Dipilih */}
+  <View className="flex-1 p-3">
+    <View className="bg-white rounded-md shadow-md">
+    <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 self-center" >
+        Parameter yang Dipilih
+      </Text>
+      <View className="h-[1px] bg-gray-100 my-3" />
+      <Paginate
+        ref={paginateSelectedParameterRef}
+        url={`/master/user/${selected}/parameter`}
+        payload={{ except: selectedParameter }}
+        renderItem={renderSelectedItem}
+      />
+    </View>
+  </View>
+  
+  {/* Parameter Tersedia */}
+  <View className="flex-1 p-3">
+    <View className="bg-white rounded-md shadow-md">
+      <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 self-center" >
+        Parameter Tersedia
+      </Text>
+      <View className="h-[1px] bg-gray-100 my-3" />
+      <View style={{ maxHeight: 500 }}>
+        <ScrollView nestedScrollEnabled>
+          <Paginate
+            ref={paginateParameterRef}
+            url="/master/parameter"
+            payload={{ }}
+            renderItem={renderAvailableItem}
+          />
+        </ScrollView>
+      </View>
+    </View>
+  </View>
+</ScrollView>
+
+  )
+}
+
+export default ParameterUsers;
