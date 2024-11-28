@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import {
   View,
   Text,
@@ -12,11 +12,15 @@ import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
+import { useQuery } from "@tanstack/react-query";
+import axios from "@/src/libs/axios";
+import { rupiah } from "@/src/libs/utils";
 
 const { width } = Dimensions.get("window");
 
 export default function Pembayaran() {
   const navigation = useNavigation();
+  const [data, setData] = useState([]);
 
   const paymentInfo = {
     title: "Informasi Pembayaran",
@@ -56,7 +60,6 @@ export default function Pembayaran() {
     },
   ];
 
-  // Konten baru: Panduan pembayaran
   const paymentGuides = [
     {
       title: "Cara Melakukan Pembayaran",
@@ -73,47 +76,69 @@ export default function Pembayaran() {
           icon: "verified-user",
           text: "Jika pembayaran berhasil dilakukan, anda akan mendapatkan invoice",
         },
-        // {
-        //   icon: "receipt-long",
-        //   color: "purple", // Tambahkan warna hijau
-        //   text: "Isi detail pembayaran dengan teliti",
-        // },
-        // {
-        //   icon: "verified-user",
-        //   color: "orange", // Tambahkan warna oranye
-        //   text: "Konfirmasi dan verifikasi pembayaran",
-        // },
-        // {
-        //   icon: "check-circle",
-        //   color: "green", // Tambahkan warna ungu
-        //   text: "Tunggu konfirmasi pembayaran berhasil",
-        // },
-        // {
-        //   icon: "check-circle",
-        //   text: "Tunggu konfirmasi pembayaran berhasil",
-        // },
       ],
     },
   ];
 
-  // Konten baru: Promo dan penawaran khusus
-  const specialOffers = [
-    {
-      title: "Promo Pembayaran",
-      icon: "local-offer",
-      color: "#9C27B0",
-      description: "Dapatkan cashback 5% untuk pembayaran QRIS",
-      validUntil: "31 Des 2024",
-    },
-    {
-      title: "Diskon Khusus",
-      icon: "card-giftcard",
-      color: "#E91E63",
-      description: "Potongan 10% untuk pembayaran pertama",
-      validUntil: "31 Des 2024",
-    },
-  ];
+  useQuery({
+    queryKey: ["history"],
+    queryFn: async () =>
+      await axios
+        .get("/dashboard/historyPembayaran")
+        .then(res => res.data.data),
 
+    onSuccess: data => {
+      console.log(data);
+      setData(data);
+    },
+    onError: err => console.error(err),
+  });
+
+  // const getStatusText = activity => {
+  //   if (activity.payment?.is_expired) {
+  //     return "Kedaluwarsa";
+  //   } else {
+  //     const status = activity.payment?.status;
+  //     if (status === "pending") {
+  //       return "Belum Dibayar";
+  //     } else if (status === "success") {
+  //       return "Berhasil";
+  //     } else {
+  //       return "Gagal";
+  //     }
+  //   }
+  // };
+
+  // const getStatusStyle = activity => {
+  //   if (activity.payment?.is_expired) {
+  //     return " text-red-500";
+  //   } else {
+  //     const status = activity.payment?.status;
+  //     if (status === "pending") {
+  //       return " text-blue-400";
+  //     } else if (status === "success") {
+  //       return "text-green-500";
+  //     } else {
+  //       return " text-red-500";
+  //     }
+  //   }
+  // };
+
+  const getStatusTextStyle = status => {
+    switch (status) {
+      case "pending":
+        return "text-blue-400";
+      case "success":
+        return "text-green-500";
+      case "failed":
+        return "text-red-500";
+      default:
+        return "";
+    }
+  };
+
+  // const statusText = getStatusText(activity);
+  // const statusStyle = getStatusStyle(activity);
   return (
     <>
       <View style={styles.container}>
@@ -159,7 +184,7 @@ export default function Pembayaran() {
             </View>
           </ImageBackground>
 
-          <ScrollView contentContainerStyle={styles.scrollContent}>
+          <View style={styles.scrollContent}>
             <Text style={styles.sectionTitle}>Panduan Pembayaran</Text>
             <View style={styles.guideContainer}>
               {paymentGuides[0].steps.map((step, index) => (
@@ -201,7 +226,7 @@ export default function Pembayaran() {
 
             {/* Payment Information Cards */}
 
-            <View style={styles.infoSection}>
+            {/* <View style={styles.infoSection}>
               {paymentInfo.features.map((feature, index) => (
                 <View key={index} style={styles.featureCard}>
                   <View
@@ -218,30 +243,100 @@ export default function Pembayaran() {
                   <Text style={styles.featureText}>{feature.text}</Text>
                 </View>
               ))}
-            </View>
+            </View> */}
 
-            {/* Payment Methods */}
+            <Text style={styles.sectionTitle}>Aktivitas Terakhir</Text>
+            <View style={styles.activityContainer}>
+              {data?.map((activity, index) => (
+                <View key={index} style={styles.activityCard}>
+                  <View style={styles.activityBadge}>
+                    <MaterialIcons name="assignment" size={20} color="#FFF" />
+                  </View>
 
-            {/* Payment Guide Section */}
+                  <View style={styles.activityContent}>
+                    <View style={styles.activityHeader}>
+                      <View style={styles.locationContainer}>
+                        <MaterialIcons
+                          name="location-on"
+                          size={16}
+                          color="#4CAF50"
+                        />
+                        <Text style={styles.locationText} numberOfLines={1}>
+                          {activity.lokasi}
+                        </Text>
+                      </View>
+                    </View>
+                    <View style={styles.divider} />
+                    <View style={styles.infoSection}>
+                      {/* <View style={styles.infoRow}>
+                        <MaterialIcons
+                          name="location-on"
+                          size={16}
+                          color="#666"
+                        />
+                        <View style={styles.infoGroup}>
+                          <Text style={styles.infoLabel}>Lokasi</Text>
+                          <Text style={styles.infoValue} numberOfLines={1}>
+                            {activity.lokasi || "Error, Harap Refresh"}
+                          </Text>
+                        </View>
+                      </View> */}
+                      <View style={styles.infoRow}>
+                        <MaterialIcons name="code" size={16} color="#666" />
+                        <View style={styles.infoGroup}>
+                          <Text style={styles.infoLabel}>Kode</Text>
+                          <Text style={styles.infoValue} numberOfLines={1}>
+                            {activity.kode || "Error, Harap Refresh"}
+                          </Text>
+                        </View>
+                      </View>
 
-            {/* Special Offers Section */}
-            {/* <Text style={styles.sectionTitle}>Promo Spesial</Text>
-          <ScrollView 
-          horizontal 
-          showsHorizontalScrollIndicator={false}
-          contentContainerStyle={styles.offersContainer}>
-          {specialOffers.map((offer, index) => (
-            <View key={index} style={styles.offerCard}>
-            <View style={[styles.offerIconContainer, { backgroundColor: offer.color }]}>
-            <MaterialIcons name={offer.icon} size={32} color="white" />
+                      <View style={styles.infoRow}>
+                        <MaterialIcons name="done" size={16} color="#666" />
+                        <View style={styles.infoGroup}>
+                          <Text style={[styles.infoLabel]}>
+                            Status Pembayaran
+                          </Text>
+                          <Text style={[styles.infoValue]}>
+                            {activity.payment?.status || "Error, Harap Refresh"}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.infoRow}>
+                        <MaterialIcons
+                          name="account-balance-wallet"
+                          size={16}
+                          color="#666"
+                        />
+                        <View style={styles.infoGroup}>
+                          <Text style={styles.infoLabel}>Tipe Pembayaran</Text>
+                          <Text style={styles.infoValue}>
+                            {activity.payment_type || "Error, Harap Refresh"}
+                          </Text>
+                        </View>
+                      </View>
+                      <View style={styles.infoRow}>
+                        <MaterialIcons
+                          name="attach-money"
+                          size={16}
+                          color="#666"
+                        />
+                        <View style={styles.infoGroup}>
+                          <Text style={styles.infoLabel}>Total Harga</Text>
+                          <Text style={styles.infoValue}>
+                            {rupiah(
+                              activity.payment?.jumlah ||
+                                "Error, Harap Refresh",
+                            )}
+                          </Text>
+                        </View>
+                      </View>
+                    </View>
+                  </View>
+                </View>
+              ))}
             </View>
-            <Text style={styles.offerTitle}>{offer.title}</Text>
-            <Text style={styles.offerDescription}>{offer.description}</Text>
-            <Text style={styles.offerValidity}>Berlaku sampai: {offer.validUntil}</Text>
-            </View>
-            ))}
-            </ScrollView> */}
-          </ScrollView>
+          </View>
         </ScrollView>
       </View>
     </>
@@ -430,5 +525,94 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#999",
     fontFamily: "Poppins-Regular",
+  },
+
+  activityContainer: {
+    marginBottom: 24,
+  },
+  activityCard: {
+    backgroundColor: "#FFF",
+    borderRadius: 16,
+    marginBottom: 16,
+    overflow: "hidden",
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    position: "relative",
+  },
+  activityBadge: {
+    position: "absolute",
+    top: 0,
+    right: 0,
+    backgroundColor: "#2196F3",
+    padding: 8,
+    borderBottomLeftRadius: 16,
+    zIndex: 1,
+  },
+  activityContent: {
+    padding: 16,
+  },
+  activityHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 8,
+  },
+  locationContainer: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1,
+    marginRight: 8,
+  },
+  locationText: {
+    fontSize: 16,
+    color: "#333",
+    fontFamily: "Poppins-SemiBold",
+    marginLeft: 4,
+    flex: 1,
+  },
+  statusBadge: {
+    backgroundColor: "#E8F5E9",
+    paddingHorizontal: 12,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    color: "#4CAF50",
+    fontSize: 12,
+    fontFamily: "Poppins-Medium",
+  },
+  divider: {
+    height: 3,
+    backgroundColor: "#F0F0F0",
+    marginVertical: 12,
+  },
+  infoSection: {
+    gap: 8,
+  },
+
+  infoRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 8,
+  },
+  infoGroup: {
+    flexDirection: "row",
+    alignItems: "center",
+    flex: 1, // Memberikan ruang yang fleksibel untuk menyesuaikan konten
+  },
+  infoLabel: {
+    width: 120,
+    fontSize: 14,
+    color: "#666",
+    fontFamily: "Poppins-Regular",
+  },
+  infoValue: {
+    flex: 1,
+    fontSize: 14,
+    color: "#333",
+    fontFamily: "Poppins-Medium",
   },
 });
