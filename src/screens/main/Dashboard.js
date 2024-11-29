@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
@@ -87,13 +88,29 @@ const Dashboard = () => {
       setIsYearPickerVisible(false);
     };
 
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = React.useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
+
     return (
       <>
         <View className="px-4 py-2 w-full mt-2">
           <View
             className="bg-[#fff] rounded-lg border border-gray-200"
             style={{ elevation: 8 }}>
-            <View className="p-4 flex-row justify-between">
+            <ScrollView
+              contentContainerStyle={{
+                padding: 16, // Set padding menggunakan contentContainerStyle
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
               <View className="flex-row gap-2 items-center">
                 <IonIcons name="calendar" size={27} color={"#4d5b7a"} />
                 <Text
@@ -108,7 +125,7 @@ const Dashboard = () => {
                 className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg">
                 <View className="flex-row items-center">
                   <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
-                    {tahun}  
+                    {tahun}
                   </Text>
                 </View>
                 <MaterialIcons
@@ -117,7 +134,7 @@ const Dashboard = () => {
                   className="text-gray-600"
                 />
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           </View>
 
           <YearPicker

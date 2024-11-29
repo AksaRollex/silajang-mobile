@@ -7,6 +7,7 @@ import {
   ScrollView,
   Dimensions,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -21,6 +22,15 @@ const { width } = Dimensions.get("window");
 export default function Pembayaran() {
   const navigation = useNavigation();
   const [data, setData] = useState([]);
+
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [refetch]);
 
   const paymentInfo = {
     title: "Informasi Pembayaran",
@@ -80,7 +90,7 @@ export default function Pembayaran() {
     },
   ];
 
-  useQuery({
+  const { refetch } = useQuery({
     queryKey: ["history"],
     queryFn: async () =>
       await axios
@@ -94,59 +104,16 @@ export default function Pembayaran() {
     onError: err => console.error(err),
   });
 
-  // const getStatusText = activity => {
-  //   if (activity.payment?.is_expired) {
-  //     return "Kedaluwarsa";
-  //   } else {
-  //     const status = activity.payment?.status;
-  //     if (status === "pending") {
-  //       return "Belum Dibayar";
-  //     } else if (status === "success") {
-  //       return "Berhasil";
-  //     } else {
-  //       return "Gagal";
-  //     }
-  //   }
-  // };
-
-  // const getStatusStyle = activity => {
-  //   if (activity.payment?.is_expired) {
-  //     return " text-red-500";
-  //   } else {
-  //     const status = activity.payment?.status;
-  //     if (status === "pending") {
-  //       return " text-blue-400";
-  //     } else if (status === "success") {
-  //       return "text-green-500";
-  //     } else {
-  //       return " text-red-500";
-  //     }
-  //   }
-  // };
-
-  const getStatusTextStyle = status => {
-    switch (status) {
-      case "pending":
-        return "text-blue-400";
-      case "success":
-        return "text-green-500";
-      case "failed":
-        return "text-red-500";
-      default:
-        return "";
-    }
-  };
-
-  // const statusText = getStatusText(activity);
-  // const statusStyle = getStatusStyle(activity);
   return (
     <>
       <View style={styles.container}>
         <ScrollView
           className="flex-col"
           showsVerticalScrollIndicator={false}
-          stickyHeaderIndices={[]}>
-          {/* Header Section with Gradient */}
+          stickyHeaderIndices={[]}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           <ImageBackground
             source={require("../../../assets/images/background.png")}
             style={{
