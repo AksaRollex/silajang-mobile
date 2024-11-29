@@ -46,7 +46,7 @@ const Paket = ({ navigation }) => {
           
           <View className="flex-row justify-end gap-2">
             <TouchableOpacity 
-              onPress={() => navigation.navigate("ParameterPaket", { uuid: item.uuid })}
+              onPress={() => navigation.navigate("ParameterPaket", { selected: item.uuid })}
               className="flex-row items-center bg-green-600 px-2 py-2 rounded"
             >
               <IonIcon name="filter" size={14} color="#fff" />
