@@ -35,7 +35,7 @@ if (
 }
 
 const Paginate = forwardRef(
-  ({ url, payload, renderItem, Plugin, ...props }, ref) => {
+  ({ url, payload, renderItem, Plugin, Year, ...props }, ref) => {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -61,6 +61,7 @@ const Paginate = forwardRef(
 
     useEffect(() => {
       if (!data.data?.length) queryClient.invalidateQueries([url]);
+      console.log(payload)
     }, [data]);
 
     useImperativeHandle(ref, () => ({
@@ -111,10 +112,10 @@ const Paginate = forwardRef(
             control={control}
             name="search"
             render={({ field: { onChange, value } }) => (
-              <View className="relative flex-row items-center">
-                <View className="flex-1 relative">
+              <View className={`relative ${Boolean(props.plugan) ? "flex-col justify-center" : "flex-row items-center"}`}>
+                <View className={props.plugan ? "" : 'flex-1 relative'}>
                   <TextInput
-                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md "
+                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px-3"
                     value={value}
                     placeholderTextColor={"grey"}
                     placeholder="Cari..."
@@ -132,7 +133,7 @@ const Paginate = forwardRef(
                 </View>
 
                 {/* Plugin Section */}
-                <View style={Plugin ? { marginLeft: 12 } : {}}>
+                <View style={Plugin ? { marginTop: 5 } : {}}>
                   {Plugin && <Plugin />}
                 </View>
               </View>
@@ -330,6 +331,7 @@ const Paginate = forwardRef(
           keyExtractor={(item, index) => index.toString()}
           onScroll={handleScroll}
           onEndReached={handleLoadMore}
+          showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0.5}
           ListFooterComponent={ListFooter}
           ListEmptyComponent={() => (

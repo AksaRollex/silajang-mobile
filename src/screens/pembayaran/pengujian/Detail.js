@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  alert,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import moment from "moment";
@@ -18,9 +19,11 @@ import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 import { API_URL } from "@env";
+import RNFS from "react-native-fs";
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [imageBase64, setImageBase64] = useState(null);
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const [dateExp, setDateExp] = useState("06:60:60:60");
   const { uuid } = route.params;
@@ -106,6 +109,30 @@ const PengujianDetail = ({ route, navigation }) => {
 
   const isExpired = formData?.payment?.is_expired;
   const paymentStatus = formData?.status_pembayaran;
+
+  const downloadPath = `${RNFS.DocumentDirectoryPath}/qris.png`;
+
+  const downloadQris = async () => {
+    try {
+      // Mendapatkan URI gambar lokal menggunakan Image.resolveAssetSource
+      const qrisImage = Image.resolveAssetSource(require("../../../../assets/images/qris.png"));
+      const qrisUrl = qrisImage.uri;
+
+      // Tentukan path untuk menyimpan file gambar yang diunduh
+      const downloadPath = `${RNFS.CachesDirectoryPath}/qris.png`;
+
+      // Salin file dari path lokal ke dalam direktori aplikasi
+      await RNFS.copyFile(qrisUrl, downloadPath);
+
+      // Baca file yang telah disalin dan konversikan ke Base64
+      const base64String = await RNFS.readFile(downloadPath, 'base64');
+      setImageBase64(base64String);
+      Alert.alert("Berhasil", "QRIS berhasil diunduh dan dikonversi.");
+    } catch (error) {
+      console.error("Error downloading QRIS:", error);
+      Alert.alert("Error", "Terjadi kesalahan saat mengunduh QRIS.");
+    }
+  };
 
   return (
     <>
@@ -355,34 +382,67 @@ const PengujianDetail = ({ route, navigation }) => {
 
                 {formData.payment_type === "qris" && (
                   <View style={[styles.card, isExpired && styles.disabledCard]}>
-                    {/* <Text style={styles.warningText}>
-                Lakukan pembayaran sebelum: {countdownExp}
-              </Text> */}
-                    <View style={styles.cardqr}>
-                      <Image
-                        source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
-                        style={styles.qrisImage}
-                        resizeMode="contain"
-                      />
-                    </View>
-                    <View
+                    {/* Template QR */}
+                    <Image
+                      source={require("../../../../assets/images/qris-template.png")}
                       style={{
-                        justifyContent: "center",
+                        width: 350,
+                        maxWidth: "100%",
+                        height: 450,
+                      }}
+                    />
+                    {/* QRIS */}
+                    <Image
+                      source={require("../../../../assets/images/qris.png")} // Ganti "qris" dengan path gambar yang sesuai
+                      style={{
+                        width: "65%",
+                        position: "absolute",
+                        left: "39%",
+                        top: "23%",
                         alignItems: "center",
-                        marginTop: 10,
-                      }}>
-                      <Text
+                        transform: [{ translateX: -50 }, { translateY: -50 }],
+                        resizeMode: "contain",
+                      }}
+                    />
+                    {/* Icon Check */}
+                    {formData.payment?.status === "success" && (
+                      <Image
+                        source={require("../../../../assets/images/checked.png")}
                         style={{
-                          color: "black",
-                          fontSize: 20,
-                          justifyContent: "center",
-                          alignItems: "center",
-                        }}>
-                        {rupiah(formData?.harga)}
-                      </Text>
-                    </View>
+                          position: "absolute",
+                          width: "20%",
+                          height: "20%",
+                          left: "95%",
+                          top: "80%",
+                          transform: [{ translateX: -50 }, { translateY: -50 }],
+                          resizeMode: "contain",
+                        }}
+                      />
+                    )}
                   </View>
                 )}
+
+                <View style={[styles.card, isExpired && styles.disabledCard]}>
+                  <Text className="font-black font-poppins-semibold">
+                    Nominal Pembayaran : {rupiah(formData?.payment?.jumlah)}
+                  </Text>
+                </View>
+                {/* {formData.payment?.status === "pending" && (
+                  <TouchableOpacity
+                    onPress={downloadQris}
+                    className="flex-row items-center justify-center p-4 rounded-lg "
+                    style={[styles.card, isExpired && styles.disabledCard]}>
+                    <Text className="font-black font-poppins-semibold items-center justify-center ">
+                      Download QRIS
+                    </Text>
+                    <MaterialIcons
+                      name="qr-code-2"
+                      size={24}
+                      color="black"
+                      paddingLeft={10}
+                    />
+                  </TouchableOpacity>
+                )} */}
 
                 {formData?.payment?.status !== "success" &&
                   formData?.payment?.is_expired &&

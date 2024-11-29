@@ -33,6 +33,7 @@
     "lottie-react-native": "^5.1.6",
     "lucide-react-native": "^0.456.0",
     "moment": "^2.30.1",
+    "native-base": "^3.4.28",
     "nativewind": "^2.0.11",
     "object-to-formdata": "^4.5.1",
     "react": "18.2.0",
@@ -81,6 +82,7 @@
     "react-native-toast-message": "^2.2.0",
     "react-native-ui-lib": "^7.23.1",
     "react-native-vector-icons": "^10.1.0",
+    "react-native-view-shot": "^4.0.2",
     "react-native-webview": "^13.12.2",
     "yup": "^1.4.0",
     "zustand": "^4.5.2"

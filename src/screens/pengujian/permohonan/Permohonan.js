@@ -6,6 +6,7 @@ import {
   Modal,
   TouchableOpacity,
 } from "react-native";
+import { HStack, Select, Box, Icon, ChevronDownIcon, CheckIcon  } from "native-base";
 import React, { useRef, useState, useCallback, useEffect } from "react";
 import { MenuView } from "@react-native-menu/menu";
 import Paginate from "../../components/Paginate";
@@ -17,6 +18,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import { useUser } from "@/src/services";
 import Back from "../../components/Back";
+import { border } from "native-base/lib/typescript/theme/styled-system";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -36,12 +38,13 @@ const Permohonan = ({ navigation }) => {
     selectedYear => {
       if (selectedYear !== tahun) {
         setTahun(selectedYear);
-        setShouldRefresh(true); // Set flag untuk refresh
+        paginateRef.current.refetch({ tahun: selectedYear }); // Kirim payload dengan tahun baru
       }
       setIsYearPickerVisible(false);
     },
-    [tahun],
+    [tahun]
   );
+  
 
   const paginateRef = useRef();
   const queryClient = useQueryClient();
@@ -149,7 +152,7 @@ const Permohonan = ({ navigation }) => {
   const filtah = () => {
     return (
       <>
-        <View className="flex-row justify-end ">
+        {/* <View className="flex-row justify-end ">
           <TouchableOpacity
             onPress={handleFilterPress} // Gunakan handler terpisah
             style={{
@@ -165,67 +168,72 @@ const Permohonan = ({ navigation }) => {
             </Text>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </TouchableOpacity>
-        </View>
+        </View> */}
 
-        <YearPicker
-          visible={isYearPickerVisible}
-          onClose={() => setIsYearPickerVisible(false)}
-          onSelect={handleYearChange}
-          selectedYear={tahun}
-        />
+        <YearPicker/>
       </>
     );
   };
 
-  const YearPicker = ({ visible, onClose, onSelect, selectedYear }) => {
-    const currentYear = new Date().getFullYear();
-    const years = Array.from(
-      { length: currentYear - 2021 },
-      (_, i) => 2022 + i,
-    );
+      const currentYear = new Date().getFullYear();
+    const generateYears = () => {
+      let years = [];
+      for (let i = currentYear; i >= 2021; i--) {
+        years.push({ id: i, title: String(i) });
+      }
+      return years;
+    };
 
+    const years = generateYears();
+
+    const [selectedYear, setSelectedYear] = useState(currentYear.toString());
+
+  const YearPicker = () => {
     return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun</Text>
-              <TouchableOpacity onPress={onClose}>
-                <MaterialIcons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.yearList}>
-              {years.map(year => (
-                <TouchableOpacity
-                  key={year}
-                  style={[
-                    styles.yearItem,
-                    selectedYear === year && styles.selectedYear,
-                  ]}
-                  onPress={() => {
-                    onSelect(year);
-                    onClose();
-                  }}>
-                  <Text
-                    style={[
-                      styles.yearText,
-                      selectedYear === year && styles.selectedYearText,
-                    ]}>
-                    {year}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </TouchableOpacity>
-      </Modal>
+      <HStack 
+      space={5}
+      marginLeft={3}
+      paddingX={3}
+      borderRadius={10}
+      paddingVertical={5}
+      alignItems={"center"}
+      >
+        <Select
+          minWidth={"130"}
+          fontFamily={"Poppins-SemiBold"}
+          fontSize={15}
+          alignItems={"center"}
+          justifyContent={"center"}
+          paddingLeft={10}
+          backgroundColor={"#fff"}
+          placeholder="tahun"
+          borderWidth={1}
+          borderColor={"coolGray.300"}
+          rounded={10}
+          dropdownIcon={<Icon as={MaterialIcons} name="keyboard-arrow-down" size={7} color={"#000"} mr={2} />}
+          onValueChange={selectedYear => {
+            setSelectedYear(selectedYear);
+            console.log(selectedYear);
+            paginateRef.current.refetch();
+          }}
+          selectedValue={selectedYear}
+          _selectedItem={{ 
+            bg: "coolGray.200",
+            borderRadius: "lg"
+           }}
+          _dropdown={{ 
+            bg: "white",
+            borderWidth: 1,
+            borderColor: "coolGray.300",
+            borderRadius: 10,
+            shadow: 2
+           }}
+          >
+          {years.map(year => (
+            <Select.Item key={year.id} label={year.title} value={year.title} />
+          ))}
+        </Select>
+      </HStack>
     );
   };
 
@@ -271,8 +279,9 @@ const Permohonan = ({ navigation }) => {
               className="mb-20"
               ref={paginateRef}
               url="/permohonan"
-              payload={{ tahun: tahun }}
+              payload={{ tahun: selectedYear }}
               Plugin={filtah}
+              plugan={false}
               renderItem={CardPermohonan}></Paginate>
           </View>
           <Icons
