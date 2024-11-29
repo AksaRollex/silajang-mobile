@@ -219,90 +219,62 @@ export default function Profile({ navigation }) {
             </View>
             {/* Modal Logout */}
             <Modal
-              transparent={true}
-              visible={modalVisible}
-              animationType="fade"
-              onRequestClose={() => setModalVisible(false)}>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                }}>
-                <View
+          transparent={true}
+          visible={modalVisible}
+          animationType="fade"
+          onRequestClose={() => setModalVisible(false)}
+        >
+          <View style={{
+            flex: 1,
+            justifyContent: 'center',
+            alignItems: 'center',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          }}>
+            <View style={{
+              width: 300,
+              padding: 20,
+              backgroundColor: 'white',
+              borderRadius: 10,
+              alignItems: 'center',
+            }}>
+              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
+
+              <View style={{
+                width: '100%',
+                borderBottomWidth: 1,
+                borderBottomColor: '#dedede',
+                marginBottom: 15,
+              }} />
+
+              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
+              <View style={{ flexDirection: 'row' }}>
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
                   style={{
-                    padding: 20,
-                    backgroundColor: "white",
-                    borderRadius: 10,
-                    alignItems: "center",
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    backgroundColor: '#dedede',
+                    borderRadius: 5,
+                    marginRight: 10,
                   }}
-                  className="w-10/12">
-
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      marginBottom: 7,
-                      fontFamily: "Poppins-Bold",
-                      color: "black",
-                    }}>
-                    Logout
-                  </Text>
-                  <Text
-                    style={{
-                      fontSize: 16,
-                      marginBottom: 7,
-                      fontFamily: "Poppins-SemiBold",
-                      color: "black",
-                    }}>
-                    Yakin ingin keluar?
-                  </Text>
-
-                  <View
-                    style={{
-                      width: "100%",
-                      marginBottom: 15,
-                    }}
-                  />
-
-                  <View style={{ flexDirection: "row" }}>
-                    <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ececec",
-                        borderRadius: 5,
-                        marginRight: 10,
-                      }}>
-                      <Text
-                        style={{
-                          color: "#4f4f4f",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
-                        Batal
-                      </Text>
-                    </TouchableOpacity>
-                    <TouchableOpacity
-                      onPress={confirmLogout}
-                      style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ffcbd1",
-                        borderRadius: 5,
-                      }}>
-                      <Text
-                        style={{
-                          color: "#de0a26",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
-                        Ya, Keluar
-                      </Text>
-                    </TouchableOpacity>
-                  </View>
-                </View>
+                >
+                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  className="bg-red-100"
+                  onPress={confirmLogout}
+                  style={{
+                    paddingVertical: 10,
+                    paddingHorizontal: 20,
+                    borderRadius: 5,
+                  }}
+                >
+                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                </TouchableOpacity>
               </View>
-            </Modal>
+            </View>
+          </View>
+        </Modal>
 
             <Modal
               animationType="fade"

@@ -105,7 +105,7 @@ export default memo(function WithPhone() {
         <Button
           labelStyle={{ fontFamily: "Poppins-Medium" }}
           label="Dapatkan OTP"
-          backgroundColor={Colors.brand}
+          backgroundColor={'#312e81'}
           paddingV-12
           borderRadius={5}
           onPress={handleSubmit(getOtp)}

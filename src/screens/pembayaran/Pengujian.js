@@ -13,6 +13,8 @@ import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import TTEModal from './TTEModal';
+import KwitansiModal from "./KwitansiModal";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -23,7 +25,10 @@ const Pengujian = ({ navigation }) => {
   const [bulan, setBulan] = useState("-");
   const [type, setType] = useState('va');
   const [modalVisible, setModalVisible] = useState(false);
+  const [tteModalVisible, setTTEModalVisible] = useState(false);
+  const [kwitansiModalVisible, setKwitansiModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const tahuns = Array.from(
     { length: new Date().getFullYear() - 2021 },
@@ -92,6 +97,8 @@ const Pengujian = ({ navigation }) => {
       const baseUrl = `/api/v1/report/${uuid}/skrd/tte/download`;
       const reportUrl = `${APP_URL}${baseUrl}?token=${authToken}`;
 
+      console.log('Report URL:', reportUrl);
+
       setReportUrl(reportUrl);
       setModalVisible(true);
     } catch (error) {
@@ -151,8 +158,8 @@ const Pengujian = ({ navigation }) => {
           type: "success",
           text1: "Success",
           text2: `Laporan PDF Berhasil Diunduh. ${Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Disimpan sebagai ${fileName} di folder Download.`
+            ? "You can find it in the Files app."
+            : `Disimpan sebagai ${fileName} di folder Download.`
             }`,
         });
       } else {
@@ -259,6 +266,19 @@ const Pengujian = ({ navigation }) => {
     }
   };
 
+  const handleTTESubmit = (formData) => {
+    // Handle TTE submit
+    console.log('TTE Form Data:', formData);
+    console.log('Selected Item:', selectedItem);
+    setTTEModalVisible(false);
+  };
+  const handleKwitansiSubmit = (formData) => {
+    // Handle TTE submit
+    console.log('TTE Form Data:', formData);
+    console.log('Selected Item:', selectedItem);
+    setKwitansiModalVisible(false);
+  };
+
   const cardPengujian = ({ item }) => {
     const statusStyle = getStatusStyle(item);
     const statusText = getStatusText(item);
@@ -338,10 +358,7 @@ const Pengujian = ({ navigation }) => {
         <View className="flex-row justify-end mt-1 space-x-2">
           <View className="flex-row space-x-2">
             <TouchableOpacity
-              onPress={() => navigation.navigate("Detail", {
-                uuid: item.uuid,
-                status: item.payment?.status,
-              })}
+               onPress={() => navigation.navigate('Detail', { uuid: item.uuid })}  
               className="bg-blue-500 px-3 py-2 rounded-md flex-row items-center">
               <MaterialIcons name="credit-card" size={13} color="white" />
               <Text className="text-white text-xs ml-1 font-poppins-medium">
@@ -350,42 +367,40 @@ const Pengujian = ({ navigation }) => {
             </TouchableOpacity>
 
             <MenuView
-              title="TTE SKRD"
-              actions={[
-                { id: 'download', title: 'Download TTE' },
-                { id: 'apply', title: 'Ajukan TTE' }
-              ]}
-              onPressAction={({ nativeEvent }) => {
-                if (nativeEvent.event === 'download') {
-                  console.log("Download TTE SKRD");
-                } else if (nativeEvent.event === 'apply') {
-                  console.log("Ajukan TTE SKRD");
-                }
-              }}
+            title="TTE SKRD"
+            actions={[
+              { id: 'apply', title: 'Ajukan TTE' }
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              if (nativeEvent.event === 'apply') {
+                setSelectedItem(item);
+                setTTEModalVisible(true);
+              }
+            }}
+          >
+            <TouchableOpacity
+              className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center"
             >
-              <TouchableOpacity className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center">
-                <FontAwesome5 name="file-signature" size={13} color="white" />
-                <Text className="text-white text-xs ml-1 font-poppins-medium">
-                  TTE SKRD
-                </Text>
-                <MaterialIcons name="arrow-drop-down" size={16} color="white" />
-              </TouchableOpacity>
-            </MenuView>
+              <FontAwesome5 name="file-signature" size={13} color="white" />
+              <Text className="text-white text-xs ml-1 font-poppins-medium">
+                TTE SKRD
+              </Text>
+              <MaterialIcons name="arrow-drop-down" size={16} color="white" />
+            </TouchableOpacity>
+          </MenuView>
 
             {item.payment?.is_lunas == 1 && (
               <MenuView
-                title="TTE Kwitansi"
-                actions={[
-                  { id: 'download', title: 'Download TTE' },
-                  { id: 'apply', title: 'Ajukan TTE' }
-                ]}
-                onPressAction={({ nativeEvent }) => {
-                  if (nativeEvent.event === 'download') {
-                    console.log("Download TTE Kwitansi");
-                  } else if (nativeEvent.event === 'apply') {
-                    console.log("Ajukan TTE Kwitansi");
-                  }
-                }}
+              title="TTE Kwitansi"
+              actions={[
+                { id: 'apply', title: 'Ajukan TTE' }
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                if (nativeEvent.event === 'apply') {
+                  setSelectedItem(item);
+                  setKwitansiModalVisible(true);
+                }
+              }}
               >
                 <TouchableOpacity className="bg-yellow-500 px-3 py-2 rounded-md flex-row items-center">
                   <FontAwesome5 name="file-signature" size={13} color="white" />
@@ -419,7 +434,7 @@ const Pengujian = ({ navigation }) => {
             onPressAction={({ nativeEvent }) => {
               if (nativeEvent.event === 'skrd') {
                 handlePreviewSKRDPDF(item.uuid);
-              } else if (nativeEvent.event === 'kwitansi') { 
+              } else if (nativeEvent.event === 'kwitansi') {
                 handlePreviewKwitansiPDF(item.uuid);
               }
             }}
@@ -519,7 +534,7 @@ const Pengujian = ({ navigation }) => {
             <View className="flex-row justify-between items-center p-4">
               <Text className="text-lg font-bold text-black">Preview PDF</Text>
               <TouchableOpacity
-                 onPress={() => {
+                onPress={() => {
                   handleDownloadReport();
                   setModalVisible(false);
                 }}
@@ -529,8 +544,11 @@ const Pengujian = ({ navigation }) => {
             </View>
             <Pdf
               source={{ uri: reportUrl, cache: true }}
-              style={{ flex: 1 }}
+              style={{ flex: 1, width: '100%', height: '100%' }}
               trustAllCerts={false}
+              onError={(error) => {
+                console.log('PDF Load Error:', error);
+              }}
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
@@ -542,6 +560,18 @@ const Pengujian = ({ navigation }) => {
           </View>
         </View>
       </Modal>
+
+      <TTEModal 
+        visible={tteModalVisible}
+        onClose={() => setTTEModalVisible(false)}
+        onSubmit={handleTTESubmit}
+      />
+
+      <KwitansiModal 
+        visible={kwitansiModalVisible}
+        onClose={() => setKwitansiModalVisible(false)}
+        onSubmit={handleKwitansiSubmit}
+      />
 
       <Paginate
         ref={paginateRef}

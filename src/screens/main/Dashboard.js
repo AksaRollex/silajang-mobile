@@ -279,14 +279,16 @@ const Dashboard = () => {
                   </Text>
                 </View>
               </View>
-              <TouchableOpacity
-                className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
-                onPress={handleLogout}
-                activeOpacity={0.7}
-              >
-                <IonIcons name="log-out-outline" size={16} color="#f2416e" />
-                <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
-              </TouchableOpacity>
+              {isAdmin && (
+                <TouchableOpacity
+                  className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
+                  onPress={handleLogout}
+                  activeOpacity={0.7}
+                >
+                  <IonIcons name="log-out-outline" size={16} color="#f2416e" />
+                  <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
+                </TouchableOpacity>
+              )}
             </View>
           </View>
 
