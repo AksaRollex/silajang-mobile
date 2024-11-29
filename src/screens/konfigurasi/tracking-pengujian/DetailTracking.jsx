@@ -70,7 +70,7 @@ const DetailTracking = ({ route, navigation }) => {
             <TouchableOpacity 
               onPress={() => navigation.goBack()}
               className="p-3 mr-4 bg-[#ef4444] rounded-xl" 
-            >
+            > 
               <AntDesign name="arrowleft" size={20} color="white" />
             </TouchableOpacity>
             <Text className="flex-1 text-lg font-poppins-semibold text-black">

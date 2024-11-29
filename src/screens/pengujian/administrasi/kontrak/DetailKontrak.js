@@ -3,6 +3,7 @@ import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -150,7 +151,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 className="bg-[#ef4444] w-[55px] h-[40px] rounded-[15px] justify-center items-center"
                                 onPress={() => navigation.goBack()}
                             >
-                                <MaterialCommunityIcons name="arrow-left" size={20} color="white" />
+                                <AntDesign name="arrowleft" size={20} color="white" />
                             </TouchableOpacity>
                             <View>
                                 <Text className="font-poppins-semibold text-[23px] text-black ml-[20px] mt-[5px]">Detail Kontrak</Text>

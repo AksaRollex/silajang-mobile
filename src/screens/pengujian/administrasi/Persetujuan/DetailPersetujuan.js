@@ -26,7 +26,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Foundation from "react-native-vector-icons/Foundation";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import Icon from "react-native-vector-icons/AntDesign";
 import { RadioButton } from "react-native-paper";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import RNPickerSelect from "react-native-picker-select";
@@ -474,7 +474,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                     alignItems: "center",
                   }}
                   onPress={() => navigation.goBack()}>
-                  <Icon name="arrow-left" size={20} color="white" />
+                  <Icon name="arrowleft" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
                   <Text className="font-poppins-semibold" style={styles.kode}>{data.kode}</Text>
