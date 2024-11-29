@@ -65,11 +65,11 @@ const Permohonan = ({ navigation }) => {
   });
 
   const dropdownOptions = [
-    {
-      id: "TitikUji",
-      title: "TitikUji",
-      action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
-    },
+    // {
+    //   id: "TitikUji",
+    //   title: "TitikUji",
+    //   action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
+    // },
     {
       id: "Edit",
       title: "Edit",
@@ -89,16 +89,33 @@ const Permohonan = ({ navigation }) => {
       <View style={styles.card}>
         <View style={styles.roundedBackground} className="rounded-br-full" />
 
-        <View style={styles.cardWrapper}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("TitikUji", { uuid: item.uuid })}
+          style={styles.cardWrapper}>
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
-                Industri
-              </Text>
-              <Text className="text-black  text-base font-poppins-regular">
-                {item.industri}
-              </Text>
+              <View className="flex-row justify-between">
+                <View className="w-1/2 ">
+                  <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
+                    Industri
+                  </Text>
+                  <Text className="text-black  text-base font-poppins-regular">
+                    {item.industri}
+                  </Text>
+                </View>
+                <View className="w-1/2 ">
+                  <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
+                    {item.tanggal}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Middle section */}
+          <View style={styles.rightSection}>
+            <View style={styles.cardContents} className="flex">
               <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
                 Alamat
               </Text>
@@ -113,37 +130,29 @@ const Permohonan = ({ navigation }) => {
               </Text>
             </View>
           </View>
-
-          {/* Middle section */}
-          <View
-            style={styles.cardContents}
-            className="flex flex-end   font-poppins-semibold">
-            <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
-              {item.tanggal}
-            </Text>
-          </View>
-
           {/* Right section (dots menu) */}
-          <View style={styles.cardActions} className="mb-4">
-            <MenuView
-              title="Menu Title"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}>
-              <View>
-                <Entypo name="dots-three-vertical" size={20} color="#312e81" />
-              </View>
-            </MenuView>
-          </View>
+        </TouchableOpacity>
+        <View
+          style={styles.cardActions}
+          className="mb-4 flex-end jusitfy-end items-end mr-2">
+          <MenuView
+            title="Menu Title"
+            actions={dropdownOptions.map(option => ({
+              ...option,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = dropdownOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                selectedOption.action(item);
+              }
+            }}
+            shouldOpenOnLongPress={false}>
+            <View>
+              <Entypo name="dots-three-vertical" size={20} color="#312e81" />
+            </View>
+          </MenuView>
         </View>
       </View>
     );
@@ -308,10 +317,11 @@ const styles = StyleSheet.create({
     marginVertical: 10,
     elevation: 5,
     shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
+    shadowOffset: { width: 0, height: 0.5 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
     overflow: "hidden",
+    display: "flex",
     position: "relative", // Added to position the background
   },
   roundedBackground: {
@@ -323,27 +333,26 @@ const styles = StyleSheet.create({
     backgroundColor: "#e2e8f0", // slate-200 equivalent
   },
   cardWrapper: {
-    flexDirection: "row",
+    flexDirection: "column",
     position: "relative",
     zIndex: 2,
-  },
-  leftSection: {
-    width: "45%",
-    position: "relative",
-  },
-  cardContent: {
     padding: 12,
   },
-  cardContents: {
-    width: "45%",
-    paddingTop: 12,
+  leftSection: {
+    width: "100%",
+    position: "relative",
   },
-  cardActions: {
-    width: "10%",
-    alignItems: "center",
-    justifyContent: "flex-end",
-    zIndex: 4,
+  cardContent: {},
+  rightSection: {
+    width: "100%",
+    position: "relative",
   },
+  cardContents: {},
+  // cardActions: {
+  //   alignItems: "flex-end",
+  //   justifyContent: "flex-end",
+  //   zIndex: 4,
+  // },
   picker: {
     flex: 1,
     marginHorizontal: 4,

@@ -108,7 +108,7 @@ const Dashboard = () => {
                 className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg">
                 <View className="flex-row items-center">
                   <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
-                    {tahun}
+                    {tahun}  
                   </Text>
                 </View>
                 <MaterialIcons

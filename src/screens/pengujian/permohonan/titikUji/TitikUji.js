@@ -1,17 +1,6 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
-import {
-  View,
-  Text,
-  StyleSheet,
-  ActivityIndicator,
-  Modal,
-  Button,
-  TouchableOpacity,
-} from "react-native";
+import { View, Text, StyleSheet, TouchableOpacity } from "react-native";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
-import axios from "@/src/libs/axios";
-import { Colors } from "react-native-ui-lib";
-import Header from "@/src/screens/components/Header";
 import Entypo from "react-native-vector-icons/Entypo";
 import { MenuView } from "@react-native-menu/menu";
 import { useDelete } from "@/src/hooks/useDelete";
@@ -19,21 +8,10 @@ import Icons from "react-native-vector-icons/AntDesign";
 import Paginate from "@/src/screens/components/Paginate";
 import { usePermohonan } from "@/src/services/usePermohonan";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { APP_URL } from "@env";
-import Pdf from "react-native-pdf";
-import {
-  Menu,
-  MenuOption,
-  MenuOptions,
-  MenuTrigger,
-} from "react-native-popup-menu";
-import Icon from "react-native-vector-icons/FontAwesome";
 import { useUser } from "@/src/services";
 import BackButton from "@/src/screens/components/Back";
 import { API_URL } from "@env";
 import RNFS from "react-native-fs";
-import Share from "react-native-share";
-import { FA5Style } from "react-native-vector-icons/FontAwesome5";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
@@ -44,29 +22,15 @@ const TitikUji = ({ navigation, route, status, callback }) => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
   const { data: user } = useUser();
-  const openModal = () => {
-    setIsModalVisible(true);
-  };
-  // console.log("data permohonan", permohonan);
   const data = permohonan || {};
   const pivotData = data.titik_permohonans;
-  // console.log("data: ", data);
   const { onSuccess, onError, onSettled } = callback || {};
-
-  useEffect(() => {
-    console.log("DATA ANJAY", uuid);
-  }, [uuid]);
-
-  const closeModal = () => {
-    setIsModalVisible(false);
-  };
   const queryClient = useQueryClient();
   const titikPermohonans = queryClient.getQueryData([
     "permohonan",
     uuid,
     "titik",
   ]);
-
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [previewUrl, setPreviewUrl] = useState("");
@@ -135,11 +99,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       ],
     },
     {
-      id: "Parameter",
-      title: "Parameter",
-      action: item => navigation.navigate("Parameter", { uuid: item.uuid }),
-    },
-    {
       id: "Edit",
       title: "Edit",
       action: item =>
@@ -154,7 +113,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       action: item => deleteTitikUji(`/permohonan/titik/${item.uuid}`),
     },
   ];
-
   // Function to download the PDF
   const handleConfirm = async () => {
     const fileName = "pembayaran.pdf";
@@ -163,18 +121,14 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       android: RNFS.DownloadDirectoryPath,
     });
     const filePath = `${fileDir}/${fileName}`;
-
     setIsLoading(true); // Start loading when download begins
-
     try {
       const options = {
         fromUrl: previewUrl,
         toFile: filePath,
         background: true,
       };
-
       const response = await RNFS.downloadFile(options).promise;
-
       if (response.statusCode === 200) {
         setDownloadComplete(true); // Set download complete flag to true
         onSuccess && onSuccess(filePath);
@@ -189,37 +143,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       onSettled && onSettled();
     }
   };
-
-  const showConfirmationModal = url => {
-    setreportUrl(url);
-    setModalVisible(true);
-  };
-  // Function to handle share
-  const handleShare = async () => {
-    const fileName = "pembayaran.pdf";
-    const fileDir = Platform.select({
-      ios: RNFS.DocumentDirectoryPath,
-      android: RNFS.DownloadDirectoryPath,
-    });
-    const filePath = `${fileDir}/${fileName}`;
-
-    await Share.open({
-      url: Platform.OS === "android" ? `file://${filePath}` : filePath,
-      type: "application/pdf",
-    });
-  };
-
-  // Fungsi untuk mendapatkan class berdasarkan data.kesimpulan_permohonan
-  function getKesimpulanClass(kesimpulan_permohonan) {
-    if (kesimpulan_permohonan === 1) {
-      return "text-indigo-600 bg-light-success"; // Diterima
-    } else if (kesimpulan_permohonan === 2) {
-      return "text-indigo-600 bg-light-danger"; // Ditolak
-    } else {
-      return "text-indigo-600 bg-light-info"; // Menunggu
-    }
-  }
-
   // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_permohonan
   function getKesimpulanText(kesimpulan_permohonan) {
     if (kesimpulan_permohonan === 1) {
@@ -230,16 +153,6 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       return "Menunggu";
     }
   }
-  function getPenerimaanClass(kesimpulan_sampel) {
-    if (kesimpulan_sampel === 1) {
-      return "text-indigo-600 bg-light-success"; // Diterima
-    } else if (kesimpulan_sampel === 2) {
-      return "text-indigo-600 bg-light-danger"; // Ditolak
-    } else {
-      return "text-indigo-600 bg-light-info"; // Menunggu
-    }
-  }
-
   // Fungsi untuk mendapatkan teks berdasarkan data.kesimpulan_sampel
   function getPenerimaanText(kesimpulan_sampel) {
     if (kesimpulan_sampel === 1) {
@@ -250,12 +163,12 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       return "Menunggu";
     }
   }
-
   const CardTitikUji = ({ item }) => (
     <View style={styles.card}>
       <View style={styles.roundedBackground} className="rounded-br-full" />
-
-      <View style={styles.cardWrapper}>
+      <TouchableOpacity
+        style={styles.cardWrapper}
+        onPress={() => navigation.navigate("Parameter", { uuid: item.uuid })}>
         {/* Left section with rounded background */}
         <View style={styles.leftSection}>
           <View style={styles.cardContent}>
@@ -328,28 +241,29 @@ const TitikUji = ({ navigation, route, status, callback }) => {
             {item.tanggal_selesai_uji || "-"}
           </Text>
         </View>
-
-        {/* Right section (dots menu) */}
-        <View style={styles.cardActions} className="mb-4 ">
-          <MenuView
-            title="Menu Title"
-            actions={dropdownOptions.map(option => ({
-              ...option,
-            }))}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = dropdownOptions.find(
-                option => option.title === nativeEvent.event,
-              );
-              if (selectedOption) {
-                selectedOption.action(item);
-              }
-            }}
-            shouldOpenOnLongPress={false}>
-            <View>
-              <Entypo name="dots-three-vertical" size={20} color="#312e81" />
-            </View>
-          </MenuView>
-        </View>
+      </TouchableOpacity>
+      {/* Right section (dots menu) */}
+      <View
+        style={styles.cardActions}
+        className="mb-4 flex-end jusitfy-end items-end ml-80">
+        <MenuView
+          title="Menu Title"
+          actions={dropdownOptions.map(option => ({
+            ...option,
+          }))}
+          onPressAction={({ nativeEvent }) => {
+            const selectedOption = dropdownOptions.find(
+              option => option.title === nativeEvent.event,
+            );
+            if (selectedOption) {
+              selectedOption.action(item);
+            }
+          }}
+          shouldOpenOnLongPress={false}>
+          <View>
+            <Entypo name="dots-three-vertical" size={20} color="#312e81" />
+          </View>
+        </MenuView>
       </View>
     </View>
   );
@@ -359,7 +273,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       <View className="w-full h-full bg-[#ececec] p-3">
         <View className="w-full h-full rounded-3xl bg-[#fff]">
           <View className="w-full">
-            <View className="flex-row p-3  justify-between rounded-t-md">
+            <View className="flex-row p-3 justify-between rounded-t-md">
               <BackButton
                 size={24}
                 color={"black"}
@@ -367,7 +281,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
                 className="mr-2 "
               />
               {permohonan ? (
-                <Text className="font-poppins-semibold text-black   ">
+                <Text className="font-poppins-semibold text-black">
                   {permohonan?.industri} : Titik Pengujian
                 </Text>
               ) : (
@@ -375,22 +289,20 @@ const TitikUji = ({ navigation, route, status, callback }) => {
               )}
             </View>
           </View>
-          <View className=" w-full h-full rounded-b-md">
-            {!titikPermohonans?.data?.length && !pivotData?.length && (
-              <View className=" pt-5 px-5">
-                <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
-                  <Text className="text-black text-xs mb-2 font-poppins-medium">
-                    Silahkan Tambah Titik Lokasi Sampel Pengujian
-                  </Text>
-                  <Text className="text-black text-xs  font-poppins-regular">
-                    Anda belum memiliki Titik Lokasi Sampel satu pun.
-                  </Text>
-                </View>
-              </View>
-            )}
-            {user.has_tagihan ? (
-              <View className="p-2">
-                <View className="flex items-center w-full p-3 bg-yellow-100 border border-yellow-400 rounded-md">
+          <View className="w-full h-full rounded-b-md">
+            {/* Tampilkan data Paginate terlebih dahulu */}
+            <Paginate
+              ref={paginateRef}
+              payload={{ permohonan_uuid: { uuid } }}
+              url="/permohonan/titik"
+              className="mb-20"
+              renderItem={CardTitikUji}
+            />
+  
+            {/* Cek apakah data kosong dan menampilkan info tagihan jika kosong */}
+            {!titikPermohonans?.data?.length && !pivotData?.length && user.has_tagihan && (
+              <View className="pt-5 px-5">
+                <View className="flex p-2 items-center bg-yellow-100 border border-yellow-400 rounded-md">
                   <Text className="text-black mb-0">
                     Tidak dapat membuat Permohonan Baru
                   </Text>
@@ -399,17 +311,23 @@ const TitikUji = ({ navigation, route, status, callback }) => {
                   </Text>
                 </View>
               </View>
-            ) : (
-              <>
-                <Paginate
-                  ref={paginateRef}
-                  payload={{ permohonan_uuid: { uuid } }}
-                  url="/permohonan/titik"
-                  className="mb-20"
-                  renderItem={CardTitikUji}></Paginate>
-              </>
+            )}
+  
+            {/* Jika tidak ada data dan tidak ada tagihan */}
+            {!titikPermohonans?.data?.length && !pivotData?.length && !user.has_tagihan && (
+              <View className="pt-5 px-5">
+                <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+                  <Text className="text-black text-xs mb-2 font-poppins-medium">
+                    Silahkan Tambah Titik Lokasi Sampel Pengujian
+                  </Text>
+                  <Text className="text-black text-xs font-poppins-regular">
+                    Anda belum memiliki Titik Lokasi Sampel satu pun.
+                  </Text>
+                </View>
+              </View>
             )}
           </View>
+  
           <Icons
             name="plus"
             size={28}
@@ -424,6 +342,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       </View>
     </>
   );
+  
 };
 const styles = StyleSheet.create({
   backButton: {

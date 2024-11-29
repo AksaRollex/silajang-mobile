@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     left: 24,
     top: 50,
     width: 2,
-    height: "79%",
+    height: "74%",
     zIndex: 1,
   },
   iconContainer: {
