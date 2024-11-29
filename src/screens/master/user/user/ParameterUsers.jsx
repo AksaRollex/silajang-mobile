@@ -68,13 +68,13 @@ const ParameterUsers = ({ navigation, route }) => {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-base font-poppins-medium text-black">
+            <Text className="text-sm mb-2 font-poppins-medium text-black">
               {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
             </Text>
-            <Text className="text-base text-muted font-poppins-medium">
+            <Text className="text-xs mb-2 text-muted font-poppins-medium">
               {item.jenis_parameter.nama}
             </Text>
-            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+            <Text className="text-sm font-poppins-medium text-black">{item.metode}</Text>
           </View>
           <TouchableOpacity 
             className="bg-[#312e81] rounded-md p-2"
@@ -95,13 +95,13 @@ const ParameterUsers = ({ navigation, route }) => {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-base font-poppins-medium text-black">
+            <Text className="text-sm mb-2 font-poppins-medium text-black">
               {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
             </Text>
-            <Text className="text-base text-muted font-poppins-medium">
+            <Text className="text-xs mb-2 text-muted font-poppins-medium">
               {item.jenis_parameter.nama}
             </Text>
-            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+            <Text className="text-sm font-poppins-medium text-black">{item.metode}</Text>
           </View>
           <TouchableOpacity 
             className="bg-[#dc2626] rounded-md p-2"
