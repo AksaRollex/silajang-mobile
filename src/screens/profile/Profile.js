@@ -220,58 +220,57 @@ export default function Profile({ navigation }) {
                   style={{
                     padding: 20,
                     backgroundColor: "white",
-                    borderRadius: 10,
+                    borderRadius: 15,
                     alignItems: "center",
-                  }}
-                  className="w-10/12">
-                  <Image
-                    source={require("../../../assets/icons/arrowRed.png")} // Ganti dengan path ke gambar Anda
-                    style={{
-                      width: 95, // Sesuaikan ukuran gambar
-                      height: 100, // Sesuaikan ukuran gambar
-                      marginBottom: 15,
-                    }}
+                    width: "90%",
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 4,
+                    elevation: 5,
+                  }}>
+                  <Icon
+                    name="log-out"
+                    size={50}
+                    color="red"
+                    style={{ marginBottom: 15 }}
                   />
-
                   <Text
                     style={{
-                      fontSize: 16,
-                      marginBottom: 7,
+                      fontSize: 18,
+                      marginBottom: 5,
                       fontFamily: "Poppins-Bold",
-                      color: "black",
+                      color: "#333",
                     }}>
                     Logout
                   </Text>
                   <Text
                     style={{
-                      fontSize: 16,
-                      marginBottom: 7,
+                      fontSize: 14,
+                      marginBottom: 15,
                       fontFamily: "Poppins-SemiBold",
-                      color: "black",
+                      color: "#666",
+                      textAlign: "center",
                     }}>
-                    Yakin ingin keluar?
+                    Yakin ingin keluar dari aplikasi ini?
                   </Text>
-
                   <View
                     style={{
-                      width: "100%",
-                      marginBottom: 15,
-                    }}
-                  />
-
-                  <View style={{ flexDirection: "row" }}>
+                      flexDirection: "row",
+                      justifyContent: "space-between",
+                    }}>
                     <TouchableOpacity
                       onPress={() => setModalVisible(false)}
                       style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ececec",
-                        borderRadius: 5,
+                        paddingVertical: 12,
+                        paddingHorizontal: 25,
+                        backgroundColor: "red",
+                        borderRadius: 8,
                         marginRight: 10,
                       }}>
                       <Text
                         style={{
-                          color: "#4f4f4f",
+                          color: "#fff",
                           fontFamily: "Poppins-SemiBold",
                         }}>
                         Batal
@@ -280,14 +279,14 @@ export default function Profile({ navigation }) {
                     <TouchableOpacity
                       onPress={confirmLogout}
                       style={{
-                        paddingVertical: 10,
-                        paddingHorizontal: 20,
-                        backgroundColor: "#ffcbd1",
-                        borderRadius: 5,
+                        paddingVertical: 12,
+                        paddingHorizontal: 25,
+                        backgroundColor: "green",
+                        borderRadius: 8,
                       }}>
                       <Text
                         style={{
-                          color: "#de0a26",
+                          color: "#fff",
                           fontFamily: "Poppins-SemiBold",
                         }}>
                         Ya, Keluar

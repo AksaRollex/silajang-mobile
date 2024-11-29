@@ -92,12 +92,27 @@ const Permohonan = ({ navigation }) => {
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
-                Industri
-              </Text>
-              <Text className="text-black  text-base font-poppins-regular">
-                {item.industri}
-              </Text>
+              <View className="flex-row justify-between">
+                <View className="w-1/2 ">
+                  <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
+                    Industri
+                  </Text>
+                  <Text className="text-black  text-base font-poppins-regular">
+                    {item.industri}
+                  </Text>
+                </View>
+                <View className="w-1/2 ">
+                  <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
+                    {item.tanggal}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          </View>
+
+          {/* Middle section */}
+          <View style={styles.rightSection}>
+            <View style={styles.cardContents} className="flex">
               <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
                 Alamat
               </Text>
@@ -112,16 +127,6 @@ const Permohonan = ({ navigation }) => {
               </Text>
             </View>
           </View>
-
-          {/* Middle section */}
-          <View
-            style={styles.cardContents}
-            className="flex flex-end   font-poppins-semibold">
-            <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
-              {item.tanggal}
-            </Text>
-          </View>
-
           {/* Right section (dots menu) */}
         </TouchableOpacity>
         <View
@@ -319,21 +324,21 @@ const styles = StyleSheet.create({
     backgroundColor: "#e2e8f0", // slate-200 equivalent
   },
   cardWrapper: {
-    flexDirection: "row",
+    flexDirection: "column",
     position: "relative",
     zIndex: 2,
-  },
-  leftSection: {
-    width: "45%",
-    position: "relative",
-  },
-  cardContent: {
     padding: 12,
   },
-  cardContents: {
-    width: "45%",
-    paddingTop: 12,
+  leftSection: {
+    width: "100%",
+    position: "relative",
   },
+  cardContent: {},
+  rightSection: {
+    width: "100%",
+    position: "relative",
+  },
+  cardContents: {},
   // cardActions: {
   //   alignItems: "flex-end",
   //   justifyContent: "flex-end",
