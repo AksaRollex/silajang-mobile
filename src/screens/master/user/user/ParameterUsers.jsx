@@ -2,10 +2,11 @@ import React, { useRef, useState } from "react";
 import {  View,  Text,  TouchableOpacity,  SafeAreaView,  ScrollView
 } from 'react-native';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
-import axios from 'axios'; // Ensure you have axios configured
+import axios from "@/src/libs/axios";
 import FontAwesome6Icon from 'react-native-vector-icons/FontAwesome6';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 interface Parameter {
   uuid: string;
@@ -23,6 +24,7 @@ const ParameterUsers = ({ navigation, route }) => {
   const paginateParameterRef = useRef(null);
   const paginateSelectedParameterRef = useRef(null);
   const queryClient = useQueryClient();
+  const paginateRef = React.useRef()
 
 
   const { data: selectedParameter, refetch: refetchSelectedParameter } = useQuery({
@@ -31,34 +33,31 @@ const ParameterUsers = ({ navigation, route }) => {
     cacheTime: 0,
   });
 
-
-  const { mutate: addParameter } = useMutation(
-    (uuid: string) => axios.post(`/master/user/${selected}/parameter/store`, { uuid }),
-    {
-      onSuccess: () => {
-        refetchSelectedParameter();
-        paginateParameterRef.current?.refetch();
-        paginateSelectedParameterRef.current?.refetch();
-      },
-      onError: (error) => {
-        console.error('Add parameter error:', error);
-      }
+  const { mutate: addParameter, isLoading: isAdding } = useMutation({
+    mutationFn: (uuid) => 
+      axios.post(`/master/user/${selected}/parameter/store`, { uuid }),
+    onSuccess: () => {
+      refetchSelectedParameter();
+      paginateRef.current.refetch();
+      paginateSelectedRef.current.refetch()
+    },
+    onError: (error) => {
+      console.error('Add Parameter Error:', error);
     }
-  );
+  });
   
-  const { mutate: removeParameter } = useMutation(
-    (uuid: string) => axios.post(`/master/user/${selected}/parameter/destroy`, { uuid }),
-    {
-      onSuccess: () => {
-        refetchSelectedParameter();
-        paginateParameterRef.current?.refetch();
-        paginateSelectedParameterRef.current?.refetch();
-      },
-      onError: (error) => {
-        console.error('Remove parameter error:', error);
-      }
+  const { mutate: removeParameter, isLoading: isRemoving } = useMutation({
+    mutationFn: (uuid) => 
+      axios.post(`/master/user/${selected}/parameter/destroy`, { uuid }),
+    onSuccess: () => {
+      refetchSelectedParameter();
+      paginateRef.current.refetch();
+      paginateSelectedRef.current.refetch()
+    },
+    onError: (error) => {
+      console.error('Remove Parameter Error:', error);
     }
-  );
+  });
 
   const renderAvailableItem = ({ item }: { item: Parameter }) => {
     return (
@@ -68,19 +67,19 @@ const ParameterUsers = ({ navigation, route }) => {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-base font-poppins-medium text-black">
+            <Text className="text-sm mb-2 font-poppins-medium text-black">
               {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
             </Text>
-            <Text className="text-base text-muted font-poppins-medium">
+            <Text className="text-xs mb-2 text-muted font-poppins-medium">
               {item.jenis_parameter.nama}
             </Text>
-            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+            <Text className="text-sm font-poppins-medium text-black">{item.metode}</Text>
           </View>
           <TouchableOpacity 
             className="bg-[#312e81] rounded-md p-2"
             onPress={() => addParameter(item.uuid)}
           >
-            <FontAwesome6Icon name="plus" size={18} color={"#fff"} />
+            <IonIcons name="add" size={18} color={"#fff"} />
           </TouchableOpacity>
         </View> 
       </View>
@@ -95,19 +94,19 @@ const ParameterUsers = ({ navigation, route }) => {
       >
         <View className="flex-row justify-between items-center">
           <View>
-            <Text className="text-base font-poppins-medium text-black">
+            <Text className="text-sm mb-2 font-poppins-medium text-black">
               {item.nama} {item.keterangan ? `(${item.keterangan})` : ''}
             </Text>
-            <Text className="text-base text-muted font-poppins-medium">
+            <Text className="text-xs mb-2 text-muted font-poppins-medium">
               {item.jenis_parameter.nama}
             </Text>
-            <Text className="text-base font-poppins-medium text-black">{item.metode}</Text>
+            <Text className="text-sm font-poppins-medium text-black">{item.metode}</Text>
           </View>
           <TouchableOpacity 
             className="bg-[#dc2626] rounded-md p-2"
             onPress={() => removeParameter(item.uuid)}
           >
-            <FontAwesome6Icon name="trash" size={18} color={"#fff"} />
+            <IonIcons name="trash-outline" size={18} color={"#fff"} />
           </TouchableOpacity>
         </View> 
       </View>
@@ -126,23 +125,27 @@ const ParameterUsers = ({ navigation, route }) => {
   {/* Parameter yang Dipilih */}
   <View className="flex-1 p-3">
     <View className="bg-white rounded-md shadow-md">
-    <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 self-center" >
+    <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 " >
         Parameter yang Dipilih
       </Text>
       <View className="h-[1px] bg-gray-100 my-3" />
+      <View style={{ maxHeight: 500 }}>
+        <ScrollView nestedScrollEnabled>
       <Paginate
         ref={paginateSelectedParameterRef}
         url={`/master/user/${selected}/parameter`}
         payload={{ except: selectedParameter }}
         renderItem={renderSelectedItem}
       />
+        </ScrollView>
+      </View>
     </View>
   </View>
   
   {/* Parameter Tersedia */}
   <View className="flex-1 p-3">
     <View className="bg-white rounded-md shadow-md">
-      <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 self-center" >
+      <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4 " >
         Parameter Tersedia
       </Text>
       <View className="h-[1px] bg-gray-100 my-3" />
@@ -151,7 +154,7 @@ const ParameterUsers = ({ navigation, route }) => {
           <Paginate
             ref={paginateParameterRef}
             url="/master/parameter"
-            payload={{ }}
+            payload={{ except: selectedParameter }}
             renderItem={renderAvailableItem}
           />
         </ScrollView>

@@ -3,7 +3,8 @@ import {
   View, 
   Text, 
   TouchableOpacity, 
-  SafeAreaView 
+  SafeAreaView ,
+  ScrollView
 } from 'react-native';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import axios from '@/src/libs/axios';
@@ -102,7 +103,7 @@ const ParameterPaket = ({ navigation, route }) => {
   ), [removeParameter, isRemoving]);
 
   return (
-    <SafeAreaView className="flex-1 bg-[#ececec]">
+    <ScrollView className="flex-1">
       <View className="items-center justify-center mt-4 mb-2">
         <View className="absolute left-4">
           <BackButton action={() => navigation.goBack()} size={26} />
@@ -112,29 +113,43 @@ const ParameterPaket = ({ navigation, route }) => {
         </Text>
       </View>
 
-      <View className="flex-1 bg-white">
+      <View className="flex-1 p-3">
+      <View className="bg-white rounded-md shadow-md">
         <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4">
           Parameter yang Dipilih
         </Text>
+        <View className="h-[1px] bg-gray-100 my-3" />
+      <View style={{ maxHeight: 500 }}>
+        <ScrollView nestedScrollEnabled>
         <Paginate
           url={`/master/paket/${selected}/parameter`}
           renderItem={renderSelectedParameterItem}
           ref={paginateSelectedRef}
         />
+        </ScrollView>
+        </View>
+        </View>
       </View>
 
-      <View className="flex-1 bg-white">
-        <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4">
-          Parameter Tersedia
-        </Text>
-        <Paginate
-          url="/master/parameter"
-          payload={{ except: selectedParameters }}
-          renderItem={renderParameterItem}
-          ref={paginateRef}
-        />
+      <View className="flex-1 p-3">
+        <View className="bg-white rounded-md shadow-md">
+          <Text className="text-[16px] font-poppins-semibold text-black ml-4 mt-4">
+            Parameter Tersedia
+          </Text>
+          <View className="h-[1px] bg-gray-100 my-3" />
+        <View style={{ maxHeight: 500 }}>
+          <ScrollView nestedScrollEnabled>
+          <Paginate
+            url="/master/parameter"
+            payload={{ except: selectedParameters }}
+            renderItem={renderParameterItem}
+            ref={paginateRef}
+          />
+          </ScrollView>
+          </View>
+        </View>
       </View>
-    </SafeAreaView>
+    </ScrollView>
   );
 };
 
