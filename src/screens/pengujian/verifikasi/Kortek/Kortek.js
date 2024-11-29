@@ -188,10 +188,10 @@ const Kortek = ({ navigation }) => {
           </View>
   
           <View className="flex-shrink-0 items-end">
-            <View className="bg-slate-100 rounded-md px-2 py-1 max-w-[150px] mb-2">
+            <View className="bg-slate-100 rounded-md py-1 px-2 max-w-[120px] mb-2">
               <Text
-                className="text-[11px] text-indigo-600 font-bold text-right"
-                numberOfLines={2}
+                className="text-[11px] text-indigo-600 font-poppins-semibold text-right"
+                numberOfLines={3}
                 ellipsizeMode="tail">
                 {item.text_status}
               </Text>

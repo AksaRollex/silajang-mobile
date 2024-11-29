@@ -24,7 +24,7 @@ import FormRadiusPengambilan from './radius-pengambilan/FormRadiusPengambilan'
 import FormLiburCuti from './libur-cuti/FormLiburCuti'
 import FormKodeRetribusi from './kode-retribusi/FormKodeRetribusi'
 import ParameterPeraturan from './peraturan/Parameter'
-import ParameterPaket from './paket/Parameter'
+import ParameterPaket from './paket/ParameterPaket'
 
 const Stack = createNativeStackNavigator()
 export default function MainScreen () {
@@ -54,6 +54,7 @@ export default function MainScreen () {
         <Stack.Screen name="FormKodeRetribusi" component={FormKodeRetribusi}/>
         <Stack.Screen name="FormPaket" component={FormPaket}/>
         <Stack.Screen name="ParameterPeraturan" component={ParameterPeraturan}/>
+        <Stack.Screen name="ParameterPaket" component={ParameterPaket}/>
       </Stack.Navigator>
   )
 }

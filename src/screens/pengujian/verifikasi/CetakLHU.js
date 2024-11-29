@@ -8,12 +8,16 @@ import {
   Modal,
   TouchableOpacity,
   Alert,
+  TextInput,
+  Pressable,
+  BackHandler,
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import FontIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
@@ -55,6 +59,18 @@ const HasilUjis = ({ navigation, route }) => {
   const [revisiNote, setRevisiNote] = useState("");
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
   const [currentItem, setCurrentItem] = useState(null);
+  const [revisionModalVisible, setRevisionModalVisible] = useState(false);
+  const [revisionNote, setRevisionNote] = useState("");
+  const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
+  const [tteModalVisible, setTteModalVisible] = useState(false);
+  const [formTte, setFormTte] = useState({
+    tanda_tangan_id: "",
+    passphrase: "",
+    tipe: "1", // default value, adjust as needed
+  });
+  const [previewReport, setPreviewReport] = useState(true);
+  const [showPrintOptions, setShowPrintOptions] = useState(false);
+  const [activeItem, setActiveItem] = useState(null);
 
   const dropdownOptions = [];
 
@@ -178,6 +194,225 @@ const HasilUjis = ({ navigation, route }) => {
     }
   };
 
+  const handleRevision = async () => {
+    try {
+      if (!revisionNote.trim()) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Keterangan revisi tidak boleh kosong",
+        });
+        return;
+      }
+
+      const response = await axios.post(
+        `/administrasi/${selectedRevisionItem.uuid}/cetak-lhu/revisi`,
+        { keterangan_revisi: revisionNote }
+      );
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "Berhasil menyimpan revisi",
+      });
+
+      setRevisionModalVisible(false);
+      setRevisionNote("");
+      setSelectedRevisionItem(null);
+      paginateRef.current?.refetch();
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.response?.data?.message || "Gagal menyimpan revisi",
+      });
+    }
+  };
+
+  const handleTteLhu = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const encodedPassphrase = btoa(formTte.passphrase); // Base64 encode passphrase
+
+      setTteModalVisible(false);
+
+      if (previewReport) {
+        // For preview in modal
+        const newReportUrl = `${APP_URL}/api/v1/report/${currentItem.uuid}/lhu/tte?token=${authToken}&tanda_tangan_id=${formTte.tanda_tangan_id}&passphrase=${encodedPassphrase}&tipe=${formTte.tipe}`;
+        setReportUrl(newReportUrl);
+        setModalVisible(true);
+      } else {
+        // For direct download
+        try {
+          const fileName = `LHU_TTE_${Date.now()}.pdf`;
+          const downloadPath =
+            Platform.OS === "ios"
+              ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+              : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+          const downloadUrl = `${APP_URL}/api/v1/report/${currentItem.uuid}/lhu/tte?tanda_tangan_id=${formTte.tanda_tangan_id}&passphrase=${encodedPassphrase}&tipe=${formTte.tipe}`;
+
+          const options = {
+            fromUrl: downloadUrl,
+            toFile: downloadPath,
+            headers: {
+              Authorization: `Bearer ${authToken}`,
+            },
+          };
+
+          const result = await RNFS.downloadFile(options).promise;
+
+          if (result.statusCode === 200) {
+            if (Platform.OS === "android") {
+              await RNFS.scanFile(downloadPath);
+            }
+
+            Toast.show({
+              type: "success",
+              text1: "Success",
+              text2: `PDF Berhasil Diunduh dengan TTE. ${
+                Platform.OS === "ios"
+                  ? "You can find it in the Files app."
+                  : `Saved as ${fileName} in your Downloads folder.`
+              }`,
+            });
+          } else {
+            throw new Error("Download failed");
+          }
+        } catch (error) {
+          console.error("Download error:", error);
+          Toast.show({
+            type: "error",
+            text1: "Error",
+            text2: `PDF gagal diunduh: ${error.message}`,
+          });
+        }
+      }
+    } catch (error) {
+      console.error("TTE error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.response?.data?.message || "Failed to process TTE",
+      });
+    }
+  };
+
+  const handleDownloadWord = async (item) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `LAPORAN-HASIL-PENGUJIAN-${item.kode}.docx`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const downloadUrl = `${APP_URL}/api/v1/report/${item.uuid}/lhu/word`;
+
+      const options = {
+        fromUrl: downloadUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `Word document berhasil diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `Word document gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
+  const PrintOptionsDropdown = ({ item }) => {
+    return (
+      <View className="relative">
+        <TouchableOpacity
+          onPress={() => {
+            setActiveItem(activeItem === item.uuid ? null : item.uuid);
+            setShowPrintOptions(!showPrintOptions);
+          }}
+          className="flex-row items-center p-2 bg-green-100 rounded-md mr-2"
+        >
+          <FontIcon name="file-contract" size={16} color="#059669" />
+          <Text className="ml-2 text-green-600 text-[13px] font-poppins-semibold">
+            Cetak LHU
+          </Text>
+          <MaterialIcons 
+            name={activeItem === item.uuid ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
+            size={20} 
+            color="#059669" 
+          />
+        </TouchableOpacity>
+
+        {activeItem === item.uuid && (
+          <View className="absolute left-0 bg-white rounded-lg shadow-lg z-50 w-40 ">
+            <TouchableOpacity
+              onPress={() => {
+                setActiveItem(null);
+                if (previewReport) {
+                  const getPreviewUrl = async () => {
+                    const authToken = await AsyncStorage.getItem("@auth-token");
+                    setReportUrl(
+                      `${APP_URL}/api/v1/report/${item.uuid}/cetak-lhu?token=${authToken}`
+                    );
+                    setModalVisible(true);
+                  };
+                  getPreviewUrl();
+                } else {
+                  handleDownloadPDF();
+                }
+              }}
+              className="flex-row items-center p-2 border-b border-gray-100"
+            >
+              <FontIcon name="file-pdf" size={16} color="#dc2626" className="mr-2" />
+              <Text className="text-red-600 text-[12px] font-poppins-semibold ml-2">
+                PDF
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => {
+                setActiveItem(null);
+                handleDownloadWord(item);
+              }}
+              className="flex-row items-center p-2"
+            >
+              <FontIcon name="file-word" size={16} color="#2563eb" className="mr-2" />
+              <Text className="text-blue-600 text-[12px] font-poppins-semibold ml-2">
+                WORD
+              </Text>
+            </TouchableOpacity>
+          </View>
+        )}
+      </View>
+    );
+  };
+
   const fetchCetak = async ({ queryKey }) => {
     const [_, search, year] = queryKey;
     const response = await axios.post("/administrasi/cetak-lhu", {
@@ -193,6 +428,9 @@ const HasilUjis = ({ navigation, route }) => {
   const renderItem = ({ item }) => {
     const canUpload = selectedCetak === 0 && item.can_upload === 1;
     const showPreview = selectedCetak !== 0 || item.status === 8;
+    const canRevision = selectedCetak === 0; 
+    const canPrev = selectedCetak === 0;
+    // const canTte = selectedCetak === 0;
 
     return (
       <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{ 
@@ -233,6 +471,40 @@ const HasilUjis = ({ navigation, route }) => {
         </View>
 
         <View className="flex-row justify-end pt-2">
+          {canPrev&&(
+            <PrintOptionsDropdown item={item} />
+          )}
+          {canRevision && (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedRevisionItem(item);
+                setRevisionModalVisible(true);
+              }}
+              className="flex-row items-center p-2 bg-yellow-100 rounded-md mr-2"
+            >
+              <FontIcon name="pencil-alt" size={16} color="#EAB308" />
+              <Text className="ml-2 text-yellow-600 text-[13px] font-poppins-semibold">
+                Revisi
+              </Text>
+            </TouchableOpacity>
+          )}
+
+          {/* {canTte && (
+            <TouchableOpacity
+              onPress={() => {
+                setCurrentItem(item);
+                setTteModalVisible(true);
+              }}
+              className="flex-row items-center p-2 bg-green-100 rounded-md mr-2"
+            >
+              <FontIcon name="signature" size={16} color="#059669" />
+              <Text className="ml-2 text-green-600 text-[13px] font-poppins-semibold">
+                TTE
+              </Text>
+            </TouchableOpacity>
+          )} */}
+
+
           {canUpload && (
             <TouchableOpacity
               onPress={() => {
@@ -263,6 +535,21 @@ const HasilUjis = ({ navigation, route }) => {
       </View>
     );
   };
+
+  useEffect(() => {
+    const backHandler = BackHandler.addEventListener(
+      "hardwareBackPress",
+      () => {
+        if (activeItem) {
+          setActiveItem(null);
+          return true;
+        }
+        return false;
+      }
+    );
+
+    return () => backHandler.remove();
+  }, [activeItem]);
 
   const payload = useMemo(() => {
     return {
@@ -333,6 +620,171 @@ const HasilUjis = ({ navigation, route }) => {
         payload={payload}
         renderItem={renderItem}
       />
+
+      <Modal
+        transparent={true}
+        animationType="fade"
+        visible={revisionModalVisible}
+        onRequestClose={() => {
+          setRevisionModalVisible(false);
+          setRevisionNote("");
+          setSelectedRevisionItem(null);
+        }}>
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Revisi LHU
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setRevisionModalVisible(false);
+                  setRevisionNote("");
+                  setSelectedRevisionItem(null);
+                }}>
+                <AntDesign name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm mb-2 text-gray-600">
+                Keterangan Revisi
+              </Text>
+              <TextInput
+                multiline
+                numberOfLines={4}
+                value={revisionNote}
+                onChangeText={setRevisionNote}
+                className="border border-gray-300 rounded-lg p-3 text-sm"
+                placeholder="Masukkan keterangan revisi..."
+                textAlignVertical="top"
+              />
+            </View>
+
+            <View className="flex-row justify-end space-x-2">
+              <TouchableOpacity
+                onPress={() => {
+                  setRevisionModalVisible(false);
+                  setRevisionNote("");
+                  setSelectedRevisionItem(null);
+                }}
+                className="bg-gray-200 px-4 py-2 rounded">
+                <Text className="text-gray-800 font-poppins-semibold">Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleRevision}
+                className="bg-yellow-500 px-4 py-2 rounded">
+                <Text className="text-white font-poppins-semibold">Simpan</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={tteModalVisible}
+        onRequestClose={() => {
+          setTteModalVisible(false);
+          setFormTte({
+            tanda_tangan_id: "",
+            passphrase: "",
+            tipe: "1",
+          });
+        }}>
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Tanda Tangan Elektronik
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setTteModalVisible(false);
+                  setFormTte({
+                    tanda_tangan_id: "",
+                    passphrase: "",
+                    tipe: "1",
+                  });
+                }}>
+                <AntDesign name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm mb-2 text-gray-600">
+                Tanda Tangan ID
+              </Text>
+              <TextInput
+                value={formTte.tanda_tangan_id}
+                onChangeText={(text) => 
+                  setFormTte(prev => ({...prev, tanda_tangan_id: text}))
+                }
+                className="border border-gray-300 rounded-lg p-3 text-sm"
+                placeholder="Masukkan ID Tanda Tangan"
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm mb-2 text-gray-600">
+                Passphrase
+              </Text>
+              <TextInput
+                value={formTte.passphrase}
+                onChangeText={(text) => 
+                  setFormTte(prev => ({...prev, passphrase: text}))
+                }
+                className="border border-gray-300 rounded-lg p-3 text-sm"
+                placeholder="Masukkan Passphrase"
+                secureTextEntry
+              />
+            </View>
+
+            <View className="mb-4">
+              <Text className="text-sm mb-2 text-gray-600">
+                Preview
+              </Text>
+              <TouchableOpacity
+                onPress={() => setPreviewReport(!previewReport)}
+                className="flex-row items-center"
+              >
+                <View className={`w-5 h-5 border rounded mr-2 ${previewReport ? 'bg-green-500 border-green-500' : 'border-gray-300'}`}>
+                  {previewReport && <Feather name="check" size={16} color="white" />}
+                </View>
+                <Text>Preview sebelum download</Text>
+              </TouchableOpacity>
+            </View>
+
+            <View className="flex-row justify-end space-x-2">
+              <TouchableOpacity
+                onPress={() => {
+                  setTteModalVisible(false);
+                  setFormTte({
+                    tanda_tangan_id: "",
+                    passphrase: "",
+                    tipe: "1",
+                  });
+                }}
+                className="bg-gray-200 px-4 py-2 rounded">
+                <Text className="text-gray-800 font-poppins-semibold">Batal</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={handleTteLhu}
+                className="bg-green-500 px-4 py-2 rounded">
+                <Text className="text-white font-poppins-semibold">Proses</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {activeItem && (
+        <Pressable
+          className="absolute inset-0 z-40 bg-transparent"
+          onPress={() => setActiveItem(null)}
+        />
+      )}
 
       <Modal
         transparent={true}

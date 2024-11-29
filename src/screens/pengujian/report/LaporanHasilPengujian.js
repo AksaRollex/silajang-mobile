@@ -461,8 +461,11 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 shadowRadius: 4
             }}>
                 <View className="border-b border-gray-100 pb-3 mb-3">
-                    <View className="flex-row justify-between items-center mb-2">
-                        <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+                    <View className="flex-row justify-between items-center mb-3">
+                        <View>
+                            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Kode</Text>   
+                            <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+                        </View>
                         <CertificateBadge value={item.sertifikat}/>
                     </View>
                     <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>

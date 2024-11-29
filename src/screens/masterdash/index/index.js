@@ -24,7 +24,7 @@ import FormRadiusPengambilan from '../../master/master/radius-pengambilan/FormRa
 import FormLiburCuti from '../../master/master/libur-cuti/FormLiburCuti'
 import FormKodeRetribusi from '../../master/master/kode-retribusi/FormKodeRetribusi'
 import ParameterPeraturan from '../../master/master/peraturan/Parameter'
-import ParameterPaket from '../../master/master/paket/Parameter'
+import ParameterPaket from '../../master/master/paket/ParameterPaket'
 import Jabatan from '../../master/user/jabatan/Jabatan'
 import FormJabatan from '../../master/user/jabatan/FormJabatan'
 import Users from '../../master/user/user/Users'
@@ -64,6 +64,7 @@ export default function MainScreen () {
         <Stack.Screen name="FormLiburCuti" component={FormLiburCuti}/>
         <Stack.Screen name="FormKodeRetribusi" component={FormKodeRetribusi}/>
         <Stack.Screen name="FormPaket" component={FormPaket}/>
+        <Stack.Screen name="ParameterPaket" component={ParameterPaket}/>
         <Stack.Screen name="ParameterPeraturan" component={ParameterPeraturan}/>
         <Stack.Screen name="Jabatan" component={Jabatan} />
         <Stack.Screen name="Users" component={Users}/>
