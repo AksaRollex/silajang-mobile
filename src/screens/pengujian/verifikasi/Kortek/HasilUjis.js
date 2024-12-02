@@ -16,12 +16,7 @@ import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 
 const HasilUjis = ({ route, navigation }) => {
   const { uuid } = route.params;
-  const [formData, setFormData] = useState({
-    kode: "",
-    keterangan_revisi: "",
-    memenuhi_hasil_pengujian: null,
-    parameters: [],
-  });
+  const [formData, setFormData] = useState();
   const [loading, setLoading] = useState(true);
 
   // Simplified mock data fetch
