@@ -11,6 +11,8 @@ import axios from '@/src/libs/axios';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import IonIcons from "react-native-vector-icons/Ionicons";
+
 
 const ParameterPaket = ({ navigation, route }) => {
   const { selected } = route.params;
@@ -25,6 +27,7 @@ const ParameterPaket = ({ navigation, route }) => {
         .get(`/master/paket/${selected}/parameter`)
         .then(res => res.data.data),
   })
+
 
   React.useEffect(() => console.log(selectedParameters), [selectedParameters])
 
@@ -71,7 +74,7 @@ const ParameterPaket = ({ navigation, route }) => {
           onPress={() => !isAdding && addParameter(item.uuid)}
           disabled={isAdding}
         >
-          <Icon name="plus" size={18} color="#fff" />
+          <IonIcons name="add" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -96,7 +99,7 @@ const ParameterPaket = ({ navigation, route }) => {
           onPress={() => !isRemoving && removeParameter(item.uuid)}
           disabled={isRemoving}
         >
-          <Icon name="trash" size={18} color="#fff" />
+          <IonIcons name="trash" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
