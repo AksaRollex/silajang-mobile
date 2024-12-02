@@ -1,33 +1,15 @@
-// profil
-
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  TouchableOpacity,
-  ActivityIndicator,
-  Modal,
-  Linking,
-  Dimensions,
-  StyleSheet,
-  Image,
-  ImageBackground,
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Linking, Dimensions, StyleSheet, Image, ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
-import { Colors } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Toast from "react-native-toast-message";
-// import BackButton from "@/src/screens/components/BackButton";
-// import FastImage from "react-native-fast-image";
-// import LottieView from "lottie-react-native";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Icon from "react-native-vector-icons/Feather";
-import Icons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextFooter } from "../components/TextFooter";
-import { black } from "react-native-paper/lib/typescript/styles/themes/v2/colors";
 
 const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
@@ -104,8 +86,8 @@ export default function Profile({ navigation }) {
                       </View>
                     ) : (
                       <View
-                        className="rounded-full  bg-gray-300 items-center justify-center"
-                        style={{ borderWidth: 2, borderColor: "#E2E8F0", width: 135, height: 135 }}
+                        className="rounded-full  bg-gray-300 items-center justify-center w-28 h-28"
+                        style={{ borderWidth: 2, borderColor: "#E2E8F0" }}
                       >
                         <IonIcons
                           name="person"
@@ -130,21 +112,35 @@ export default function Profile({ navigation }) {
           <View className="rounded-3xl h-full bg-[#F9FAFB]">
             {userData ? (
               <>
-                <View className="flex-col align-center justify-center mx-2 mt-20">
-                  <Text className="text-[14px] text-black font-poppins-bold my-1 text-center ">
+                <View className="flex-col align-center justify-center mx-2 mt-14">
+                <View className="flex flex-row items-center mb-2 justify-center">
+                  {/* Nama User */}
+                  <Text className="text-[16px] text-black font-poppins-semibold mr-2 mt-[0.5px]">
                     {userData?.nama}
                   </Text>
-                  <Text className="text-[13px] text-gray-500 font-poppins-semibold text-center ">
+                  
+                    <View className="items-center">
+                      <MaterialIcons name="check-decagram" size={22} color="#312e81"  />
+                    </View>
+                </View>
+
+                  <Text className="text-[13px] text-gray-500 font-poppins-regular text-center ">
                     {userData?.email}
                   </Text>
+                  <Text className="text-[13px] text-gray-500 font-poppins-regular text-center ">
+                    {userData?.phone}
+                  </Text>
+                  <Text className="text-[13px] text-gray-500 font-poppins-regular text-center mt-1">
+                    ( {userData?.golongan?.nama} )
+                  </Text>
                 </View>
-                <View className="w-full h-1 bg-gray-300 mt-3" />
+                <View className="w-full h-[2px] bg-gray-300 mt-3" />
               </>
             ) : (
               <View></View>
             )}
             <TouchableOpacity
-              onPress={() => navigation.navigate("Akun")}
+              onPress={() => navigation.navigate("Informasi")}
               className=" w-full py-6 px-6  flex-row justify-between items-center"
               style={{ zIndex: 5 }}>
               <View className="flex-row items-center">
@@ -193,13 +189,6 @@ export default function Profile({ navigation }) {
             <TouchableOpacity
               className=" w-full py-6 px-6  flex-row justify-between items-center"
               onPress={handleLogout}
-            // style={{
-            //   elevation: 2,
-            //   shadowColor: "#000",
-            //   shadowOffset: { width: 0, height: 2 },
-            //   shadowOpacity: 0.2,
-            //   shadowRadius: 2,
-            // }}
             >
               <View className="flex-row items-center">
                 <Icon name="log-out" size={20} color="red" />
@@ -209,15 +198,13 @@ export default function Profile({ navigation }) {
               </View>
               <Icon name="chevron-right" size={21} color="red" />
             </TouchableOpacity>
-            <View className="w-full h-px bg-gray-300 mt-1" />
+            <View className="w-full h-[1.5px] bg-gray-300 mt-1" />
             <View className="justify-self-center">
               <View className="top-20 items-center justify-center flex-end">
                 <Text className="self-center">
-                  {/* <TextFooter /> */}
                 </Text>
               </View>
             </View>
-            {/* Modal Logout */}
             <Modal
           transparent={true}
           visible={modalVisible}
