@@ -98,7 +98,6 @@ export default function Pembayaran() {
         .then(res => res.data.data),
 
     onSuccess: data => {
-      console.log(data);
       setData(data);
     },
     onError: err => console.error(err),

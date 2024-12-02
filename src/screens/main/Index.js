@@ -114,7 +114,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     "Akun",
     "Keamanan",
     "Perusahaan",
-    "ProfileMain",
+    // "ProfileMain",
   ];
 
   if (hideOnScreens.includes(routeName)) {
@@ -252,7 +252,7 @@ export default function MainScreen() {
               "Akun",
               "Keamanan",
               "Perusahaan",
-              "ProfileMain",
+              // "ProfileMain",
             ];
 
             if (hideOnScreens.includes(routeName)) {

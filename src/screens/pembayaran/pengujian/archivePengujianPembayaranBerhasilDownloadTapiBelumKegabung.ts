@@ -1,16 +1,14 @@
+import React, { useEffect, useState, useCallback } from "react";
 import {
   View,
   Text,
   StyleSheet,
   TouchableOpacity,
   ScrollView,
-  ActivityIndicator,
   Alert,
+  ActivityIndicator,
   Image,
-  Button,
 } from "react-native";
-import { useState, useEffect, useCallback, useRef } from "react";
-import React from "react";
 import axios from "@/src/libs/axios";
 import moment from "moment";
 import { Clipboard } from "react-native";
@@ -20,11 +18,12 @@ import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Colors } from "react-native-ui-lib";
 import { API_URL } from "@env";
+import { CameraRoll } from "react-native";
 import RNFS from "react-native-fs";
-
 const PengujianDetail = ({ route, navigation }) => {
-  const [formData, setFormData] = useState({ payment: { status: "pending" } });
+  const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(true);
+  const [imageBase64, setImageBase64] = useState(null);
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const { uuid } = route.params;
   const { data: setting } = useSetting();
@@ -37,6 +36,7 @@ const PengujianDetail = ({ route, navigation }) => {
       .get(`/pembayaran/pengujian/${uuid}`)
       .then(res => {
         setFormData(res.data.data);
+        console.log("text", res.data.data);
         setLoading(false);
       })
       .catch(err => {
@@ -113,34 +113,26 @@ const PengujianDetail = ({ route, navigation }) => {
    *
    * @returns {Promise<void>}
    */
-
   const downloadQris = async () => {
     try {
       const timestamp = Date.now();
       // Resolusi sumber gambar
-      // const qrisImage = Image.resolveAssetSource(
-      //   require("../../../../assets/images/qris.png"),
-      // );
-      // const qrisTemplateImage = Image.resolveAssetSource(
-      //   require("../../../../assets/images/qris-template.png"),
-      // );
-
-      const qris = Image.resolveAssetSource(
-        require("../../../../assets/images/qris-template-code.jpg"),
+      const qrisImage = Image.resolveAssetSource(
+        require("../../../../assets/images/qris.png"),
       );
+      const qrisTemplateImage = Image.resolveAssetSource(
+        require("../../../../assets/images/qris-template.png"),
+      );
+
       // Array gambar untuk didownload
       const images = [
-        // {
-        //   source: qrisImage,
-        //   filename: `qris_${timestamp}.png`,
-        // },
-        // {
-        //   source: qrisTemplateImage,
-        //   filename: `qris-template_${timestamp}.png`,
-        // },
         {
-          source: qris,
-          filename: `qris-template-code_${timestamp}.png`,
+          source: qrisImage,
+          filename: `qris_${timestamp}.png`,
+        },
+        {
+          source: qrisTemplateImage,
+          filename: `qris-template_${timestamp}.png`,
         },
       ];
 
@@ -199,7 +191,6 @@ const PengujianDetail = ({ route, navigation }) => {
       );
     }
   };
-
   return (
     <>
       <View className="p-3 w-full h-full bg-[#ececec]">
@@ -489,7 +480,7 @@ const PengujianDetail = ({ route, navigation }) => {
                 )}
 
                 <View style={[styles.card, isExpired && styles.disabledCard]}>
-                  <Text className="text-black font-poppins-semibold text-center">
+                  <Text className="text-black font-poppins-semibold">
                     Nominal Pembayaran : {rupiah(formData?.payment?.jumlah)}
                   </Text>
                 </View>

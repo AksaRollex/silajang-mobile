@@ -197,7 +197,7 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-20 items-center justify-center flex-end">
+              <View className="top-3 items-center justify-center flex-end">
                 <Text className="flex-end">
                   <FooterText />
                 </Text>

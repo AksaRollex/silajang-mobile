@@ -104,7 +104,7 @@ const Dashboard = () => {
             style={{ elevation: 8 }}>
             <ScrollView
               contentContainerStyle={{
-                padding: 16, // Set padding menggunakan contentContainerStyle
+                padding: 16,
                 flexDirection: "row",
                 justifyContent: "space-between",
               }}
@@ -122,17 +122,17 @@ const Dashboard = () => {
 
               <TouchableOpacity
                 onPress={handleFilterPress}
-                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg">
+                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 p-3 rounded-lg">
                 <View className="flex-row items-center">
-                  <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
+                  <Text className="text-gray-700 font-poppins-semibold text-base ">
                     {tahun}
                   </Text>
+                  <MaterialIcons
+                    name="keyboard-arrow-down"
+                    size={24}
+                    color={"#4d5b7a"}
+                  />
                 </View>
-                <MaterialIcons
-                  name="keyboard-arrow-down"
-                  size={24}
-                  className="text-gray-600"
-                />
               </TouchableOpacity>
             </ScrollView>
           </View>
