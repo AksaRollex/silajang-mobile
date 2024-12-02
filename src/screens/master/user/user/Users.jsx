@@ -1,5 +1,5 @@
-import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
-import React, {useRef, useState} from "react";
+import { View, Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform } from 'react-native';
+import React, { useRef, useState } from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
 import { MenuView } from "@react-native-menu/menu";
@@ -7,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
-import { HorizontalAlignment } from 'react-native-ui-lib/src/components/gridListItem';
+import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
 import IndexMaster from '../../../masterdash/IndexMaster';
 import IonIcon from "react-native-vector-icons/Ionicons";
@@ -16,204 +16,186 @@ import axios from '@/src/libs/axios';
 
 
 const Users = ({ navigation, route }) => {
-    const Options = [
-        { id: 2, name: "Dinas Internal" },
-        { id: 1, name: "Customer" },
-      ];
 
-    const { golongan_id } = route.params || 2
-    const [selectedMenu, setSelectedMenu] = useState(2);
-    const paginateRef = useRef();
-    const queryClient = useQueryClient();
-    const { delete: deleteUser, DeleteConfirmationModal } = useDelete({
-        onSuccess: () => {
-          queryClient.invalidateQueries(['/master/user']);
-          paginateRef.current?.refetch()
-        },
-        onError: (error) => {
-          console.error('Delete error:', error);
-        }
-      });
+  const OptionsMenu = [
+    { id: 2, name: "Dinas Internal" },
+    { id: 1, name: "Customer" },
+  ];
 
-      React.useEffect(() => {
-        setSelectedMenu(golongan_id ?? 2);
-      }, [golongan_id])
+  const { golongan_id } = route.params || 2
+  const [selectedMenu, setSelectedMenu] = useState(2);
+  const paginateRef = useRef();
+  const queryClient = useQueryClient();
+  const { delete: deleteUser, DeleteConfirmationModal } = useDelete({
+    onSuccess: () => {
+      queryClient.invalidateQueries(['/master/user']);
+      paginateRef.current?.refetch()
+    },
+    onError: (error) => {
+      console.error('Delete error:', error);
+    }
+  });
 
-      const handleConfirmToggle = (uuid, currentConfirmed) => {
-        confirmMutation.mutate({ 
-            uuid, 
-            confirmed: !currentConfirmed 
-        });
-    };
+  React.useEffect(() => {
+    setSelectedMenu(golongan_id ?? 2);
+  }, [golongan_id])
 
-    const confirmMutation = useMutation(
-      (data) => axios.post(`/master/user/${data.uuid}/confirm`, { confirmed: data.confirmed }),
-      {
-          onSuccess: () => {
-              // Refetch the data after successful confirmation
-              paginateRef.current?.refetch();
-              queryClient.invalidateQueries(['/master/user']);
-          },
-          onError: (error) => {
-              console.error('Confirmation error:', error);
-              Alert.alert('Error', 'Failed to update user confirmation status');
-          }
+  const handleConfirmToggle = (uuid, currentConfirmed) => {
+    confirmMutation.mutate({
+      uuid,
+      confirmed: !currentConfirmed
+    });
+  };
+
+  const confirmMutation = useMutation(
+    (data) => axios.post(`/master/user/${data.uuid}/confirm`, { confirmed: data.confirmed }),
+    {
+      onSuccess: () => {
+        // Refetch the data after successful confirmation
+        paginateRef.current?.refetch();
+        queryClient.invalidateQueries(['/master/user']);
+      },
+      onError: (error) => {
+        console.error('Confirmation error:', error);
+        Alert.alert('Error', 'Failed to update user confirmation status');
       }
+    }
   );
 
-    const renderItem = ({ item }) => {
-      return (
-        <View
-          className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"  
-          style={{ elevation: 4 }}
-        >
-          
-          <View className="flex-row justify-between">
-  {/* Bagian Data Utama */}
-  <View className="flex-1">
-    <View className="flex-row justify-between mb-3">
-      <View className="flex-1 mr-2">
-        <Text className="text-xs text-gray-500 font-poppins-regular">Nama</Text>
-        <Text className="text-md text-black font-poppins-semibold">{item.nama}</Text>
-      </View>
-      <View className="flex-1 mr-2">
-        <Text className="text-xs text-gray-500 font-poppins-regular">No. Telepon</Text>
-        <Text className="text-md text-black font-poppins-semibold">{item.phone}</Text>
-      </View>
-    </View>
-
-    <View className="flex-row justify-between mb-3">
-      
-      <View className="flex-1">
-        <Text className="text-xs text-gray-500 font-poppins-regular">Email</Text>
-        <Text className="text-md text-black font-poppins-semibold">{item.email}</Text>
-      </View>
-      <View className="flex-1">
-        <Text className="text-xs text-gray-500 font-poppins-regular">Perusahaan</Text>
-        <Text className="text-md text-black font-poppins-semibold">
-          {item.detail?.instansi ?? "-"}
-        </Text>
-      </View>
-    </View>
-
-    <View className="flex-row justify-between mb-3">
-      <View className="flex-1 mr-2">
-        <Text className="text-xs text-gray-500 font-poppins-regular">Jabatan</Text>
-        <Text className="text-md text-black font-poppins-semibold">
-          {item.role?.full_name}
-        </Text>
-      </View>
-      <View className="flex-1">
-        <Text className="text-xs text-gray-500 font-poppins-regular">Jenis</Text>
-        <Text className="text-md text-black font-poppins-semibold">
-          {item.golongan?.nama}
-        </Text>
-      </View>
-    </View>
-  </View>
-
-  {/* Switch Bagian Kanan */}
-  <View className="items-center justify-center">
-
-      <Text className="text-xs text-black font-poppins-semibold mb-2">Konfirmasi</Text>
-      <Switch
-        value={item.confirmed === 1}
-        onValueChange={() => handleConfirmToggle(item.uuid, item.confirmed === 1)}
-        trackColor={{ false: "#767577", true: "#312e81" }}
-        thumbColor={item.confirmed === 1 ? "#f4f3f4" : "#f4f3f4"}
-      />
-  </View>
-</View>
-
-
-          <View className="h-[1px] bg-gray-300 my-3" />
-          
-          <View className="flex-row justify-end gap-2">
-            <TouchableOpacity 
-              onPress={() => navigation.navigate("ParameterUsers", { selected: item.uuid })}
-              className="flex-row items-center bg-green-600 px-2 py-2 rounded"
-            >
-              <IonIcon name="filter" size={14} color="#fff" />
-              <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => navigation.navigate("FormUsers", { uuid: item.uuid })}
-              className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
-            >
-              <IonIcon name="pencil" size={14} color="#fff" />
-              <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity 
-              onPress={() => deleteUser(`/master/user/${item.uuid}`)}
-              className="flex-row items-center bg-red-600 px-2 py-2 rounded"
-            >
-              <IonIcon name="trash" size={14} color="#fff" />
-              <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
-            </TouchableOpacity>
-          </View>
-        </View>
-      );
-    }
-
-
+  const renderItem = ({ item }) => {
     return (
-        <GestureHandlerRootView className="flex-1 bg-[#ececec]">
-            <View className="flex-row items-center justify-center mt-4 mb-2">
-                <View className="absolute left-4">
-                   <BackButton action={() => navigation.goBack()} size={26} />
-                </View>
-                <Text className="text-[20px] font-poppins-semibold text-black">User</Text>
+      <View
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+        style={{ elevation: 4 }}
+      >
+
+        <View className="flex-row justify-between">
+          {/* Bagian Data Utama */}
+          <View className="flex-1">
+            <View className="flex-row justify-between mb-3">
+              <View className="flex-1 mr-2">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Nama</Text>
+                <Text className="text-md text-black font-poppins-semibold">{item.nama}</Text>
+              </View>
+              <View className="flex-1 mr-2">
+                <Text className="text-xs text-gray-500 font-poppins-regular">No. Telepon</Text>
+                <Text className="text-md text-black font-poppins-semibold">{item.phone}</Text>
+              </View>
             </View>
-            <View className="flex-row justify-center">
-          <View className="mt-3 ml-[-10] mr-2"> 
-          <HorizontalScrollMenu
-              textStyle={{ fontFamily: 'Poppins-Medium', fontSize: 12 }}
-              items={Options}
-              selected={selectedMenu}
-              onPress={(item) => setSelectedMenu(item.id)}
-              itemWidth={190}
-                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              itemRender={(item) => (
-                <View
-                  style={{
-                    borderColor: '#312e81',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 12,
-                    }}>
-                    {item.name}
-                  </Text>
-                </View>
-              )}
+
+            <View className="flex-row justify-between mb-3">
+
+              <View className="flex-1">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Email</Text>
+                <Text className="text-md text-black font-poppins-semibold">{item.email}</Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Perusahaan</Text>
+                <Text className="text-md text-black font-poppins-semibold">
+                  {item.detail?.instansi ?? "-"}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row justify-between mb-3">
+              <View className="flex-1 mr-2">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Jabatan</Text>
+                <Text className="text-md text-black font-poppins-semibold">
+                  {item.role?.full_name}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs text-gray-500 font-poppins-regular">Jenis</Text>
+                <Text className="text-md text-black font-poppins-semibold">
+                  {item.golongan?.nama}
+                </Text>
+              </View>
+            </View>
+          </View>
+
+          {/* Switch Bagian Kanan */}
+          <View className="items-center justify-center">
+
+            <Text className="text-xs text-black font-poppins-semibold mb-2">Konfirmasi</Text>
+            <Switch
+              value={item.confirmed === 1}
+              onValueChange={() => handleConfirmToggle(item.uuid, item.confirmed === 1)}
+              trackColor={{ false: "#767577", true: "#312e81" }}
+              thumbColor={item.confirmed === 1 ? "#f4f3f4" : "#f4f3f4"}
             />
           </View>
         </View>
-            <Paginate
-                ref={paginateRef}
-                url="/master/user"
-                payload={{
-                    golongan_id: golongan_id ?? selectedMenu,
-                    page: 1,
-                    per: 10,
-                }}
-                renderItem={renderItem}
-            />
-            <Icon
-                name="plus"
-                size={28}
-                color="#fff"
-                style={{ position: "absolute", bottom: 20, padding: 10, right: 20, backgroundColor: "#312e81", borderRadius: 50 }}
-                onPress={() => navigation.navigate("FormUsers")}
-            />
-            <DeleteConfirmationModal />
-        </GestureHandlerRootView>
-    )
+
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+
+        <View className="flex-row justify-end gap-2">
+        {selectedMenu !== 1 && (
+          <TouchableOpacity 
+            onPress={() => navigation.navigate("ParameterUsers", { uuid: item.uuid })}
+            className="flex-row items-center bg-green-600 px-2 py-2 rounded"
+          >
+            <IonIcon name="filter" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
+          </TouchableOpacity>
+        )}
+
+        <TouchableOpacity 
+          onPress={() => navigation.navigate("FormUsers", { uuid: item.uuid })}
+          className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+        >
+          <IonIcon name="pencil" size={14} color="#fff" />
+          <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          onPress={() => deleteUser(`/master/user/${item.uuid}`)}
+          className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+        >
+          <IonIcon name="trash" size={14} color="#fff" />
+          <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
+        </TouchableOpacity>
+      </View>
+    </View>
+  );
+}
+
+
+  return (
+    <GestureHandlerRootView className="flex-1 bg-[#ececec]">
+      <View className="flex-row items-center justify-center mt-4 mb-2">
+        <View className="absolute left-4">
+          <BackButton action={() => navigation.goBack()} size={26} />
+        </View>
+        <Text className="text-[20px] font-poppins-semibold text-black">User</Text>
+      </View>
+      <View className="flex-row justify-center mt-4">
+        <HorizontalFilterMenu
+          items={OptionsMenu}
+          selected={selectedMenu}
+          onPress={(item) => setSelectedMenu(item.id)}
+        />
+      </View>
+      <Paginate
+        ref={paginateRef}
+        url="/master/user"
+        payload={{
+          golongan_id: golongan_id ?? selectedMenu,
+          page: 1,
+          per: 10,
+        }}
+        renderItem={renderItem}
+      />
+      <Icon
+        name="plus"
+        size={28}
+        color="#fff"
+        style={{ position: "absolute", bottom: 20, padding: 10, right: 20, backgroundColor: "#312e81", borderRadius: 50 }}
+        onPress={() => navigation.navigate("FormUsers")}
+      />
+      <DeleteConfirmationModal />
+    </GestureHandlerRootView>
+  )
 }
 
 export default Users
