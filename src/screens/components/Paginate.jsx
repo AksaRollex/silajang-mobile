@@ -210,7 +210,7 @@ const Paginate = forwardRef(
                 <View LinearGradientComponent={LinearGradient}>
                   <Skeleton
                     animation="wave"
-                    width={350}
+                    width={370}
                     LinearGradientComponent={LinearGradient}
                     height={180}
                   />
