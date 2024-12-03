@@ -135,6 +135,7 @@ const Perusahaan = ({navigation}) => {
           <BackButton action={() => navigation.goBack()} size={26} />
           <View className="absolute left-0 right-3 items-center">
             <Text className="text-[20px] text-black font-poppins-semibold">Update Perusahaan</Text>
+            <View className="h-px w-[120%] bg-gray-200 top-5"/>
           </View>
         </View>
           <View className="mb-6">
