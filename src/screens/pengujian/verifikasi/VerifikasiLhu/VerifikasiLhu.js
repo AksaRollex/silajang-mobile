@@ -82,18 +82,6 @@ const VerifikasiLhu = ({ navigation }) => {
     setModalVisible(true);
   };
 
-  const BeritaAcara = async (item) => {
-    const authToken = await AsyncStorage.getItem('@auth-token');
-    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/berita-acara?token=${authToken}`);
-    setModalVisible(true);
-  };
-
-  const DataPengambilan = async (item) => {
-    const authToken = await AsyncStorage.getItem('@auth-token');
-    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`);
-    setModalVisible(true);
-  };
-
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');

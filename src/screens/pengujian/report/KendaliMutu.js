@@ -233,10 +233,10 @@ const KendaliMutu = ({ navigation }) => {
     }
   };
 
-  const handlePreviewPDF = async (item) => {
+  const handlePreviewPDF = async (uuid) => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
-      setReportUrl(`${APP_URL}/api/v1/kendali-mutu/${item.uuid}/preview?token=${authToken}`);
+      setReportUrl(`${APP_URL}/api/v1/report/${uuid}/kendali-mutu?token=${authToken}`);
       setModalVisible(true);
     } catch (error) {
       Toast.show({
@@ -371,7 +371,7 @@ const KendaliMutu = ({ navigation }) => {
           )}
 
           <TouchableOpacity 
-            onPress={() => handlePreviewPDF(item)}
+            onPress={() => handlePreviewPDF(item.uuid)}
             className="bg-red-100 p-2 rounded-md flex-row items-center"
           >
             <FontAwesome name="file-pdf-o" size={16} color="#dc2626" />
@@ -488,12 +488,15 @@ const KendaliMutu = ({ navigation }) => {
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
-            
             {reportUrl ? (
+            
               <Pdf
                 source={{ uri: reportUrl, cache: true }}
                 style={{ flex: 1 }}
                 trustAllCerts={false}
+                onError={(error) => {
+                  console.log('PDF Load Error:', error);
+                }}
               />
             ) : (
               <View className="flex-1 justify-center items-center">

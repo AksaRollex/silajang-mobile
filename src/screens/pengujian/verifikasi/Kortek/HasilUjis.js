@@ -101,6 +101,7 @@ const HasilUjis = ({ route, navigation }) => {
       const response = await axios.post(`${API_URL}/verifikasi/koordinator-teknis/${uuid}/fill-parameter`, {
         parameters: updatedParameters.map(param => ({
           uuid: param.uuid,
+          parameter_uuid: param.uuid,
           ...param.pivot, // Kirim hanya data yang ada di pivot
         })),
       });
@@ -112,7 +113,7 @@ const HasilUjis = ({ route, navigation }) => {
         Alert.alert('Error', 'Gagal memperbarui data');
       }
     } catch (error) {
-      console.error('Error updating parameter:', error);
+      console.error('Error updating parameter:', error.response.data);
       Alert.alert('Error', 'Terjadi kesalahan saat memperbarui data');
     }
   };
