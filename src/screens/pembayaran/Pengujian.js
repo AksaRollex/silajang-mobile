@@ -19,8 +19,12 @@ import KwitansiModal from "./KwitansiModal";
 const Pengujian = ({ navigation }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const paginateRef = useRef();
-  const [tahun, setTahun] = useState(2024);
-  const [bulan, setBulan] = useState('-');
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  const [tahun, setTahun] =  useState(currentYear.toString());
+  const [bulan, setBulan] = useState(currentMonth.toString());
   const [type, setType] = useState('va');
   const [modalVisible, setModalVisible] = useState(false);
   const [tteModalVisible, setTTEModalVisible] = useState(false);
@@ -512,7 +516,7 @@ const Pengujian = ({ navigation }) => {
                   setModalVisible(false);
                 }}
                 className="p-2 rounded flex-row items-center">
-                <Feather name="download" size={21} color="black" />
+                <Feather name="download" size={21} color="black"/>
               </TouchableOpacity>
             </View>
             <Pdf
