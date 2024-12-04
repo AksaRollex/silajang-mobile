@@ -16,13 +16,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TTEModal from './TTEModal';
 import KwitansiModal from "./KwitansiModal";
 
-const rem = multiplier => 16 * multiplier;
-
 const Pengujian = ({ navigation }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const paginateRef = useRef();
-  const [tahun, setTahun] = useState(2024);
-  const [bulan, setBulan] = useState("-");
+
+  const currentYear = new Date().getFullYear();
+  const currentMonth = new Date().getMonth() + 1;
+
+  const [tahun, setTahun] =  useState(currentYear.toString());
+  const [bulan, setBulan] = useState(currentMonth.toString());
   const [type, setType] = useState('va');
   const [modalVisible, setModalVisible] = useState(false);
   const [tteModalVisible, setTTEModalVisible] = useState(false);
@@ -92,41 +94,16 @@ const Pengujian = ({ navigation }) => {
   };
 
   const handlePreviewSKRDPDF = async (uuid) => {
-    try {
-      const authToken = await AsyncStorage.getItem("@auth-token");
-      const baseUrl = `/api/v1/report/${uuid}/skrd/tte/download`;
-      const reportUrl = `${APP_URL}${baseUrl}?token=${authToken}`;
-
-      console.log('Report URL:', reportUrl);
-
-      setReportUrl(reportUrl);
-      setModalVisible(true);
-    } catch (error) {
-      console.error("Preview SKRD PDF error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Gagal memuat laporan SKRD",
-      });
-    }
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${uuid}/skrd?token=${authToken}`);
+    setModalVisible(true);
   };
 
-  const handlePreviewKwitansiPDF = async (uuid) => {
-    try {
-      const authToken = await AsyncStorage.getItem("@auth-token");
-      const baseUrl = `/api/v1/report/${uuid}/kwitansi/tte/download`;
-      const reportUrl = `${APP_URL}${baseUrl}?token=${authToken}`;
 
-      setReportUrl(reportUrl);
-      setModalVisible(true);
-    } catch (error) {
-      console.error("Preview Kwitansi PDF error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: "Gagal memuat laporan Kwitansi",
-      });
-    }
+  const handlePreviewKwitansiPDF = async (uuid) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${uuid}/kwitansi?token=${authToken}`);
+    setModalVisible(true);
   };
 
   const handleDownloadReport = async () => {
@@ -374,7 +351,7 @@ const Pengujian = ({ navigation }) => {
             onPressAction={({ nativeEvent }) => {
               if (nativeEvent.event === 'apply') {
                 setSelectedItem(item);
-                setTTEModalVisible(true);
+                setTTEModalVisible(true);x
               }
             }}
           >
@@ -539,7 +516,7 @@ const Pengujian = ({ navigation }) => {
                   setModalVisible(false);
                 }}
                 className="p-2 rounded flex-row items-center">
-                <Feather name="download" size={21} color="black" />
+                <Feather name="download" size={21} color="black"/>
               </TouchableOpacity>
             </View>
             <Pdf
