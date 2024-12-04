@@ -63,17 +63,13 @@ const Detail = ({ route, navigation }) => {
   }, [uuid]);
   const calculateCountdown = () => {
     if (!formData?.payment?.tanggal_exp) return;
-
     const exp = moment(formData.payment.tanggal_exp);
     const now = moment();
-
     const days = exp.diff(now, 'days');
     const hours = exp.diff(now, 'hours') - (days * 24);
     const minutes = exp.diff(now, 'minutes') - (days * 24 * 60) - (hours * 60);
     const seconds = exp.diff(now, 'seconds') - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
-
     const formatTime = (time) => time < 10 ? `0${time}` : time;
-
     setCountdown(`${formatTime(days)}H : ${formatTime(hours)}J : ${formatTime(minutes)}M : ${formatTime(seconds)}D`);
   };
 
@@ -281,5 +277,4 @@ const Detail = ({ route, navigation }) => {
     </SafeAreaView>
   );
 };
-
 export default Detail;

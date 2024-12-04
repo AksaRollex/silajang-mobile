@@ -22,7 +22,7 @@ const Select2 = ({ onChangeValue, items, value, placeholder }) => {
 
 const styles = StyleSheet.create({
   container: {
-    marginVertical: 10,
+    marginVertical: 1,
   },
   icon: {
     position: 'absolute',
