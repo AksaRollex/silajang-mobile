@@ -106,6 +106,9 @@ export default function Detail({ route, navigation }) {
         ) {
           setIsAbnormal(response.data.data.kondisi_sampel === 1);
         }
+        if(response.data.data && response.data.data.keterangan_kondisi_sampel !== undefined){
+          setKeterangan(response.data.data.keterangan_kondisi_sampel)
+        }
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -183,8 +186,8 @@ export default function Detail({ route, navigation }) {
 
   const jenisWadahValues = data.jenis_wadahs
     ? data.jenis_wadahs
-        .map(item => `${item.nama} (${item.keterangan})`)
-        .join(", ")
+      .map(item => `${item.nama} (${item.keterangan})`)
+      .join(", ")
     : "Tidak ada data";
 
   const parameters = data.parameters ? data.parameters : [];
@@ -265,7 +268,7 @@ export default function Detail({ route, navigation }) {
       },
     );
   };
-  
+
   const tanggal = value => {
     setDate(value);
     saveDateAndTime(value);
@@ -293,6 +296,7 @@ export default function Detail({ route, navigation }) {
         {
           kondisi_sampel: kondisiSampel,
           keterangan_kondisi_sampel: keterangan,
+          tanggal_diterima: date ? date.toISOString() : null,
         },
       );
       console.log("Data berhasil disimpan:", response.data);
@@ -304,10 +308,11 @@ export default function Detail({ route, navigation }) {
     }
   };
 
-  const handleKeteranganChange = text => {
+  const handleKeteranganChange = (text) => {
     setKeterangan(text);
+    console.log("Keterangan changed:", text);
+
     if (isAbnormal) {
-      console.log(text);
       updateKondisiSampel(0, text);
     }
   };
@@ -340,7 +345,7 @@ export default function Detail({ route, navigation }) {
                   <Icon name="arrow-left" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text  style={styles.kode}>{data?.kode || ""}</Text>
+                  <Text style={styles.kode}>{data?.kode || ""}</Text>
                 </View>
               </View>
             </View>
@@ -584,9 +589,9 @@ export default function Detail({ route, navigation }) {
                         ? `${date.toLocaleDateString()} ${date.toLocaleTimeString()}`
                         : "Pilih Tanggal dan Waktu"}
                     </Text>
-                    <FontAwesome
+                    <AntDesign
                       name="calendar"
-                      size={30}
+                      size={16}
                       color="#000"
                       style={styles.dateTimeIcon}
                     />
@@ -617,7 +622,12 @@ export default function Detail({ route, navigation }) {
               <Text className="font-poppins-semibold" style={styles.mt}>Kondisi Sampel Saat Diterima</Text>
               <View style={styles.switchContainer}>
                 <Text style={styles.value}>Abnormal</Text>
-                <Switch value={isAbnormal} onValueChange={handleSwitchChange} />
+                <Switch
+                  value={isAbnormal}
+                  onValueChange={handleSwitchChange}
+                  trackColor={{ false: '#767577', true: '#312e81' }}
+                  thumbColor={isAbnormal ? '#f4f3f4' : '#f4f3f4'}
+                />
                 <View style={styles.normal}>
                   <Text style={styles.value}>Normal</Text>
                 </View>
@@ -625,11 +635,11 @@ export default function Detail({ route, navigation }) {
               <View>
                 {!isAbnormal && (
                   <TextInput
-                    placeholder={data?.keterangan_kondisi_sampel || ""}
+                    placeholder="Jelaskan..."
                     style={styles.input}
                     onChangeText={handleKeteranganChange}
                     onBlur={handleInputBlur}
-                    value={keterangan}
+                    value={keterangan || ""}
                   />
                 )}
               </View>
@@ -977,6 +987,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     flex: 1,
     color: "black",
+    fontFamily: "Poppins-Medium",
   },
   dateTimeIcon: {
     marginLeft: 8,
@@ -1020,6 +1031,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#f0f0f0",
     borderRadius: 5,
     padding: 10,
-    marginTop: 9,
+    fontFamily: "Poppins-Medium",
   },
 });

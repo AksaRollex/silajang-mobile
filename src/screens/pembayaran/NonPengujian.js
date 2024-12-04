@@ -289,8 +289,8 @@ const NonPengujian = ({ navigation }) => {
             className="bg-indigo-500 px-14 py-1.5 rounded-md flex-row items-center ml-2"
             style={{ height: 49.5, marginTop: 10.8, bottom: 10 }}
           >
-            <Ionicons name="add" size={20} color="white" />
-            <Text className="text-white ml-2 font-poppins-medium">
+            <Ionicons name="add" size={20} color="white" style={{ right: 6 }} />
+            <Text className="text-white ml-2 font-poppins-medium right-2">
               Buat
             </Text>
           </TouchableOpacity>

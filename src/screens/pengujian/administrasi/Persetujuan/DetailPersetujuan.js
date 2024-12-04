@@ -810,6 +810,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.label}>Radius Pengambilan</Text>
                   <View style={styles.pickerContainer}>
                     <RNPickerSelect
+                    
                       placeholder={{ label: "Pilih Radius", value: null }}
                       onValueChange={value => {
                         console.log("Selected radius value:", value);
@@ -841,11 +842,11 @@ export default function DetailPersetujuan({ route, navigation }) {
                         inputIOS: {
                           ...styles.pickerStyle,
                           fontSize: 12,
-                          fontFamily: "Poppins-Regular",
+                          fontFamily: "Poppins-Medium",
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontFamily: "Poppins-Regular",
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
                         },
                         iconContainer: {
@@ -962,7 +963,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                             ? `${date.toLocaleDateString()} - ${date.toLocaleTimeString()}`
                             : "Pilih Tanggal dan Waktu"}
                         </Text>
-                        <FontAwesome
+                        <AntDesign
                           name="calendar"
                           size={13}
                           color="#000"
