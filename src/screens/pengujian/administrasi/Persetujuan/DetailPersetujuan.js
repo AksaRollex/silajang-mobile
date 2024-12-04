@@ -13,6 +13,9 @@ import {
   Button,
   ActivityIndicator
 } from "react-native";
+import Toast from 'react-native-toast-message';
+import { useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -37,7 +40,7 @@ import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MultiSelect from "react-native-multiple-select";
 import { API_URL } from "@env";
 
-const currency = number => {
+const currency = number => { 
   return number.toLocaleString("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -132,10 +135,6 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const savePetugas = async () => {
     try {
-      console.log("Data yang akan dikirim:", {
-        petugas_pengambil_ids: selectedPetugas,
-      });
-
       const response = await axios.post(
         `/administrasi/pengambil-sample/${uuid}/update`,
         {
@@ -145,21 +144,18 @@ export default function DetailPersetujuan({ route, navigation }) {
           headers: {
             "Content-Type": "application/json",
           },
-        },
+        }
       );
-
-      console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      if (error.response) {
-        // Server merespons dengan status selain 2xx
-        console.error("Server response error:", error.response.data);
-      } else if (error.request) {
-        // Request dibuat tetapi tidak ada response
-        console.error("No response received:", error.request);
-      } else {
-        // Error pada saat setup request
-        console.error("Request error:", error.message);
-      }
+    
+      fetchData();
+    } catch (error) {  
+      console.error("Error updating petugas:", error);
+    }finally{
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data Petugas telah diperbarui',
+      })
     }
   };
 
@@ -271,16 +267,23 @@ export default function DetailPersetujuan({ route, navigation }) {
   };
 
   const handleTimeChange = (event, selectedTime) => {
-    if (event.type === "set") {
-      const currentTime = selectedTime || date;
-      setDate(currentTime);
-      setShowTimePicker(false);
-      handleWaktu(currentTime); // Simpan setelah memilih waktu
-    } else {
-      setShowTimePicker(false);
+    try {
+      if (event.type === "set") {
+        const currentTime = selectedTime || date;
+        setDate(currentTime);
+        setShowTimePicker(false);
+        handleWaktu(currentTime);
+      } else {
+        setShowTimePicker(false);
+      }
+    } finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data Tanggal & Waktu berhasil disimpan',
+      });
     }
   };
-
   const formatDateTime = date => {
     const year = date.getFullYear();
     const month = String(date.getMonth() + 1).padStart(2, "0");
@@ -316,6 +319,13 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data successfully updated on server:", response.data);
     } catch (error) {
       console.error("Error updating data to server:", error);
+    }finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data telah diperbarui',
+        visibilityTime: 2000,
+      });
     }
   };
 
@@ -356,14 +366,26 @@ export default function DetailPersetujuan({ route, navigation }) {
     saveStatus(value);
   };
 
-  const saveStatus = async status => {
-    const response = await axios.post(
-      `/administrasi/pengambil-sample/${uuid}/update`,
-      {
-        kesimpulan_permohonan: status,
-      },
-    );
-    console.log("Data berhasil disimpan:", response.data);
+  const saveStatus = async (status) => {
+    try {
+      const response = await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          kesimpulan_permohonan: status,
+        }
+      );
+  
+      fetchData();
+    } catch (error) {  
+      console.error("Error updating status:", error);
+    }finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Status telah diperbarui',
+        visibilityTime: 2000,
+      });
+    }
   };
 
   const saveInterpretasi = value => {
@@ -372,13 +394,23 @@ export default function DetailPersetujuan({ route, navigation }) {
   };
 
   const saveInter = async status => {
-    const response = await axios.post(
-      `/administrasi/pengambil-sample/${uuid}/update`,
-      {
-        hasil_pengujian: status,
-      },
-    );
-    console.log("Data berhasil disimpan:", response.data);
+    try {
+      await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          hasil_pengujian: status,
+        }
+      );
+    } catch (error) {
+      console.error("Error saat menyimpan data:", error);
+    } finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Interpretasi telah diperbarui',
+        visibilityTime: 2000,
+      });
+    }
   };
 
   const saveObyekPelayanan = value => {
@@ -387,14 +419,26 @@ export default function DetailPersetujuan({ route, navigation }) {
   };
 
   const saveObyek = async status => {
-    const response = await axios.post(
-      `/administrasi/pengambil-sample/${uuid}/update`,
-      {
-        obyek_pelayanan: status,
-      },
-    );
-    console.log("Data berhasil disimpan:", response.data);
+    try {
+      await axios.post(
+        `/administrasi/pengambil-sample/${uuid}/update`,
+        {
+          obyek_pelayanan: status,
+        }
+      );
+    } catch (error) {
+      console.error("Error saat menyimpan data:", error);
+    } finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Obyek pelayanan telah diperbarui',
+        visibilityTime: 2000,
+      });
+    }
   };
+  
+
   const saveAcuanMetode = value => {
     setMetode(value);
     saveMetode(value);
@@ -420,6 +464,13 @@ export default function DetailPersetujuan({ route, navigation }) {
     } catch (error) {
       // Log jika ada error
       console.error("Error saat menyimpan data:", error);
+    }finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Metode telah diperbarui',
+        visibilityTime: 2000,
+      });
     }
   };
 
@@ -824,7 +875,6 @@ export default function DetailPersetujuan({ route, navigation }) {
                               },
                             };
 
-                            // Setelah state diubah, kirim data ke server
                             updateDataToServer(updatedData);
 
                             return updatedData;
@@ -895,7 +945,6 @@ export default function DetailPersetujuan({ route, navigation }) {
                           uniqueKey="id"
                           onSelectedItemsChange={items => {
                             setSelectedPetugas(items);
-                            // Update petugas_pengambil_ids di dalam data yang sudah ada
                             setData(prevData => {
                               if (prevData) {
                                 const updatedData = {
@@ -1316,7 +1365,7 @@ const styles = StyleSheet.create({
     fontSize: 13.5,
     fontFamily : 'Poppins-Medium',
     paddingVertical: 8,
-    paddingHorizontal: 15,
+    paddingHorizontal: 15,  
     color: "#333333",
     width: "100%",
     height: 40, // Sama dengan tinggi picker
