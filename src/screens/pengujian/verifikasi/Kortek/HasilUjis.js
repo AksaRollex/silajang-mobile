@@ -177,7 +177,7 @@ const HasilUjis = ({ route, navigation }) => {
                     style={[
                       styles.radioButton,
                       formData.memenuhi_hasil_pengujian === 0 &&
-                        styles.radioButtonSelected,
+                      styles.radioButtonSelected,
                     ]}
                     onPress={() => {
                       setFormData(prev => ({
@@ -192,7 +192,7 @@ const HasilUjis = ({ route, navigation }) => {
                     style={[
                       styles.radioButton,
                       formData.memenuhi_hasil_pengujian === 1 &&
-                        styles.radioButtonSelected,
+                      styles.radioButtonSelected,
                     ]}
                     onPress={() => {
                       setFormData(prev => ({
@@ -239,7 +239,7 @@ const HasilUjis = ({ route, navigation }) => {
                   <View style={styles.parameterForm}>
                     <View style={styles.formRow}>
                       <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>Satuan *</Text>
+                        <Text style={styles.fieldLabel}>Satuan <Text className="text-red-500">*</Text></Text>
                         <Controller
                           control={control}
                           name={`satuan.${index}`}
@@ -254,7 +254,7 @@ const HasilUjis = ({ route, navigation }) => {
                         />
                       </View>
                       <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>Baku Mutu *</Text>
+                        <Text style={styles.fieldLabel}>Baku Mutu <Text className="text-red-500">*</Text></Text>
                         <Controller
                           control={control}
                           name={`baku_mutu.${index}`}
@@ -287,7 +287,7 @@ const HasilUjis = ({ route, navigation }) => {
                     <View style={styles.formRow} className="mt-2">
                       <View style={styles.formField}>
                         <Text style={styles.fieldLabel}>
-                          Hasil Uji (Analis) *
+                          Hasil Uji (Analis) <Text className="text-red-500">*</Text>
                         </Text>
                         <Controller
                           control={control}
@@ -304,7 +304,7 @@ const HasilUjis = ({ route, navigation }) => {
                       </View>
                       <View style={styles.formField}>
                         <Text style={styles.fieldLabel}>
-                          Hasil Uji (Pembulatan) *
+                          Hasil Uji (Pembulatan) <Text className="text-red-500">*</Text>
                         </Text>
                         <Controller
                           control={control}
@@ -343,15 +343,14 @@ const HasilUjis = ({ route, navigation }) => {
                       <Controller
                         control={control}
                         name={`keterangan_hasil.${index}`}
-                        defaultValue="" // Optional: set a default value
+                        defaultValue=""
                         render={({ field: { onChange, value } }) => (
                           <View style={styles.buttonGroup}>
                             <TouchableOpacity
                               style={[
                                 styles.resultButton,
                                 styles.failButton,
-                                value === "Tidak Memenuhi" &&
-                                  styles.failButtonActive,
+                                value === "Tidak Memenuhi" && styles.failButtonActive,
                               ]}
                               onPress={() =>
                                 handleUpdate(index, {
@@ -365,7 +364,13 @@ const HasilUjis = ({ route, navigation }) => {
                                   keterangan: watch(`keterangan.${index}`),
                                 })
                               }>
-                              <Text style={styles.buttonText}>
+                              <Text
+                                style={[
+                                  styles.buttonText,
+                                  value === "Tidak Memenuhi"
+                                    ? styles.failButtonTextActive
+                                    : styles.failButtonText,
+                                ]}>
                                 Tidak Memenuhi
                               </Text>
                             </TouchableOpacity>
@@ -387,7 +392,15 @@ const HasilUjis = ({ route, navigation }) => {
                                   keterangan: watch(`keterangan.${index}`),
                                 })
                               }>
-                              <Text style={styles.buttonText}>Memenuhi</Text>
+                              <Text
+                                style={[
+                                  styles.buttonText,
+                                  value === "Memenuhi"
+                                    ? styles.passButtonTextActive
+                                    : styles.passButtonText,
+                                ]}>
+                                Memenuhi
+                              </Text>
                             </TouchableOpacity>
                           </View>
                         )}
@@ -420,9 +433,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   kode: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 23,
-    color: "balck",
+    color: "black",
     marginLeft: 20,
     marginTop: 5,
   },
@@ -473,7 +486,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 12,
     marginTop: 12,
   },
@@ -494,7 +507,8 @@ const styles = StyleSheet.create({
     borderColor: "#3699FF",
   },
   radioText: {
-    fontSize: 14,
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   parameterCard: {
     backgroundColor: "white",
@@ -515,12 +529,13 @@ const styles = StyleSheet.create({
   },
   parameterTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
   },
   parameterType: {
     fontSize: 12,
     color: "#B5B5C3",
     marginTop: 4,
+    fontFamily: "Poppins-Regular",
   },
   subkontrakBadge: {
     backgroundColor: "#FFF4DE",
@@ -533,6 +548,7 @@ const styles = StyleSheet.create({
   subkontrakText: {
     color: "#FFA800",
     fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   parameterForm: {
     padding: 16,
@@ -549,6 +565,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#B5B5C3",
     marginBottom: 4,
+    fontFamily: "Poppins-Medium",
   },
   inputMdl: {
     borderWidth: 1,
@@ -557,6 +574,7 @@ const styles = StyleSheet.create({
     padding: 12,
     width: "48%",
     backgroundColor: "#F5F8FA",
+    fontFamily: "Poppins-Medium",
   },
   input: {
     borderWidth: 1,
@@ -564,6 +582,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     backgroundColor: "#F5F8FA",
+    fontFamily: "Poppins-Medium",
   },
   buttonGroup: {
     flexDirection: "row",
@@ -575,23 +594,46 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
+    borderWidth: 1.5,
   },
   failButton: {
-    backgroundColor: "#FFE2E5",
+    backgroundColor: "white",
+    borderColor: "#F64E60",
   },
   failButtonActive: {
     backgroundColor: "#F64E60",
+    color: "white",
   },
   passButton: {
-    backgroundColor: "#B5E6E5",
+    backgroundColor: "white",
+    borderColor: "#32b857",
   },
   passButtonActive: {
     backgroundColor: "#32b857",
+    color: "white",
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Poppins-Medium",
+  },
+  failButtonText: {
+    color: "#F64E60",
+  },
+  failButtonTextActive: {
+    color: "white",
+  },
+  passButtonText: {
+    color: "#32b857",
+  },
+  passButtonTextActive: {
+    color: "white",
   },
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#333333",
+    fontFamily: "Poppins-Medium",
   },
 });
 
