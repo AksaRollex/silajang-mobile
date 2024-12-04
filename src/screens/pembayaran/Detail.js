@@ -56,24 +56,20 @@ const Detail = ({ route, navigation }) => {
       console.error('Error fetching payment details:', error.response?.data?.message);
       Alert.alert('Error', error.response?.data?.message || 'Failed to fetch details');
     }
-  };
+  }; 
   
   useEffect(() => {
     fetchPaymentDetails();
   }, [uuid]);
   const calculateCountdown = () => {
     if (!formData?.payment?.tanggal_exp) return;
-
     const exp = moment(formData.payment.tanggal_exp);
     const now = moment();
-
     const days = exp.diff(now, 'days');
     const hours = exp.diff(now, 'hours') - (days * 24);
     const minutes = exp.diff(now, 'minutes') - (days * 24 * 60) - (hours * 60);
     const seconds = exp.diff(now, 'seconds') - (days * 24 * 60 * 60) - (hours * 60 * 60) - (minutes * 60);
-
     const formatTime = (time) => time < 10 ? `0${time}` : time;
-
     setCountdown(`${formatTime(days)}H : ${formatTime(hours)}J : ${formatTime(minutes)}M : ${formatTime(seconds)}D`);
   };
 
@@ -135,15 +131,13 @@ const Detail = ({ route, navigation }) => {
             <View className="flex-row items-center space-x-3">
               <Image 
                 source={require('../../../assets/images/bank-jatim.png')} 
-                className="w-[75px] h-[30px]" 
-              />
+                className="w-[75px] h-[30px]"/>
               <Text className="flex-1 text-lg font-poppins-regular text-blue-600">
                 {formData.payment.va_number}
               </Text>
               <TouchableOpacity 
                 onPress={() => copyToClipboard(formData.payment.va_number)}
-                disabled={formData.payment.is_expired}
-              >
+                disabled={formData.payment.is_expired}>
                 <Text className="text-green-600 font-poppins-semibold">Salin</Text>
               </TouchableOpacity>
             </View>
@@ -164,7 +158,6 @@ const Detail = ({ route, navigation }) => {
             </View>
           )}
         </View>
-
         <View className="bg-white rounded-lg p-4 shadow-md">
           <Text className="text-base font-poppins-semibold mb-3">Nominal Pembayaran</Text>
           <View className="flex-row items-center justify-between">
@@ -173,8 +166,7 @@ const Detail = ({ route, navigation }) => {
             </Text>
             <TouchableOpacity 
               onPress={() => copyToClipboard(formData.payment.jumlah)}
-              disabled={formData.payment.is_expired}
-            >
+              disabled={formData.payment.is_expired}>
               <Text className="text-green-600 font-poppins-semibold">Salin</Text>
             </TouchableOpacity>
           </View>
@@ -188,15 +180,13 @@ const Detail = ({ route, navigation }) => {
       <View className="flex-row mx-4 my-3 rounded-xl py-4 px-3 bg-white shadow-sm" style={{ elevation: 6, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 4, shadowOffset: 10 }}>
         <TouchableOpacity 
           onPress={() => navigation.navigate('Pengujian')} 
-          className="mr-3 px-4 py-3 bg-red-500 rounded-xl ml-2"
-        >
+          className="mr-3 px-4 py-3 bg-red-500 rounded-xl ml-2">
           <AntDesign name="arrowleft" size={20} color="white"/>
         </TouchableOpacity>
         <Text className="top-2 text-xl ml-2 font-poppins-semibold text-black">
           {formData?.kode || 'Detail Pembayaran'}
         </Text>
       </View>
-      
       <ScrollView>
         <View className="p-4">
           <View className="flex-row justify-between mb-4">
@@ -213,12 +203,10 @@ const Detail = ({ route, navigation }) => {
               </Text>
             </View>
           </View>
-
           {renderPaymentDetails()}
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
-
 export default Detail;
