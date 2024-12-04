@@ -145,10 +145,10 @@ export default function DetailKontrak({ route, navigation }) {
             <View className="flex-1 items-center bg-[#ececec]">
             {data ? (
                 <>
-                    <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]">
+                    <View className="bg-white rounded-[10px] p-[15px] w-[90%] shadow-md my-[10px]" style={{ elevation: 4, shadowRadius: 5, shadowColor: 'black',}}>
                         <View className="flex-row">
                             <TouchableOpacity 
-                                className="bg-[#ef4444] w-[55px] h-[40px] rounded-[15px] justify-center items-center"
+                                className="bg-[#ef4444] w-[55px] h-[46px] rounded-[15px] justify-center items-center"
                                 onPress={() => navigation.goBack()}
                             >
                                 <AntDesign name="arrowleft" size={20} color="white" />
