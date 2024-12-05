@@ -151,9 +151,6 @@ const Pengujian = ({ navigation }) => {
       });
     }
   };
-
-
-
   const PickerButton = ({ label, value, style }) => (
     <View
       style={[{
@@ -179,6 +176,7 @@ const Pengujian = ({ navigation }) => {
   );
 
   const getStatusStyle = (item) => {
+  // console.log('item: ', item.payment_type)
     if (item.payment?.is_expired) {
       return {
         text: "text-red-700",
@@ -321,7 +319,7 @@ const Pengujian = ({ navigation }) => {
                       className={`text-[11px] font-bold text-center ${metodeStyle.text}`}
                       numberOfLines={2}
                       ellipsizeMode="tail">
-                      {item.payment?.type.toUpperCase() || "-"}
+                      {item.payment_type?.toUpperCase() || "-"}
                     </Text>
                   </View>
                 </View>
