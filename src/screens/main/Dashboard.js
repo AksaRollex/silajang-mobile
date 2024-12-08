@@ -18,8 +18,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
-import FooterText from "../components/FooterText";
-
 const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -247,7 +245,6 @@ const Dashboard = () => {
             {dashboard ? (
               <>
                 <DashboardCard
-                  style={styles.cardNew}
                   number={dashboard.permohonanBaru}
                   text="Permohonan Baru"
                   icon="file-circle-plus"
@@ -255,7 +252,6 @@ const Dashboard = () => {
                   gradientColors={["#EEF2FF", "#C7D2FE"]}
                 />
                 <DashboardCard
-                  style={styles.cardProcess}
                   number={dashboard.permohonanDiproses}
                   text="Sedang Diproses"
                   icon="leaf"
@@ -263,7 +259,6 @@ const Dashboard = () => {
                   gradientColors={["#FCE7F3", "#FBCFE8"]}
                 />
                 <DashboardCard
-                  style={styles.cardCompleted}
                   number={dashboard.permohonanSelesai}
                   text="Telah Selesai"
                   icon="clipboard-check"
@@ -271,7 +266,6 @@ const Dashboard = () => {
                   gradientColors={["#ECFDF5", "#A7F3D0"]}
                 />
                 <DashboardCard
-                  style={styles.cardTotal}
                   className="mb-2"
                   number={dashboard.permohonanTotal}
                   text="Total Permohonan"
@@ -395,7 +389,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   card: {
-    width: (windowWidth - 36) / 1,
+    width: (windowWidth - 26) / 1,
     height: 150,
     borderRadius: 16,
     overflow: "hidden",

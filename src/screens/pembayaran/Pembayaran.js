@@ -234,19 +234,6 @@ export default function Pembayaran() {
                     </View>
                     <View style={styles.divider} />
                     <View style={styles.infoSection}>
-                      {/* <View style={styles.infoRow}>
-                        <MaterialIcons
-                          name="location-on"
-                          size={16}
-                          color="#666"
-                        />
-                        <View style={styles.infoGroup}>
-                          <Text style={styles.infoLabel}>Lokasi</Text>
-                          <Text style={styles.infoValue} numberOfLines={1}>
-                            {activity.lokasi || "Error, Harap Refresh"}
-                          </Text>
-                        </View>
-                      </View> */}
                       <View style={styles.infoRow}>
                         <MaterialIcons name="code" size={16} color="#666" />
                         <View style={styles.infoGroup}>
@@ -265,6 +252,18 @@ export default function Pembayaran() {
                           </Text>
                           <Text style={[styles.infoValue]}>
                             {activity.payment?.status || "Error, Harap Refresh"}
+                            {/* {activity.payment?.status === "pending"
+                              ? "Pending"
+                              : "Error, Harap Refresh"}
+                            {activity.payment?.status === "success"
+                              ? "Sukses"
+                              : "Error, Harap Refresh"}
+                            {activity.payment?.status === "failed"
+                              ? "Gagal"
+                              : "Error, Harap Refresh"}
+                            {activity.payment?.status === "expired"
+                              ? "Expired"
+                              : "Error, Harap Refresh"} */}
                           </Text>
                         </View>
                       </View>
@@ -316,9 +315,6 @@ const styles = StyleSheet.create({
   },
   scrollContent: {
     padding: 16,
-  },
-  headerSection: {
-    // marginBottom: 14,
   },
   welcomeCard: {
     backgroundColor: "#FFFFFF",
@@ -567,7 +563,7 @@ const styles = StyleSheet.create({
   infoGroup: {
     flexDirection: "row",
     alignItems: "center",
-    flex: 1, // Memberikan ruang yang fleksibel untuk menyesuaikan konten
+    flex: 1,
   },
   infoLabel: {
     width: 120,

@@ -6,7 +6,6 @@ import {
   TouchableOpacity,
   Text,
   Image,
-  Alert,
   PermissionsAndroid,
   Platform,
   ActivityIndicator,
@@ -21,7 +20,6 @@ import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
 import { launchImageLibrary } from "react-native-image-picker";
-import RNPickerSelect from "react-native-picker-select";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { APP_URL } from "@env";
@@ -29,7 +27,6 @@ import Back from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import Select2 from "@/src/screens/components/Select2";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 rem = multiplier => baseRem * multiplier;
@@ -37,8 +34,8 @@ const baseRem = 16;
 const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
-  const [imageUrl, setImageUrl] = useState(null); // Tambahkan state untuk imageUrl
-  const [data, setData] = useState({}); // Tambahkan state untuk data
+  const [imageUrl, setImageUrl] = useState(null); 
+  const [data, setData] = useState({}); 
 
   const [kotaKabupaten, setKotaKabupaten] = useState([[]]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
@@ -95,7 +92,7 @@ const Perusahaan = () => {
   };
   const getLocation = () => {
     setLoading(true);
-    setModalVisible(true); // Langsung tampilkan modal setelah klik tombol
+    setModalVisible(true); 
 
     Geolocation.getCurrentPosition(
       position => {
@@ -110,11 +107,11 @@ const Perusahaan = () => {
         setValue("south", latitude);
         setValue("east", longitude);
 
-        setLoading(false); // Selesai loading saat koordinat didapatkan
+        setLoading(false);
       },
       error => {
         console.log(error.code, error.message);
-        setLoading(false); // Selesai loading jika terjadi error
+        setLoading(false);
       },
       { enableHighAccuracy: true, timeout: 15000, maximumAge: 10000 },
     );
@@ -207,16 +204,11 @@ const Perusahaan = () => {
     axios
       .get("/auth")
       .then(response => {
-        // console.log(
-        //   "Response Data detail user akun:",
-        //   response.data.user.detail,
-        // );
         setUserData(response.data.user.detail);
 
         setSelectedKotaKabupaten(response.data.user.detail.kab_kota_id);
         setSelectedKecamatan(response.data.user.detail.kecamatan_id);
         setSelectedKelurahan(response.data.user.detail.kelurahan_id);
-        // console.log("userData setelah setUserData:", response.data.user.detail);
       })
       .catch(error => {
         console.error("Error fetching data:", error);
@@ -280,7 +272,7 @@ const Perusahaan = () => {
           text1: "File terlalu besar",
           text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
         });
-        return; // Exit the function early if the file is too large
+        return;
       }
     }
     if (file) {
@@ -327,14 +319,11 @@ const Perusahaan = () => {
     try {
       const response = await axios.get("/auth");
 
-      // Pastikan response.data.user dan detail ada sebelum diakses
       if (response.data && response.data.user && response.data.user.detail) {
         const userDetail = response.data.user.detail;
 
-        // Set data detail user
         setUserData(userDetail);
 
-        // Jika tanda tangan ada, set photoUrl
         if (userDetail.tanda_tangan) {
           const photoUrl = `${APP_URL}${userDetail.tanda_tangan}`;
           setCurrentPhotoUrl(photoUrl);
@@ -414,21 +403,7 @@ const Perusahaan = () => {
     fetchPhoto();
   }, []);
 
-  const ImageComponent = () => {
-    const imageSource = file?.uri || currentPhotoUrl;
-
-    if (!imageSource) {
-      return <Text>Tidak ada gambar yang dipilih</Text>;
-    }
-
-    return (
-      <Image
-        source={{ uri: imageSource }}
-        style={styles.signaturePreview}
-        onError={e => console.log("Error loading image:", e.nativeEvent.error)}
-      />
-    );
-  };
+ 
   return (
     <>
       <ScrollView className="flex-1">
