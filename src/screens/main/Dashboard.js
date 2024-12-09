@@ -347,52 +347,35 @@ const Dashboard = () => {
           animationType="fade"
           onRequestClose={() => setModalVisible(false)}
         >
-          <View style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: 'rgba(0, 0, 0, 0.5)',
-          }}>
-            <View style={{
-              width: 300,
-              padding: 20,
-              backgroundColor: 'white',
-              borderRadius: 10,
-              alignItems: 'center',
-            }}>
-              <Text style={{ fontSize: 18, marginBottom: 15 }} className="font-poppins-semibold text-black">Konfirmasi Logout</Text>
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+              <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+                <IonIcons size={40} color="#f43f5e" name="log-out-outline" />
+              </View>
 
-              <View style={{
-                width: '100%',
-                borderBottomWidth: 1,
-                borderBottomColor: '#dedede',
-                marginBottom: 15,
-              }} />
+              <Text className="text-xl font-poppins-semibold text-black mb-3">
+                Konfirmasi Logout
+              </Text>
 
-              <Text style={{ fontSize: 15, marginBottom: 25, marginLeft: 5 }} className="font-poppins-regular text-black">Apakah anda yakin ingin keluar?</Text>
-              <View style={{ flexDirection: 'row' }}>
+              <View className="w-full h-px bg-gray-200 mb-4" />
+
+              <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+                Apakah anda yakin ingin logout?
+              </Text>
+
+              <View className="flex-row w-full justify-between">
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    backgroundColor: '#dedede',
-                    borderRadius: 5,
-                    marginRight: 10,
-                  }}
+                  className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
                 >
-                  <Text style={{ color: 'gray' }} className="font-poppins-regular">Batal</Text>
+                  <Text className="text-gray-700 font-poppins-medium">Batal</Text>
                 </TouchableOpacity>
+
                 <TouchableOpacity
-                  className="bg-red-100"
                   onPress={confirmLogout}
-                  style={{
-                    paddingVertical: 10,
-                    paddingHorizontal: 20,
-                    borderRadius: 5,
-                  }}
+                  className="flex-1 ml-3 bg-red-500 py-3 rounded-xl items-center"
                 >
-                  <Text className="text-red-500 font-poppins-medium">Ya, Logout</Text>
+                  <Text className="text-white font-poppins-medium">Ya, Logout</Text>
                 </TouchableOpacity>
               </View>
             </View>
@@ -857,7 +840,7 @@ const Dashboard = () => {
 
                   </View>
                 </View>
-              <TextFooter className="top-1"/>
+                <TextFooter className="top-1" />
 
               </>
             )}
