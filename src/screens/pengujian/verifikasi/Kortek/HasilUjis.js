@@ -9,10 +9,12 @@ import {
   Alert,
   ActivityIndicator,
 } from "react-native";
+import { Controller, useForm } from "react-hook-form";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react-native";
 import axios from "@/src/libs/axios";
 import { API_URL } from "@env";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
+import { useMutation } from "@tanstack/react-query";
 
 const HasilUjis = ({ route, navigation }) => {
   const { uuid } = route.params;
@@ -24,6 +26,37 @@ const HasilUjis = ({ route, navigation }) => {
   });
   const [loading, setLoading] = useState(true);
 
+  const { mutate: updateParam } = useMutation({
+    mutationFn: async param => {
+      const response = await axios.post(
+        `/verifikasi/koordinator-teknis/${uuid}/fill-parameter`,
+        {
+          parameter_uuid: param.uuid,
+          satuan: param.satuan,
+          baku_mutu: param.baku_mutu,
+          mdl: param.mdl,
+          hasil_uji_pembulatan: param.hasil_uji_pembulatan,
+          keterangan: param.keterangan,
+          keterangan_hasil: param.keterangan_hasil,
+          acc_manager: param.acc_manager,
+        },
+      );
+      return response.data.data;
+    },
+    onSuccess: updatedParam => {
+      setFormData(prevData => {
+        const updatedParameters = prevData.parameters.map(param =>
+          param.uuid === updatedParam.uuid ? updatedParam : param,
+        );
+        return { ...prevData, parameters: updatedParameters };
+      });
+    },
+    onError: err => {
+      console.error(err.response);
+    },
+  });
+
+  const { handleSubmit, watch, control, setValue } = useForm();
   // Simplified mock data fetch
   useEffect(() => {
     const fetchData = async () => {
@@ -32,8 +65,13 @@ const HasilUjis = ({ route, navigation }) => {
         const response = await axios.get(
           `/verifikasi/koordinator-teknis/${uuid}`,
         );
-        console.log("Response data:", response.data);
+        // console.log("Response data:", response.data);
         setFormData(response.data.data);
+
+        console.log(formData.parameters, 8898);
+        formData.parameters.map(item => {
+          setValue("satuan", item.pivot.satuan);
+        });
       } catch (error) {
         console.error("Error fetching data:", error);
         Alert.alert("Error", "Failed to fetch data."); // Tampilkan alert jika gagal
@@ -44,9 +82,32 @@ const HasilUjis = ({ route, navigation }) => {
     fetchData();
   }, [uuid]);
 
+  useEffect(() => {
+    if (formData?.parameters) {
+      formData.parameters.forEach((item, index) => {
+        setValue(`satuan.${index}`, item.pivot.satuan);
+        setValue(`baku_mutu.${index}`, item.pivot.baku_mutu);
+        setValue(`mdl.${index}`, item.pivot.mdl);
+        setValue(
+          `hasil_uji_pembulatan.${index}`,
+          item.pivot.hasil_uji_pembulatan,
+        );
+        setValue(`keterangan.${index}`, item.pivot.keterangan);
+        setValue(`keterangan_hasil.${index}`, item.pivot.keterangan_hasil);
+      });
+    }
+  }, [formData]);
+
+  const handleUpdate = (index, updatedFields) => {
+    const param = formData.parameters[index];
+    updateParam({ ...param, ...updatedFields });
+  };
+
   if (loading) {
     return (
-      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+      <View className="h-full flex justify-center">
+        <ActivityIndicator size={"large"} color={"#312e81"} />
+      </View>
     );
   }
 
@@ -75,46 +136,8 @@ const HasilUjis = ({ route, navigation }) => {
     }
   };
 
-  const handleParameterUpdate = async (paramUuid, updatedData) => {
-    try {
-      // Memperbarui data lokal
-      const updatedParameters = formData.parameters.map(param => {
-        if (param.uuid === paramUuid) {
-          return {
-            ...param,
-            pivot: {
-              ...param.pivot,
-              ...updatedData,
-            },
-          };
-        }
-        return param;
-      });
-  
-      // Mengupdate state formData
-      setFormData(prevState => ({
-        ...prevState,
-        parameters: updatedParameters,
-      }));
-  
-      // Mengirim permintaan API untuk memperbarui data
-      const response = await axios.post(`${API_URL}/verifikasi/koordinator-teknis/${uuid}/fill-parameter`, {
-        parameters: updatedParameters.map(param => ({
-          uuid: param.uuid,
-          ...param.pivot, // Kirim hanya data yang ada di pivot
-        })),
-      });
-  
-      // Menangani respon dari server
-      if (response.status === 200) {
-        Alert.alert('Success', 'Data berhasil diperbarui');
-      } else {
-        Alert.alert('Error', 'Gagal memperbarui data');
-      }
-    } catch (error) {
-      console.error('Error updating parameter:', error);
-      Alert.alert('Error', 'Terjadi kesalahan saat memperbarui data');
-    }
+  const onSubmit = data => {
+    updateParam(data);
   };
 
   return (
@@ -153,13 +176,13 @@ const HasilUjis = ({ route, navigation }) => {
                   <TouchableOpacity
                     style={[
                       styles.radioButton,
-                      formData.memenuhi_hasil_pengujian === 1 &&
-                        styles.radioButtonSelected,
+                      formData.memenuhi_hasil_pengujian === 0 &&
+                      styles.radioButtonSelected,
                     ]}
                     onPress={() => {
                       setFormData(prev => ({
                         ...prev,
-                        memenuhi_hasil_pengujian: 1,
+                        memenuhi_hasil_pengujian: 0,
                       }));
                       handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
                     }}>
@@ -168,13 +191,13 @@ const HasilUjis = ({ route, navigation }) => {
                   <TouchableOpacity
                     style={[
                       styles.radioButton,
-                      formData.memenuhi_hasil_pengujian === 0 &&
-                        styles.radioButtonSelected,
+                      formData.memenuhi_hasil_pengujian === 1 &&
+                      styles.radioButtonSelected,
                     ]}
                     onPress={() => {
                       setFormData(prev => ({
                         ...prev,
-                        memenuhi_hasil_pengujian: 0,
+                        memenuhi_hasil_pengujian: 1,
                       }));
                       handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
                     }}>
@@ -186,7 +209,7 @@ const HasilUjis = ({ route, navigation }) => {
               </View>
 
               {/* Parameter Cards */}
-              {formData.parameters.map(param => (
+              {formData.parameters.map((param, index) => (
                 <View key={param.uuid} style={styles.parameterCard}>
                   {/* Parameter Header */}
                   <View style={styles.parameterHeader}>
@@ -216,112 +239,172 @@ const HasilUjis = ({ route, navigation }) => {
                   <View style={styles.parameterForm}>
                     <View style={styles.formRow}>
                       <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>Satuan *</Text>
-                        <TextInput
-                          style={styles.input}
-                          value={param.pivot.satuan}
-                          onChangeText={text =>
-                            handleParameterUpdate(param.uuid, { satuan: text })
-                          }
-                          placeholder="Satuan"
+                        <Text style={styles.fieldLabel}>Satuan <Text className="text-red-500">*</Text></Text>
+                        <Controller
+                          control={control}
+                          name={`satuan.${index}`}
+                          render={({ field: { onChange, value } }) => (
+                            <TextInput
+                              style={styles.input}
+                              value={value}
+                              onChangeText={value => onChange(value)}
+                              placeholder="Satuan"
+                            />
+                          )}
                         />
                       </View>
                       <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>Baku Mutu *</Text>
-                        <TextInput
-                          style={styles.input}
-                          value={param.pivot.baku_mutu}
-                          onChangeText={text =>
-                            handleParameterUpdate(param.uuid, { baku_mutu: text })
-                          }
-                          placeholder="Baku Mutu"
+                        <Text style={styles.fieldLabel}>Baku Mutu <Text className="text-red-500">*</Text></Text>
+                        <Controller
+                          control={control}
+                          name={`baku_mutu.${index}`}
+                          render={({ field: { onChange, value } }) => (
+                            <TextInput
+                              style={styles.input}
+                              value={value}
+                              onChangeText={value => onChange(value)}
+                              placeholder="Baku Mutu"
+                            />
+                          )}
                         />
                       </View>
                     </View>
-                      <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>MDL</Text>
-                        <TextInput
-                          style={styles.inputMdl}
-                          value={param.pivot.mdl}
-                          onChangeText={text =>
-                            handleParameterUpdate(param.uuid, { mdl: text })
-                          }
-                          placeholder="MDL"
-                        />
-                      </View>
-
+                    <View style={styles.formField}>
+                      <Text style={styles.fieldLabel}>MDL</Text>
+                      <Controller
+                        control={control}
+                        name={`mdl.${index}`}
+                        render={({ field: { onChange, value } }) => (
+                          <TextInput
+                            style={styles.inputMdl}
+                            value={value}
+                            onChangeText={value => onChange(value)}
+                            placeholder="MDL"
+                          />
+                        )}
+                      />
+                    </View>
                     <View style={styles.formRow} className="mt-2">
                       <View style={styles.formField}>
-                        <Text style={styles.fieldLabel}>Hasil Uji (Analis) *</Text>
-                        <TextInput
-                          style={styles.input}
-                          value={param.pivot.hasil_uji}
-                          onChangeText={text =>
-                            handleParameterUpdate(param.uuid, { hasil_uji: text })
-                          }
-                          placeholder="MDL"
+                        <Text style={styles.fieldLabel}>
+                          Hasil Uji (Analis) <Text className="text-red-500">*</Text>
+                        </Text>
+                        <Controller
+                          control={control}
+                          name={`hasil_uji.${index}`}
+                          render={({ field: { onChange, value } }) => (
+                            <TextInput
+                              style={styles.input}
+                              value={value}
+                              onChangeText={value => onChange(value)}
+                              placeholder="MDL"
+                            />
+                          )}
                         />
                       </View>
                       <View style={styles.formField}>
                         <Text style={styles.fieldLabel}>
-                          Hasil Uji (Pembulatan) *
+                          Hasil Uji (Pembulatan) <Text className="text-red-500">*</Text>
                         </Text>
-                        <TextInput
-                          style={styles.input}
-                          value={param.pivot.hasil_uji_pembulatan}
-                          onChangeText={text =>
-                            handleParameterUpdate(param.uuid, {
-                              hasil_uji_pembulatan: text,
-                            })
-                          }
-                          placeholder="Hasil Uji"
+                        <Controller
+                          control={control}
+                          name={`hasil_uji_pembulatan.${index}`}
+                          render={({ field: { onChange, value } }) => (
+                            <TextInput
+                              style={styles.input}
+                              value={value}
+                              onChangeText={value => onChange(value)}
+                              placeholder="Hasil Uji"
+                            />
+                          )}
                         />
                       </View>
                     </View>
 
                     <View>
-                      <Text style={styles.fieldLabel}>Keterangan</Text>
-                      <TextInput
-                        style={styles.input}
-                        value={param.pivot.keterangan}
-                        onChangeText={text =>
-                          handleParameterUpdate(param.uuid, { keterangan: text })
-                        }
-                        placeholder="Keterangan"
+                      <Text style={styles.fieldLabel}>
+                        Keterangan
+                      </Text>
+                      <Controller
+                        control={control}
+                        name={`keterangan.${index}`}
+                        render={({ field: { onChange, value } }) => (
+                          <TextInput
+                            style={styles.input}
+                            value={value}
+                            onChangeText={value => onChange(value)}
+                            placeholder="Keterangan"
+                          />
+                        )}
                       />
                     </View>
 
                     {param.pivot.acc_analis && (
-                      <View style={styles.buttonGroup}>
-                        <TouchableOpacity
-                          style={[
-                            styles.resultButton,
-                            styles.failButton,
-                            param.pivot.keterangan_hasil === "Tidak Memenuhi" &&
-                              styles.failButtonActive,
-                          ]}
-                          onPress={() =>
-                            handleParameterUpdate(param.uuid, {
-                              keterangan_hasil: "Tidak Memenuhi",
-                            })
-                          }>
-                          <Text style={styles.buttonText}>Tidak Memenuhi</Text>
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                          style={[
-                            styles.resultButton,
-                            styles.passButton,
-                            param.pivot.keterangan_hasil === "Memenuhi" &&
-                              styles.passButtonActive,
-                          ]}
-                          onPress={() =>
-                            handleParameterUpdate(param.uuid, {
-                              keterangan_hasil: "Memenuhi",
-                            })
-                          }>
-                          <Text style={styles.buttonText}>Memenuhi</Text>
-                        </TouchableOpacity>
-                      </View>
+                      <Controller
+                        control={control}
+                        name={`keterangan_hasil.${index}`}
+                        defaultValue=""
+                        render={({ field: { onChange, value } }) => (
+                          <View style={styles.buttonGroup}>
+                            <TouchableOpacity
+                              style={[
+                                styles.resultButton,
+                                styles.failButton,
+                                value === "Tidak Memenuhi" && styles.failButtonActive,
+                              ]}
+                              onPress={() =>
+                                handleUpdate(index, {
+                                  keterangan_hasil: "Tidak Memenuhi",
+                                  satuan: watch(`satuan.${index}`),
+                                  baku_mutu: watch(`baku_mutu.${index}`),
+                                  mdl: watch(`mdl.${index}`),
+                                  hasil_uji_pembulatan: watch(
+                                    `hasil_uji_pembulatan.${index}`,
+                                  ),
+                                  keterangan: watch(`keterangan.${index}`),
+                                })
+                              }>
+                              <Text
+                                style={[
+                                  styles.buttonText,
+                                  value === "Tidak Memenuhi"
+                                    ? styles.failButtonTextActive
+                                    : styles.failButtonText,
+                                ]}>
+                                Tidak Memenuhi
+                              </Text>
+                            </TouchableOpacity>
+                            <TouchableOpacity
+                              style={[
+                                styles.resultButton,
+                                styles.passButton,
+                                value === "Memenuhi" && styles.passButtonActive,
+                              ]}
+                              onPress={() =>
+                                handleUpdate(index, {
+                                  keterangan_hasil: "Memenuhi",
+                                  satuan: watch(`satuan.${index}`),
+                                  baku_mutu: watch(`baku_mutu.${index}`),
+                                  mdl: watch(`mdl.${index}`),
+                                  hasil_uji_pembulatan: watch(
+                                    `hasil_uji_pembulatan.${index}`,
+                                  ),
+                                  keterangan: watch(`keterangan.${index}`),
+                                })
+                              }>
+                              <Text
+                                style={[
+                                  styles.buttonText,
+                                  value === "Memenuhi"
+                                    ? styles.passButtonTextActive
+                                    : styles.passButtonText,
+                                ]}>
+                                Memenuhi
+                              </Text>
+                            </TouchableOpacity>
+                          </View>
+                        )}
+                      />
                     )}
                   </View>
                 </View>
@@ -350,9 +433,9 @@ const styles = StyleSheet.create({
     marginLeft: 16,
   },
   kode: {
-    fontWeight: "bold",
+    fontFamily: "Poppins-SemiBold",
     fontSize: 23,
-    color: "balck",
+    color: "black",
     marginLeft: 20,
     marginTop: 5,
   },
@@ -403,7 +486,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
     marginBottom: 12,
     marginTop: 12,
   },
@@ -424,7 +507,8 @@ const styles = StyleSheet.create({
     borderColor: "#3699FF",
   },
   radioText: {
-    fontSize: 14,
+    fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   parameterCard: {
     backgroundColor: "white",
@@ -445,12 +529,13 @@ const styles = StyleSheet.create({
   },
   parameterTitle: {
     fontSize: 16,
-    fontWeight: "600",
+    fontFamily: "Poppins-SemiBold",
   },
   parameterType: {
     fontSize: 12,
     color: "#B5B5C3",
     marginTop: 4,
+    fontFamily: "Poppins-Regular",
   },
   subkontrakBadge: {
     backgroundColor: "#FFF4DE",
@@ -463,6 +548,7 @@ const styles = StyleSheet.create({
   subkontrakText: {
     color: "#FFA800",
     fontSize: 12,
+    fontFamily: "Poppins-Regular",
   },
   parameterForm: {
     padding: 16,
@@ -479,14 +565,16 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: "#B5B5C3",
     marginBottom: 4,
+    fontFamily: "Poppins-Medium",
   },
   inputMdl: {
     borderWidth: 1,
     borderColor: "#E4E6EF",
     borderRadius: 8,
     padding: 12,
-    width: '48%',
+    width: "48%",
     backgroundColor: "#F5F8FA",
+    fontFamily: "Poppins-Medium",
   },
   input: {
     borderWidth: 1,
@@ -494,6 +582,7 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     padding: 12,
     backgroundColor: "#F5F8FA",
+    fontFamily: "Poppins-Medium",
   },
   buttonGroup: {
     flexDirection: "row",
@@ -505,23 +594,46 @@ const styles = StyleSheet.create({
     padding: 12,
     borderRadius: 8,
     alignItems: "center",
+    borderWidth: 1.5,
   },
   failButton: {
-    backgroundColor: "#FFE2E5",
+    backgroundColor: "white",
+    borderColor: "#F64E60",
   },
   failButtonActive: {
     backgroundColor: "#F64E60",
+    color: "white",
   },
   passButton: {
-    backgroundColor: "#B5E6E5",
+    backgroundColor: "white",
+    borderColor: "#32b857",
   },
   passButtonActive: {
     backgroundColor: "#32b857",
+    color: "white",
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "600",
+    fontFamily: "Poppins-Medium",
+  },
+  failButtonText: {
+    color: "#F64E60",
+  },
+  failButtonTextActive: {
+    color: "white",
+  },
+  passButtonText: {
+    color: "#32b857",
+  },
+  passButtonTextActive: {
+    color: "white",
   },
   buttonText: {
     fontSize: 14,
     fontWeight: "600",
     color: "#333333",
+    fontFamily: "Poppins-Medium",
   },
 });
 

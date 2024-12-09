@@ -1,4 +1,4 @@
-  import axios from "@/src/libs/axios";
+import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
 import {
   FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity, TextInput,
@@ -51,6 +51,7 @@ const useDebounce = (value, delay) => {
 
   return debouncedValue;
 };
+
 
 const PenerimaSampel = ({ navigation }) => {
   const [searchInput, setSearchInput] = useState("");
@@ -202,16 +203,16 @@ const PenerimaSampel = ({ navigation }) => {
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text> 
+            <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
             <Text className="text-md text-black font-poppins-semibold mb-3">{item.kode}</Text>
 
-          <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text> 
+            <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
             <Text className="text-md text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
 
-            <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text> 
+            <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text>
             <Text className="text-md text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
 
-            <Text className="text-xs text-gray-500 font-poppins-regular">Diterima Pada</Text> 
+            <Text className="text-xs text-gray-500 font-poppins-regular">Diterima Pada</Text>
             <Text className="text-md text-black font-poppins-semibold mb-1">{item.tanggal_diterima}</Text>
           </View>
           <View className="flex-shrink-0 items-end">
@@ -234,18 +235,23 @@ const PenerimaSampel = ({ navigation }) => {
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => {
-              setSelectedRevisionItem(item);
-              setRevisionModalVisible(true);
-            }}
-            className="bg-amber-500 px-3 py-2 rounded-md"
-          >
-            <View className="flex-row">
-              <Ionicons name="pencil" size={15} color="white" style={{ marginRight: 5 }} />
-              <Text className="text-white font-poppins-medium text-[11px]">Revisi</Text>
-            </View>
-          </TouchableOpacity>
+          {item.status < 8 && (
+            <TouchableOpacity
+              onPress={() => {
+                setSelectedRevisionItem({
+                  uuid: item.uuid,
+                  kode: item.kode
+                });
+                setRevisionModalVisible(true);
+              }}
+              className="bg-amber-500 px-3 py-2 rounded-md"
+            >
+              <View className="flex-row">
+                <Ionicons name="pencil" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Revisi</Text>
+              </View>
+            </TouchableOpacity>
+          )}
 
           {selectedPenerima === 3 && ( // "Telah Konfirmasi"
             <TouchableOpacity
@@ -292,7 +298,7 @@ const PenerimaSampel = ({ navigation }) => {
             <View className="flex-row items-center space-x-2 mb-4">
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text> 
+                <Text className="text-[20px] font-poppins-semibold text-black">Penerima Sampel</Text>
               </View>
             </View>
 
@@ -369,7 +375,7 @@ const PenerimaSampel = ({ navigation }) => {
 
       <Modal
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         visible={revisionModalVisible}
         onRequestClose={() => {
           setRevisionModalVisible(false);
@@ -380,7 +386,7 @@ const PenerimaSampel = ({ navigation }) => {
           <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
             <View className="flex-row justify-between items-center mb-4">
               <Text className="text-lg font-poppins-semibold text-black">
-                Revisi LHU
+                Revisi:{selectedRevisionItem?.kode ? ` ${selectedRevisionItem.kode}` : ''}
               </Text>
               <TouchableOpacity
                 onPress={() => {
@@ -393,15 +399,16 @@ const PenerimaSampel = ({ navigation }) => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm mb-2 text-gray-600">
+              {/* <Text className="text-sm mb-2 text-gray-600 font-poppins-regular">
                 Keterangan Revisi
-              </Text>
+              </Text> */}
               <TextInput
+
                 multiline
                 numberOfLines={4}
                 value={revisionNote}
                 onChangeText={setRevisionNote}
-                className="border border-gray-300 rounded-lg p-3 text-sm"
+                className="border border-gray-300 rounded-lg p-3 text-sm font-poppins-regular"
                 placeholder="Masukkan keterangan revisi..."
                 textAlignVertical="top"
               />
