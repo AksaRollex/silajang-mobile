@@ -51,7 +51,6 @@ const Users = ({ navigation, route }) => {
     (data) => axios.post(`/master/user/${data.uuid}/confirm`, { confirmed: data.confirmed }),
     {
       onSuccess: () => {
-        // Refetch the data after successful confirmation
         paginateRef.current?.refetch();
         queryClient.invalidateQueries(['/master/user']);
       },
