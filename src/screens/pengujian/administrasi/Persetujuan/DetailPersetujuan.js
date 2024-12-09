@@ -1023,6 +1023,7 @@ export default function DetailPersetujuan({ route, navigation }) {
 
                     {showDatePicker && (
                       <DateTimePicker
+                        modal
                         value={date || new Date()}
                         mode="date"
                         timeZoneName="Asia/Jakarta"
