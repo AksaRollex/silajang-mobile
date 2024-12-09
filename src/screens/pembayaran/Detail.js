@@ -193,7 +193,7 @@ const Detail = ({ route, navigation }) => {
               formData.payment?.status !== "success" && (
                 <View className="flex-row items-center mb-4 pb-4 border-b border-gray-100">
                   <AntDesign name="clockcircle" size={28} color="#3B82F6" />
-                  <View className="ml-3">
+                  <View className="ml-5">
                     <Text className="text-blue-800 font-poppins-semibold text-base">
                       Segera Selesaikan Pembayaran
                     </Text>
