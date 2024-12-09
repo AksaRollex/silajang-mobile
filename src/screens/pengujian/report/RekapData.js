@@ -16,14 +16,14 @@ import Toast from 'react-native-toast-message';
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
-const RekapData = ({navigation}) => {
+const RekapData = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [isDownloading, setIsDownloading] = useState(false);
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [dateType, setDateType] = useState('start'); 
+  const [dateType, setDateType] = useState('start');
   const [modalVisible, setModalVisible] = useState(false);
-  const [mode, setMode] = useState('sampel-permohonan'); 
+  const [mode, setMode] = useState('sampel-permohonan');
   const [reportUrl, setReportUrl] = useState('');
   const [selectedDate, setSelectedDate] = useState({
     start: moment().startOf('month').format('YYYY-MM-DD'),
@@ -63,7 +63,7 @@ const RekapData = ({navigation}) => {
       [dateType]: formattedDate
     }));
     setShowDatePicker(false);
-    
+
     if (dateType === 'start') {
       setTimeout(() => {
         setDateType('end');
@@ -73,65 +73,65 @@ const RekapData = ({navigation}) => {
   };
 
   const handlePreviewPDF = async () => {
-      try {
-          const authToken = await AsyncStorage.getItem('@auth-token');
-          // Preview URL menggunakan full path dengan /api/v1 dan membutuhkan token
-          setReportUrl(`${APP_URL}/api/v1/report/rekap?token=${authToken}&start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`);
-          setModalVisible(true);
-      } catch (error) {
-          console.error('Preview error:', error);
-          Toast.show({
-              type: 'error',  
-              text1: 'Error',
-              text2: 'Gagal memuat preview PDF',
-          });
-      }
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      // Preview URL menggunakan full path dengan /api/v1 dan membutuhkan token
+      setReportUrl(`${APP_URL}/api/v1/report/rekap?token=${authToken}&start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`);
+      setModalVisible(true);
+    } catch (error) {
+      console.error('Preview error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Gagal memuat preview PDF',
+      });
+    }
   };
 
   const handleDownloadPDF = async () => {
-      try {
-          const authToken = await AsyncStorage.getItem('@auth-token');
-          const fileName = `RekapParameter_${Date.now()}.pdf`;
-          const downloadPath = Platform.OS === 'ios'
-              ? `${RNFS.DocumentDirectoryPath}/${fileName}`
-              : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      const fileName = `RekapParameter_${Date.now()}.pdf`;
+      const downloadPath = Platform.OS === 'ios'
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
-          // Download URL menggunakan path yang lebih pendek tanpa /api/v1
-          const downloadUrl = `${APP_URL}/report/rekap?start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`;
+      // Download URL menggunakan path yang lebih pendek tanpa /api/v1
+      const downloadUrl = `${APP_URL}/report/rekap?start=${selectedDate.start}&end=${selectedDate.end}&is_mandiri=${isMandiri}&golongan_id=${golonganId}&mode=${mode}`;
 
-          const options = {
-              fromUrl: downloadUrl,
-              toFile: downloadPath,
-              headers: {
-                  'Authorization': `Bearer ${authToken}`,
-              },
-          };
+      const options = {
+        fromUrl: downloadUrl,
+        toFile: downloadPath,
+        headers: {
+          'Authorization': `Bearer ${authToken}`,
+        },
+      };
 
-          setIsDownloading(true);
-          const result = await RNFS.downloadFile(options).promise;
-          setIsDownloading(false);
+      setIsDownloading(true);
+      const result = await RNFS.downloadFile(options).promise;
+      setIsDownloading(false);
 
-          if (result.statusCode === 200) {
-              if (Platform.OS === 'android') {
-                  await RNFS.scanFile(downloadPath);
-              }
-              Toast.show({
-                  type: 'success',
-                  text1: 'Success',
-                  text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'File tersimpan di Files app.' : `File tersimpan sebagai ${fileName} di folder Downloads.`}`,
-              });
-          } else {
-              throw new Error('Download failed');
-          }
-      } catch (error) {
-          setIsDownloading(false);
-          console.error('Download error:', error);
-          Toast.show({
-              type: 'error',
-              text1: 'Error',
-              text2: `PDF gagal diunduh: ${error.message}`,
-          });
+      if (result.statusCode === 200) {
+        if (Platform.OS === 'android') {
+          await RNFS.scanFile(downloadPath);
+        }
+        Toast.show({
+          type: 'success',
+          text1: 'Success',
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === 'ios' ? 'File tersimpan di Files app.' : `File tersimpan sebagai ${fileName} di folder Downloads.`}`,
+        });
+      } else {
+        throw new Error('Download failed');
       }
+    } catch (error) {
+      setIsDownloading(false);
+      console.error('Download error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
   };
 
   const getTipeMandirisActions = () => {
@@ -159,7 +159,7 @@ const RekapData = ({navigation}) => {
   };
 
   const CardItem = ({ item }) => (
-    <View className="mb-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5">
+    <View className="mb-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
       <View className="flex-row items-center">
         <View style={{ width: "90%" }}>
           <View className="flex-col space-y-2">
@@ -216,23 +216,17 @@ const RekapData = ({navigation}) => {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <View className="bg-gray-100 p-4 shadow-sm">
-        <View className="flex-row justify-between items-center mb-4">
+      <View className="bg-gray-100 p-4 ">
+        <View className="flex-row items-center mb-4">
           <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-lg font-poppins-bold text-black ml-16 self-center">Rekap Data</Text>
-            <TouchableOpacity
-                className="bg-red-100 py-2 px-4 rounded-lg"
-            >
-                <View className="flex-row">
-                <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{marginRight: 5}}/>
-                <Text className="font-poppins-semibold text-red-500" onPress={handlePreviewPDF}>Cetak</Text>
-                </View>
-            </TouchableOpacity>
+          <View className="flex-1 items-center">
+            <Text className="text-lg font-poppins-bold text-black">Rekap Data</Text>
+          </View>
         </View>
 
         <TouchableOpacity
           onPress={() => handleDateSelection('start')}
-          className="mb-4 bg-white p-3 rounded-lg border border-gray-300">
+          className="mb-4 bg-white p-3 rounded-lg ">
           <Text className="text-center text-black font-poppins-semibold">
             {`${selectedDate.start} to ${selectedDate.end}`}
           </Text>
@@ -311,7 +305,33 @@ const RekapData = ({navigation}) => {
           mode: mode
         }}
         renderItem={CardItem}
+        className="mb-8"
       />
+
+      <TouchableOpacity
+        onPress={handlePreviewPDF}
+        style={{
+          position: 'absolute',
+          bottom: 75,
+          right: 20,
+          backgroundColor: '#dc2626',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+
+        <View className="flex-row items-center">
+          <FontAwesome5Icon name="file-pdf" size={22} color="#fff" />
+        </View>
+      </TouchableOpacity>
 
       <DateTimePickerModal
         isVisible={showDatePicker}
@@ -320,43 +340,43 @@ const RekapData = ({navigation}) => {
         onCancel={() => setShowDatePicker(false)}
         date={new Date(dateType === 'start' ? selectedDate.start : selectedDate.end)}
       />
-      
+
       <Modal
-                transparent={true}
-                animationType="slide"
-                visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
-                <View className="flex-1 justify-center items-center bg-black bg-black/50">
-                    <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
-                        <View className="flex-row justify-between items-center p-4">
-                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
-                            <TouchableOpacity
-                                onPress={() => {
-                                    handleDownloadPDF();
-                                    setModalVisible(false);
-                                }}
-                                className="p-2 rounded flex-row items-center"
-                            >
-                                <Feather name="download" size={21} color="black" />
-                            </TouchableOpacity>
-                        </View>
-                        <Pdf
-                            source={{ uri: reportUrl, cache: true }}
-                            style={{ flex: 1 }}
-                            trustAllCerts={false}
-                        />
-                        <View className="flex-row justify-between m-4">
-                            <TouchableOpacity
-                                onPress={() => setModalVisible(false)}
-                                className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
-                            >
-                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
-                            </TouchableOpacity>
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDownloadPDF();
+                  setModalVisible(false);
+                }}
+                className="p-2 rounded flex-row items-center"
+              >
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Pdf
+              source={{ uri: reportUrl, cache: true }}
+              style={{ flex: 1 }}
+              trustAllCerts={false}
+            />
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
+              >
+                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
     </View>
   );

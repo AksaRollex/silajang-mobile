@@ -268,19 +268,11 @@ const Global = ({ navigation }) => {
       <View className="flex-row items-center justify-between mb-4">
         <View className="flex-row items-center flex-1">
           <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-[20px] font-poppins-semibold text-black mx-auto left-10" >
+          <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center" >
             Global
           </Text>
         </View>
-        <TouchableOpacity
-          onPress={downloadReport}
-          className="bg-red-50 px-4 py-3 rounded-md flex-row items-center"
-        >
-          <FontAwesome5 name="file-excel" size={13} color="#ef4444" />
-          <Text className="text-red-500 ml-2 font-poppins-medium text-xs">
-            Laporan
-          </Text>
-        </TouchableOpacity>
+        
       </View>
 
         <View className="flex-row space-x-2 ">
@@ -328,6 +320,31 @@ const Global = ({ navigation }) => {
         renderItem={renderItem}
         className="px-4 mb-12"
       />
+
+    <TouchableOpacity
+        onPress={downloadReport}
+        className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
+        style={{
+          position: 'absolute',
+          bottom: 75,
+          right: 20,
+          backgroundColor: '#dc2626',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+        <FontAwesome5 name="file-pdf" size={19} color="white" />
+        
+      </TouchableOpacity>
+
 
     </View>
   );
