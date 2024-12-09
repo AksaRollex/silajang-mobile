@@ -1,24 +1,44 @@
 import React, { useState } from 'react';
-import { Modal, View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import axios from '../libs/axios';
+import IonIcons from 'react-native-vector-icons/Ionicons';
 
-const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message }) => (
+const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message, iconName = "trash-outline" }) => (
   <Modal
-    animationType="fade"
     transparent={true}
     visible={visible}
+    animationType="fade"
     onRequestClose={onCancel}
   >
-    <View style={styles.centeredView}>
-      <View style={styles.modalView}>
-        <Text style={styles.modalTitle}>{title}</Text>
-        <Text style={styles.modalText}>{message}</Text>
-        <View style={styles.buttonContainer}>
-          <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-            <Text style={styles.textStyle}>Batalkan</Text>
+    <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+        <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+          <IonIcons size={40} color="#f43f5e" name={iconName} />
+        </View>
+
+        <Text className="text-xl font-poppins-semibold text-black mb-3">
+          {title}
+        </Text>
+
+        <View className="w-full h-px bg-gray-200 mb-4" />
+
+        <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+          {message}
+        </Text>
+
+        <View className="flex-row w-full justify-between">
+          <TouchableOpacity
+            onPress={onCancel}
+            className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+          >
+            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={styles.confirmButton} onPress={onConfirm}>
-            <Text style={styles.textStyle}>Ya, hapus</Text>
+
+          <TouchableOpacity
+            onPress={onConfirm}
+            className="flex-1 ml-3 bg-red-500 py-3 rounded-xl items-center"
+          >
+            <Text className="text-white font-poppins-medium">Ya, Hapus</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -57,8 +77,9 @@ export const useDelete = (callback) => {
       visible={modalVisible}
       onConfirm={handleConfirm}
       onCancel={hideConfirmationModal}
-      title="Apakah anda yakin?"
+      title="Konfirmasi Hapus"
       message="Data yang dihapus tidak dapat dikembalikan!"
+      iconName="trash-outline"
     />
   );
 
@@ -68,63 +89,4 @@ export const useDelete = (callback) => {
   };
 };
 
-const styles = StyleSheet.create({
-  centeredView: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0, 0, 0, 0.5)',
-  },
-  modalView: {
-    margin: 20,
-    backgroundColor: 'white',
-    borderRadius: 20,
-    padding: 35,
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: {
-      width: 0,
-      height: 2,
-    },
-    shadowOpacity: 0.25,
-    shadowRadius: 4,
-    elevation: 5,
-  },
-  modalTitle: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontSize: 18,
-    fontFamily: 'Poppins-Medium',
-  },
-  modalText: {
-    marginBottom: 15,
-    textAlign: 'center',
-    fontFamily: 'Poppins-Regular',
-  },
-  buttonContainer: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    width: '100%',
-  },
-  confirmButton: {
-    backgroundColor: '#d33',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    flex: 1,
-    marginLeft: 5,
-  },
-  cancelButton: {
-    backgroundColor: '#6c757d',
-    borderRadius: 5,
-    padding: 10,
-    elevation: 2,
-    flex: 1,
-    marginRight: 5,
-  },
-  textStyle: {
-    color: 'white',
-    textAlign: 'center',
-    fontFamily: 'Poppins-Medium',
-  },
-});
+export default ConfirmationModal;

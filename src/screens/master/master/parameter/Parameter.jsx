@@ -116,7 +116,7 @@ const Parameter = ({ navigation }) => {
         name="plus"
         size={28}
         color="#fff"
-        className="absolute bottom-5 right-5 bg-[#312e81] p-2 rounded-full"
+        style={{ position: "absolute", bottom: 20, right: 20, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
         onPress={() => navigation.navigate("FormParameter")}
       />
       <DeleteConfirmationModal />
