@@ -1,15 +1,8 @@
 import { View, Text, Button } from "react-native-ui-lib";
 import React, { memo, useEffect, useState } from "react";
-import { useForm, Controller } from "react-hook-form";
+import { useForm, Controller, set } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import {
-  ActivityIndicator,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  Image,
-  TouchableOpacity,
-} from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity,} from "react-native";
 import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import { launchImageLibrary } from "react-native-image-picker";
@@ -17,41 +10,33 @@ import BackButton from "@/src/screens/components/BackButton";
 import Select2 from "@/src/screens/components/Select2";
 import { APP_URL } from "@env";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import { Platform } from 'react-native';
 
 export default memo(function Form({ route, navigation }) {
   const { uuid } = route.params || {};
-  const [file, setFile] = useState(null);
-  const [image, setImage] = useState(null);
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
   const [userData, setUserData] = useState(null);
   const [photos, setPhotos] = useState([]);
+  const [photott, setPhotoTT] = useState([]);
+  const [tandatangan, setTandaTangan] = useState([]);
   const [kotaKab, setKotaKab] = useState([]);
   const [kecamatan, setKecamatan] = useState([]);
-  const [kelurahan, setKelurahan] = useState([]);
   const [golongan, setGolongan] = useState([]);
   const [jabatan, setJabatan] = useState([]);
-  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
+  const [profileImage, setProfileImage] = useState(null);
   const [selectedJabatan, setSelectedJabatan] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
-  const [formData, setFormData] = useState({
-    tanda_tangan_id: "",
-  });
-  const togglePasswordVisibility = () => {
-    setShowPassword(!showPassword);
-  };
+  const [formData, setFormData] = useState({ tanda_tangan_id: "", });
+  const [tandaTanganUrl, setTandaTanganUrl] = useState(null);
+  const [tandaTanganFile, setTandaTanganFile] = useState(null);
+  const togglePasswordVisibility = () => { setShowPassword(!showPassword);};
 
-  const {
-    handleSubmit,
-    control,
-    formState: { errors },
-    setValue,
-    watch,
-  } = useForm({
+  const { handleSubmit, control, formState: { errors }, setValue, watch} = useForm({
     values: { ...userData },
     defaultValues: {
       nama: "",
@@ -94,10 +79,10 @@ export default memo(function Form({ route, navigation }) {
           setValue("email", data.email);
           setValue("phone", data.phone);
           setPhotos(data.photo);
-          // setValue('tanda_tangan', data.detail.tanda_tangan);
+          setPhotoTT(data.detail.tanda_tangan);
           setValue("golongan_id", data.golongan_id);
-          setValue("role_ids", data.role_ids);``
-          setCurrentPhotoUrl(data.detail.tanda_tangan);
+          setValue("role_ids", data.role_ids);
+          // setCurrentPhotoUrl(data.detail.tanda_tangan);
           if (data.detail) {
             Object.keys(data.detail).forEach(key => {
               setValue(`detail.${key}`, data.detail[key]);
@@ -116,13 +101,215 @@ export default memo(function Form({ route, navigation }) {
     },
   );
 
-  // useEffect(() => {
-  //     const fetchData = async () => {
-  //         try {
-  //             const [TipeResponse, JabatanResponse]
-  //         }
-  //     }
-  // })
+  
+  
+  useEffect(() => {
+    const fetchTandaTangan = async () => {
+      try {
+        const response = await axios.get(`/master/user/${uuid}/edit`);
+        const userData = response.data.data;
+  
+        if (userData.detail.tanda_tangan) {
+          const fullTandaTanganUrl = `${APP_URL}${userData.detail.tanda_tangan}`;
+          setTandaTanganUrl(fullTandaTanganUrl);
+          setTandaTanganFile(fullTandaTanganUrl);
+          setPhotoTT([]);
+        } else {
+          setTandaTanganUrl(null);
+          setTandaTanganFile(null);
+          setPhotoTT([]);
+        }
+
+      } catch (error) {
+        console.error("Error fetching tanda tangan:", error);
+        Toast.show({
+          type: "error",
+          text1: "Gagal memuat tanda tangan",
+          text2: "Tidak dapat mengambil tanda tangan"
+        });
+        setTandaTanganUrl(null);
+        setTandaTanganFile(null);
+        setPhotoTT([])
+      }
+    };
+  
+    if (uuid) {
+      fetchTandaTangan();
+    }
+  }, [uuid, APP_URL]);
+
+  const handleChooseTandaTangan = () => {
+    const options = {
+      mediaType: 'photo',
+      maxHeight: 2000,
+      maxWidth: 2000,
+      quality: 0.8,
+      selectionLimit: 1,
+    };
+  
+    launchImageLibrary(options, async (response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+        return;
+      }
+  
+      if (response.errorCode) {
+        Toast.show({
+          type: "error",
+          text1: "Kesalahan",
+          text2: response.errorMessage || "Gagal memilih gambar"
+        });
+        return;
+      }
+  
+      if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        
+        // Validasi ukuran file
+        const fileSizeInKB = selectedImage.fileSize / 1024;
+        if (fileSizeInKB > 2048) {
+          Toast.show({
+            type: "error",
+            text1: "Ukuran file terlalu besar",
+            text2: "Ukuran file tidak boleh melebihi 2 MB"
+          });
+          return;
+        }
+  
+        const tandaTanganFile = {
+          uri: Platform.OS === 'android' 
+            ? selectedImage.uri 
+            : selectedImage.uri.replace('file://', ''),
+          type: selectedImage.type || "image/jpeg",
+          name: selectedImage.fileName || "tanda_tangan.jpg"
+        };
+  
+        // Update state
+        setTandaTangan(tandaTanganFile);
+        setTandaTanganUrl(selectedImage.uri);
+      }
+    });
+  };
+  const handleDeleteTandaTangan = async () => {
+    try {
+      const response = await axios.post(`/master/user/${uuid}/update`, {
+        detail: { tanda_tangan: null }
+      });
+
+      setTandaTanganUrl(null);
+      setTandaTanganFile([]);
+  
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Tanda tangan telah dihapus"
+      });
+      
+      // Refetch user data to ensure sync with backend
+      await refetchUserData();
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Gagal",
+        text2: "Tidak dapat menghapus tanda tangan"
+      });
+    }
+  };
+
+  useEffect(() => {
+    const fetchUserPhoto = async () => {
+      try {
+        const response = await axios.get(`/master/user/${uuid}/edit`);
+        const userData = response.data.data;
+
+        if (userData.photo) {
+          const fullPhotoUrl = `${APP_URL}${userData.photo}`;
+          setCurrentPhotoUrl(fullPhotoUrl);
+          setProfileImage(fullPhotoUrl);
+          setPhotos([fullPhotoUrl]);
+        } else {
+          setCurrentPhotoUrl(null);
+          setProfileImage(null);
+          setPhotos([]);
+        }
+      } catch (error) {
+        console.error("Error fetching photo:", error);
+        Toast.show({
+          type: "error",
+          text1: "Gagal memuat foto",
+          text2: "Tidak dapat mengambil foto profil"
+        });
+        setCurrentPhotoUrl(null);
+        setProfileImage(null);
+        setPhotos([]);
+      }
+    };
+    if (uuid) {
+      fetchUserPhoto();
+    }
+  }, [uuid, APP_URL]);
+  const handleImagePick = () => {
+    const options = {
+      mediaType: 'photo',
+      maxHeight: 2000,
+      maxWidth: 2000,
+      quality: 0.8,
+    };
+    launchImageLibrary(options, async (response) => {
+      if (response.errorCode) {
+        Toast.show({
+          type: "error",
+          text1: "Kesalahan",
+          text2: response.errorMessage || "Gagal memilih gambar"
+        });
+        return;
+      }
+
+      if (response.assets && response.assets.length > 0) {
+        const selectedImage = response.assets[0];
+        const fileSizeInKB = selectedImage.fileSize / 1024;
+        if (fileSizeInKB > 2048) {
+          Toast.show({
+            type: "error",
+            text1: "Ukuran file terlalu besar",
+            text2: "Ukuran file tidak boleh melebihi 2 MB"
+          });
+          return;
+        }
+        const photoFile = {
+          uri: selectedImage.uri,
+          type: selectedImage.type || "image/jpeg",
+          name: selectedImage.fileName || "profile_photo.jpg"
+        };
+        setProfileImage(photoFile);
+      }
+    });
+  };
+
+  const handleRemovePhoto = async () => {
+    try {
+      const response = await axios.post(`/master/user/${uuid}/update`, {
+        photo: null
+      });
+      setProfileImage(null);
+      setCurrentPhotoUrl(null);
+      setPhotos([]);
+
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Foto profil telah dihapus"
+      });
+      await refetchUserData();
+    } catch (error) {
+      console.error("Remove photo error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Gagal",
+        text2: error.response?.data?.message || "Tidak dapat menghapus foto"
+      });
+    }
+  };
 
   function fetchJabatan() {
     axios.get("/master/jabatan").then(res => {
@@ -177,202 +364,157 @@ export default memo(function Form({ route, navigation }) {
     },
   );
 
-
-  const handleDeletePhoto = () => {
-    setFile(null);
-    setCurrentPhotoUrl(null);
-  };
-
-  const handleDeleteImage = () => {
-    setPhotos(null);
-  };
-
-  useEffect(() => {
-    const fetchPhoto = async () => {
-        try {
-            const response = await axios.get(`${APP_URL}/storage/tanda_tangan/${setUserData.tanda_tangan}`);
-            if (response.data && response.data.tanda_tangan) {
-                setCurrentPhotoUrl(response.data.tanda_tangan);
-            }
-        } catch (error) {
-            console.error("Error fetching photo:", error);
-        }
-    };
-
-    fetchPhoto();
-  }, [])
-
-  const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
-        const file = response.assets[0];
-        const fileSizeInBytes = file.fileSize;
-        const fileSizeInKB = fileSizeInBytes / 1024;
-        if (response.didCancel) {
-            console.log("User cancelled image picker");
-        } else if (response.errorMessage) {
-            console.log("ImagePicker Error:", response.errorMessage);
-        }
-        if (fileSizeInKB > 2048) {
-            Toast.show({
-                type: "error",
-                text1: "Ukuran file terlalu besar",
-                text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
-            });
-        } else {
-            console.log("Chosen file:", file);
-            setFile(file);
-        };
-    });
-  };
-  const handleChooseImage = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
-        const file = response.assets[0];
-        const fileSizeInBytes = file.fileSize;
-        const fileSizeInKB = fileSizeInBytes / 1024;
-        if (response.didCancel) {
-            console.log("User cancelled image picker");
-        } else if (response.errorMessage) {
-            console.log("ImagePicker Error:", response.errorMessage);
-        }
-        if (fileSizeInKB > 2048) {
-            Toast.show({
-                type: "error",
-                text1: "Ukuran file terlalu besar",
-                text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
-            });
-        } else {
-            console.log("Chosen file:", file);
-            setPhotos([{ uri: file.uri }]);
-            setImage(file);
-        };
-    });
-  };
-
-  useEffect(() => {
-    if (userData && userData.tanda_tangan) {
-      const photoUrl = `${APP_URL}/storage/tanda_tangan/${userData.tanda_tangan}`;
-      console.log("Photo Url:", photoUrl);
-      setCurrentPhotoUrl(photoUrl);
-    }
-  }, [userData]);
-
-  const onSubmit = data => {
-    const formData = {...data}
-    
-    if (file) {
-      formData.photo = {
-        uri: file.uri,
-        type: file.type || "image/jpeg",
-        name: file.fileName || "photo.jpg"
-      };
-    }
-
+  const onSubmit = async (data) => {
     try {
-      createOrUpdate(formData);
+      const formData = new FormData();
+      
+      formData.append('nama', data.nama);
+      formData.append('nip', data.nip);
+      formData.append('nik', data.nik);
+      formData.append('email', data.email);
+      formData.append('phone', data.phone);
+      formData.append('golongan_id', data.golongan_id);
+      if (data.role_ids) {
+        if (Array.isArray(data.role_ids)) {
+          data.role_ids.forEach((roleId, index) => {
+            formData.append(`role_ids[${index}]`, roleId);
+          });
+        } 
+        else {
+          const roleIds = String(data.role_ids).split(',').map(id => id.trim());
+          roleIds.forEach((roleId, index) => {
+            formData.append(`role_ids[${index}]`, roleId);
+          });
+        }
+      }
+  
+      if (data.password) {
+        formData.append('password', data.password);
+        formData.append('password_confirmation', data.password_confirmation);
+      }
+  
+      if (data.detail) {
+        const detailFields = [
+          'instansi', 'alamat', 'pimpinan', 'pj_mutu', 
+          'telepon', 'fax', 'email', 'jenis_kegiatan', 
+          'lat', 'long'
+        ];
+  
+        detailFields.forEach(field => {
+          if (data.detail[field]) {
+            formData.append(`detail[${field}]`, data.detail[field]);
+          }
+        });
+      }
+
+      if (profileImage) {
+        const photoFile = {
+          uri: profileImage.uri || profileImage,
+          type: profileImage.type || 'image/jpeg',
+          name: profileImage.name || 'profile_photo.jpg'
+        };
+        formData.append('photo', {
+          uri: photoFile.uri,
+          type: photoFile.type,
+          name: photoFile.name
+        });
+      }
+  
+      if (tandaTanganUrl) {
+        formData.append('tanda_tangan', {
+          uri: tandaTanganUrl.uri || tandaTanganUrl,
+          type: tandaTanganUrl.type || 'image/jpeg',
+          name: tandaTanganUrl.name || 'tanda_tangan.jpg'
+        });
+      }
+  
+      console.log(formData, 99888)
+      const endpoint = uuid 
+        ? `/master/user/${uuid}/update`
+        : "/master/user/store";
+  
+      const response = await axios.post(endpoint, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+  
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: uuid ? "Berhasil memperbarui data" : "Berhasil membuat data",
+      });
+
+      queryClient.invalidateQueries(["/master/user"]);
+      navigation.navigate("Users");
+      console.log(response.data);
     } catch (error) {
-      console.error("Submit Error:", error);
+      console.error("Submit Error:", error.response?.data);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: uuid 
+          ? `Gagal memperbarui data: ${error.response?.data?.message || ''}`
+          : "Gagal membuat data",
+      });
     }
   };
 
-  // const updateUser = async () => {
-  //     const fomData = new FormData();
-
-  //     if(file) {
-  //         const fileSizeInKB = file.fileSize / 1024;
-  //         if (fileSizeInKB > 2048) {
-  //             Toast.show({
-  //                 type: "error",
-  //                 text1: "File terlalu besar",
-  //                 text2: "Ukuran file tidak boleh lebih dari 2048 KB (2MB)",
-  //             })
-  //             return;
-  //         }
-  //     }
-  //     if (file) {
-  //         formData.append("tanda_tangan", {
-  //             uri: file.uri,
-  //             type: file.type || "image/jpeg",
-  //             name: file.fileName || "tanda_tangan.jpg",
-  //         })
-  //     }
-  // }
-
-//     launchImageLibrary(options, response => {
-//       if (response.didCancel) {
-//         console.log("User cancelled image picker");
-//       } else if (response.error) {
-//         console.log("ImagePicker Error: ", response.error);
-//       } else {
-//         const newPhoto = { uri: response.assets[0].uri };
-//         setPhotos(prevPhotos => [...prevPhotos, newPhoto]); // Tambahkan foto baru ke array
-//     }
-// });
-
-if (isLoadingData && uuid) {
-  return (
-    <View className="h-full flex justify-center">
-      <ActivityIndicator size={"large"} color={"#312e81"} />
-    </View>
-  );
-}
+  if (isLoadingData && uuid) {
+    return (
+      <View className="h-full flex justify-center">
+        <ActivityIndicator size={"large"} color={"#312e81"} />
+      </View>
+    );
+  }
 
   return (
     <ScrollView>
       <View style={styles.container}>
-        {/* Personal Information */}
         <View style={styles.cardContainer}>
-          <View className="info-item">
-            <Controller
-              control={control}
-              name="photos"
-              render={({ field: { onChange } }) => (
-                <View className="w-full flex items-center justify-center">
-                  {photos?.length > 0 ? (
-                    <View className="relative">
-                      {/* Foto Bundar */}
-                      <Image
-                        source={{ uri: photos[0].uri }} // Ambil foto pertama
-                        className="w-40 h-40 rounded-full border-2 border-gray-700"
-                      />
-                      {/* Icon Pensil */}
+          <View className="">
+            <View className="w-full items-center mt-5 justify-center">
+              <TouchableOpacity
+                onPress={handleImagePick}
+                style={{
+                  alignSelf: "center"
+                }}
+                disabled={isLoading}
+              >
+                {isLoading ? (
+                  <ActivityIndicator size="large" color="#312e81" />
+                ) : profileImage ? (
+                  <View className="rounded-full w-40 h-40 overflow-hidden relative">
+                    <Image
+                      source={{ uri: profileImage.uri || profileImage }}
+                      className="w-full h-full"
+                      resizeMode="cover"
+                    />
                     <TouchableOpacity
-                      className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
-                      onPress={handleDeleteImage}>
-                    <Icons name="close" size={18} color="#dc2626" />
+                      onPress={handleRemovePhoto}
+                      className="absolute bottom-0 right-0 bg-red-500 p-1 rounded-full"
+                    >
+                      <MaterialIcons name="delete" size={20} color="white" />
                     </TouchableOpacity>
-
-                    <TouchableOpacity
-                      className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
-                      onPress={handleChooseImage}>
-                      <Icons name="camera" size={20} color="white" />
-                    </TouchableOpacity>
-                    </View>
-                  ) : (
-                    <View className="relative">
-                      <TouchableOpacity
-                        onPress={handleChooseImage}
-                        className="w-40 h-40 rounded-full border-indigo-600/30 border-2 bg-indigo-50 flex items-center justify-center shadow-lg">
-                        <SimpleLineIcons name="cloud-upload" size={30}  color="#4f46e5"/>
-                        <Text className="text-indigo-600 text-md font-poppins-semibold mt-2">
-                          Tambah Foto
-                        </Text>
-                      </TouchableOpacity>
-                      {/* Icon Pensil */}
-                      {/* <TouchableOpacity
-                                onPress={handleChoosePhoto}
-                                className="absolute top-0 right-0 bg-white p-1 rounded-full border border-gray-300"
-                                >
-                                <Text className="text-xs">✏️</Text>
-                                </TouchableOpacity> */}
-                    </View>
-                  )}
-                </View>
-              )}
-            />
+                  </View>
+                ) : (
+                  <View
+                    className="rounded-full  bg-gray-300 items-center justify-center w-36 h-36"
+                    style={{ borderWidth: 2, borderColor: "#E2E8F0" }}
+                  >
+                    <Ionicons
+                      name="person"
+                      size={62}
+                      color="#666666"
+                    />
+                  </View>
+                )}
+              </TouchableOpacity>
+            </View>
           </View>
 
           <View style={styles.fieldContainer}>
-            <Text style={styles.label}>Nama</Text>
+            <Text style={styles.label} className="mt-8">Nama</Text>
             <Controller
               control={control}
               name="nama"
@@ -479,7 +621,7 @@ if (isLoadingData && uuid) {
             render={({ field: { onChange, value } }) => (
               <View className="mt-1">
                 <Text style={styles.label}>Jabatan</Text>
-                <View className="border rounded-2xl border-stone-300 bg-[#fff] p-3">
+                <View className="border rounded-lg border-stone-300 bg-[#fff] p-3">
                   <SectionedMultiSelect
                     IconRenderer={Icon}
                     hideTags
@@ -488,26 +630,26 @@ if (isLoadingData && uuid) {
                         backgroundColor: "#fff",
                         borderWidth: 1,
                         borderColor: "#CCC",
-                        borderRadius: 16,
-                        padding: 12,
+                        borderRadius: 10,
+                        padding: 10,
                         fontFamily: "Poppins-Regular",
                         marginBottom: 8,
                       },
                       selectToggleText: {
                         fontFamily: "Poppins-Regular",
+                        fontSize: 15,
                       },
                       displayKey: {
                         fontFamily: "Poppins-Regular",
                         color: "#333",
                       },
                       chipContainer: {
-                        borderRadius: 16,
-                        margin: 4,
+                        borderRadius: 10,
                         backgroundColor: "#f8f8f8",
                       },
                       chipText: {
                         color: "#FF0000",
-                        fontSize: 14,
+                        fontSize: 12,
                         fontFamily: "Poppins-Regular",
                       },
                       chipIcon: {
@@ -593,7 +735,7 @@ if (isLoadingData && uuid) {
             control={control}
             name="golongan_id"
             rules={{ required: "Tipe harus diisi" }}
-            render={({ field: { onChange, value } }) => ( 
+            render={({ field: { onChange, value } }) => (
               <Select2
                 onChangeValue={onChange}
                 value={value}
@@ -607,81 +749,79 @@ if (isLoadingData && uuid) {
           )}
 
           <Text style={styles.label} className="mt-3">Tanda Tangan</Text>
-         <View style={styles.infoItem}>
-  <Controller
-    control={control}
-    name="tanda_tangan"
-    render={({ field: { onChange } }) => (
-      <View className="w-full">
-        {/* Check if there's a tanda_tangan in data.detail or photos array */}
-        {currentPhotoUrl || file ? (
-           <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
-           <View className="items-center">
-             <View className="relative">
-               <Image
-                 source={{
-                   uri: file ? file.uri : currentPhotoUrl,
-                 }}
-                 className="w-48 h-48 rounded-lg"
-                 onError={e =>
-                   console.log(
-                     "Error loading image:",
-                     e.nativeEvent.error,
-                   )
-                 }
-               />
-
-               {/* Overlay gradient */}
-               <View className="absolute inset-0 rounded-full bg-black/5" />
-               {/* Delete button */}
-               <TouchableOpacity
-                 className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
-                 onPress={handleDeletePhoto}>
-                 <Icons name="close" size={18} color="#dc2626" />
-               </TouchableOpacity>
-
-               {/* Change photo button */}
-               <TouchableOpacity
-                 className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
-                 onPress={handleChoosePhoto}>
-                 <Icons name="camera" size={20} color="white" />
-               </TouchableOpacity>
-             </View>
-
-             <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
-               Ketuk ikon kamera untuk mengubah foto
-             </Text>
-           </View>
-         </View>
-       ) : (
-         // State sebelum upload foto
-         <TouchableOpacity
-           className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
-           onPress={handleChoosePhoto}>
-           <View className="items-center space-y-4">
-             <View className="bg-indigo-100 rounded-full p-5">
-               <SimpleLineIcons
-                 name="cloud-upload"
-                 size={40}
-                 color="#4f46e5"
-               />
-             </View>
-
-             <View className="items-center">
-               <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
-                 Unggah Tanda Tangan 
-               </Text>
-               <Text className="font-poppins-regular text-sm text-gray-500 text-center">
-                 Klik atau sentuh area ini untuk memilih foto
-               </Text>
-             </View>
-           </View>
-         </TouchableOpacity>
-       )}
-     </View>
-    )}
-  />
-</View>
+          <View style={styles.infoItem}>
+            <Controller
+              control={control}
+              name="tanda_tangan"
+              render={({ field: { onChange } }) => (
+                <View className="w-full">
+                  {tandaTanganUrl ? (
+                    <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                      <View className="items-center">
+                        <View className="relative">
+                          <Image
+                            source={{ uri: tandaTanganUrl }}
+                            className="w-48 h-48 rounded-lg"
+                            resizeMode="contain"
+                            onError={(e) => {
+                              console.log("Error loading image:", e.nativeEvent.error);
+                              setTandaTanganUrl(null);
+                            }}
+                          />
+                          <TouchableOpacity
+                            className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                            onPress={() => {
+                              // handleDeleteTandaTangan();
+                              setValue('detail.tanda_tangan', null);
+                              setTandaTanganFile(null);
+                              setTandaTanganUrl(null);
+                            }}>
+                            <Icons name="close" size={18} color="#dc2626" />
+                          </TouchableOpacity>
+                          <TouchableOpacity
+                            className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                            onPress={() => {
+                              handleChooseTandaTangan();
+                              onChange(null); 
+                            }}>
+                            <Icons name="camera" size={20} color="white" />
+                          </TouchableOpacity>
+                        </View>
+                        <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
+                          Ketuk ikon kamera untuk mengubah foto
+                        </Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                      onPress={() => {
+                        handleChooseTandaTangan();
+                        onChange(null); 
+                      }}>
+                      <View className="items-center space-y-4">
+                        <View className="bg-indigo-100 rounded-full p-5">
+                          <SimpleLineIcons
+                            name="cloud-upload"
+                            size={40}
+                            color="#4f46e5"
+                          />
+                        </View>
+                        <View className="items-center">
+                          <Text className="font-poppins-semibold text-base text-indigo-600 mb-1">
+                            Unggah Tanda Tangan
+                          </Text>
+                          <Text className="font-poppins-regular text-xs text-gray-500 text-center">
+                            Klik atau sentuh area ini untuk memilih foto
+                          </Text>
+                        </View>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              )}
+            />
+          </View>
         </View>
 
         {/* Company Details */}
@@ -985,7 +1125,7 @@ const styles = StyleSheet.create({
     borderColor: "#e5e7eb",
     borderRadius: 8,
     padding: 12,
-    fontSize: 16,
+    fontSize: 14,
     fontFamily: "Poppins-Regular",
     backgroundColor: "#f9fafb",
   },

@@ -196,23 +196,29 @@ export default function Detail({ route, navigation }) {
     setChecked(value);
     saveStatus(value);
   };
-
+  
   const saveStatus = async status => {
     try {
-      const response = await axios.post(
+      await axios.post(
         `/administrasi/penerima-sample/${uuid}/update`,
         {
           kesimpulan_sampel: status,
-        },
+          tanggal_diterima: date ? date.toISOString() : null,
+        }
       );
-      console.log("Data berhasil disimpan:", response.data);
+      console.log("Data berhasil disimpan");
     } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+      console.error("Gagal menyimpan data:", error);
+    } finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data telah diperbarui',
+        visibilityTime: 2000,
+      });
     }
   };
+
   const saving = value => {
     setPengawetan(value);
     savePengawetan(value);
@@ -224,6 +230,8 @@ export default function Detail({ route, navigation }) {
         `/administrasi/penerima-sample/${uuid}/update`,
         {
           pengawetan_oleh: status,
+          tanggal_diterima: date ? date.toISOString() : null,
+
         },
       );
       console.log("Data berhasil disimpan:", response.data);
@@ -232,6 +240,13 @@ export default function Detail({ route, navigation }) {
         "Gagal menyimpan data:",
         error.response ? error.response.data : error.message,
       );
+    }
+    finally {
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data telah diperbarui'
+      });
     }
   };
   const saveInterpretasi = value => {
@@ -245,6 +260,8 @@ export default function Detail({ route, navigation }) {
         `/administrasi/penerima-sample/${uuid}/update`,
         {
           hasil_pengujian: status,
+          tanggal_diterima: date ? date.toISOString() : null,
+
         },
       );
       console.log("Data berhasil disimpan:", response.data);
@@ -265,6 +282,7 @@ export default function Detail({ route, navigation }) {
       `/administrasi/penerima-sample/${uuid}/update`,
       {
         baku_mutu: status,
+        tanggal_diterima: date ? date.toISOString() : null,
       },
     );
   };
@@ -619,9 +637,9 @@ export default function Detail({ route, navigation }) {
                 )}
               </View>
 
-              <Text className="font-poppins-semibold" style={styles.mt}>Kondisi Sampel Saat Diterima</Text>
+              <Text className="font-poppins-semibold mt-5" style={styles.value}>Kondisi Sampel Saat Diterima</Text>
               <View style={styles.switchContainer}>
-                <Text style={styles.value}>Abnormal</Text>
+                <Text className="text-black text-md font-poppins-medium">Abnormal</Text>
                 <Switch
                   value={isAbnormal}
                   onValueChange={handleSwitchChange}
@@ -629,7 +647,7 @@ export default function Detail({ route, navigation }) {
                   thumbColor={isAbnormal ? '#f4f3f4' : '#f4f3f4'}
                 />
                 <View style={styles.normal}>
-                  <Text style={styles.value}>Normal</Text>
+                  <Text className="text-black text-md font-poppins-medium">Normal</Text>
                 </View>
               </View>
               <View>
@@ -996,8 +1014,8 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    marginVertical: 15,
-    marginRight: 110,
+    marginVertical: 13,
+    marginRight: 100,
   },
   normalRow: {
     flexDirection: "row",
