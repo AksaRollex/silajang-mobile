@@ -288,15 +288,7 @@ const RekapParameter = ({ navigation }) => {
                         <BackButton action={() => navigation.goBack()} size={26} />
                     </View>
                     <Text className="text-xl font-poppins-bold text-black">Rekap Parameter</Text>
-
-                    <TouchableOpacity
-                        className="bg-red-100 py-2 px-4 rounded-lg"
-                    >
-                        <View className="flex-row">
-                            <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{ marginRight: 5 }} />
-                            <Text className="font-poppins-semibold text-red-500 text-[11px]" onPress={handlePreviewPDF}>Rekap Laporan</Text>
-                        </View>
-                    </TouchableOpacity>
+                    <View />
                 </View>
             </View>
 
@@ -324,6 +316,28 @@ const RekapParameter = ({ navigation }) => {
                 renderItem={CardRekapParameter}
                 className="mb-10"
             />
+
+            <TouchableOpacity
+                onPress={handlePreviewPDF}
+                style={{
+                    position: 'absolute',
+                    bottom: 75,
+                    right: 20,
+                    backgroundColor: '#dc2626',
+                    borderRadius: 50,
+                    width: 55,
+                    height: 55,
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                    elevation: 5,
+                    shadowColor: '#000',
+                    shadowOffset: { width: 0, height: 2 },
+                    shadowOpacity: 0.25,
+                    shadowRadius: 3.84,
+                    zIndex: 1000
+                  }}>
+                <FontAwesome5Icon name="file-pdf" size={24} color="#fff" />
+            </TouchableOpacity>
 
             <Modal
                 transparent={true}

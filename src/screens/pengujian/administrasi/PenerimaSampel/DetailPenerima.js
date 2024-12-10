@@ -207,16 +207,9 @@ export default function Detail({ route, navigation }) {
         }
       );
       console.log("Data berhasil disimpan");
-      
-      Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data telah diperbarui',
-        visibilityTime: 2000,
-      });
     } catch (error) {
       console.error("Gagal menyimpan data:", error);
-      
+    } finally {
       Toast.show({
         type: 'success',
         text1: 'Berhasil',

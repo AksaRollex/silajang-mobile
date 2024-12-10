@@ -5,6 +5,7 @@ import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Pl
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
 import {APP_URL} from "@env";
@@ -199,26 +200,12 @@ const RegistrasiSampel = ({ navigation }) => {
   );
 
   return (
-    <View className="flex-1 bg-gray-100">
+    <View className="flex-1 bg-gray-100 relative">
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-between items-center mb-4">
           <BackButton action={() => navigation.goBack()} size={26} />
           <Text className="text-lg font-poppins-bold text-black">Registrasi Sampel</Text>
-          <TouchableOpacity
-            onPress={handleDownloadExcel}
-            disabled={isDownloading}
-            className={`flex-row items-center space-x-2 ${
-              isDownloading ? 'bg-gray-100' : 'bg-red-50'
-            } px-4 py-2 rounded-md`}>
-            {isDownloading ? (
-              <ActivityIndicator size="small" color="#dc2626" />
-            ) : (
-              <MaterialIcons name="file-download" size={20} color="#dc2626" />
-            )}
-            <Text className="text-red-600 font-poppins-semibold">
-              {isDownloading ? 'Downloading...' : 'Report Excel'}
-            </Text>
-          </TouchableOpacity>
+          <View style={{ width: 40 }} />
         </View>
 
         <View className="flex-row justify-end space-x-3">
@@ -289,6 +276,33 @@ const RegistrasiSampel = ({ navigation }) => {
         }}
         renderItem={CardRegistrasiSampel}
       />
+
+      <TouchableOpacity
+        onPress={handleDownloadExcel}
+        disabled={isDownloading}
+        style={{
+          position: 'absolute',
+          bottom: 75,
+          right: 20,
+          backgroundColor: '#177a44',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+        {isDownloading ? (
+          <ActivityIndicator size="small" color="white" />
+        ) : (
+          <FontAwesome5 name="file-excel" size={20} color="white" /> 
+        )}
+      </TouchableOpacity>
     </View>
   );
 };
