@@ -140,7 +140,9 @@ export default function Profile({ navigation }) {
               <View></View>
             )}
             <TouchableOpacity
-              onPress={() => navigation.navigate("Informasi")}
+              onPress={() => {
+                navigation.navigate("Informasi")
+              }}
               className=" w-full py-6 px-6  flex-row justify-between items-center"
               style={{ zIndex: 5 }}>
               <View className="flex-row items-center">

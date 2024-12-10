@@ -124,6 +124,7 @@ const UserProfileForm = ({ navigation }) => {
       <View className="flex-row items-center space-x-2  bg-white p-2 ml-3 mr-3 rounded-lg py-2.5">
         <BackButton action={() => navigation.goBack()} size={26} className="ml-2" ></BackButton>
         <View className="w-px h-full bg-gray-200 " />
+        
         <View className="flex-1 items-center mr-11">
           <Text className="text-[18px] text-black font-poppins-semibold">
             Update Profile
