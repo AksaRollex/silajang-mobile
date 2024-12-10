@@ -217,7 +217,7 @@ const NonPengujian = ({ navigation }) => {
 
         <View className="flex-row justify-end mt-1 space-x-2">
           <TouchableOpacity
-            onPress={() => {/* Edit action */ }}
+            onPress={() => navigation.navigate('Detail', { uuid: item.uuid })}
             className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center">
             <Ionicons name="eye-outline" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
