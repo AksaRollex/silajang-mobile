@@ -9,9 +9,13 @@ import Select2 from "../components/Select2";
 import DatePicker from "react-native-date-picker";
 import moment from "moment";
 import AntDesign from 'react-native-vector-icons/AntDesign';
+import BackButton from '../components/BackButton';
+import { useNavigation } from '@react-navigation/native';
+
 
 
 export default function FormNonPengujian() {
+  const navigation = useNavigation();
   const [kodeRetribusi, setKodeRetribusi] = useState([]);
   
   const [paymentType, setPaymentType] = useState('va');
@@ -71,7 +75,14 @@ export default function FormNonPengujian() {
 
   return (
     <ScrollView className="h-full w-full bg-[#ececec] px-3 py-2">
-      <View className="w-full bg-[#f8f8f8] px-3 py-4">
+      <View className={`w-full bg-[#f8f8f8] px-3 ${paymentType === 'va' ? 'pt-4 mb-20 pb-4' : 'py-4'}`}>
+        <View className="flex-row items-center space-x-2 mb-10 mt-2 ">
+          <BackButton action={() => navigation.navigate('NonPengujian')} size={26} />
+          <View className="absolute left-0 right-2 items-center">
+            <Text className="text-[18px] text-black font-poppins-semibold">Buat Pembayaran</Text>
+            <View className="h-px w-[120%] bg-gray-200 top-5"/>
+          </View>
+        </View>
         <Text className="font-poppins-bold text-black mb-2">Metode Pembayaran</Text>
         <View className="w-full mb-4 space-y-3">
         <TouchableOpacity 
