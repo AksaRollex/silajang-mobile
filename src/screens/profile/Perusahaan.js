@@ -1,20 +1,7 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "@/src/libs/axios";
-import {
-  View,
-  Text,
-  TextInput,
-  TouchableOpacity,
-  ScrollView,
-  Alert,
-  Platform,
-  Image,
-  StyleSheet,
-  PermissionsAndroid,
-  ActivityIndicator,
-  Modal,
-} from "react-native";
-import { Controller, useForm } from "react-hook-form";
+import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform, Image, StyleSheet, PermissionsAndroid, ActivityIndicator, Modal,} from "react-native";
+import { Controller, set, useForm } from "react-hook-form";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BackButton from "../components/BackButton";
 import Select2 from "@/src/screens/components/Select2";
@@ -40,6 +27,7 @@ const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState({});
   const [imageUrl, setImageUrl] = useState("");
+  const [typePhoto, setTypePhoto] = useState('')
 
   const [kotaKabupaten, setKotaKabupaten] = useState([]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
@@ -57,6 +45,8 @@ const Perusahaan = () => {
   const [isKotaKabupatenLoaded, setIsKotaKabupatenLoaded] = useState(false);
   const [isKecamatanLoaded, setIsKecamatanLoaded] = useState(false);
   const [isKelurahanLoaded, setIsKelurahanLoaded] = useState(false);
+  const [isKecamatanEmpty, setIsKecamatanEmpty] = useState(false);
+  const [isKelurahanEmpty, setIsKelurahanEmpty] = useState(false);
 
   const openCameraLib = async () => {
     try {
@@ -82,6 +72,7 @@ const Perusahaan = () => {
           const uri = response.assets[0].uri;
           console.log("Captured Image URI:", uri);
           setImageUrl(uri);
+          setTypePhoto('capture')
         }
       });
     } catch (error) {
@@ -200,16 +191,20 @@ const Perusahaan = () => {
           setKecamatan(formattedKecamatan);
           setSelectedKecamatan(null); // Reset kecamatan saat kota/kabupaten berubah
           setKelurahan([]); // Reset kelurahan
+          setIsKecamatanEmpty(response.data.data.length === 0);
           setIsKecamatanLoaded(true); // Set status menjadi true
         })
         .catch(error => {
           console.error("Error fetching data kecamatan:", error);
           setKecamatan([]);
+          setIsKecamatanLoaded(true);
+          setIsKecamatanEmpty(true);
         });
     } else {
       setKecamatan([]);
       setKelurahan([]);
       setIsKecamatanLoaded(false); // Reset status jika tidak ada value
+      setIsKecamatanEmpty(true);
     }
   }, [selectedKotaKabupaten]);
 
@@ -226,15 +221,19 @@ const Perusahaan = () => {
           console.log("Response data kelurahan:", response.data);
           setKelurahan(formattedKelurahan);
           setSelectedKelurahan(null);
+          setIsKelurahanEmpty(response.data.data.length === 0);
           setIsKelurahanLoaded(true); // Set status menjadi true
         })
         .catch(error => {
           console.error("Error fetching data kelurahan:", error);
           setKelurahan([]);
+          setIsKelurahanLoaded(true);
+          setIsKelurahanEmpty(true);
         });
     } else {
       setKelurahan([]);
       setIsKelurahanLoaded(false); // Reset status jika tidak ada value
+      setIsKelurahanEmpty(true);
     }
   }, [selectedKecamatan]);
 
@@ -348,15 +347,25 @@ const Perusahaan = () => {
   const QueryClient = useQueryClient();
 
   const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
+    launchImageLibrary({ mediaType: "photo"  }, response => {
+     
+      if (response.didCancel) {
+        console.log("User cancelled image picker");
+        return;
+      } 
+      if (response.errorMessage) {
+        console.log("ImagePicker Error: ", response.errorMessage);
+        return;
+      }
+      if (!response.assets || response.assets.length === 0) {
+        console.log("No image selected");
+        return;
+      }
+      
       const file = response.assets[0];
       const fileSizeInBytes = file.fileSize;
       const fileSizeInKB = fileSizeInBytes / 1024;
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.errorMessage) {
-        console.log("ImagePicker Error: ", response.errorMessage);
-      }
+
       if (fileSizeInKB > 2048) {
         Toast.show({
           type: "error",
@@ -365,14 +374,17 @@ const Perusahaan = () => {
         });
       } else {
         console.log("Chosen file:", file);
-        setImageUrl(file);
+        setImageUrl(file.uri);
+        setTypePhoto('upload')
       }
+
     });
   };
 
   const handleDeletePhoto = () => {
     setImageUrl(null);
     setCurrentPhotoUrl(null);
+    setTypePhoto('')
   };
 
   useEffect(() => {
@@ -415,53 +427,55 @@ const Perusahaan = () => {
   };
 
   const { mutate: update, isLoading } = useMutation({
-    mutationFn: () => {
-    // if (imageUrl) {
-    //   formData.append("tanda_tangan", {
-    //     uri: imageUrl.uri,
-    //     type: imageUrl.type || "image/jpeg",
-    //     name: imageUrl.fileName || "tanda_tangan.jpg",
-    //   });
-    // }
-    // console.log(formData, 99888);
-      return axios.post("/user/company", {
-        instansi: watch("instansi"),
-        pimpinan: watch("pimpinan"),
-        pj_mutu: watch("pj_mutu"),
-        alamat: watch("alamat"),
-        telepon: watch("telepon"),
-        fax: watch("fax"),
-        email: watch("email"),
-        jenis_kegiatan: watch("jenis_kegiatan"),
-        lat: watch("lat"),
-        long: watch("long"),
-        kab_kota_id: watch("kab_kota_id"),
-        kecamatan_id: watch("kecamatan_id"),
-        kelurahan_id: watch("kelurahan_id"),
-        tanda_tangan: imageUrl ? { uri: imageUrl.uri, type: imageUrl.type, name: imageUrl.fileName } : '',
-      }, {
+    mutationFn: (data) => {
+      console.log(data, 222)
+      console.log(watch(), 444)
+      const formData = new FormData()
+      formData.append("instansi", watch("instansi")),
+      formData.append("pimpinan", watch("pimpinan")),
+      formData.append("pj_mutu", watch("pj_mutu")),
+      formData.append("alamat", watch("alamat")),
+      formData.append("telepon", watch("telepon")),
+      formData.append("fax", watch("fax")),
+      formData.append("email", watch("email")),
+      formData.append("jenis_kegiatan", watch("jenis_kegiatan")),
+      formData.append("lat", watch("lat")),
+      formData.append("long", watch("long")),
+      formData.append("kab_kota_id", watch("kab_kota_id")),
+      formData.append("kecamatan_id", watch("kecamatan_id")),
+      formData.append("kelurahan_id", watch("kelurahan_id"));
+
+      if (imageUrl) {
+        formData.append("tanda_tangan", {
+          uri: imageUrl,
+          type: 'image/jpeg',
+          name: 'tanda_tangan.jpg'
+        });
+      }
+
+      return axios.post("/user/company",formData, {
         headers: {
-          "Content-Type": "multipart/form-data",
+          'Content-Type': 'multipart/form-data',
         },
       }).then(res => res.data.data);
     },
     onSuccess: res => {
-      QueryClient.invalidateQueries("/auth");
+      // QueryClient.invalidateQueries("/auth");
 
-      const { tanda_tangan } = res.detail;
-      const updatedImageUrl = `${APP_URL}${tanda_tangan}?t=${new Date().getTime()}`;
-      setImageUrl(updatedImageUrl);
-      setData(prevData => ({
-        ...prevData,
-        tanda_tangan: watch("tanda_tangan"),
-      }));
+      // const { tanda_tangan } = res.detail;
+      // const updatedImageUrl = `${APP_URL}${tanda_tangan}?t=${new Date().getTime()}`;
+      // setImageUrl(updatedImageUrl);
+      // setData(prevData => ({
+      //   ...prevData,
+      //   tanda_tangan: watch("tanda_tangan"),
+      // }));
       navigation.navigate("Profile");
     },
     onError: error => {
       setErrorMessage(
         error.response?.data?.message || "Gagal memperbarui data.",
       );
-      console.log(err.response.data.message)
+      console.log(error.response.data.message)
     },
   });
 
@@ -483,6 +497,7 @@ const Perusahaan = () => {
               Tanda Tangan
             </Text>
 
+          {(typePhoto == 'capture' || typePhoto == '') && (
             <View style={styles.container}>
               <TouchableOpacity onPress={openCameraLib} style={styles.button}>
                 <Text className="font-poppins-semibold text-lg mb-3">
@@ -496,11 +511,14 @@ const Perusahaan = () => {
                   source={{
                     uri: imageUrl ? imageUrl : currentPhotoUrl,
                   }}
-                />
+                  />
               </View>
             </View>
+            )}
 
-            <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
+            {(typePhoto == 'upload' || typePhoto == '') && (
+              <>
+              <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
               Or
             </Text>
             <Controller
@@ -524,7 +542,7 @@ const Perusahaan = () => {
                                 e.nativeEvent.error,
                               )
                             }
-                          />
+                            />
 
                           {/* Overlay gradient */}
                           <View className="absolute inset-0 rounded-full bg-black/5" />
@@ -551,15 +569,15 @@ const Perusahaan = () => {
                   ) : (
                     // State sebelum upload foto
                     <TouchableOpacity
-                      className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
-                      onPress={handleChoosePhoto}>
+                    className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                    onPress={handleChoosePhoto}>
                       <View className="items-center space-y-4">
                         <View className="bg-indigo-100 rounded-full p-5">
                           <SimpleLineIcons
                             name="cloud-upload"
                             size={40}
                             color="#4f46e5"
-                          />
+                            />
                         </View>
 
                         <View className="items-center">
@@ -575,7 +593,9 @@ const Perusahaan = () => {
                   )}
                 </View>
               )}
-            />
+              />
+              </>              
+          )}
           </View>
 
           {/* Nama Perusahaan/Instansi */}
@@ -1066,6 +1086,7 @@ const Perusahaan = () => {
             <Text>Memuat data, mohon tunggu...</Text>
           )}
 
+<Text>e- {JSON.stringify(errors)}</Text>
           {/* Simpan Button */}
           <TouchableOpacity
             onPress={handleSubmit(update)}
