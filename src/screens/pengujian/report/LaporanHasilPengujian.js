@@ -239,27 +239,39 @@ const LaporanHasilPengujian = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [tteType, setTteType] = useState('system');
 
-    const handleTTESubmit = async (fromData) => {
-        try{
-            const response = await axios.post('/report/{uuid}/tte', fromData);
-
-            if (response.data?.success){
+    const handleTTESubmit = async (formData) => {
+        try {
+            // Convert formData to query parameters
+            const queryParams = new URLSearchParams({
+                tanda_tangan_id: formData.tanda_tangan_id,
+                passphrase: formData.passphrase,
+                tipe: formData.tipe
+            }).toString();
+    
+            const response = await axios.get(`/report/${selectedItem}/kendali-mutu/tte?${queryParams}`);
+        
+            if (response.data?.success) {
+                const authToken = await AsyncStorage.getItem('@auth-token');
+                setReportUrl(`${APP_URL}/api/v1/report/${selectedItem}/lhu/tte?token=${authToken}&tanda_tangan_id=${formData.tanda_tangan_id}&passphrase=${btoa(formData.passphrase)}`);
+                setModalVisible(true); 
+        
                 Toast.show({
                     type: 'success',
                     text1: 'Success',
                     text2: 'TTE request submitted successfully',
                 });
                 setTteModalVisible(false);
-                paginate.current?.refetch();
+                paginateRef.current?.refetch();
             }
         } catch (error) {
+            console.error('Error submitting TTE request:', error.response);
             Toast.show({
                 type: 'error',
                 text1: 'Error',
                 text2: error.response?.data?.message || 'Failed to submit TTE request',
             });
         }
-    }
+    };
 
     const getSelectedMonthName = () => {
         const month = months.find(m => m.id === selectedMonth);
@@ -373,12 +385,10 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 action: async () => {
                     try {
                         const authToken = await AsyncStorage.getItem('@auth-token');
-                        if (previewReport) {
-                            setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/lhu/tte/download?token=${authToken}`);
-                            setModalVisible(true);
-                        } else {
-                            downloadReport(`/report/${item.uuid}/lhu/tte/download`);
-                        }
+                        const downloadUrl = `${APP_URL}/api/v1/report/${item.uuid}/lhu/tte/download?token=${authToken}`;
+                        
+                        setReportUrl(downloadUrl);
+                        setModalVisible(true);
                     } catch (error) {
                         Toast.show({
                             type: 'error',

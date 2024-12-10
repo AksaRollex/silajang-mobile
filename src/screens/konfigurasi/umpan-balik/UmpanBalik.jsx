@@ -9,6 +9,7 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
+import HorizontalFilterMenu from '../../components/HorizontalFilterMenu';
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
 import BackButton from '../../components/BackButton';
@@ -677,31 +678,30 @@ const handleImport = async () => {
     );
   };
   const renderCardTemplate = () => (
-    <TouchableOpacity 
+    <TouchableOpacity
       onPress={() => setDownloadModalVisible(true)}
       style={{
+        position: 'absolute',
+        zIndex: 999, // Pastikan berada di lapisan paling atas
+        bottom: 25,
+        right: 20,
+        backgroundColor: '#177a44',
+        padding: 10,
+        borderRadius: 50,
+        elevation: 5,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        borderRadius: 24,
-        overflow: 'hidden'
       }}
     >
-      <View className="bg-green-100 rounded-xl mx-4 mt-3 p-3 flex-row justify-center items-center space-x-2 elevation-4 border-2 border-gray-200">
-        <Text className="text-[#217346]  text-sm font-poppins-semibold text-center">
-          Download Template Import
-        </Text>
-    
-        <MaterialCommunityIcons 
-          name="file-excel-outline" 
-          size={20} 
-          color="#217346" 
-        />
-      </View>
+      <MaterialCommunityIcons 
+        name="file-excel-outline" 
+        size={32} 
+        color="#fff" 
+      />
     </TouchableOpacity>
   );
-
   const renderPaginateItem = ({ item }) => (
     <View className="bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-5 mb-4" style={{ elevation: 4 }}>
       <View cla>
@@ -901,34 +901,13 @@ const handleImport = async () => {
         <Text className="text-[20px] font-poppins-semibold text-black">Umpan Balik</Text>
       </View>
       <View className="flex-1">
-        <View className="flex-row justify-center">
-          <View className="mt-3 ml-[-10] mr-2"> 
-          <HorizontalScrollMenu
-              textStyle={{ fontFamily: 'Poppins-Medium', fontSize: 12 }}
-              items={Options}
-              selected={selectedMenu}
-              onPress={(item) => setSelectedMenu(item.id)}
-              itemWidth={190}
-                  scrollAreaStyle={{ height: 30, justifyContent: 'flex-start' }}
-                  activeBackgroundColor={"#312e81"}
-                  buttonStyle={{ marginRight: 10, borderRadius: 20, backgroundColor: "white" }}
-              itemRender={(item) => (
-                <View
-                  style={{
-                    borderColor: '#312e81',
-                  }}>
-                  <Text
-                    style={{
-                      color: 'white',
-                      fontSize: 12,
-                    }}>
-                    {item.name}
-                  </Text>
-                </View>
-              )}
-            />
-          </View>
-        </View>
+        <View className="flex-row justify-center mt-4 ml-10">
+        <HorizontalFilterMenu
+          items={Options}
+          selected={selectedMenu}
+          onPress={(item) => setSelectedMenu(item.id)}
+        />
+      </View>
 
         {renderContent()}
         {renderModal()}
