@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, Modal } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
-import Ionicons from "react-native-vector-icons/Ionicons"; 
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import { rupiah } from "@/src/libs/utils";
@@ -84,23 +84,59 @@ const NonPengujian = ({ navigation }) => {
     </View>
   );
 
-  const getStatusStyle = (item) => {
-    if (item.payment?.is_expired) {
-      return {
-        text: "text-red-700",
-        background: "bg-red-100",
-        border: "border-red-100",
-      };
-    } else {
-      const status = item.payment?.status;
-      switch (status) {
-        case "pending":
-          return {
-            text: "text-blue-700",
-            background: "bg-blue-50",
-            border: "border-blue-50",
-          };
-        case "success":
+  const cardNonPengujian = ({ item }) => {
+    const getStatusStyle = (item) => {
+      if (item.payment?.is_expired) {
+        return {
+          text: "text-red-700",
+          background: "bg-red-50",
+          border: "border-red-100",
+        };
+      } else {
+        const status = item.payment?.status;
+        switch (status) {
+          case "pending":
+            return {
+              text: "text-blue-700",
+              background: "bg-blue-50",
+              border: "border-blue-100",
+            };
+          case "success":
+            return {
+              text: "text-green-600",
+              background: "bg-green-50",
+              border: "border-green-100",
+            };
+          default:
+            return {
+              text: "text-gray-700",
+              background: "bg-gray-50",
+              border: "border-gray-100",
+            };
+        }
+      }
+    };
+
+    const getStatusText = (item) => {
+      if (item.is_expired) {
+        return "Kedaluwarsa";
+      } else {
+        const status = item.status;
+        switch (status) {
+          case "pending":
+            return "pending";
+          case "success":
+            return "success";
+          default:
+            return "failed";
+        }
+      }
+    };
+
+
+    const getMetodeStyle = (metode) => {
+      switch (metode) {
+        case 'va':
           return {
             text: "text-green-600",
             background: "bg-green-100",
@@ -108,51 +144,16 @@ const NonPengujian = ({ navigation }) => {
           };
         default:
           return {
-            text: "text-gray-700",
-            background: "bg-gray-100",
-            border: "border-gray-200",
+            text: "text-blue-700",
+            background: "bg-blue-50",
+            border: "border-blue-50",
           };
       }
-    }
-  };
+    };
 
-  const getStatusText = (item) => {
-    if (item.payment?.is_expired) {
-      return "Kedaluwarsa";
-    } else {
-      const status = item.payment?.status;
-      switch (status) {
-        case "pending":
-          return "Belum Dibayar";
-        case "success":
-          return "Berhasil";
-        default:
-          return "Gagal";
-      }
-    }
-  };
-
-  const getMetodeStyle = (metode) => {
-    switch (metode) {
-      case 'va':
-        return {
-          text: "text-green-600",
-          background: "bg-green-100",
-          border: "border-green-100",
-        };
-      default:
-        return {
-          text: "text-blue-700",
-          background: "bg-blue-50",
-          border: "border-blue-50",
-        };
-    }
-  };
-
-  const cardNonPengujian = ({ item }) => {
     const statusStyle = getStatusStyle(item);
     const statusText = getStatusText(item);
-    const metodeStyle = getMetodeStyle(item.payment?.type);
+    const metodeStyle = getMetodeStyle(item.type);
 
     return (
       <View
@@ -161,7 +162,7 @@ const NonPengujian = ({ navigation }) => {
           elevation: 4,
         }}>
         <View className="flex-row justify-between">
-          <View className="absolute top-0 right-0 p-2">
+          <View className="absolute top-[-6px] right-0 p-2">
             <View className={`rounded-md px-1.5 py-1 border ${statusStyle.background} ${statusStyle.border}`}>
               <Text
                 className={`text-[11px] font-bold text-right ${statusStyle.text}`}
@@ -171,52 +172,41 @@ const NonPengujian = ({ navigation }) => {
               </Text>
             </View>
           </View>
-
           <View className="flex-1 pr-4">
-            <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-4">
-              {item.kode}
-            </Text>
 
             <View className="flex-row justify-between mb-2">
               <View className="flex-1 pr-5">
-                <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
                 <Text className="text-md font-poppins-semibold text-black">
-                  {item?.permohonan?.user?.nama || "-"}
+                  {item.nama}
                 </Text>
               </View>
               <View className="flex-1">
-                <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
-                <Text className="text-md font-poppins-semibold text-black">
-                  {item.lokasi}
-                </Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Metode</Text>
+                <View className={`rounded-md px-1 py-1 border self-start ${metodeStyle.background} ${metodeStyle.border}`}>
+                  <Text
+                    className={`text-[11px] font-bold ${metodeStyle.text}`}
+                    numberOfLines={2}
+                    ellipsizeMode="tail">
+                    {(item.type || '').toUpperCase()}
+                  </Text>
+                </View>
               </View>
             </View>
 
             <View className="flex-row pr-3">
               <View className="flex-1 pr-3">
-                <Text className="text-xs font-poppins-regular text-gray-500">Harga</Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Jumlah Nominal</Text>
                 <Text className="text-md font-poppins-semibold text-black">
-                  {rupiah(item.harga)}
+                  {rupiah(item.jumlah || 0)}
                 </Text>
               </View>
               <View className="flex-1 flex-row items-center">
                 <View>
-                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Bayar</Text>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Kedaluwarsa</Text>
                   <Text className="text-md font-poppins-semibold text-black">
-                    {item.payment?.tanggal_bayar || "-"}
+                    {item.tanggal_exp_indo || '-'}
                   </Text>
-                </View>
-                <View className="ml-5">
-                  <Text className="text-xs font-poppins-regular text-gray-500">Metode</Text>
-                  <View className={`rounded-md px-1.5 py-1 border ${metodeStyle.background} ${metodeStyle.border}`}>
-                    <Text
-                      className={`text-[11px] font-bold text-center ${metodeStyle.text}`}
-                      numberOfLines={2}
-                      ellipsizeMode="tail">
-                      {item.payment?.type.toUpperCase() || "-"}
-                    </Text>
-                  </View>
                 </View>
               </View>
             </View>
@@ -227,45 +217,36 @@ const NonPengujian = ({ navigation }) => {
 
         <View className="flex-row justify-end mt-1 space-x-2">
           <TouchableOpacity
-            onPress={() => navigation.navigate('Detail', { uuid: item.uuid })}  
-            className="bg-blue-500 px-3 py-2 rounded-md flex-row items-center">
-            <MaterialIcons name="credit-card" size={13} color="white" />
+            onPress={() => {/* Edit action */ }}
+            className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center">
+            <Ionicons name="eye-outline" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
               Detail
             </Text>
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() => navigation.navigate("FormNonPengujian", { uuid: item.uuid })}
-            className="bg-yellow-500 px-3 py-2 rounded-md flex-row items-center">
-            <FontAwesome5 name="edit" size={13} color="white" />
+            onPress={() => {/* Delete action */ }}
+            className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
+            <Ionicons name="ban-outline" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
-              Edit
+              Batal
             </Text>
           </TouchableOpacity>
         </View>
       </View>
     );
   };
-
   return (
     <View className="bg-[#ececec] w-full h-full">
       <View className="p-4">
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center flex-1">
             <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-[20px] font-poppins-semibold text-black mx-auto left-10">
+            <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center">
               Non Pengujian
             </Text>
           </View>
-          <TouchableOpacity
-            className="bg-red-50 px-4 py-3 rounded-md flex-row items-center"
-          >
-            <FontAwesome5 name="file-excel" size={13} color="#ef4444" />
-            <Text className="text-red-500 ml-2 font-poppins-medium text-xs">
-              Laporan
-            </Text>
-          </TouchableOpacity>
         </View>
 
         <View className="flex-row ml-2">
@@ -326,6 +307,31 @@ const NonPengujian = ({ navigation }) => {
         renderItem={cardNonPengujian}
         className="px-4 mb-12"
       />
+
+      <TouchableOpacity
+        // onPress={handlePreviewReport}
+        className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
+        style={{
+          position: 'absolute',
+          bottom: 75,
+          right: 20,
+          backgroundColor: '#dc2626',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+        <FontAwesome5 name="file-pdf" size={19} color="white" />
+
+      </TouchableOpacity>
+
     </View>
   );
 };
