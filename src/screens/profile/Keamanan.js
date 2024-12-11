@@ -87,20 +87,19 @@ const ChangePasswordForm = ({navigation}) => {
   };
 
   return (
-    <ScrollView className="bg-gray-100 py-8">
-
-      <View className="flex-row items-center space-x-2  bg-white p-2 ml-3 mr-3 rounded-lg py-2.5">
-        <BackButton action={() => navigation.goBack()} size={26} className="ml-2" ></BackButton>
-        <View className="w-px h-full bg-gray-200 " />
-        <View className="flex-1 items-center mr-11">
-          <Text className="text-[18px] text-black font-poppins-semibold">
-            Update Password
-          </Text>
-        </View>
-      </View>
+    <ScrollView className="bg-gray-100 py-3">
 
       <View style={{ alignItems: 'center' }} className="mt-5">
         <View className="bg-white rounded-lg p-6 w-[95%] shadow-lg">
+          <View className="flex-row items-center space-x-2 mb-10 ">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <View className="absolute left-0 right-3 items-center">
+              <Text className="text-[20px] text-black font-poppins-semibold">
+                Update Password
+              </Text>
+              <View className="h-px w-[120%] bg-gray-200 top-5" />
+            </View>
+          </View>
 
           {/* Password Lama */}
           <View className="mb-6">
