@@ -163,7 +163,7 @@ const UserProfileForm = ({ navigation }) => {
               <Text className="font-poppins-semibold text-sm mb-3">Foto</Text>
               <TouchableOpacity
                 onPress={handleImagePick}
-                className="w-full h-40 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center"
+                className="w-full h-60 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center"
               >
 
                 {profileImage ? (

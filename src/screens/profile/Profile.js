@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Linking, Dimensions, StyleSheet, Image, ImageBackground,
-} from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, Modal, Linking, Dimensions, StyleSheet, Image, ImageBackground,} from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
 import { useQueryClient, useMutation } from "@tanstack/react-query";
@@ -10,6 +9,7 @@ import Icon from "react-native-vector-icons/Feather";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextFooter } from "../components/TextFooter";
+// import ImagePreviewModal from "./ImagePreviewModal";
 
 const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
@@ -51,7 +51,7 @@ export default function Profile({ navigation }) {
     },
   });
 
-  const openImageViewer = imageUrl => {
+  const openImageViewer = (imageUrl) => {
     setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
     setImageViewerVisible(true);
   };
@@ -95,8 +95,10 @@ export default function Profile({ navigation }) {
                           color="#666666"
                         />
                       </View>
+                      
                     )}
                   </TouchableOpacity>
+                  
                 ) : (
                   <View></View>
                 )}
@@ -138,7 +140,9 @@ export default function Profile({ navigation }) {
               </>
             ) : (
               <View></View>
+              
             )}
+            
             <TouchableOpacity
               onPress={() => {
                 navigation.navigate("Informasi")
@@ -248,19 +252,27 @@ export default function Profile({ navigation }) {
           </View>
         </Modal>
 
-            <Modal
-              animationType="fade"
-              transparent={true}
-              visible={imageViewerVisible}
-              onRequestClose={() => setImageViewerVisible(false)}>
-              <View style={styles.imageViewerContainer}>
-                <TouchableOpacity
-                  style={styles.closeButton}
-                  onPress={() => setImageViewerVisible(false)}>
-                  <IonIcons name="close" size={40} color="white" />
-                </TouchableOpacity>
-              </View>
-            </Modal>
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={imageViewerVisible}  
+          onRequestClose={() => setImageViewerVisible(false)}
+        >
+          <View className="flex-1 bg-black justify-center items-center">
+            <TouchableOpacity
+              className="absolute top-10 right-5 p-2  "
+              onPress={() => setImageViewerVisible(false)}
+            >
+              <Text className="text-white text-2xl font-bold">✕</Text>
+            </TouchableOpacity>
+            <Image
+              source={{ uri: selectedImage }}
+              className="w-[90%] h-[70%] "
+              resizeMode="contain"
+            />
+          </View>
+        </Modal>
+
           </View>
         </View>
 
