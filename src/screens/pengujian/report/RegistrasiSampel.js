@@ -300,7 +300,7 @@ const RegistrasiSampel = ({ navigation }) => {
         {isDownloading ? (
           <ActivityIndicator size="small" color="white" />
         ) : (
-          <FontAwesome5 name="file-excel" size={20} color="white" />
+          <FontAwesome5 name="file-excel" size={20} color="white" /> 
         )}
       </TouchableOpacity>
     </View>

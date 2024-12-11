@@ -435,7 +435,7 @@ const Pengujian = ({ navigation }) => {
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center flex-1">
             <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-[20px] font-poppins-semibold text-black mx-auto ">
+            <Text className="text-[20px] font-poppins-semibold text-black mx-auto right-3">
               Pengujian
             </Text>
           </View>

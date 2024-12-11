@@ -13,6 +13,7 @@ import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import { TextFooter } from "../components/TextFooter";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
@@ -23,6 +24,10 @@ const Pembayaran = () => {
 
   const NonPengujian = () => {
     navigation.navigate("NonPengujian");
+  };
+
+  const MultiPayment = () => {
+    navigation.navigate("MultiPayment");
   };
 
   const Global = () => {
@@ -49,6 +54,22 @@ const Pembayaran = () => {
           right={props => <List.Icon {...props} icon="chevron-right" />}
           className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
           onPress={Pengujian}
+          />
+          <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+        </View>
+
+        <View>
+          <List.Item
+          style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+          title={<Text className="font-poppins-medium text-[15px]">Multi Payment</Text>}
+          left={() => (
+            <View className="bg-green-600 rounded-full ml-3">
+            <MaterialCommunityIcons name="credit-card-multiple" size={17} color={'white'} style={{padding: 5}}/>
+          </View>
+          )}
+          right={props => <List.Icon {...props} icon="chevron-right" />}
+          className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
+          onPress={MultiPayment}
           />
           <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
         </View>

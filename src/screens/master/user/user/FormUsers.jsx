@@ -428,7 +428,6 @@ export default memo(function Form({ route, navigation }) {
         });
       }
   
-      console.log(formData, 99888)
       const endpoint = uuid 
         ? `/master/user/${uuid}/update`
         : "/master/user/store";

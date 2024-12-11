@@ -26,6 +26,7 @@ import { TextField } from "react-native-ui-lib";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import Toast from "react-native-toast-message";
 import {
   Camera,
   useCameraDevice,
@@ -231,14 +232,14 @@ const Perusahaan = () => {
             label: item.nama,
             value: item.id,
           }));
-          console.log("Response data kelurahan:", response.data);
+          // console.log("Response data kelurahan:", response.data);
           setKelurahan(formattedKelurahan);
           setSelectedKelurahan(null);
           setIsKelurahanEmpty(response.data.data.length === 0);
           setIsKelurahanLoaded(true); // Set status menjadi true
         })
         .catch(error => {
-          console.error("Error fetching data kelurahan:", error);
+          // console.error("Error fetching data kelurahan:", error);
           setKelurahan([]);
           setIsKelurahanLoaded(true);
           setIsKelurahanEmpty(true);
@@ -252,11 +253,10 @@ const Perusahaan = () => {
 
   useEffect(() => {
     if (isKotaKabupatenLoaded && isKecamatanLoaded && isKelurahanLoaded) {
-      console.log("Semua data sudah tersedia:");
-      console.log("Kota/Kabupaten:", kotaKabupaten);
-      console.log("Kecamatan:", kecamatan);
-      console.log("Kelurahan:", kelurahan);
-
+      // console.log("Semua data sudah tersedia:");
+      // console.log("Kota/Kabupaten:", kotaKabupaten);
+      // console.log("Kecamatan:", kecamatan);
+      // console.log("Kelurahan:", kelurahan);
       // Jika diperlukan, lakukan sesuatu dengan data ini
     }
   }, [
@@ -313,17 +313,17 @@ const Perusahaan = () => {
                     setSelectedKelurahan(userDetail.kelurahan_id);
                   })
                   .catch(error => {
-                    console.error("Error fetching kelurahan:", error);
+                    // console.error("Error fetching kelurahan:", error);
                   });
               }
             })
             .catch(error => {
-              console.error("Error fetching kecamatan:", error);
+              // console.error("Error fetching kecamatan:", error);
             });
         }
       })
       .catch(error => {
-        console.error("Error fetching data user:", error);
+        // console.error("Error fetching data user:", error);
       });
   }, []);
 
@@ -349,7 +349,8 @@ const Perusahaan = () => {
           response.data.user.detail.tanda_tangan
         ) {
           const photoUrl = `${APP_URL}${response.data.user.detail.tanda_tangan}`;
-          setCurrentPhotoUrl(photoUrl);
+          setImageUrl(photoUrl);
+          setTypePhoto("upload");
         }
       })
       .catch(error => {
@@ -403,7 +404,8 @@ const Perusahaan = () => {
       try {
         const response = await axios.get(`${APP_URL}/user/tanda_tangan`);
         if (response.data && response.data.photo_url) {
-          setCurrentPhotoUrl(response.data.photo_url);
+          setImageUrl(response.data.photo_url);
+          setTypePhoto("upload");
         }
       } catch (error) {
         console.log("Error fetching photo:", error);
@@ -464,6 +466,8 @@ const Perusahaan = () => {
         });
       }
 
+      console.log(formData, 999);
+
       return axios
         .post("/user/company", formData, {
           headers: {
@@ -473,21 +477,23 @@ const Perusahaan = () => {
         .then(res => res.data.data);
     },
     onSuccess: res => {
-      // QueryClient.invalidateQueries("/auth");
+      QueryClient.invalidateQueries("/auth");
 
-      // const { tanda_tangan } = res.detail;
-      // const updatedImageUrl = `${APP_URL}${tanda_tangan}?t=${new Date().getTime()}`;
-      // setImageUrl(updatedImageUrl);
-      // setData(prevData => ({
-      //   ...prevData,
-      //   tanda_tangan: watch("tanda_tangan"),
-      // }));
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data berhasil diperbarui.",
+      });
+
       navigation.goBack();
     },
     onError: error => {
-      setErrorMessage(
-        error.response?.data?.message || "Gagal memperbarui data.",
-      );
+      Toast.show({
+        type: "error",
+        text1: "Gagal",
+        text2: error.response?.data?.message || "Gagal memperbarui data.",
+      });
+
       console.log(error.response.data.message);
     },
   });
@@ -496,7 +502,7 @@ const Perusahaan = () => {
     <ScrollView className="bg-gray-100 py-8">
       <View style={{ alignItems: "center" }} className=" mb-28">
         <View className="bg-white rounded-lg p-6 w-[95%] shadow-lg">
-          <View className="flex-row items-center space-x-2 mb-10 mt-2 ">
+          <View className="flex-row items-center space-x-2 mb-10 ">
             <BackButton action={() => navigation.goBack()} size={26} />
             <View className="absolute left-0 right-3 items-center">
               <Text className="text-[20px] text-black font-poppins-semibold">
@@ -539,7 +545,6 @@ const Perusahaan = () => {
                   name="tanda_tangan"
                   render={({ field: { onChange } }) => (
                     <View className="w-full">
-                      {/* Check if there's a tanda_tangan in data.detail or photos array */}
                       {currentPhotoUrl || imageUrl ? (
                         <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
                           <View className="items-center">
@@ -556,31 +561,21 @@ const Perusahaan = () => {
                                   )
                                 }
                               />
-
-                              {/* Overlay gradient */}
-                              <View className="absolute inset-0 rounded-full bg-black/5" />
-                              {/* Delete button */}
                               <TouchableOpacity
                                 className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
                                 onPress={handleDeletePhoto}>
                                 <Icons name="close" size={18} color="#dc2626" />
                               </TouchableOpacity>
 
-                              {/* Change photo button */}
                               <TouchableOpacity
                                 className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
                                 onPress={handleChoosePhoto}>
                                 <Icons name="camera" size={20} color="white" />
                               </TouchableOpacity>
                             </View>
-
-                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
-                              Ketuk ikon kamera untuk mengubah foto
-                            </Text>
                           </View>
                         </View>
                       ) : (
-                        // State sebelum upload foto
                         <TouchableOpacity
                           className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
                           onPress={handleChoosePhoto}>
@@ -611,7 +606,6 @@ const Perusahaan = () => {
             )}
           </View>
 
-          {/* Nama Perusahaan/Instansi */}
           <Controller
             control={control}
             name="instansi"
@@ -1010,7 +1004,7 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKotaKabupatenLoaded ? kotaKabupaten : []}
-                      onChangeValue={(value) => {
+                      onChangeValue={value => {
                         onChange(value);
                         setSelectedKotaKabupaten(value);
                         setSelectedKecamatan(null); // Reset Kecamatan
@@ -1047,7 +1041,7 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKecamatanLoaded ? kecamatan : []}
-                      onChangeValue={(value) => {
+                      onChangeValue={value => {
                         onChange(value);
                         setSelectedKecamatan(value);
                         setKelurahan([]);
@@ -1077,7 +1071,7 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKelurahanLoaded ? kelurahan : []}
-                      onChangeValue={(value) => {
+                      onChangeValue={value => {
                         onChange(value);
                         setSelectedKelurahan(value);
                       }}
