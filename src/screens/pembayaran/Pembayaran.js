@@ -26,6 +26,7 @@ const Pembayaran = () => {
     navigation.navigate("NonPengujian");
   };
 
+
   const Global = () => {
     navigation.navigate("Global");
   };
