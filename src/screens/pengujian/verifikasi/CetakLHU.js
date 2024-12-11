@@ -358,8 +358,8 @@ const HasilUjis = ({ navigation, route }) => {
           }}
           className="flex-row items-center p-2 bg-green-100 rounded-md mr-2"
         >
-          <FontIcon name="file-contract" size={16} color="#059669" />
-          <Text className="ml-2 text-green-600 text-[13px] font-poppins-semibold">
+          <FontIcon name="file-contract" size={16} color="#22c55e" />
+          <Text className="ml-2 text-green-500 text-[13px] font-poppins-semibold">
             Cetak LHU
           </Text>
           <MaterialIcons 
@@ -390,7 +390,7 @@ const HasilUjis = ({ navigation, route }) => {
               className="flex-row items-center p-2 border-b border-gray-100"
             >
               <FontIcon name="file-pdf" size={16} color="#dc2626" className="mr-2" />
-              <Text className="text-red-600 text-[12px] font-poppins-semibold ml-2">
+              <Text className="text-red-500 text-[12px] font-poppins-semibold ml-2">
                 PDF
               </Text>
             </TouchableOpacity>
@@ -403,7 +403,7 @@ const HasilUjis = ({ navigation, route }) => {
               className="flex-row items-center p-2"
             >
               <FontIcon name="file-word" size={16} color="#2563eb" className="mr-2" />
-              <Text className="text-blue-600 text-[12px] font-poppins-semibold ml-2">
+              <Text className="text-blue-500 text-[12px] font-poppins-semibold ml-2">
                 WORD
               </Text>
             </TouchableOpacity>
@@ -482,8 +482,8 @@ const HasilUjis = ({ navigation, route }) => {
               }}
               className="flex-row items-center p-2 bg-yellow-100 rounded-md mr-2"
             >
-              <FontIcon name="pencil-alt" size={16} color="#EAB308" />
-              <Text className="ml-2 text-yellow-600 text-[13px] font-poppins-semibold">
+              <FontIcon name="pencil-alt" size={16} color="#facc15" />
+              <Text className="ml-2 text-yellow-400 text-[13px] font-poppins-semibold">
                 Revisi
               </Text>
             </TouchableOpacity>
@@ -523,10 +523,10 @@ const HasilUjis = ({ navigation, route }) => {
           {showPreview && (
             <TouchableOpacity
               onPress={() => handlePreviewLHU(item)}
-              className="flex-row items-center p-2 bg-red-500 rounded-md"
+              className="flex-row items-center p-2 bg-red-100 rounded-md"
             >
-              <FontIcon name="file-pdf" size={16} color="#fff" />
-              <Text className="ml-2 text-white text-[13px] font-poppins-semibold">
+              <FontIcon name="file-pdf" size={16} color="#ef4444" />
+              <Text className="ml-2 text-red-500 text-[13px] font-poppins-semibold">
                 Preview LHU
               </Text>
             </TouchableOpacity>
