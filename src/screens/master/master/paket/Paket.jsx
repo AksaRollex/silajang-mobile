@@ -47,7 +47,7 @@ const Paket = ({ navigation }) => {
           <View className="flex-row justify-end gap-2">
             <TouchableOpacity 
               onPress={() => navigation.navigate("ParameterPaket", { selected: item.uuid })}
-              className="flex-row items-center bg-green-600 px-2 py-2 rounded"
+              className="flex-row items-center bg-green-500 px-2 py-2 rounded"
             >
               <IonIcon name="filter" size={14} color="#fff" />
               <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
@@ -55,7 +55,7 @@ const Paket = ({ navigation }) => {
 
             <TouchableOpacity 
               onPress={() => navigation.navigate("FormPaket", { uuid: item.uuid })}
-              className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+              className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
             >
               <IonIcon name="pencil" size={14} color="#fff" />
               <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
@@ -63,7 +63,7 @@ const Paket = ({ navigation }) => {
 
             <TouchableOpacity 
               onPress={() => deletePaket(`/master/paket/${item.uuid}`)}
-              className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+              className="flex-row items-center bg-red-500 px-2 py-2 rounded"
             >
               <IonIcon name="trash" size={14} color="#fff" />
               <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
