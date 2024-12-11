@@ -33,7 +33,7 @@ const Parameter = ({ navigation }) => {
           </View>
           <View className={`rounded-md ${item.is_akreditasi ? 'bg-green-200' : 'bg-yellow-100'
             }`}>
-            <Text className={`text-xs font-poppins-medium px-1 py-1 ${item.is_akreditasi ? 'text-green-600' : 'text-yellow-400'
+            <Text className={`text-xs font-poppins-semibold px-2 py-1 ${item.is_akreditasi ? 'text-green-600' : 'text-yellow-400'
               }`}>
               {item.is_akreditasi ? 'Akreditasi' : 'Belum Akreditasi'}
             </Text>
@@ -80,7 +80,7 @@ const Parameter = ({ navigation }) => {
         <View className="flex-row justify-end gap-2 mt-3">
           <TouchableOpacity
             onPress={() => navigation.navigate("FormParameter", { uuid: item.uuid })}
-            className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+            className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
           >
             <IonIcon name="pencil" size={14} color="#fff" />
             <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
@@ -88,7 +88,7 @@ const Parameter = ({ navigation }) => {
 
           <TouchableOpacity
             onPress={() => deleteParameter(`/master/parameter/${item.uuid}`)}
-            className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+            className="flex-row items-center bg-red-500 px-2 py-2 rounded"
           >
             <IonIcon name="trash" size={14} color="#fff" />
             <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>

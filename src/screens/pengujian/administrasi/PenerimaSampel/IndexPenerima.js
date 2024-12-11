@@ -21,6 +21,7 @@ import Pdf from 'react-native-pdf';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
+import moment from "moment";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -195,7 +196,7 @@ const PenerimaSampel = ({ navigation }) => {
   );
 
   const renderItem = ({ item }) => {
-    const isDiterima = item.kesimpulan_permohonan;
+    const isWaitingConfirmation = selectedPenerima === 1;
 
     return (
       <View
@@ -203,17 +204,87 @@ const PenerimaSampel = ({ navigation }) => {
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-            <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
-            <Text className="text-md text-black font-poppins-semibold mb-3">{item.kode}</Text>
 
-            <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
-            <Text className="text-md text-black font-poppins-semibold mb-3">{item.permohonan.user.nama}</Text>
 
-            <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text>
-            <Text className="text-md text-black font-poppins-semibold mb-3">{item.lokasi}</Text>
 
-            <Text className="text-xs text-gray-500 font-poppins-regular">Diterima Pada</Text>
-            <Text className="text-md text-black font-poppins-semibold mb-1">{item.tanggal_diterima}</Text>
+            {selectedPenerima === 1 ? (
+              <>
+
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">
+                  {item.permohonan.user.nama}
+                </Text>
+
+
+                <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">{item.lokasi}</Text>
+
+                <Text className="text-xs text-gray-500 font-poppins-regular">Status Penerimaan</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">
+                  {item.kesimpulan_sampel === 1 ? 'Diterima' :
+                    item.kesimpulan_sampel === 2 ? 'Ditolak' :
+                      'Menunggu'}
+                </Text>
+
+                <Text className="text-md text-gray-500 font-poppins-regular mb-1">Detail Pengambilan/Pengiriman</Text>
+
+                <View>
+                  <Text className="text-xs text-gray-500 font-poppins-regular">
+                    {item.permohonan.is_mandiri ? 'Dikirim pada' : 'Diambil pada'}
+                  </Text>
+
+                  <Text className="text-md text-black font-poppins-semibold mb-1">
+                    {item.tanggal_pengambilan || '-'}
+                  </Text>
+                </View>
+
+
+                <View>
+                  <Text className="text-xs text-gray-500 font-poppins-regular">
+                    {'Oleh'}
+                  </Text>
+
+                  <Text className="text-md text-black font-poppins-semibold mb-1">
+                    {item.pengambil?.nama || item.nama_pengambil || '-'}
+                  </Text>
+                </View>
+
+              </>
+
+            ) : (
+              <>
+
+                {selectedPenerima === 3 && (
+                  <>
+                    <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
+                    <Text className="text-md text-black font-poppins-semibold mb-1">
+                      {item.kode || '-'}
+                    </Text>
+                  </>
+                )}
+
+
+
+
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">
+                  {item.permohonan.user.nama}
+                </Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">{item.lokasi}</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Diterima pada</Text>
+                <Text className="text-md text-black font-poppins-semibold mb-1">
+                  {item.tanggal_diterima ? moment(item.tanggal_diterima).format('DD MMMM YYYY - HH:mm') : '-'}
+                </Text>
+
+
+
+              </>
+
+            )}
+
+
+
           </View>
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md p-2 max-w-[120px] mb-2">
@@ -223,11 +294,13 @@ const PenerimaSampel = ({ navigation }) => {
             </View>
           </View>
         </View>
+
+
         <View className="h-[1px] bg-gray-300 my-3" />
         <View className="flex-row flex-wrap  justify-end gap-2">
           <TouchableOpacity
             onPress={() => navigation.navigate("DetailPenerima", { uuid: item.uuid })}
-            className="bg-indigo-900 px-3 py-2 rounded-md"
+            className="bg-indigo-500 px-3 py-2 rounded-md"
           >
             <View className="flex-row">
               <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
@@ -244,7 +317,7 @@ const PenerimaSampel = ({ navigation }) => {
                 });
                 setRevisionModalVisible(true);
               }}
-              className="bg-amber-500 px-3 py-2 rounded-md"
+              className="bg-amber-400 px-3 py-2 rounded-md"
             >
               <View className="flex-row">
                 <Ionicons name="pencil" size={15} color="white" style={{ marginRight: 5 }} />
