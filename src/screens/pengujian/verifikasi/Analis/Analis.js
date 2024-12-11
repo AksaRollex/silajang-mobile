@@ -174,7 +174,7 @@ const Analis = ({ navigation }) => {
               uuid: item.uuid,
               status: item.status,
             })}
-            className="bg-indigo-900 px-3 py-2 rounded-md flex-row items-center">
+            className="bg-indigo-500 px-3 py-2 rounded-md flex-row items-center">
             <FontAwesome6Icon name="vial" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
               Hasil Uji
@@ -183,7 +183,7 @@ const Analis = ({ navigation }) => {
                 
             <TouchableOpacity
               onPress={() => handlePreviewSPP({ uuid: item.uuid })}
-              className="bg-red-600 px-3 py-2 rounded-md flex-row items-center">
+              className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
               <FontAwesome5Icon name="file-pdf" size={16} color="white" />
               <Text className="text-white text-xs ml-1 font-poppins-medium">
                 SPP

@@ -47,7 +47,7 @@ const RadiusPengambilan = ({ navigation }) => {
       <View className="flex-row justify-end gap-2">
         <TouchableOpacity
           onPress={() => navigation.navigate('FormRadiusPengambilan', { uuid: item.uuid })}
-          className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+          className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
         >
           <IonIcon name="pencil" size={14} color="#fff" />
           <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
@@ -55,7 +55,7 @@ const RadiusPengambilan = ({ navigation }) => {
 
         <TouchableOpacity
           onPress={() => deleteRadiusPengambilan(`/master/radius-pengambilan/${item.uuid}`)}
-          className="flex-row items-center bg-red-600 px-2 py-2 rounded"
+          className="flex-row items-center bg-red-500 px-2 py-2 rounded"
         >
           <IonIcon name="trash" size={14} color="#fff" />
           <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>

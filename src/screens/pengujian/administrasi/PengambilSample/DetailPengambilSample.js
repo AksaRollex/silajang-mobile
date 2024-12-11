@@ -239,6 +239,33 @@ export default function Detail({ route, navigation }) {
     createOrUpdate(watch());
   }, 1500);
 
+  const createAutosave = (fieldName) => {
+    return debounce((value) => {
+      const currentData = watch(); // Get current form data
+      const updatedData = { 
+        ...currentData, 
+        [fieldName]: value 
+      };
+      createOrUpdate(updatedData);
+    }, 1500);
+  };
+  
+  // Create autosave functions for specific fields
+  const autosaveSuhuAir = createAutosave('lapangan.suhu_air');
+  const autosavePh = createAutosave('lapangan.ph');
+  const autosaveDhl = createAutosave('lapangan.dhl');
+  const autosaveSalinitas = createAutosave('lapangan.salinitas');
+  const autosaveDo = createAutosave('lapangan.do');
+  const autosaveKlorin = createAutosave('lapangan.klorin_bebas');
+  const autosaveKekeruhan = createAutosave('lapangan.kekeruhan');
+  const autosaveSuhuUdara = createAutosave('lapangan.suhu_udara');
+  const autosaveCuaca = createAutosave('lapangan.cuaca');
+  const autosaveArahAngin = createAutosave('lapangan.arah_angin');
+  const autosaveKelembapan = createAutosave('lapangan.kelembapan');
+  const autosaveKecepatanAngin = createAutosave('lapangan.kecepatan_angin');
+  const autosaveSouth = createAutosave('south');
+  const autosaveEast = createAutosave('east');
+
   if (isLoadingData && uuid) {
     return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
   }
@@ -483,7 +510,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveSouth(data);
                         }}
                         editable={true}
                         className="h-10 bg-slate-50  font-poppins-semibold"
@@ -507,7 +534,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveEast(data);
                         }}
                         editable={true}
                         className="h-10 bg-slate-50  font-poppins-semibold"
@@ -541,7 +568,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveSuhuAir(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -563,7 +590,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosavePh(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -585,7 +612,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveDhl(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -607,7 +634,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveSalinitas(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -629,7 +656,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveDo(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -651,7 +678,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveKekeruhan(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -673,7 +700,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveKlorin(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -698,7 +725,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveSuhuUdara(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -720,7 +747,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveCuaca(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -742,7 +769,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveArahAngin(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -764,7 +791,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveKelembapan(data);
                         }}
                         className="h-10 bg-slate-50  font-poppins-semibold"
                         enableErrors
@@ -786,7 +813,7 @@ export default function Detail({ route, navigation }) {
                         value={value}
                         onChangeText={(text) => {
                           onChange(text);
-                          autosave(data);
+                          autosaveKecepatanAngin(data);
                         }}
                         className="h-10 bg-slate-50 font-poppins-semibold"
                         enableErrors

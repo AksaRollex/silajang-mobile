@@ -15,6 +15,7 @@ import { launchImageLibrary } from 'react-native-image-picker';
 import BackButton from "../components/BackButton";
 import { useUser } from "@/src/services";
 import axios from "@/src/libs/axios"; // Adjust the import path as needed
+import Icons from "react-native-vector-icons/AntDesign";
 
 const UserProfileForm = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -31,6 +32,27 @@ const UserProfileForm = ({ navigation }) => {
       }
     }
   }, [userData]);
+
+  const handleDeletePhoto = () => {
+    Alert.alert(
+      "Hapus Foto Profil",
+      "Apakah Anda yakin ingin menghapus foto profil?",
+      [
+        {
+          text: "Batal",
+          style: "cancel"
+        },
+        {
+          text: "Hapus",
+          style: "destructive",
+          onPress: () => {
+            // Set profileImage ke null
+            setProfileImage(null);
+          }
+        }
+      ]
+    );
+  };
 
   const validateName = () => {
     if (!name.trim()) {
@@ -120,16 +142,7 @@ const UserProfileForm = ({ navigation }) => {
      (!profileImage || profileImage === userData?.photo));
 
   return (
-    <ScrollView className="bg-gray-100 py-8">
-      <View className="flex-row items-center space-x-2  bg-white p-2 ml-3 mr-3 rounded-lg py-2.5">
-        <BackButton action={() => navigation.goBack()} size={26} className="ml-2" ></BackButton>
-        <View className="w-px h-full bg-gray-200 " />
-        <View className="flex-1 items-center mr-11">
-          <Text className="text-[18px] text-black font-poppins-semibold">
-            Update Profile
-          </Text>
-        </View>
-      </View>
+    <ScrollView className="bg-gray-100 py-3">
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#312e81" />
@@ -137,13 +150,24 @@ const UserProfileForm = ({ navigation }) => {
       ) : (
         <View className="mt-5" style={{ alignItems: "center" }}>
           <View className="bg-white rounded-lg p-6 w-[95%] shadow-lg">
+          <View className="flex-row items-center space-x-2 mb-10 ">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <View className="absolute left-0 right-3 items-center">
+              <Text className="text-[20px] text-black font-poppins-semibold">
+                Update Profile
+              </Text>
+              <View className="h-px w-[120%] bg-gray-200 top-5" />
+            </View>
+          </View>
             <View className="mb-6">
               <Text className="font-poppins-semibold text-sm mb-3">Foto</Text>
               <TouchableOpacity
                 onPress={handleImagePick}
-                className="w-full h-40 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center"
+                className="w-full h-60 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center"
               >
+
                 {profileImage ? (
+                  <>
                   <Image
                   source={{ 
                     uri: profileImage.startsWith('http') || profileImage.startsWith('file:') 
@@ -153,6 +177,14 @@ const UserProfileForm = ({ navigation }) => {
                     className="w-full h-full rounded-lg"
                     resizeMode="cover"
                   />
+                  <TouchableOpacity
+                      onPress={handleDeletePhoto}
+                      className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                    >
+                      <Icons name="close" size={18} color="#dc2626" />
+                    </TouchableOpacity>
+                  </>
+                  
                 ) : (
                   <Text className="text-gray-400 text-xs font-poppins-regular">
                     Pilih Foto
