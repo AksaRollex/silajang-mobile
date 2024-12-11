@@ -1,6 +1,19 @@
 import React, { useEffect, useState, useRef } from "react";
 import axios from "@/src/libs/axios";
-import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert, Platform, Image, StyleSheet, PermissionsAndroid, ActivityIndicator, Modal,} from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+  Platform,
+  Image,
+  StyleSheet,
+  PermissionsAndroid,
+  ActivityIndicator,
+  Modal,
+} from "react-native";
 import { Controller, set, useForm } from "react-hook-form";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BackButton from "../components/BackButton";
@@ -27,7 +40,7 @@ const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const [data, setData] = useState({});
   const [imageUrl, setImageUrl] = useState("");
-  const [typePhoto, setTypePhoto] = useState('')
+  const [typePhoto, setTypePhoto] = useState("");
 
   const [kotaKabupaten, setKotaKabupaten] = useState([]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
@@ -72,7 +85,7 @@ const Perusahaan = () => {
           const uri = response.assets[0].uri;
           console.log("Captured Image URI:", uri);
           setImageUrl(uri);
-          setTypePhoto('capture')
+          setTypePhoto("capture");
         }
       });
     } catch (error) {
@@ -347,12 +360,11 @@ const Perusahaan = () => {
   const QueryClient = useQueryClient();
 
   const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo"  }, response => {
-     
+    launchImageLibrary({ mediaType: "photo" }, response => {
       if (response.didCancel) {
         console.log("User cancelled image picker");
         return;
-      } 
+      }
       if (response.errorMessage) {
         console.log("ImagePicker Error: ", response.errorMessage);
         return;
@@ -361,7 +373,7 @@ const Perusahaan = () => {
         console.log("No image selected");
         return;
       }
-      
+
       const file = response.assets[0];
       const fileSizeInBytes = file.fileSize;
       const fileSizeInKB = fileSizeInBytes / 1024;
@@ -375,16 +387,15 @@ const Perusahaan = () => {
       } else {
         console.log("Chosen file:", file);
         setImageUrl(file.uri);
-        setTypePhoto('upload')
+        setTypePhoto("upload");
       }
-
     });
   };
 
   const handleDeletePhoto = () => {
     setImageUrl(null);
     setCurrentPhotoUrl(null);
-    setTypePhoto('')
+    setTypePhoto("");
   };
 
   useEffect(() => {
@@ -427,37 +438,39 @@ const Perusahaan = () => {
   };
 
   const { mutate: update, isLoading } = useMutation({
-    mutationFn: (data) => {
-      console.log(data, 222)
-      console.log(watch(), 444)
-      const formData = new FormData()
+    mutationFn: data => {
+      console.log(data, 222);
+      console.log(watch(), 444);
+      const formData = new FormData();
       formData.append("instansi", watch("instansi")),
-      formData.append("pimpinan", watch("pimpinan")),
-      formData.append("pj_mutu", watch("pj_mutu")),
-      formData.append("alamat", watch("alamat")),
-      formData.append("telepon", watch("telepon")),
-      formData.append("fax", watch("fax")),
-      formData.append("email", watch("email")),
-      formData.append("jenis_kegiatan", watch("jenis_kegiatan")),
-      formData.append("lat", watch("lat")),
-      formData.append("long", watch("long")),
-      formData.append("kab_kota_id", watch("kab_kota_id")),
-      formData.append("kecamatan_id", watch("kecamatan_id")),
-      formData.append("kelurahan_id", watch("kelurahan_id"));
+        formData.append("pimpinan", watch("pimpinan")),
+        formData.append("pj_mutu", watch("pj_mutu")),
+        formData.append("alamat", watch("alamat")),
+        formData.append("telepon", watch("telepon")),
+        formData.append("fax", watch("fax")),
+        formData.append("email", watch("email")),
+        formData.append("jenis_kegiatan", watch("jenis_kegiatan")),
+        formData.append("lat", watch("lat")),
+        formData.append("long", watch("long")),
+        formData.append("kab_kota_id", watch("kab_kota_id")),
+        formData.append("kecamatan_id", watch("kecamatan_id")),
+        formData.append("kelurahan_id", watch("kelurahan_id"));
 
       if (imageUrl) {
         formData.append("tanda_tangan", {
           uri: imageUrl,
-          type: 'image/jpeg',
-          name: 'tanda_tangan.jpg'
+          type: "image/jpeg",
+          name: "tanda_tangan.jpg",
         });
       }
 
-      return axios.post("/user/company",formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      }).then(res => res.data.data);
+      return axios
+        .post("/user/company", formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        })
+        .then(res => res.data.data);
     },
     onSuccess: res => {
       // QueryClient.invalidateQueries("/auth");
@@ -469,13 +482,13 @@ const Perusahaan = () => {
       //   ...prevData,
       //   tanda_tangan: watch("tanda_tangan"),
       // }));
-      navigation.navigate("Profile");
+      navigation.goBack();
     },
     onError: error => {
       setErrorMessage(
         error.response?.data?.message || "Gagal memperbarui data.",
       );
-      console.log(error.response.data.message)
+      console.log(error.response.data.message);
     },
   });
 
@@ -497,105 +510,105 @@ const Perusahaan = () => {
               Tanda Tangan
             </Text>
 
-          {(typePhoto == 'capture' || typePhoto == '') && (
-            <View style={styles.container}>
-              <TouchableOpacity onPress={openCameraLib} style={styles.button}>
-                <Text className="font-poppins-semibold text-lg mb-3">
-                  Open Camera
-                </Text>
-              </TouchableOpacity>
-              <View>
-                <Image
-                  resizeMode="cover"
-                  className={`rounded-lg ${imageUrl ? "w-48 h-48" : ""}`}
-                  source={{
-                    uri: imageUrl ? imageUrl : currentPhotoUrl,
-                  }}
+            {(typePhoto == "capture" || typePhoto == "") && (
+              <View style={styles.container}>
+                <TouchableOpacity onPress={openCameraLib} style={styles.button}>
+                  <Text className="font-poppins-semibold text-lg mb-3">
+                    Open Camera
+                  </Text>
+                </TouchableOpacity>
+                <View>
+                  <Image
+                    resizeMode="cover"
+                    className={`rounded-lg ${imageUrl ? "w-48 h-48" : ""}`}
+                    source={{
+                      uri: imageUrl ? imageUrl : currentPhotoUrl,
+                    }}
                   />
+                </View>
               </View>
-            </View>
             )}
 
-            {(typePhoto == 'upload' || typePhoto == '') && (
+            {(typePhoto == "upload" || typePhoto == "") && (
               <>
-              <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
-              Or
-            </Text>
-            <Controller
-              control={control}
-              name="tanda_tangan"
-              render={({ field: { onChange } }) => (
-                <View className="w-full">
-                  {/* Check if there's a tanda_tangan in data.detail or photos array */}
-                  {currentPhotoUrl || imageUrl ? (
-                    <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
-                      <View className="items-center">
-                        <View className="relative">
-                          <Image
-                            source={{
-                              uri: imageUrl ? imageUrl : currentPhotoUrl,
-                            }}
-                            className="w-48 h-48 rounded-lg"
-                            onError={e =>
-                              console.log(
-                                "Error loading image:",
-                                e.nativeEvent.error,
-                              )
-                            }
-                            />
+                <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
+                  Or
+                </Text>
+                <Controller
+                  control={control}
+                  name="tanda_tangan"
+                  render={({ field: { onChange } }) => (
+                    <View className="w-full">
+                      {/* Check if there's a tanda_tangan in data.detail or photos array */}
+                      {currentPhotoUrl || imageUrl ? (
+                        <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                          <View className="items-center">
+                            <View className="relative">
+                              <Image
+                                source={{
+                                  uri: imageUrl ? imageUrl : currentPhotoUrl,
+                                }}
+                                className="w-48 h-48 rounded-lg"
+                                onError={e =>
+                                  console.log(
+                                    "Error loading image:",
+                                    e.nativeEvent.error,
+                                  )
+                                }
+                              />
 
-                          {/* Overlay gradient */}
-                          <View className="absolute inset-0 rounded-full bg-black/5" />
-                          {/* Delete button */}
-                          <TouchableOpacity
-                            className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
-                            onPress={handleDeletePhoto}>
-                            <Icons name="close" size={18} color="#dc2626" />
-                          </TouchableOpacity>
+                              {/* Overlay gradient */}
+                              <View className="absolute inset-0 rounded-full bg-black/5" />
+                              {/* Delete button */}
+                              <TouchableOpacity
+                                className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                                onPress={handleDeletePhoto}>
+                                <Icons name="close" size={18} color="#dc2626" />
+                              </TouchableOpacity>
 
-                          {/* Change photo button */}
-                          <TouchableOpacity
-                            className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
-                            onPress={handleChoosePhoto}>
-                            <Icons name="camera" size={20} color="white" />
-                          </TouchableOpacity>
+                              {/* Change photo button */}
+                              <TouchableOpacity
+                                className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                                onPress={handleChoosePhoto}>
+                                <Icons name="camera" size={20} color="white" />
+                              </TouchableOpacity>
+                            </View>
+
+                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
+                              Ketuk ikon kamera untuk mengubah foto
+                            </Text>
+                          </View>
                         </View>
+                      ) : (
+                        // State sebelum upload foto
+                        <TouchableOpacity
+                          className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                          onPress={handleChoosePhoto}>
+                          <View className="items-center space-y-4">
+                            <View className="bg-indigo-100 rounded-full p-5">
+                              <SimpleLineIcons
+                                name="cloud-upload"
+                                size={40}
+                                color="#4f46e5"
+                              />
+                            </View>
 
-                        <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
-                          Ketuk ikon kamera untuk mengubah foto
-                        </Text>
-                      </View>
+                            <View className="items-center">
+                              <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
+                                Unggah Tanda Tangan
+                              </Text>
+                              <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                                Klik atau sentuh area ini untuk memilih foto
+                              </Text>
+                            </View>
+                          </View>
+                        </TouchableOpacity>
+                      )}
                     </View>
-                  ) : (
-                    // State sebelum upload foto
-                    <TouchableOpacity
-                    className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
-                    onPress={handleChoosePhoto}>
-                      <View className="items-center space-y-4">
-                        <View className="bg-indigo-100 rounded-full p-5">
-                          <SimpleLineIcons
-                            name="cloud-upload"
-                            size={40}
-                            color="#4f46e5"
-                            />
-                        </View>
-
-                        <View className="items-center">
-                          <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
-                            Unggah Tanda Tangan
-                          </Text>
-                          <Text className="font-poppins-regular text-sm text-gray-500 text-center">
-                            Klik atau sentuh area ini untuk memilih foto
-                          </Text>
-                        </View>
-                      </View>
-                    </TouchableOpacity>
                   )}
-                </View>
-              )}
-              />
-              </>              
-          )}
+                />
+              </>
+            )}
           </View>
 
           {/* Nama Perusahaan/Instansi */}
@@ -982,111 +995,104 @@ const Perusahaan = () => {
             </TouchableOpacity> */}
           </View>
 
-          {isKotaKabupatenLoaded && isKecamatanLoaded && isKelurahanLoaded ? (
-            <>
-              <Controller
-                name="kab_kota_id"
-                control={control}
-                rules={{ required: "Kabupaten/Kota harus diisi" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-5">
-                    <Text className="font-poppins-semibold text-black mb-2">
-                      Kabupaten / Kota
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kotaKabupaten}
-                        onChangeValue={value => {
-                          onChange(value);
-                          setSelectedKotaKabupaten(value);
-                          setSelectedKecamatan(null); // Reset Kecamatan
-                          setSelectedKelurahan(null); // Reset Kelurahan
-                          setValue("kecamatan_id", null); // Clear Kecamatan field
-                          setValue("kelurahan_id", null); // Clear Kelurahan field
-                          setKecamatan([]);
-                          setKelurahan([]);
-                        }}
-                        items={kotaKabupaten}
-                        value={value}
-                        defaultValue={watch("kab_kota_id")}
-                        placeholder={{
-                          label: "Pilih Kabupaten/Kota",
-                          value: null,
-                        }}
-                      />
-                    </View>
+          <>
+            <Controller
+              name="kab_kota_id"
+              control={control}
+              rules={{ required: "Kabupaten/Kota harus diisi" }}
+              render={({ field: { onChange, value } }) => (
+                <View className="mt-5">
+                  <Text className="font-poppins-semibold text-black mb-2">
+                    Kabupaten / Kota
+                  </Text>
+                  <View
+                    style={{ borderColor: "black", borderWidth: 0.5 }}
+                    className="rounded-2xl">
+                    <Select2
+                      data={isKotaKabupatenLoaded ? kotaKabupaten : []}
+                      onChangeValue={(value) => {
+                        onChange(value);
+                        setSelectedKotaKabupaten(value);
+                        setSelectedKecamatan(null); // Reset Kecamatan
+                        setSelectedKelurahan(null); // Reset Kelurahan
+                        setValue("kecamatan_id", null); // Clear Kecamatan field
+                        setValue("kelurahan_id", null); // Clear Kelurahan field
+                        setKecamatan([]);
+                        setKelurahan([]);
+                      }}
+                      items={isKotaKabupatenLoaded ? kotaKabupaten : []}
+                      value={value}
+                      defaultValue={watch("kab_kota_id")}
+                      placeholder={{
+                        label: "Pilih Kabupaten/Kota",
+                        value: null,
+                      }}
+                    />
                   </View>
-                )}
-              />
+                </View>
+              )}
+            />
 
-              <Controller
-                name="kecamatan_id"
-                control={control}
-                rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-4">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Kecamatan
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kecamatan}
-                        onChangeValue={value => {
-                          onChange(value);
-                          setSelectedKecamatan(value);
-                          setSelectedKelurahan(null); // Reset Kelurahan when Kecamatan changes
-                          setValue("kelurahan_id", null); // Clear Kelurahan field
-                          setKelurahan([]);
-                        }}
-                        items={kecamatan}
-                        value={value}
-                        defaultValue={selectedKecamatan} // Use local state to reset
-                        placeholder={{ label: "Pilih Kecamatan", value: null }}
-                        disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
-                      />
-                    </View>
+            <Controller
+              name="kecamatan_id"
+              control={control}
+              rules={{ required: "Kecamatan Tidak Boleh Kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View className="mt-4">
+                  <Text className="font-poppins-semibold mb-2 text-black">
+                    Kecamatan
+                  </Text>
+                  <View
+                    style={{ borderColor: "black", borderWidth: 0.5 }}
+                    className="rounded-2xl">
+                    <Select2
+                      data={isKecamatanLoaded ? kecamatan : []}
+                      onChangeValue={(value) => {
+                        onChange(value);
+                        setSelectedKecamatan(value);
+                        setKelurahan([]);
+                      }}
+                      items={isKecamatanLoaded ? kecamatan : []}
+                      value={value}
+                      defaultValue={selectedKecamatan} // Use local state to reset
+                      placeholder={{ label: "Pilih Kecamatan", value: null }}
+                      disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
+                    />
                   </View>
-                )}
-              />
+                </View>
+              )}
+            />
 
-              <Controller
-                name="kelurahan_id"
-                control={control}
-                rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-4">
-                    <Text className="font-poppins-semibold mb-2 text-black">
-                      Kelurahan
-                    </Text>
-                    <View
-                      style={{ borderColor: "black", borderWidth: 0.5 }}
-                      className="rounded-2xl">
-                      <Select2
-                        data={kelurahan}
-                        onChangeValue={value => {
-                          onChange(value);
-                          setSelectedKelurahan(value);
-                        }}
-                        items={kelurahan}
-                        value={value}
-                        defaultValue={selectedKelurahan} // Use local state to reset
-                        placeholder={{ label: "Pilih Kelurahan", value: null }}
-                        disabled={!selectedKecamatan} // Disable if Kecamatan not selected
-                      />
-                    </View>
+            <Controller
+              name="kelurahan_id"
+              control={control}
+              rules={{ required: "Kelurahan Tidak Boleh Kosong" }}
+              render={({ field: { onChange, value } }) => (
+                <View className="mt-4">
+                  <Text className="font-poppins-semibold mb-2 text-black">
+                    Kelurahan
+                  </Text>
+                  <View
+                    style={{ borderColor: "black", borderWidth: 0.5 }}
+                    className="rounded-2xl">
+                    <Select2
+                      data={isKelurahanLoaded ? kelurahan : []}
+                      onChangeValue={(value) => {
+                        onChange(value);
+                        setSelectedKelurahan(value);
+                      }}
+                      items={isKelurahanLoaded ? kelurahan : []}
+                      value={value}
+                      defaultValue={selectedKelurahan} // Use local state to reset
+                      placeholder={{ label: "Pilih Kelurahan", value: null }}
+                      disabled={!selectedKecamatan} // Disable if Kecamatan not selected
+                    />
                   </View>
-                )}
-              />
-            </>
-          ) : (
-            <Text>Memuat data, mohon tunggu...</Text>
-          )}
+                </View>
+              )}
+            />
+          </>
 
-<Text>e- {JSON.stringify(errors)}</Text>
           {/* Simpan Button */}
           <TouchableOpacity
             onPress={handleSubmit(update)}
