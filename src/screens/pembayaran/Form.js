@@ -11,13 +11,13 @@ import moment from "moment";
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import BackButton from '../components/BackButton';
 import { useNavigation } from '@react-navigation/native';
-
+import { useKodeRetribusi } from "@/src/services/useKodeRetribusi";
 
 
 export default function FormNonPengujian() {
   const navigation = useNavigation();
-  const [kodeRetribusi, setKodeRetribusi] = useState([]);
-  
+  const { data: kodeRetribusi = [], isLoading, error } = useKodeRetribusi();
+
   const [paymentType, setPaymentType] = useState('va');
 
   const [datePickerOpen, setDatePickerOpen] = useState(false);
@@ -38,28 +38,15 @@ export default function FormNonPengujian() {
     }
   });
 
-  useEffect(() => {
-    axios
-      .get("/master/kode-retribusi")
-      .then(res => {
-        const formattedKodeRetribusi = res.data.data.map(item => ({
-          label: item.nama,
-          value: item.id,
-        }));
-        setKodeRetribusi(formattedKodeRetribusi);
-      })
-      .catch(err => {
-        console.error(err);
-      });
-  }, []);
+  
 
   const onSubmit = async (data) => {
     try {
       const response = await axios.post('/pembayaran/non-pengujian/store', {
         ...data,
-        jumlah: data.jumlah.replace(/\./g, ''), 
+        jumlah: data.jumlah.replace(/\./g, ''),
       });
-      
+
       console.log('Submission successful', response.data);
 
     } catch (error) {
@@ -67,50 +54,56 @@ export default function FormNonPengujian() {
     }
   };
 
+  const formattedKodeRetribusi = kodeRetribusi.map(item => ({
+    label: item.nama,
+    value: item.id,
+  }));
+
   const formatCurrency = (value) => {
     const cleaned = value.replace(/\D/g, '');
-    
+
     return cleaned.replace(/\B(?=(\d{3})+(?!\d))/g, '.');
   };
 
   return (
-    <ScrollView className="h-full w-full bg-[#ececec] px-3 py-2">
-      <View className={`w-full bg-[#f8f8f8] px-3 ${paymentType === 'va' ? 'pt-4 mb-20 pb-4' : 'py-4'}`}>
+    <ScrollView className="h-full w-full bg-[#ececec] px-3 py-2 ">
+      <View className={`w-full bg-[#f8f8f8] rounded-md px-3 ${paymentType === 'va' ? 'pt-4 mb-20 pb-4' : 'py-4'}`}>
         <View className="flex-row items-center space-x-2 mb-10 mt-2 ">
           <BackButton action={() => navigation.navigate('NonPengujian')} size={26} />
           <View className="absolute left-0 right-2 items-center">
             <Text className="text-[18px] text-black font-poppins-semibold">Buat Pembayaran</Text>
-            <View className="h-px w-[120%] bg-gray-200 top-5"/>
+            <View className="h-px w-[120%] bg-gray-200 top-5" />
           </View>
         </View>
         <Text className="font-poppins-bold text-black mb-2">Metode Pembayaran</Text>
         <View className="w-full mb-4 space-y-3">
-        <TouchableOpacity 
-          className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'va' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
-          onPress={() => {
-            setPaymentType('va');
-            setValue('type', 'va');
-          }}
-        >
-          <AntDesign name="calculator" size={20} color={paymentType === 'va' ? 'white' : 'black'} />
-          <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'va' ? 'text-white' : 'text-black'}`}>
-            Virtual Account
-          </Text>
-        </TouchableOpacity>
-        <TouchableOpacity 
-          className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'qris' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
-          onPress={() => {
-            setPaymentType('qris');
-            setValue('type', 'qris');
-          }}
-        >
-          <AntDesign name="qrcode" size={20} color={paymentType === 'qris' ? 'white' : 'black'} />
-          <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'qris' ? 'text-white' : 'text-black'}`}>
-            QRIS
-          </Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'va' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
+            onPress={() => {
+              setPaymentType('va');
+              setValue('type', 'va');
+            }}
+          >
+            <AntDesign name="calculator" size={20} color={paymentType === 'va' ? 'white' : 'black'} />
+            <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'va' ? 'text-white' : 'text-black'}`}>
+              Virtual Account
+            </Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'qris' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
+            onPress={() => {
+              setPaymentType('qris');
+              setValue('type', 'qris');
+            }}
+          >
+            <AntDesign name="qrcode" size={20} color={paymentType === 'qris' ? 'white' : 'black'} />
+            <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'qris' ? 'text-white' : 'text-black'}`}>
+              QRIS
+            </Text>
+          </TouchableOpacity>
         </View>
 
+        
         <Controller
           control={control}
           name="kode_retribusi_id"
@@ -118,10 +111,10 @@ export default function FormNonPengujian() {
             <View className="mb-4">
               <Text className="font-poppins-bold text-black mb-2">Kode Retribusi</Text>
               <Select2
-                placeholder="Pilih Kode Retribusi"
-                items={kodeRetribusi}
+                placeholder={{ label: "Pilih Kode Retribusi", value: null }}
+                items={formattedKodeRetribusi}
                 value={value}
-                onChange={value => onChange(value)}
+                onChangeValue={value => onChange(value)}
               />
               {error && <Text className="text-red-500 font-poppins-regular">{error.message}</Text>}
             </View>
@@ -169,7 +162,7 @@ export default function FormNonPengujian() {
           render={({ field: { onChange, value }, fieldState: { error } }) => (
             <View className="mb-4">
               <Text className="font-poppins-bold text-black mb-2">Tanggal Kedaluwarsa</Text>
-              <TouchableOpacity 
+              <TouchableOpacity
                 className="p-2 bg-[#fff] rounded-sm border-stone-300 border"
                 onPress={() => setDatePickerOpen(true)}
               >
@@ -218,11 +211,11 @@ export default function FormNonPengujian() {
           </>
         )}
 
-        <TouchableOpacity 
+        <TouchableOpacity
           className="bg-[#312e81] p-3 rounded mt-4"
           onPress={handleSubmit(onSubmit)}
         >
-        <Text className="text-white text-center font-poppins-regular">Simpan</Text>
+          <Text className="text-white text-center font-poppins-regular">Simpan</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

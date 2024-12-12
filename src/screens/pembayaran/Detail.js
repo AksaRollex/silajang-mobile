@@ -232,9 +232,7 @@ const Detail = ({ route, navigation }) => {
       .catch(error => {
         console.error("Gagal mengambil data URL:", error);
       });
-  };
-
-  
+  };  
 
   const calculateCountdown = (exp, now) => {
     let days = exp.diff(now, "days");
@@ -410,31 +408,47 @@ const Detail = ({ route, navigation }) => {
 
             {formData.payment?.type === "qris" && (
               <View className="items-center mb-4 pb-4 border-b border-gray-100">
-                <View style={{ height: 450 }}>
-                      <Canvas ref={handleCanvas} />
-                    </View>
-                {formData.payment?.status === "pending" && (
+                <View
+                  style={{
+                    height: 450,
+                    opacity: formData.payment.is_expired ? 0.3 : 1, // Mengatur opacity Canvas
+                  }}>
+                  <Canvas ref={handleCanvas} />
+                </View>
+                {formData.payment.status === "pending" && (
                   <TouchableOpacity
                     onPress={downloadQris}
-                    disabled={formData.payment?.is_expired}
-                    className="flex-row mt-3 bg-blue-50 px-4 py-2 p-3 rounded-lg">
-                    <Text className="text-blue-600 font-poppins-semibold">
+                    disabled={formData.payment.is_expired}
+                    className={`flex-row mt-3 px-4 py-2 p-3 rounded-lg ${
+                      formData.payment.is_expired ? "bg-gray-200" : "bg-blue-50"
+                    }`}
+                    style={{
+                      opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
+                    }}>
+                    <Text
+                      className={`font-poppins-semibold ${
+                        formData.payment.is_expired ? "text-gray-400" : "text-blue-600"
+                      }`}>
                       Unduh QRIS
                     </Text>
                     <MaterialIcons
                       name="qr-code-2"
                       size={24}
-                      color="black"
-                      paddingLeft={10}
+                      color={formData.payment.is_expired ? "gray" : "black"}
+                      style={{ paddingLeft: 10 }}
                     />
                   </TouchableOpacity>
                 )}
               </View>
             )}
 
-            <View className="flex-row items-center justify-between">
+            <View
+              className="flex-row items-center justify-between"
+              style={{
+                opacity: formData.is_expired ? 0.5 : 1, // Mengatur opacity seluruh View
+              }}>
               <View>
-                <Text className="text-sm text-gray-600 font-poppins-regular mb-1">
+                <Text className="text-md text-black font-poppins-bold mb-1">
                   Nominal Pembayaran
                 </Text>
                 <Text className="text-xl text-blue-600 font-poppins-semibold">
@@ -443,9 +457,15 @@ const Detail = ({ route, navigation }) => {
               </View>
               <TouchableOpacity
                 onPress={() => copyToClipboard(formData.payment.jumlah)}
-                disabled={formData.payment?.is_expired}
-                className="top-3">
-                <Text className="text-green-600 font-poppins-semibold">
+                disabled={formData.payment.is_expired}
+                className="top-3"
+                style={{
+                  opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity tombol Salin
+                }}>
+                <Text
+                  className={`font-poppins-semibold ${
+                    formData.payment.is_expired ? "text-gray-400" : "text-green-600"
+                  }`}>
                   Salin
                 </Text>
               </TouchableOpacity>

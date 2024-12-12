@@ -201,7 +201,7 @@ const PengambilSampel = ({ navigation }) => {
         <View className="flex-row justify-end items-center space-x-2 mr-[-10px]">
           <TouchableOpacity 
             onPress={() => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
-            className="bg-indigo-900 px-3 py-2 rounded-md"
+            className="bg-indigo-500 px-3 py-2 rounded-md"
           >
               <View className="flex-row">
                 <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />

@@ -292,10 +292,10 @@ const VerifikasiLhu = ({ navigation }) => {
         <View className="flex-row justify-end mt-2">
           <TouchableOpacity 
             onPress={() => PreviewVerifikasi(item)}
-            className="flex-row items-center bg-red-600 px-2 py-2 rounded-md"
+            className="flex-row items-center bg-red-100 px-2 py-2 rounded-md"
           >
-            <FontAwesome5Icon name="file-pdf" size={16} color="white" style={{ marginRight: 8 }} />
-            <Text className="text-white font-poppins-medium text-xs">Preview LHU</Text>
+            <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" style={{ marginRight: 8 }} />
+            <Text className="text-red-500 font-poppins-medium text-xs">Preview LHU</Text>
           </TouchableOpacity>
         </View>
       </View>
