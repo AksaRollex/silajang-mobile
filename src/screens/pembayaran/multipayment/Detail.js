@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback } from "react";
+import React, { useEffect, useState, useCallback, useRef } from "react";
 import {
   View,
   Text,
@@ -8,6 +8,7 @@ import {
   Alert,
   ActivityIndicator,
   Image,
+  Modal,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import moment from "moment";
@@ -16,15 +17,160 @@ import Back from "../../components/Back";
 import { rupiah } from "@/src/libs/utils";
 import { useSetting } from "@/src/services";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { Colors } from "react-native-ui-lib";
 import { QueryClient } from "@tanstack/react-query";
+import RNFS from "react-native-fs";
+import Canvas, { Image as CanvasImage } from "react-native-canvas";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import AntDesign from "react-native-vector-icons/AntDesign";
 const MultipaymentDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const [dateExp, setDateExp] = useState("06:60:60:60");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [modalError, setModalError] = useState(false);
   const { uuid } = route.params;
+  const canvasRef = useRef(null);
+  console.log(route);
   const { data: setting } = useSetting();
-  // console.log(setting);
+
+  /**
+   * Download QRIS dan QRIS template ke galeri perangkat
+   *
+   * @returns {Promise<void>}
+   */
+
+  const handleCanvas = async canvas => {
+    try {
+      // Fungsi untuk mengambil gambar sebagai base64
+      const getBase64Image = async imageSource => {
+        const photo = Image.resolveAssetSource(imageSource);
+        const photoUri = photo?.uri;
+
+        if (!photoUri) {
+          throw new Error(`Image not found`);
+        }
+
+        const response = await fetch(photoUri);
+        const blob = await response.blob();
+
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            const base64String = reader.result.split(",")[1] || reader.result;
+            resolve(`data:image/png;base64,${base64String}`);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      };
+
+      const qrisBase64 = await getBase64Image(
+        require("../../../../assets/images/qrcodes.png"),
+      );
+      const qrisTemplateBase64 = await getBase64Image(
+        require("../../../../assets/images/qris-template.png"),
+      );
+
+      if (!canvas || canvasRef.current) return;
+
+      canvasRef.current = canvas;
+      const width = 340;
+      const height = 440;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+
+      const qrisTemplate = new CanvasImage(canvas);
+      qrisTemplate.src = qrisTemplateBase64;
+      qrisTemplate.addEventListener("load", () => {
+        // Gambar template terlebih dahulu
+        ctx.drawImage(qrisTemplate, 0, 0, width, height);
+      });
+
+      const qrisImage = new CanvasImage(canvas);
+      qrisImage.src = qrisBase64;
+      qrisImage.addEventListener("load", () => {
+        // Gambar QRIS di tengah template
+        const imageWidth = 180;
+        const imageHeight = 180;
+        const x = (width - imageWidth) / 2;
+        const y = (height - imageHeight) / 2;
+
+        // Gambar QRIS di atas template
+        ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
+      });
+    } catch (error) {
+      console.error("Error dalam proses download:", error);
+      throw error;
+    }
+  };
+
+  const [dataKode, setDataKode] = useState(null);
+
+  useEffect(() => {
+    axios
+      .get(`/pembayaran/pengujian/${uuid}`)
+      .then(res => {
+        setDataKode(res.data.data?.kode);
+        console.log(res.data.data?.kode, 1111);
+      })
+      .catch(err => {
+        Alert.alert("error", err.response?.data?.data?.kode.message);
+      });
+  }, [uuid]);
+
+  const downloadQris = () => {
+    if (!dataKode) {
+      setModalError(true);
+      setTimeout(() => {
+        setModalError(false);
+      }, 2000);
+      return;
+    }
+
+    const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
+    const downloadDir = RNFS.PicturesDirectoryPath;
+    const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
+
+    console.log("Download Directory:", downloadDir);
+    console.log("Full Path:", downloadDestPath);
+
+    canvasRef.current
+      .toDataURL("image/png")
+      .then(fullData => {
+        const base64Data = fullData.split(",")[1];
+
+        console.log("Base64 Data Length:", base64Data.length);
+
+        RNFS.writeFile(downloadDestPath, base64Data, "base64")
+          .then(() => {
+            console.log("File berhasil disimpan di:", downloadDestPath);
+            setModalVisible(true);
+            setTimeout(() => {
+              setModalVisible(false);
+            }, 2000);
+
+            // Coba scan file ke gallery
+            RNFS.scanFile(downloadDestPath)
+              .then(() => {
+                console.log("File successfully scanned into gallery");
+              })
+              .catch(error => {
+                console.error("Gagal scan file:", error);
+              });
+          })
+          .catch(error => {
+            console.error("Gagal menyimpan file:", error);
+            // Log detail error
+            console.error("Error Details:", JSON.stringify(error));
+          });
+      })
+      .catch(error => {
+        console.error("Gagal mengambil data URL:", error);
+      });
+  };
 
   const copyToClipboard = text => {
     Clipboard.setString(text);
@@ -119,56 +265,64 @@ const MultipaymentDetail = ({ route, navigation }) => {
 
   const renderPaymentInfo = () => (
     <>
-      <View>
-        <View
-          className="border-gray-300"
-          style={{ flexDirection: "row", justifyContent: "space-between" }}>
+      <View className=" p-4">
+        <View className="border-gray-300  flex-col ">
           <Text
+            className="text-gray-800 text-lg"
             style={{
-              color: "black",
-              fontSize: 16,
               fontFamily: "Poppins-SemiBold",
             }}>
-            Titik Permohonan Dipilih
+            Titik Permohonan
           </Text>
-          <View className="px-2 py-1 bg-indigo-500 rounded-md">
-            <Text
-              style={{ color: "white" }}
-              className="text-sm font-poppins-regular">
-              {formData?.data?.multi_payments
-                ?.map(payment => payment.titik_permohonan.kode)
-                .join(", ") || "Kode Kosong"}
-            </Text>
-          </View>
+          <Text className=" font-poppins-regular text-gray-600 ">
+            {formData?.data?.multi_payments
+              ?.map(payment => payment.titik_permohonan.kode)
+              .join(", ") || "Kode Kosong"}
+          </Text>
         </View>
 
-        <View className="flex-row justify-between border-gray-300 pb-1">
-          <Text className="font-poppins-semibold text-black text-base">
+        <View className="flex-col  border-gray-300 mt-2">
+          <Text className="font-poppins-semibold  text-gray-800  text-lg">
             Total Harga
           </Text>
-          <Text className="font-poppins-regular text-black text-base">
+          <Text className="font-poppins-regular text-gray-600 ">
             {rupiah(formData?.data?.jumlah)}
           </Text>
         </View>
-        <View
-          className="border-gray-300 mb-3"
-          style={{ flexDirection: "row", justifyContent: "space-between" }}>
+        <View className="border-gray-300 mb-1 flex-col mt-2">
           <Text
+            className="text-gray-800 text-lg"
             style={{
-              color: "black",
-              fontSize: 16,
               fontFamily: "Poppins-SemiBold",
             }}>
             Atas Nama
           </Text>
           <Text
+            className="text-gray-600 "
             style={{
-              color: "black",
-              fontSize: 16,
               fontFamily: "Poppins-Regular",
             }}>
             {formData?.data?.nama || "-"}
           </Text>
+        </View>
+        <View className="mt-2 flex-col ">
+          <Text
+            className="text-gray-800 text-lg"
+            style={{
+              fontFamily: "Poppins-SemiBold",
+            }}>
+            Tipe Pembayaran
+          </Text>
+          <Text className=" font-poppins-regular text-gray-600">
+            {formData.data?.type === "va" ? "Virtual Account" : "QRIS"}
+          </Text>
+
+          {formData.data?.type === "qris" &&
+            formData.data?.status === "pending" && (
+              <Text className="text-gray-600 font-poppins-regular ">
+                Gunakan QRIS untuk pembayaran
+              </Text>
+            )}
         </View>
       </View>
     </>
@@ -177,37 +331,157 @@ const MultipaymentDetail = ({ route, navigation }) => {
   const renderPaymentStatus = () => {
     if (formData?.data?.status === "success") {
       return (
-        <Text className="bg-green-500 text-white text-center p-3 rounded-lg mb-4 font-poppins-semibold">
-          Pembayaran berhasil dilakukan : {formData?.data?.tanggal_bayar}
-        </Text>
+        <View className="bg-green-500 flex-row justify-between items-center p-4 rounded-t-xl">
+          <MaterialCommunityIcons
+            name="check-decagram"
+            size={28}
+            color="white"
+            className="mr-4"
+          />
+          <View class="">
+            <Text className="text-white font-poppins-semibold text-base ml-3">
+              Pembayaran Berhasil
+            </Text>
+            <Text className="text-green-100 font-poppins-regular text-sm mt-1 ml-3">
+              Dilakukan pada:{" "}
+              {moment(formData.data?.tanggal_bayar).format("DD-MM-YYYY")}
+            </Text>
+          </View>
+        </View>
       );
     } else if (formData?.data?.status === "failed") {
       return (
-        <Text className="bg-red-500 text-white text-center p-3 rounded-lg mb-4 font-poppins-semibold">
+        <View>
+          {/* <Text className="bg-red-500 text-white text-center p-3 rounded-lg mb-4 font-poppins-semibold">
           Pembayaran gagal. Silakan coba lagi.
-        </Text>
-      );
-      return null;
-    } else if (formData?.data?.is_expired) {
-      return (
-        <View className="bg-[#ececec] rounded-lg mb-3">
-          <Text
-            style={styles.errorText}
-            className="p-3 m-2 font-poppins-semibold">
-            VA Pembayaran telah kedaluwarsa
-          </Text>
-          <Text className="p-2 my-2 text-base font-poppins-semibold text-center text-black">
-            Silakan Hubungi Admin Kami untuk Melakukan Permintaan Pembuatan VA
-            Pembayaran
-          </Text>
-          {/* ... (keep the admin contact information) */}
+        </Text> */}
         </View>
       );
-    } else if (!formData?.data?.is_expired) {
+    } else if (formData?.data?.is_expired && formData?.data?.type === "va") {
       return (
-        <Text style={styles.warningText} className="font-poppins-semibold">
-          Lakukan pembayaran sebelum : {countdownExp}
-        </Text>
+        <View className=" rounded-lg mb-3 relative ">
+          {formData?.data?.type === "va" && (
+            <>
+              <Text className=" p-2 my-2 text-base font-poppins-semibold text-center text-black">
+                Silakan Hubungi Admin Kami untuk Melakukan Permintaan Pembuatan
+                VA Pembayaran
+              </Text>
+            </>
+          )}
+          {setting ? (
+            <View>
+              <View className="flex flex-row items-center justify-center my-3">
+                <MaterialIcons name="email" size={24} color="#000" />
+                <Text className="font-poppins-semibold text-black mx-1 ">
+                  Email :
+                </Text>
+                <Text className=" text-black font-bold">
+                  {setting?.email || "-"}
+                </Text>
+              </View>
+              <View className="flex flex-row items-center justify-center mb-3 ">
+                <MaterialIcons
+                  name="local-phone"
+                  size={19}
+                  color="#000"
+                  style={{}}
+                />
+                <Text className="font-poppins-semibold text-black mx-1 ">
+                  Telepon :
+                </Text>
+                <Text className=" text-black font-poppins-semibold ">
+                  {setting?.telepon || "-"}
+                </Text>
+              </View>
+            </View>
+          ) : (
+            <View>
+              <Text>Data Kosong</Text>
+            </View>
+          )}
+        </View>
+      );
+    } else if (formData?.data?.is_expired && formData?.data?.type === "qris") {
+      return (
+        <View>
+          <View className="flex-row  justify-between items-center  p-2 border-b border-gray-100">
+            <AntDesign
+              name="exclamationcircle"
+              size={28}
+              color="#EF4444"
+              className="mr-4"
+            />
+            <View>
+              <Text className="text-red-800 font-poppins-semibold text-base">
+                Pembayaran Kedaluwarsa
+              </Text>
+              <Text className="text-red-700 font-poppins-regular text-sm mt-1">
+                {formData.data?.type === "va" &&
+                  "Virtual Account telah kedaluwarsa"}
+                {formData.data?.type === "qris" && "QRIS telah kedaluwarsa"}
+              </Text>
+            </View>
+          </View>
+
+          <View className=" rounded-lg mb-3">
+            {formData?.data?.type === "qris" && (
+              <>
+                <Text className=" p-2 my-2 text-base font-poppins-semibold text-center text-black">
+                  Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                  Pembuatan QRIS Pembayaran
+                </Text>
+              </>
+            )}
+            {setting ? (
+              <View>
+                <View className="flex flex-row items-center justify-center my-3">
+                  <MaterialIcons name="email" size={24} color="#000" />
+                  <Text className="font-poppins-semibold text-black mx-1 ">
+                    Email :
+                  </Text>
+                  <Text className=" text-black font-bold">
+                    {setting?.email || "-"}
+                  </Text>
+                </View>
+                <View className="flex flex-row items-center justify-center mb-3 ">
+                  <MaterialIcons
+                    name="local-phone"
+                    size={19}
+                    color="#000"
+                    style={{}}
+                  />
+                  <Text className="font-poppins-semibold text-black mx-1 ">
+                    Telepon :
+                  </Text>
+                  <Text className=" text-black font-poppins-semibold ">
+                    {setting?.telepon || "-"}
+                  </Text>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text>Data Kosong</Text>
+              </View>
+            )}
+          </View>
+        </View>
+      );
+    } else if (formData?.data?.is_expired) {
+      return (
+        <View className="flex-row items-center mb-4 pb-4 border-b border-gray-100">
+          <AntDesign name="clockcircle" size={28} color="#3B82F6" />
+          <View className="ml-5">
+            <Text className="text-blue-800 font-poppins-semibold text-base">
+              Segera Selesaikan Pembayaran
+            </Text>
+            <Text className="text-blue-700 font-poppins-regular text-sm mt-1">
+              Lakukan Pembayaran Sebelum :
+            </Text>
+            <Text className="text-blue-700 font-poppins-regular text-sm mt-1">
+              {countdownExp}
+            </Text>
+          </View>
+        </View>
       );
     }
   };
@@ -217,13 +491,15 @@ const MultipaymentDetail = ({ route, navigation }) => {
       return null;
     }
     if (formData?.data?.status !== "success" && !formData?.data?.is_expired) {
-      if (formData?.data?.type === "va" && !formData?.user_has_va) {
+      if (formData?.data?.type === "va" && !formData?.data?.user_has_va) {
         return (
           <View className="flex items-end my-2">
             <TouchableOpacity
               className="bg-indigo-600 p-3 rounded-lg"
               onPress={handleGenerateVA}>
-              <Text style={styles.buttonText}>Buat VA Pembayaran</Text>
+              <Text className="font-poppins-semibold text-white">
+                Buat VA Pembayaran
+              </Text>
             </TouchableOpacity>
           </View>
         );
@@ -231,9 +507,11 @@ const MultipaymentDetail = ({ route, navigation }) => {
         return (
           <View className="flex items-end my-2">
             <TouchableOpacity
-              className="bg-indigo-600 p-3 rounded-lg"
+              className="bg-indigo-500 p-3 rounded-lg"
               onPress={handleGenerateQris}>
-              <Text style={styles.buttonText}>Buat QRIS</Text>
+              <Text className="font-poppins-semibold text-white">
+                Buat QRIS
+              </Text>
             </TouchableOpacity>
           </View>
         );
@@ -251,51 +529,99 @@ const MultipaymentDetail = ({ route, navigation }) => {
       return (
         <>
           <View style={styles.card}>
-            <Text style={styles.cardTitle} className="font-poppins-semibold">
+            <Text className="font-poppins-semibold text-lg text-gray-800">
               Virtual Account
             </Text>
-            <View style={styles.cardContent}>
-              <Image
-                source={require("@/assets/images/bank-jatim.png")}
-                style={{
-                  width: 100,
-                  marginLeft: rem(0.8),
-                  height: 30,
-                  resizeMode: "contain",
-                }}
-              />
-              <Text
-                style={styles.vaNumber}
-                className="text-indigo-600 font-poppins-semibold">
-                {formData?.data?.va_number || "Tidak Tersedia"}
-              </Text>
-              <TouchableOpacity
-                onPress={() => copyToClipboard(formData?.data?.va_number)}>
-                <Text
-                  style={styles.copyButton}
-                  className="font-poppins-semibold">
-                  Salin
-                </Text>
-              </TouchableOpacity>
+            <View
+              className="flex-row justify-between"
+              style={{
+                opacity:
+                  formData.data?.is_expired ||
+                  formData.data?.status === "success"
+                    ? 0.5
+                    : 1,
+              }}>
+              {formData.data?.type === "va" && (
+                <>
+                  <View className="flex-row items-center">
+                    <View className="bg-white p-2 rounded-lg mr-1">
+                      <Image
+                        source={require("../../../../assets/images/bank-jatim.png")}
+                        className="w-[100px] h-[23px] object-cover"
+                      />
+                    </View>
+                    <Text className="text-blue-600 font-poppins-semibold text-base">
+                      {formData.data?.va_number}
+                    </Text>
+                  </View>
+                  <TouchableOpacity
+                    disabled={formData.data?.is_expired}
+                    onPress={() => copyToClipboard(formData.data?.va_number)}
+                    className="bottom-4"
+                    // style={{
+                    //   opacity:
+                    //     formData.data?.is_expired ||
+                    //     formData?.data?.status === "success"
+                    //       ? 0.5
+                    //       : 1,
+                    // }}
+                  >
+                    <Text
+                      className={`font-poppins-semibold ${
+                        formData.data?.is_expired ||
+                        formData?.data?.status === "success"
+                          ? "text-gray-400"
+                          : "text-green-600"
+                      }`}>
+                      Salin
+                    </Text>
+                  </TouchableOpacity>
+                </>
+              )}
             </View>
           </View>
           <View style={styles.card}>
-            <Text style={styles.cardTitle} className="font-poppins-semibold">
-              Total Harga
-            </Text>
-            <View style={styles.cardContent}>
-              <Text
-                style={styles.vaNumber}
-                className="text-indigo-600 font-poppins-semibold">
-                {rupiah(formData?.data?.jumlah || 0)}
+            <View>
+              <Text className="text-lg text-black font-poppins-bold mb-1">
+                Total Harga
+              </Text>
+            </View>
+            <View
+              className="flex-row items-center justify-between"
+              style={{
+                opacity:
+                  formData.data?.is_expired ||
+                  formData.data?.status === "success"
+                    ? 0.5
+                    : 1,
+              }}>
+              <Text className="font-poppins-semibold text-base text-blue-600 ">
+                {rupiah(formData.data?.jumlah)}
               </Text>
               <TouchableOpacity
-                onPress={() =>
-                  copyToClipboard(formData?.data?.jumlah?.toString())
-                }>
+                onPress={() => copyToClipboard(formData.data?.jumlah)}
+                disabled={
+                  formData.data?.is_expired ||
+                  formData.data?.status === "success"
+                }
+                className="bottom-4"
+                // style={{
+                //   opacity:
+                //     formData.data?.is_expired ||
+                //     formData.data?.status === "success"
+                //       ? 0.5
+                //       : 1,
+                // }}
+              >
                 <Text
-                  style={styles.copyButton}
-                  className="font-poppins-semibold">
+                  className={`font-poppins-semibold 
+                    ${
+                      formData.data?.is_expired ||
+                      formData.data?.status === "success"
+                        ? "text-gray-400"
+                        : "text-green-600"
+                    }
+                  `}>
                   Salin
                 </Text>
               </TouchableOpacity>
@@ -305,13 +631,44 @@ const MultipaymentDetail = ({ route, navigation }) => {
       );
     } else if (formData?.data?.type === "qris") {
       return (
-        <View className="items-center justify-center p-5 m-3 bg-[#ececec] rounded-md">
-          <View style={[isExpired && styles.disabledCard]}>
-            <Image
-              source={require("../../../../android/app/src/main/assets/images/qrcode.png")}
-              style={styles.qrisImage}
-              resizeMode="contain"
-            />
+        <View>
+          <View className="items-center  justify-center">
+            <View
+              style={{
+                opacity:
+                  formData.data?.is_expired ||
+                  formData.data?.status === "success"
+                    ? 0.5
+                    : 1,
+              }}>
+              <Canvas ref={handleCanvas} />
+            </View>
+          </View>
+          <View className="px-4 my-4  justify-center items-center">
+            {formData.data.status === "pending" && (
+              <TouchableOpacity
+                onPress={downloadQris}
+                disabled={formData.data.is_expired}
+                className={`flex-row p-3 rounded-lg ${
+                  formData.data.is_expired ? "bg-gray-200" : "bg-blue-50"
+                }`}
+                style={{
+                  opacity: formData.data.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
+                }}>
+                <Text
+                  className={`font-poppins-semibold ${
+                    formData.data.is_expired ? "text-gray-400" : "text-black"
+                  }`}>
+                  Unduh QRIS
+                </Text>
+                <MaterialIcons
+                  name="qr-code-2"
+                  size={24}
+                  color={formData.data.is_expired ? "gray" : "black"}
+                  style={{ paddingLeft: 10 }}
+                />
+              </TouchableOpacity>
+            )}
           </View>
         </View>
       );
@@ -324,11 +681,11 @@ const MultipaymentDetail = ({ route, navigation }) => {
     if (formData?.data?.type === "va" && formData?.data?.status === "failed") {
       return (
         <>
-          <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
-            <Text className="font-bold text-black text-lg text-center  ">
+          <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100  justify-center items-center ">
+            <Text className="text-base font-poppins-semibold mb-2 text-black text-center">
               VA Pembayaran Belum Dibuat
             </Text>
-            <Text className=" text-sm text-[#333179] text-center">
+            <Text className="text-sm text-indigo-600 font-poppins-regular ">
               Silahkan klik Tombol Di Bawah untuk Membuat VA
             </Text>
           </View>
@@ -341,11 +698,11 @@ const MultipaymentDetail = ({ route, navigation }) => {
     ) {
       return (
         <>
-          <View className="border  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
-            <Text className="font-bold text-black text-lg text-center  ">
+          <View className="border justify-center items-center  border-indigo-400 rounded-lg my-2 p-4  bg-indigo-100 ">
+            <Text className="text-base font-poppins-semibold mb-2 text-black">
               QRIS Pembayaran Belum Dibuat
             </Text>
-            <Text className=" text-sm text-[#333179] text-center">
+            <Text className="text-sm text-indigo-600 font-poppins-regular ">
               Silahkan klik Tombol Di Bawah untuk Membuat QRIS
             </Text>
           </View>
@@ -380,6 +737,40 @@ const MultipaymentDetail = ({ route, navigation }) => {
               </View>
             )}
           </View>
+          <Modal animationType="fade" transparent={true} visible={modalVisible}>
+            <View style={styles.overlayView}>
+              <View style={styles.successContainer}>
+                <Image
+                  source={require("@/assets/images/check-mark.png")}
+                  style={styles.lottie}
+                />
+
+                <Text style={styles.successTextTitle}>
+                  File berhasil di download
+                </Text>
+                <Text style={styles.successText}>
+                  Silahkan untuk cek file di folder download anda !
+                </Text>
+              </View>
+            </View>
+          </Modal>
+          <Modal animationType="fade" transparent={true} visible={modalError}>
+            <View style={styles.overlayView}>
+              <View style={styles.successContainer}>
+                <Image
+                  source={require("@/assets/images/check-mark.png")}
+                  style={styles.lottie}
+                />
+
+                <Text style={styles.successTextTitle}>
+                  File gagal di download
+                </Text>
+                <Text style={styles.successText}>
+                  Gagal mengambil data kode
+                </Text>
+              </View>
+            </View>
+          </Modal>
           <ScrollView className="px-3 py-1 rounded-b-md">
             <View className="py-4 px-3 rounded-lg ">
               {renderPaymentStatus()}
@@ -490,6 +881,43 @@ const styles = StyleSheet.create({
     justifyContent: "center",
     alignItems: "center",
     backgroundColor: "#fff",
+  },
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.7)",
+  },
+  successContainer: {
+    alignItems: "center",
+    backgroundColor: "white",
+    padding: 20,
+    width: "90%",
+    paddingVertical: 30,
+    borderRadius: 10,
+  },
+  lottie: {
+    width: 170,
+    height: 170,
+  },
+
+  successTextTitle: {
+    textAlign: "center",
+    color: "black",
+
+    fontFamily: "Poppins-SemiBold",
+  },
+  successText: {
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "black",
+  },
+  errortitle: {
+    color: "#FF4B4B",
+  },
+  errorText: {
+    color: "#666",
   },
 });
 

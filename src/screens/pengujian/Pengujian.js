@@ -55,7 +55,7 @@ export default function Pengujian() {
   }, [user.role.name]);
 
   const { refetch } = useQuery({
-    queryKey: ["history"],
+    queryKey: ["historiPengujian"],
     queryFn: async () =>
       await axios.get("/dashboard/history").then(res => res.data.data),
 

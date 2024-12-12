@@ -91,7 +91,7 @@ export default function Pembayaran() {
   ];
 
   const { refetch } = useQuery({
-    queryKey: ["history"],
+    queryKey: ["historyPembayaran"],
     queryFn: async () =>
       await axios
         .get("/dashboard/historyPembayaran")

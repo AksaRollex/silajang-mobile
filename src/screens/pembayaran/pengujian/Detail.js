@@ -208,7 +208,10 @@ const PengujianDetail = ({ route, navigation }) => {
       return;
     }
 
+    const timestamp = new Date().getTime();
     const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
+    // const downloadDestPath = `${RNFS.TemporaryDirectoryPath}/${timestamp}.png`;
+    // const downloadDestPath = `${RNFS.TemporaryDirectoryPath}/${sanitizedKode}.png`;
     const downloadDir = RNFS.PicturesDirectoryPath;
     const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
 
@@ -256,27 +259,27 @@ const PengujianDetail = ({ route, navigation }) => {
       return (
         <>
           <View className="flex-col">
-            <View className="flex-row justify-between mr-2">
-              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+            <View className="flex-row justify-between ">
+              <Text className="form-label font-poppins-bold text-black  mb-1">
                 Harga
               </Text>
-              <Text className="text-base font-poppins-semibold text-black">
+              <Text className="text-base font-poppins-regular text-black">
                 {rupiah(formData?.harga || 0)}
               </Text>
             </View>
             <View className="flex-row justify-between">
-              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+              <Text className="form-label font-poppins-bold text-black  mb-1">
                 Atas Nama
               </Text>
-              <Text className="text-base font-poppins-semibold text-black">
+              <Text className="text-base font-poppins-regular text-black">
                 {formData?.permohonan?.user?.nama || "-"}
               </Text>
             </View>
-            <View className="flex-row justify-between mr-2">
-              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+            <View className="flex-row justify-between ">
+              <Text className="form-label font-poppins-bold text-black  mb-1">
                 Denda
               </Text>
-              <Text className="text-base font-poppins-semibold text-black">
+              <Text className="text-base font-poppins-regular text-black">
                 {rupiah(formData?.harga || 0)}
               </Text>
             </View>
@@ -292,13 +295,13 @@ const PengujianDetail = ({ route, navigation }) => {
     if (!formData?.payment) {
       return (
         <>
-          <View className="bg-indigo-200 p-4 rounded-lg items-center my-4">
-            <Text className="text-base font-poppins-semibold mb-2 text-black">
+          <View className="bg-indigo-100 border border-indigo-400 p-4 rounded-lg justify-center items-center my-4">
+            <Text className="text-base font-poppins-semibold mb-2 text-black text-center">
               {formData?.payment_type === "va"
                 ? "VA Pembayaran Belum Dibuat"
                 : "QRIS Belum Dibuat"}
             </Text>
-            <Text className="text-sm text-indigo-600 font-poppins-regular text-center">
+            <Text className="text-sm text-indigo-600 font-poppins-regular">
               {formData?.payment_type === "va"
                 ? "Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran"
                 : "Silahkan klik Tombol Di Bawah untuk Membuat QRIS"}
@@ -308,9 +311,7 @@ const PengujianDetail = ({ route, navigation }) => {
             <TouchableOpacity
               className="bg-indigo-500 p-3 rounded-lg"
               onPress={handleGenerateVA}>
-              <Text
-                style={styles.buttonText}
-                className="font-poppins-semibold text-white">
+              <Text className="font-poppins-semibold text-white">
                 Buat VA Pembayaran
               </Text>
             </TouchableOpacity>
@@ -331,7 +332,7 @@ const PengujianDetail = ({ route, navigation }) => {
       <View className="space-y-4 ">
         <View className="rounded-xl shadow-lg overflow-hidden">
           {formData.payment?.status === "success" && (
-            <View className="bg-green-500 flex-row items-center p-4">
+            <View className="bg-green-500 flex-row items-center  justify-between p-4">
               <MaterialCommunityIcons
                 name="check-decagram"
                 size={28}
@@ -370,24 +371,76 @@ const PengujianDetail = ({ route, navigation }) => {
               )}
 
             {formData.payment?.is_expired && (
-              <View className="flex-row  justify-between items-center mb-4 pb-4 border-b border-gray-100">
-                <AntDesign
-                  name="exclamationcircle"
-                  size={28}
-                  color="#EF4444"
-                  className="mr-4"
-                />
-                <View>
-                  <Text className="text-red-800 font-poppins-semibold text-base">
-                    Pembayaran Kedaluwarsa
-                  </Text>
-                  <Text className="text-red-700 font-poppins-regular text-sm mt-1">
-                    {formData.payment?.type === "va"
-                      ? "Virtual Account telah kedaluwarsa"
-                      : "QRIS telah kedaluwarsa"}
-                  </Text>
+              <>
+                <View className="flex-row  justify-between items-center  pb-4 border-b border-gray-100">
+                  <AntDesign
+                    name="exclamationcircle"
+                    size={28}
+                    color="#EF4444"
+                    className="mr-4"
+                  />
+                  <View>
+                    <Text className="text-red-800 font-poppins-semibold text-base">
+                      Pembayaran Kedaluwarsa
+                    </Text>
+                    <Text className="text-red-700 font-poppins-regular text-sm mt-1">
+                      {formData.payment?.type === "va" &&
+                        "Virtual Account telah kedaluwarsa"}
+                      {formData.payment?.type === "qris" &&
+                        "QRIS telah kedaluwarsa"}
+                    </Text>
+                  </View>
                 </View>
-              </View>
+                <View className="bg-[#fff] rounded-lg mb-3">
+                  {formData?.payment_type === "va" && (
+                    <>
+                      <Text className=" p-2 my-2 text-base font-poppins-semibold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan VA Pembayaran
+                      </Text>
+                    </>
+                  )}
+                  {formData?.payment_type === "qris" && (
+                    <>
+                      <Text className=" p-2 my-2 text-base font-poppins-semibold text-center text-black">
+                        Silakan Hubungi Admin Kami untuk Melakukan Permintaan
+                        Pembuatan QRIS Pembayaran
+                      </Text>
+                    </>
+                  )}
+                  {setting ? (
+                    <View>
+                      <View className="flex flex-row items-center justify-center my-3">
+                        <MaterialIcons name="email" size={24} color="#000" />
+                        <Text className="font-poppins-semibold text-black mx-1 ">
+                          Email :
+                        </Text>
+                        <Text className=" text-black font-bold">
+                          {setting?.email || "-"}
+                        </Text>
+                      </View>
+                      <View className="flex flex-row items-center justify-center mb-3 ">
+                        <MaterialIcons
+                          name="local-phone"
+                          size={19}
+                          color="#000"
+                          style={{}}
+                        />
+                        <Text className="font-poppins-semibold text-black mx-1 ">
+                          Telepon :
+                        </Text>
+                        <Text className=" text-black font-poppins-semibold ">
+                          {setting?.telepon || "-"}
+                        </Text>
+                      </View>
+                    </View>
+                  ) : (
+                    <View>
+                      <Text>Data Kosong</Text>
+                    </View>
+                  )}
+                </View>
+              </>
             )}
 
             <View className="flex-row items-center mb-4 pb-4 border-b border-gray-100">
@@ -395,36 +448,51 @@ const PengujianDetail = ({ route, navigation }) => {
                 <Text className="text-lg font-poppins-semibold text-gray-800">
                   {formData.payment?.type === "va" ? "Virtual Account" : "QRIS"}
                 </Text>
-                {formData.payment?.type === "va" ? (
-                  <View className="flex-row items-center">
+                {formData.payment?.type === "va" && (
+                  <View
+                    className="flex-row items-center"
+                    style={{
+                      opacity:
+                        formData.payment.is_expired ||
+                        formData.payment.status === "success"
+                          ? 0.5
+                          : 1,
+                    }}>
                     <View className="bg-white p-2 rounded-lg mr-1">
                       <Image
                         source={require("../../../../assets/images/bank-jatim.png")}
                         className="w-[100px] h-[23px] object-cover"
                       />
                     </View>
-                    <Text className="text-blue-600 font-poppins-medium text-base">
+                    <Text className="text-blue-600 font-poppins-semibold text-base">
                       {formData.payment.va_number}
                     </Text>
                   </View>
-                ) : (
-                  <Text className="text-gray-600 font-poppins-regular mt-2">
-                    Gunakan QRIS untuk pembayaran
-                  </Text>
                 )}
+                {formData.payment?.type === "qris" &&
+                  formData.payment?.status === "pending" && (
+                    <Text className="text-gray-600 font-poppins-regular mt-2">
+                      Gunakan QRIS untuk pembayaran
+                    </Text>
+                  )}
               </View>
               {formData.payment?.type === "va" && (
                 <TouchableOpacity
-                  disabled={formData.payment.is_expired}
+                  disabled={formData.payment.is_expired || formData.payment.status === "success"}
                   onPress={() => copyToClipboard(formData.payment.va_number)}
                   className="bottom-4"
                   style={{
-                    opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity tombol Salin
+                    opacity:
+                      formData.payment.is_expired ||
+                      formData.payment.status === "success"
+                        ? 0.5
+                        : 1,
                   }}
-                  >
+                >
                   <Text
                     className={`font-poppins-semibold ${
-                      formData.payment.is_expired
+                      formData.payment.is_expired ||
+                      formData.payment.status === "success" 
                         ? "text-gray-400"
                         : "text-green-600"
                     }`}>
@@ -438,8 +506,11 @@ const PengujianDetail = ({ route, navigation }) => {
               <View className="items-center mb-4 pb-4 border-b border-gray-100">
                 <View
                   style={{
-                    height: 450,
-                    opacity: formData.payment.is_expired ? 0.3 : 1, // Mengatur opacity Canvas
+                    opacity:
+                      formData.payment?.is_expired ||
+                      formData.payment?.status === "success"
+                        ? 0.5
+                        : 1,
                   }}>
                   <Canvas ref={handleCanvas} />
                 </View>
@@ -457,7 +528,7 @@ const PengujianDetail = ({ route, navigation }) => {
                       className={`font-poppins-semibold ${
                         formData.payment.is_expired
                           ? "text-gray-400"
-                          : "text-blue-600"
+                          : "text-black"
                       }`}>
                       Unduh QRIS
                     </Text>
@@ -472,35 +543,48 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
             )}
 
-            <View
-              className="flex-row items-center justify-between"
-              style={{
-                opacity: formData.is_expired ? 0.5 : 1, // Mengatur opacity seluruh View
-              }}>
-              <View>
-                <Text className="text-md text-black font-poppins-bold mb-1">
-                  Nominal Pembayaran
-                </Text>
-                <Text className="text-xl text-blue-600 font-poppins-semibold">
+            <View className="">
+              <Text className="text-lg text-black font-poppins-bold mb-1">
+                Nominal Pembayaran
+              </Text>
+              <View
+                className="flex-row items-center justify-between"
+                style={{
+                  opacity:
+                    formData.payment?.is_expired ||
+                    formData.payment?.status === "success"
+                      ? 0.5
+                      : 1,
+                }}>
+                <Text className="font-poppins-semibold text-base text-blue-600 ">
                   {rupiah(formData.payment.jumlah)}
                 </Text>
+                <TouchableOpacity
+                  onPress={() => copyToClipboard(formData.payment.jumlah)}
+                  disabled={
+                    formData.payment.is_expired ||
+                    formData.payment.status === "success"
+                  }
+                  className="bottom-4"
+                  // style={{
+                  //   opacity:
+                  //     formData.payment.is_expired ||
+                  //     formData.payment.status !== "success"
+                  //       ? 0.5
+                  //       : 1,
+                  // }}
+                >
+                  <Text
+                    className={`font-poppins-semibold ${
+                      formData.payment.is_expired ||
+                      formData.payment.status === "success"
+                        ? "text-gray-400"
+                        : "text-green-600"
+                    }`}>
+                    Salin
+                  </Text>
+                </TouchableOpacity>
               </View>
-              <TouchableOpacity
-                onPress={() => copyToClipboard(formData.payment.jumlah)}
-                disabled={formData.payment.is_expired}
-                className="top-3"
-                style={{
-                  opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity tombol Salin
-                }}>
-                <Text
-                  className={`font-poppins-semibold ${
-                    formData.payment.is_expired
-                      ? "text-gray-400"
-                      : "text-green-600"
-                  }`}>
-                  Salin
-                </Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>

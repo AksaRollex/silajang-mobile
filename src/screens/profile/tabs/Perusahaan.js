@@ -19,7 +19,6 @@ import { useForm } from "react-hook-form";
 import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
-import { launchImageLibrary } from "react-native-image-picker";
 import { useNavigation } from "@react-navigation/native";
 import Icon from "react-native-vector-icons/Ionicons";
 import { APP_URL } from "@env";
@@ -28,14 +27,23 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import Select2 from "@/src/screens/components/Select2";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import {
+  Camera,
+  useCameraDevice,
+  useCameraPermission,
+} from "react-native-vision-camera";
+import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Perusahaan = () => {
   const [userData, setUserData] = useState(null);
   const navigation = useNavigation();
-  const [imageUrl, setImageUrl] = useState(null); 
-  const [data, setData] = useState({}); 
+  const [data, setData] = useState({});
+
+  const [imageUri, setImageUri] = React.useState(null);
+  const [imageUrl, setImageUrl] = useState(null);
+  const [typePhoto, setTypePhoto] = useState("");
 
   const [kotaKabupaten, setKotaKabupaten] = useState([[]]);
   const [selectedKotaKabupaten, setSelectedKotaKabupaten] = useState(null);
@@ -92,7 +100,7 @@ const Perusahaan = () => {
   };
   const getLocation = () => {
     setLoading(true);
-    setModalVisible(true); 
+    setModalVisible(true);
 
     Geolocation.getCurrentPosition(
       position => {
@@ -238,6 +246,8 @@ const Perusahaan = () => {
         ) {
           const photoUrl = `${APP_URL}${response.data.user.detail.tanda_tangan}`;
           setCurrentPhotoUrl(photoUrl);
+          setImageUrl(photoUrl);
+          setTypePhoto("upload");
         }
       })
       .catch(error => {
@@ -360,40 +370,13 @@ const Perusahaan = () => {
     },
   });
 
-  // GAMBAR
-  const [file, setFile] = React.useState(null);
-  const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
-      const file = response.assets[0];
-      const fileSizeInBytes = file.fileSize;
-      const fileSizeInKB = fileSizeInBytes / 1024;
-      if (response.didCancel) {
-        console.log("User cancelled image picker");
-      } else if (response.errorMessage) {
-        console.log("ImagePicker Error: ", response.errorMessage);
-      }
-      if (fileSizeInKB > 2048) {
-        Toast.show({
-          type: "error",
-          text1: "Ukuran file terlalu besar",
-          text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
-        });
-      } else {
-        console.log("Chosen file:", file);
-        setFile(file);
-      }
-    });
-  };
-  const handleDeletePhoto = () => {
-    setFile(null);
-    setCurrentPhotoUrl(null);
-  };
   useEffect(() => {
     const fetchPhoto = async () => {
       try {
         const response = await axios.get(`${APP_URL}/user/tanda_tangan`);
         if (response.data && response.data.photo_url) {
           setCurrentPhotoUrl(response.data.photo_url);
+          setTypePhoto("upload");
         }
       } catch (error) {
         console.log("Error fetching photo:", error);
@@ -403,7 +386,81 @@ const Perusahaan = () => {
     fetchPhoto();
   }, []);
 
- 
+  // GAMBAR
+  const [file, setFile] = React.useState(null);
+  const handleChoosePhoto = () => {
+    launchImageLibrary(
+      { mediaType: "photo", maxHeight: 3000, maxWidth: 3000 },
+      response => {
+        if (response.didCancel) {
+          console.log("User cancelled image picker");
+          return;
+        }
+
+        if (response.errorMessage) {
+          console.log("ImagePicker Error: ", response.errorMessage);
+          return;
+        }
+
+        const file = response.assets[0];
+        const fileSizeInKB = file.fileSize / 1024;
+
+        if (fileSizeInKB > 2048) {
+          Toast.show({
+            type: "error",
+            text1: "Ukuran file terlalu besar",
+            text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+          });
+          return;
+        }
+
+        setFile(file);
+        setImageUri(file.uri);
+        setCurrentPhotoUrl(file.uri);
+        setTypePhoto("upload");
+      },
+    );
+  };
+
+  const openCameraLib = async () => {
+    try {
+      const options = {
+        mediaType: "photo",
+        includeBase64: false,
+        maxHeight: 3000,
+        maxWidth: 3000,
+      };
+
+      launchCamera(options, response => {
+        if (response.didCancel) {
+          console.log("User cancelled camera");
+          return;
+        }
+
+        if (response.errorCode) {
+          console.log("Camera Error: ", response.errorMessage);
+          return;
+        }
+
+        if (response.assets && response.assets.length > 0) {
+          const file = response.assets[0];
+          setFile(file);
+          setImageUri(file.uri);
+          setCurrentPhotoUrl(file.uri);
+          setTypePhoto("capture");
+        }
+      });
+    } catch (error) {
+      console.error("Camera Launch Error:", error);
+    }
+  };
+
+  const handleDeletePhoto = () => {
+    setFile(null);
+    setImageUri(null);
+    setCurrentPhotoUrl(null);
+    setTypePhoto("");
+  };
   return (
     <>
       <ScrollView className="flex-1">
@@ -433,85 +490,78 @@ const Perusahaan = () => {
             </View>
             {userData ? (
               <View>
-                <Controller
-                  control={control}
-                  name="tanda_tangan"
-                  render={({ field: { value } }) => (
-                    <View className="mb-4">
-                      <Text className="font-poppins-semibold mb-2 text-black ">
-                        Tanda Tangan
+                <View>
+                  {currentPhotoUrl || imageUrl ? (
+                    <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                      <View className="items-center">
+                        <View className="relative">
+                          <Image
+                            source={{
+                              uri: imageUrl || currentPhotoUrl, // Prioritaskan imageUrl
+                            }}
+                            className="w-48 h-48 rounded-lg"
+                            resizeMode="cover"
+                            onError={e => {
+                              console.log(
+                                "Error loading image:",
+                                e.nativeEvent.error,
+                              );
+                              // Tambahkan error handling jika gambar gagal dimuat
+                              setImageUrl(null);
+                              setCurrentPhotoUrl(null);
+                            }}
+                          />
+                          <TouchableOpacity
+                            className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                            onPress={handleDeletePhoto}>
+                            <Icons name="close" size={18} color="#dc2626" />
+                          </TouchableOpacity>
+
+                          <TouchableOpacity
+                            className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                            onPress={handleChoosePhoto}>
+                            <Icons name="camera" size={20} color="white" />
+                          </TouchableOpacity>
+                        </View>
+                      </View>
+                    </View>
+                  ) : (
+                    <View className="items-center justify-center">
+                      <TouchableOpacity onPress={openCameraLib}>
+                        <Text className="font-poppins-semibold text-lg mb-3 text-black">
+                          Open Camera
+                        </Text>
+                      </TouchableOpacity>
+
+                      <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
+                        Or
                       </Text>
 
-                      <View className="rounded-2xl">
-                      {currentPhotoUrl || file ? (
-                        // State setelah upload foto
-                        <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
+                      <TouchableOpacity
+                        className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8 mb-4"
+                        onPress={handleChoosePhoto}>
+                        <View className="items-center space-y-4">
+                          <View className="bg-indigo-100 rounded-full p-5">
+                            <SimpleLineIcons
+                              name="cloud-upload"
+                              size={40}
+                              color="#4f46e5"
+                            />
+                          </View>
+
                           <View className="items-center">
-                            <View className="relative">
-                              <Image
-                                source={{
-                                  uri: file ? file.uri : currentPhotoUrl,
-                                }}
-                                className="w-48 h-48 rounded-lg"
-                                onError={e =>
-                                  console.log(
-                                    "Error loading image:",
-                                    e.nativeEvent.error,
-                                  )
-                                }
-                              />
-
-                              {/* Overlay gradient */}
-                              <View className="absolute inset-0 rounded-full bg-black/5" />
-                              {/* Delete button */}
-                              <TouchableOpacity
-                                className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
-                                onPress={handleDeletePhoto}>
-                                <Icons name="close" size={18} color="#dc2626" />
-                              </TouchableOpacity>
-
-                              {/* Change photo button */}
-                              <TouchableOpacity
-                                className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
-                                onPress={handleChoosePhoto}>
-                                <Icons name="camera" size={20} color="white" />
-                              </TouchableOpacity>
-                            </View>
-
-                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
-                              Ketuk ikon kamera untuk mengubah foto
+                            <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
+                              Unggah Tanda Tangan
+                            </Text>
+                            <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                              Klik atau sentuh area ini untuk memilih foto
                             </Text>
                           </View>
                         </View>
-                      ) : (
-                        // State sebelum upload foto
-                        <TouchableOpacity
-                          className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
-                          onPress={handleChoosePhoto}>
-                          <View className="items-center space-y-4">
-                            <View className="bg-indigo-100 rounded-full p-5">
-                              <SimpleLineIcons
-                                name="cloud-upload"
-                                size={40}
-                                color="#4f46e5"
-                              />
-                            </View>
-
-                            <View className="items-center">
-                              <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
-                                Unggah Tanda Tangan 
-                              </Text>
-                              <Text className="font-poppins-regular text-sm text-gray-500 text-center">
-                                Klik atau sentuh area ini untuk memilih foto
-                              </Text>
-                            </View>
-                          </View>
-                        </TouchableOpacity>
-                      )}
-                    </View>
+                      </TouchableOpacity>
                     </View>
                   )}
-                />
+                </View>
 
                 <Controller
                   control={control}
