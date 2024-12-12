@@ -50,6 +50,7 @@
     "react-native-dropdown-select": "^1.0.7",
     "react-native-dynamic-search-bar": "^2.0.2",
     "react-native-elements": "^3.4.3",
+    "react-native-fast-image": "^8.6.3",
     "react-native-flash-message": "^0.4.2",
     "react-native-fs": "^2.20.0",
     "react-native-geolocation-service": "^5.3.1",
