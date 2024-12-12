@@ -27,6 +27,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import Toast from "react-native-toast-message";
+import { request, PERMISSIONS, RESULTS } from "react-native-permissions";
 import {
   Camera,
   useCameraDevice,
@@ -105,6 +106,39 @@ const Perusahaan = () => {
   } = useForm({
     values: { ...userData },
   });
+
+  useEffect(() => {
+    requestCameraPermission();
+  }, []);
+
+  const requestCameraPermission = async () => {
+    try {
+      const permission = 
+      Platform.OS === 'ios'
+      ? PERMISSIONS.IOS.CAMERA
+      : PERMISSIONS.ANDROID.CAMERA;
+
+      const result = await request(permission);
+
+      if (result ===  RESULTS.GRANTED) {
+        console.log('Camera permission granted.');
+      } else if (result === RESULTS.DENIED) {
+        console.log('Camera permission denied.');
+        Alert.alert(
+        'Permission Denied',
+        'Camera permission is required to use this feature.'
+      );
+      } else if (result === RESULTS.BLOCKED) {
+        console.log('Camera permission permanently denied.');
+        Alert.alert(
+          'Permission Blocked',
+          'Camera permission is permanently denied. Please enable it from settings.'
+        );
+    } 
+  } catch (error) {
+    console.log('Error requesting camera permission:', error);
+  }
+  };
 
   const [location, setLocation] = useState({ lat: "", long: "" });
 

@@ -148,7 +148,7 @@ export default function IndexMaster() {
                 right={props => (
                   <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
                 )}
-                className="px-5 bg-[#f8f8f8] ml-3 mr-3"
+                className="px-5 bg-[#ffffff] ml-3 mr-3"
                 onPress={() => navigation.navigate("Metode")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -165,7 +165,7 @@ export default function IndexMaster() {
                     <Ionicons name="document-text" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Peraturan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -181,7 +181,7 @@ export default function IndexMaster() {
                     <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Parameter")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -197,7 +197,7 @@ export default function IndexMaster() {
                     <Ionicons name="cube" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Paket")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -213,7 +213,7 @@ export default function IndexMaster() {
                     <Ionicons name="water" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Pengawetan")}
                 
               />
@@ -230,7 +230,7 @@ export default function IndexMaster() {
                     <Ionicons name="beaker" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("JenisSampel")}
                 
               />
@@ -247,7 +247,7 @@ export default function IndexMaster() {
                     <Ionicons name="bag-handle" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("JenisWadah")}
                 
               />
@@ -264,7 +264,7 @@ export default function IndexMaster() {
                     <Ionicons name="car" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("JasaPengambilan")}
                 
               />
@@ -281,7 +281,7 @@ export default function IndexMaster() {
                     <Ionicons name="location" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("RadiusPengambilan")}
                 
               />
@@ -298,7 +298,7 @@ export default function IndexMaster() {
                     <Ionicons name="calendar" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("LiburCuti")}
                 
               />
@@ -316,7 +316,7 @@ export default function IndexMaster() {
                     <Ionicons name="barcode" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("KodeRetribusi")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -343,7 +343,7 @@ export default function IndexMaster() {
                     <Ionicons name="briefcase" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Jabatan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -360,7 +360,7 @@ export default function IndexMaster() {
                     <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Users")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -387,7 +387,7 @@ export default function IndexMaster() {
                     <Ionicons name="business" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("KotaKab")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -403,7 +403,7 @@ export default function IndexMaster() {
                     <Ionicons name="map" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kecamatan")}
 
               />
@@ -421,7 +421,7 @@ export default function IndexMaster() {
                     <Ionicons name="home" size={17} color={'white'} style={{padding: 5}}/>
                   </View>
                 )}
-                className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kelurahan")}
               />
               <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />

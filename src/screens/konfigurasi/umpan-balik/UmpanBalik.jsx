@@ -313,127 +313,46 @@ const handleImport = async () => {
       setAuthToken(token)
     })()
   })
-  const downloadTemplate = async () => {
-    // try {
-    //   // First check/request permissions
-    //   const hasPermission = await requestStoragePermission();
-    //   if (!hasPermission) {
-    //     Toast.show({
-    //       type: 'error',
-    //       text1: 'Error',
-    //       text2: 'Storage permission is required to download files',
-    //     });
-    //     return;
-    //   }
-  
-    //   // Define the file path - use proper extension
-    //   const fileName = 'Template_Import_Umpan_Balik.xlsx';
-    //   const localFile = `${RNFS.DownloadDirectoryPath}/${fileName}`;
-    //   const authToken = await AsyncStorage.getItem('@auth_token');
-  
-    //   // Check if file already exists and delete it
-    //   const fileExists = await RNFS.exists(localFile);
-    //   if (fileExists) {
-    //     await RNFS.unlink(localFile);
-    //   }
-  
-    //   // Set up download options with proper headers
-    //   const options = {
-    //     fromUrl: `${APP_URL}/konfigurasi/umpan-balik/template`,
-    //     toFile: localFile,
-    //     headers: {
-    //       'Authorization': `Bearer ${authToken}`,
-    //       'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    //       'Content-Type': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-    //     },
-    //     background: true,
-    //     discretionary: true,
-    //     cacheable: true,
-    //     progressDivider: 1
-    //   };
-  
-    //   // Start download with progress tracking
-    //   const download = RNFS.downloadFile(options);
-      
-    //   // Track download progress
-    //   download.promise.then(async (response) => {
-    //     if (response.statusCode === 200) {
-    //       const downloadedFileExists = await RNFS.exists(localFile);
-    //       if (downloadedFileExists) {
-    //         // Check file size to ensure it's not empty
-    //         const fileStats = await RNFS.stat(localFile);
-    //         if (fileStats.size > 0) {
-    //           Toast.show({
-    //             type: 'success',
-    //             text1: 'Sukses',
-    //             text2: `File berhasil diunduh`,
-    //           });
-    //         } else {
-    //           throw new Error('Downloaded file is empty');
-    //         }
-    //       } else {
-    //         throw new Error('File download failed - file not found');
-    //       }
-    //     } else {
-    //       throw new Error(`Download failed with status ${response.statusCode}`);
-    //     }
-    //   }).catch((error) => {
-    //     console.error('Download error:', error);
-    //     Toast.show({
-    //       type: 'error',
-    //       text1: 'Error',
-    //       text2: 'Gagal mengunduh template. Silakan coba lagi.',
-    //     });
-    //   });
-  
-    // } catch (error) {
-    //   console.error('Download process error:', error);
-    //   Toast.show({
-    //     type: 'error',
-    //     text1: 'Error',
-    //     text2: 'Gagal mengunduh template. Silakan coba lagi.',
-    //   });
-    // } finally {
-    //   setDownloadModalVisible(false);
-    // }
 
+  const downloadTemplate = async () => {
     try {
-      const fileName = 'Template_Import_Umpan_Balik.xlsx';
-      const url = `${APP_URL}/konfigurasi/umpan-balik/template`;
-      const downloadPath = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-      const response = await RNFS.downloadFile({
-        fromUrl: url,
-        toFile: downloadPath,
+      const response = await axios.get('konfigurasi/umpan-balik/template', {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`, // Menambahkan Authorization header
+        },
+        responseType: 'arraybuffer', // Konfigurasi respons biner
+      });
+  
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = 'RIO.xlsx'; // Nama default jika tidak ada header
+  
+      if (contentDisposition && contentDisposition.includes('filename=')) {
+        const matches = contentDisposition.match(/filename="(.+?)"/);
+        if (matches && matches[1]) {
+          fileName = matches[1];
         }
-      }).promise
-      if (response.statusCode === 200) {
-        console.log(authToken)
-        console.log(downloadPath)
-        console.log(response)
-        Toast.show({
-          type: "success",
-          text1: "Berhasil!"
-        })
-        setDownloadModalVisible(false)
       }
-      if (response.statusCode !== 200) {
-        Toast.show({
-          type: "error",
-          text1: "Gagal!"
-        })
-        setDownloadModalVisible(false)
-        throw new Error(`Download failed with status ${response.statusCode}`)
-      }
-    } catch (error) {
-      Toast.show({
-        type: "error",
-        text1: "Gagal mengunduh template. Silakan coba lagi."
+  
+      // Tentukan path untuk menyimpan file
+      const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+  
+      // Konversi buffer ke string ASCII untuk menyimpan file
+      const buffer = new Uint8Array(response.data);
+      const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
+  
+      // Menyimpan file ke perangkat lokal
+      await RNFS.writeFile(path, fileContent, 'ascii');
+      
+      console.log('File berhasil diunduh dan disimpan di:', path);
+
+      Toast.show({ 
+        type: 'success',
+        text1: 'Berhasil!',
+        text2: 'File berhasil diunduh',
       })
-      console.log(error)
-      setDownloadModalVisible(false)
-    }
+    } catch (error) {
+      console.error('Error saat mengunduh file:', error);
+   }
   }
 
   const renderDownloadConfirmationModal = () => (
@@ -762,7 +681,7 @@ const handleImport = async () => {
               setFormData({ uuid: item.uuid, kode: item.kode, keterangan: item.keterangan });
               setModalVisible(true);
             }}
-            className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+            className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
           >
             <IonIcons name="pencil" size={14} color="#fff" />
             <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
