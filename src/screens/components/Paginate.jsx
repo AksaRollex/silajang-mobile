@@ -16,6 +16,7 @@ import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/Feather";
 import { Skeleton } from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
+import { debounce } from "lodash";
 
 // Enable LayoutAnimation for Android
 if (
