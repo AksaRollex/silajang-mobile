@@ -18,7 +18,9 @@ import moment from "moment";
 import axios from "@/src/libs/axios";
 import RNFS from "react-native-fs";
 import Canvas, { Image as CanvasImage } from "react-native-canvas";
-import Toast from "react-native-toast-message";import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import Toast from "react-native-toast-message";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const formatCurrency = amount => {
   return new Intl.NumberFormat("id-ID", {
@@ -313,7 +315,7 @@ const Detail = ({ route, navigation }) => {
         <View className="rounded-xl shadow-lg overflow-hidden">
           {formData.payment?.status === "success" && (
             <View className="bg-green-500 flex-row items-center p-4">
-              <MaterialIcons
+              <MaterialCommunityIcons
                 name="check-decagram"
                 size={28}
                 color="white"
@@ -501,7 +503,7 @@ const Detail = ({ route, navigation }) => {
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
             <Image
-              source={require("@/assets/images/check-mark.png")}
+              source={require("@/assets/images/check-qris.png")}
               style={styles.lottie}
             />
 
