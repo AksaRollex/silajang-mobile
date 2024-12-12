@@ -26,6 +26,9 @@ const Pembayaran = () => {
     navigation.navigate("NonPengujian");
   };
 
+  const MultiPayment = () => {
+    navigation.navigate("MultiPayment");
+  };
 
   const Global = () => {
     navigation.navigate("Global");
@@ -66,7 +69,7 @@ const Pembayaran = () => {
           )}
           right={props => <List.Icon {...props} icon="chevron-right" />}
           className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
-          // onPress={MultiPayment}
+          onPress={MultiPayment}
           />
           <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
         </View>

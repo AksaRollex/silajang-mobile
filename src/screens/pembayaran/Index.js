@@ -13,6 +13,7 @@ import NonPengujian from './NonPengujian';
 import DetailNonPengujian from './DetailNonPengujian';
 import Global from './Global';
 import FormNonPengujian from './Form';
+import MultiPayment from './MultiPayment';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
@@ -74,6 +75,7 @@ export default function MainScreen() {
         />
         <Stack.Screen name="Pengujian" component={Pengujian}/>
         <Stack.Screen name="NonPengujian" component={NonPengujian}/>
+        <Stack.Screen name="MultiPayment" component={MultiPayment}/>
         <Stack.Screen name="DetailNonPengujian" component={DetailNonPengujian}/>
         <Stack.Screen name="Global" component={Global}/>
         <Stack.Screen name="FormNonPengujian" component={FormNonPengujian}/>

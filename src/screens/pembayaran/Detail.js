@@ -19,8 +19,8 @@ import axios from "@/src/libs/axios";
 import RNFS from "react-native-fs";
 import Canvas, { Image as CanvasImage } from "react-native-canvas";
 import Toast from "react-native-toast-message";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const formatCurrency = amount => {
   return new Intl.NumberFormat("id-ID", {
@@ -553,7 +553,7 @@ const Detail = ({ route, navigation }) => {
         <View style={styles.overlayView}>
           <View style={styles.successContainer}>
             <Image
-              source={require("@/assets/images/check-mark.png")}
+              source={require("@/assets/images/check-qris.png")}
               style={styles.lottie}
             />
 
