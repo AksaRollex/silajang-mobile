@@ -1,11 +1,11 @@
-import React, {  useEffect, useState, useRef } from 'react';
-import {  View,  Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform, PermissionsAndroid } from 'react-native';
+import React, { useEffect, useState, useRef } from 'react';
+import { View, Text, Alert, ActivityIndicator, Dimensions, SafeAreaView, ScrollView, TouchableOpacity, Modal, TextInput, KeyboardAvoidingView, Platform, PermissionsAndroid } from 'react-native';
 import { LineChart } from 'react-native-chart-kit';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
-import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
@@ -25,7 +25,7 @@ const Options = [
   { id: 1, name: "Tabel Umpan Balik" },
 ];
 
-const UmpanBalik = ({navigation}) => {
+const UmpanBalik = ({ navigation }) => {
   const [UmpanBalik, setUmpanBalik] = useState(null);
   const queryClient = useQueryClient();
   const paginateRef = useRef();
@@ -77,14 +77,14 @@ const UmpanBalik = ({navigation}) => {
     async () => {
       try {
         console.log('Sending params:', { tahun: selectedYear, bulan: selectedMonth });
-        
+
         // Kirim data menggunakan object biasa atau URLSearchParams
         // Opsi 1: Menggunakan object
         const response = await axios.post('/konfigurasi/umpan-balik/summary', {
           tahun: selectedYear,
           bulan: parseInt(selectedMonth)
         });
-        
+
         console.log('API Response:', response.data);
         return response.data;
       } catch (error) {
@@ -105,139 +105,139 @@ const UmpanBalik = ({navigation}) => {
       onSuccess: (data) => console.log('Query success:', data),
       onError: (error) => console.log('Query error:', error)
     }
-);
+  );
 
 
-const handleYearChange = (event) => {
-  const newYear = event.nativeEvent.event;
-  console.log('Year changed to:', newYear);
-  setSelectedYear(newYear);
-  queryClient.invalidateQueries(['umpanBalikSummary']);
-};
-
-const handleMonthChange = (event) => {
-  const newMonth = event.nativeEvent.event;
-  console.log('Month changed to:', newMonth);
-  setSelectedMonth(newMonth);
-  queryClient.invalidateQueries(['umpanBalikSummary']);
-};
-
- const handleResetConfirmation = () => {
-  setResetModalVisible(true);
-};
-
-const handleResetData = async () => {
-  setIsResetting(true);
-  try {
-    const response = await axios.post('/konfigurasi/umpan-balik/reset', {
-      tahun: selectedYear,
-      bulan: parseInt(selectedMonth)
-    });
-
-    setResetModalVisible(false);
-    
+  const handleYearChange = (event) => {
+    const newYear = event.nativeEvent.event;
+    console.log('Year changed to:', newYear);
+    setSelectedYear(newYear);
     queryClient.invalidateQueries(['umpanBalikSummary']);
-    
-    Toast.show({
-      type: 'success',
-      text1: 'Sukses',
-      text2: 'Data berhasil direset',
-    });
-  } catch (error) {
-    console.error('Reset Error:', error);
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: error.response?.data?.message || 'Gagal mereset data. Silakan coba lagi.',
-    });
-  } finally {
-    setIsResetting(false);
-  }
-};
+  };
 
-const pickFile = async () => {
-  try {
-    const result = await DocumentPicker.pick({
-      type: [DocumentPicker.types.xlsx, DocumentPicker.types.xls],
-    });
-    
-    setSelectedFile(result[0]);
-  } catch (err) {
-    if (DocumentPicker.isCancel(err)) {
-      // User cancelled the picker
-    } else {
+  const handleMonthChange = (event) => {
+    const newMonth = event.nativeEvent.event;
+    console.log('Month changed to:', newMonth);
+    setSelectedMonth(newMonth);
+    queryClient.invalidateQueries(['umpanBalikSummary']);
+  };
+
+  const handleResetConfirmation = () => {
+    setResetModalVisible(true);
+  };
+
+  const handleResetData = async () => {
+    setIsResetting(true);
+    try {
+      const response = await axios.post('/konfigurasi/umpan-balik/reset', {
+        tahun: selectedYear,
+        bulan: parseInt(selectedMonth)
+      });
+
+      setResetModalVisible(false);
+
+      queryClient.invalidateQueries(['umpanBalikSummary']);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Sukses',
+        text2: 'Data berhasil direset',
+      });
+    } catch (error) {
+      console.error('Reset Error:', error);
       Toast.show({
         type: 'error',
         text1: 'Error',
-        text2: 'Gagal memilih file',
+        text2: error.response?.data?.message || 'Gagal mereset data. Silakan coba lagi.',
       });
+    } finally {
+      setIsResetting(false);
     }
-  }
-};
+  };
 
-// Add import function
-const handleImport = async () => {
-  if (!selectedFile) {
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: 'File tidak boleh kosong',
-    });
-    return;
-  }
+  const pickFile = async () => {
+    try {
+      const result = await DocumentPicker.pick({
+        type: [DocumentPicker.types.xlsx, DocumentPicker.types.xls],
+      });
 
-  setIsImporting(true);
-  
-  try {
-    const formData = new FormData();
-    formData.append('tahun', selectedYear);
-    formData.append('bulan', parseInt(selectedMonth));
-    formData.append('file', {
-      uri: selectedFile.uri,
-      type: selectedFile.type,
-      name: selectedFile.name,
-    });
+      setSelectedFile(result[0]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker
+      } else {
+        Toast.show({
+          type: 'error',
+          text1: 'Error',
+          text2: 'Gagal memilih file',
+        });
+      }
+    }
+  };
 
-    const response = await axios.post('/konfigurasi/umpan-balik/import', formData, {
-      headers: {
-        'Content-Type': 'multipart/form-data',
-      },
-    });
+  // Add import function
+  const handleImport = async () => {
+    if (!selectedFile) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'File tidak boleh kosong',
+      });
+      return;
+    }
 
-    setImportModalVisible(false);
-    setSelectedFile(null);
-    queryClient.invalidateQueries(['umpanBalikSummary']);
+    setIsImporting(true);
 
-    Toast.show({
-      type: 'success',
-      text1: 'Sukses',
-      text2: 'Data berhasil diimport',
-    });
-  } catch (error) {
-    Toast.show({
-      type: 'error',
-      text1: 'Error',
-      text2: error.response?.data?.message || 'Gagal mengimport data',
-    });
-  } finally {
-    setIsImporting(false);
-  }
-};
+    try {
+      const formData = new FormData();
+      formData.append('tahun', selectedYear);
+      formData.append('bulan', parseInt(selectedMonth));
+      formData.append('file', {
+        uri: selectedFile.uri,
+        type: selectedFile.type,
+        name: selectedFile.name,
+      });
+
+      const response = await axios.post('/konfigurasi/umpan-balik/import', formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      setImportModalVisible(false);
+      setSelectedFile(null);
+      queryClient.invalidateQueries(['umpanBalikSummary']);
+
+      Toast.show({
+        type: 'success',
+        text1: 'Sukses',
+        text2: 'Data berhasil diimport',
+      });
+    } catch (error) {
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: error.response?.data?.message || 'Gagal mengimport data',
+      });
+    } finally {
+      setIsImporting(false);
+    }
+  };
 
   const handleSaveForm = async () => {
     setLoading(true);
-    
+
     try {
       if (!formData.keterangan || formData.keterangan.trim() === '') {
         Alert.alert('Error', 'Keterangan tidak boleh kosong');
         setLoading(false);
         return;
       }
-  
+
       const params = new URLSearchParams();
       params.append('kode', formData.kode);
       params.append('keterangan', formData.keterangan.trim());
-  
+
       const response = await axios.post(
         `/konfigurasi/umpan-balik/keterangan/${formData.uuid}/update`,
         params.toString(),
@@ -247,7 +247,7 @@ const handleImport = async () => {
           }
         }
       );
-  
+
       if (response.data.status == 'success') {
         // Reset form data first
         setFormData({
@@ -255,12 +255,12 @@ const handleImport = async () => {
           kode: '',
           keterangan: ''
         });
-        
+
         // Refresh data
         if (paginateRef.current) {
           paginateRef.current.refetch();
         }
-        
+
         setLoading(false);
         setModalVisible(false);
 
@@ -288,7 +288,7 @@ const handleImport = async () => {
 
   const requestStoragePermission = async () => {
     if (Platform.OS !== 'android') return true;
-    
+
     try {
       const granted = await PermissionsAndroid.request(
         PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
@@ -306,6 +306,7 @@ const handleImport = async () => {
       return false;
     }
   };
+
   const [authToken, setAuthToken] = useState('');
   useEffect(() => {
     (async () => {
@@ -322,37 +323,37 @@ const handleImport = async () => {
         },
         responseType: 'arraybuffer', // Konfigurasi respons biner
       });
-  
+
       const contentDisposition = response.headers['content-disposition'];
-      let fileName = 'RIO.xlsx'; // Nama default jika tidak ada header
-  
+      let fileName = 'Template Import Umpan Balik.xlsx'; // Nama default jika tidak ada header
+
       if (contentDisposition && contentDisposition.includes('filename=')) {
         const matches = contentDisposition.match(/filename="(.+?)"/);
         if (matches && matches[1]) {
           fileName = matches[1];
         }
       }
-  
+
       // Tentukan path untuk menyimpan file
       const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-  
+
       // Konversi buffer ke string ASCII untuk menyimpan file
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
-  
+
       // Menyimpan file ke perangkat lokal
       await RNFS.writeFile(path, fileContent, 'ascii');
-      
+
       console.log('File berhasil diunduh dan disimpan di:', path);
 
-      Toast.show({ 
+      Toast.show({
         type: 'success',
         text1: 'Berhasil!',
         text2: 'File berhasil diunduh',
       })
     } catch (error) {
-      console.error('Error saat mengunduh file:', error);
-   }
+      console.error('Error saat mengunduh file:', error);
+    }
   }
 
   const renderDownloadConfirmationModal = () => (
@@ -373,21 +374,21 @@ const handleImport = async () => {
               <MaterialIcons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-          
+
           <View className="mb-6">
             <Text className="text-base font-poppins-regular text-black text-center">
               Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
             </Text>
           </View>
-  
+
           <View className="flex-row justify-center gap-3">
-            <TouchableOpacity 
-              onPress={() => setDownloadModalVisible(false)} 
+            <TouchableOpacity
+              onPress={() => setDownloadModalVisible(false)}
               className="px-6 py-2 bg-gray-400 rounded-lg"
             >
               <Text className="text-white font-poppins-medium">Batal</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 downloadTemplate();
                 setDownloadModalVisible(false);
@@ -430,7 +431,7 @@ const handleImport = async () => {
               <MaterialIcons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-          
+
           <View className="mb-6">
             <Text className="text-base font-poppins-regular text-black text-center">
               Apakah Anda yakin ingin mereset data tersebut?
@@ -438,13 +439,13 @@ const handleImport = async () => {
           </View>
 
           <View className="flex-row justify-center gap-3">
-            <TouchableOpacity 
-              onPress={() => setResetModalVisible(false)} 
+            <TouchableOpacity
+              onPress={() => setResetModalVisible(false)}
               className="px-6 py-2 bg-gray-400 rounded-lg"
             >
               <Text className="text-white font-poppins-medium">Batal</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleResetData}
               disabled={isResetting}
               className="px-6 py-2 bg-red-500 rounded-lg"
@@ -482,10 +483,10 @@ const handleImport = async () => {
               <MaterialIcons name="close" size={24} color="black" />
             </TouchableOpacity>
           </View>
-          
+
           <View className="mb-6">
             <Text className="text-base font-poppins-medium text-black mb-2">File Excel</Text>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={pickFile}
               className="border border-gray-300 rounded-lg p-4 bg-gray-50"
             >
@@ -496,16 +497,16 @@ const handleImport = async () => {
           </View>
 
           <View className="flex-row justify-end gap-3">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setImportModalVisible(false);
                 setSelectedFile(null);
-              }} 
+              }}
               className="px-6 py-2 bg-gray-400 rounded-lg"
             >
               <Text className="text-white font-poppins-medium">Batal</Text>
             </TouchableOpacity>
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleImport}
               disabled={isImporting || !selectedFile}
               className={`px-6 py-2 rounded-lg ${isImporting || !selectedFile ? 'bg-red-300' : 'bg-red-500'}`}
@@ -521,45 +522,45 @@ const handleImport = async () => {
       </View>
     </Modal>
   );
-  
+
   const renderStats = (data) => {
     if (!data?.data) return null;
-    
+
     return (
       <View className="mx-4">
-        <View className="bg-[#F9F9F9] rounded-lg flex-1 overflow-hidden shadow-sm" 
+        <View className="bg-[#F9F9F9] rounded-lg flex-1 overflow-hidden shadow-sm"
           style={{
-            borderTopWidth:1,
+            borderTopWidth: 1,
             borderTopColor: '#e5e7eb',
-            borderRightWidth:1,
+            borderRightWidth: 1,
             borderRightColor: '#e5e7eb',
-            borderBottomWidth:1,
+            borderBottomWidth: 1,
             borderBottomColor: '#e5e7eb',
             borderLeftWidth: 4,
             borderLeftColor: '#0090a6',
           }}>
-            <View className="flex-row justify-content-center items-center">
-              <View className=" ml-5 ">
-                <IonIcons name="ribbon" size={30} color="#0090a6" />
-              </View>
-              <View className="p-4 ml-4">
-                <Text className="text-[20px] font-poppins-bold text-[#0090a6]">
-                  {data.ikm?.toFixed(2)}
-                </Text>
-                <Text className="text-black font-poppins-regular">
-                  IKM Unit Pelayanan
-                </Text>
-              </View>
+          <View className="flex-row justify-content-center items-center">
+            <View className=" ml-5 ">
+              <IonIcons name="ribbon" size={30} color="#0090a6" />
+            </View>
+            <View className="p-4 ml-4">
+              <Text className="text-[20px] font-poppins-bold text-[#0090a6]">
+                {data.ikm?.toFixed(2)}
+              </Text>
+              <Text className="text-black font-poppins-regular">
+                IKM Unit Pelayanan
+              </Text>
+            </View>
           </View>
         </View>
-  
+
         <View className="bg-[#F9F9F9] rounded-lg flex-1 overflow-hidden shadow-sm mt-2"
           style={{
-            borderTopWidth:1,
+            borderTopWidth: 1,
             borderTopColor: '#e5e7eb',
-            borderRightWidth:1,
+            borderRightWidth: 1,
             borderRightColor: '#e5e7eb',
-            borderBottomWidth:1,
+            borderBottomWidth: 1,
             borderBottomColor: '#e5e7eb',
             borderLeftWidth: 4,
             borderLeftColor: '#0090a6',
@@ -580,7 +581,7 @@ const handleImport = async () => {
           </View>
         </View>
       </View>
-      
+
     );
   };
 
@@ -602,10 +603,10 @@ const handleImport = async () => {
         ]
       }]
     };
-  
+
     return (
       <View>
-        <View className="mt-4 bg-white rounded-lg" style={{ marginLeft: -15}}>
+        <View className="mt-4 bg-white rounded-lg" style={{ marginLeft: -15 }}>
           <BarChart
             data={chartData}
             width={Dimensions.get('window').width - 60}
@@ -645,23 +646,26 @@ const handleImport = async () => {
       onPress={() => setDownloadModalVisible(true)}
       style={{
         position: 'absolute',
-        zIndex: 999, // Pastikan berada di lapisan paling atas
         bottom: 25,
         right: 20,
         backgroundColor: '#177a44',
-        padding: 10,
         borderRadius: 50,
+        width: 55,
+        height: 55,
+        justifyContent: 'center',
+        alignItems: 'center',
         elevation: 5,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.25,
         shadowRadius: 3.84,
-      }}
-    >
-      <MaterialCommunityIcons 
-        name="file-excel-outline" 
-        size={32} 
-        color="#fff" 
+        zIndex: 1000
+      }}>
+
+      <FontAwesome5
+        name="file-excel"
+        size={20}
+        color="#fff"
       />
     </TouchableOpacity>
   );
@@ -689,7 +693,7 @@ const handleImport = async () => {
         </View>
       </View>
     </View>
-);
+  );
 
   const renderModal = () => (
     <Modal
@@ -728,9 +732,9 @@ const handleImport = async () => {
               <TouchableOpacity onPress={closeModal} className="px-4 py-2 bg-gray-400 rounded-lg">
                 <Text className="text-white font-poppins-medium">Batal</Text>
               </TouchableOpacity>
-              <TouchableOpacity 
-                onPress={handleSaveForm} 
-                className="px-4 py-2 bg-[#312e81] rounded-lg" 
+              <TouchableOpacity
+                onPress={handleSaveForm}
+                className="px-4 py-2 bg-[#312e81] rounded-lg"
                 disabled={loading}
               >
                 {loading ? (
@@ -769,7 +773,7 @@ const handleImport = async () => {
                   </View>
                 </View>
               </MenuView>
-  
+
               <MenuView
                 title="Pilih Bulan"
                 onPressAction={handleMonthChange}
@@ -782,24 +786,24 @@ const handleImport = async () => {
                     <Text className="flex-1 text-center text-black font-poppins-medium">
                       {`${monthOptions.find(m => m.id.toString() === selectedMonth)?.title || 'Pilih'}`}
                     </Text>
-                    <MaterialIcons name="arrow-drop-down" size={24} color="black"/>
+                    <MaterialIcons name="arrow-drop-down" size={24} color="black" />
                   </View>
                 </View>
               </MenuView>
             </View>
-            
+
             <View className="border-b border-gray-200 my-4" />
-            
+
             <View className="flex-row justify-center space-x-2 mb-4">
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={handleResetConfirmation}
                 className="flex-row items-center bg-[#fff8dd] px-6 py-2 rounded-lg"
               >
                 <MaterialIcons name="refresh" size={20} color="#ffa800" />
                 <Text className="ml-2 text-[#ffa800] font-poppins-medium">Reset Data</Text>
               </TouchableOpacity>
-  
-              <TouchableOpacity 
+
+              <TouchableOpacity
                 onPress={() => setImportModalVisible(true)}
                 className="flex-row items-center bg-indigo-100 px-6 py-2 rounded-lg"
               >
@@ -807,7 +811,7 @@ const handleImport = async () => {
                 <Text className="ml-2 text-indigo-500 font-poppins-medium">Import Data</Text>
               </TouchableOpacity>
             </View>
-             
+
             {isSummaryLoading ? (
               <View className="flex items-center justify-center p-4">
                 <ActivityIndicator size="large" color="#312e81" />
@@ -865,21 +869,21 @@ const handleImport = async () => {
       </View>
       <View className="flex-1">
         <View className="flex-row justify-center mt-4 ml-10">
-        <HorizontalFilterMenu
-          items={Options}
-          selected={selectedMenu}
-          onPress={(item) => setSelectedMenu(item.id)}
-        />
-      </View>
+          <HorizontalFilterMenu
+            items={Options}
+            selected={selectedMenu}
+            onPress={(item) => setSelectedMenu(item.id)}
+          />
+        </View>
 
         {renderContent()}
         {renderModal()}
         {renderDownloadConfirmationModal()}
         {renderResetConfirmationModal()}
-        {renderImportModal()} 
-        
+        {renderImportModal()}
+
       </View>
-      
+
     </SafeAreaView>
 
   );

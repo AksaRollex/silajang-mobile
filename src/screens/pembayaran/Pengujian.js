@@ -109,17 +109,15 @@ const Pengujian = ({ navigation }) => {
   const handleDownloadReport = async () => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
-      const baseUrl = `/report/pembayaran/pengujian`;
-      const downloadUrl = `${APP_URL}${baseUrl}?tahun=${tahun}&bulan=${bulan}&type=${type}&token=${authToken}`;
+      const fileName = `Pembayaran Pengujian-${Date.now()}.pdf`;
 
-      const fileName = `Laporan_Pengujian_${tahun}_${bulan || 'Semua_Bulan'}.pdf`;
       const downloadPath =
         Platform.OS === "ios"
           ? `${RNFS.DocumentDirectoryPath}/${fileName}`
           : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
       const options = {
-        fromUrl: downloadUrl,
+        fromUrl: reportUrl,
         toFile: downloadPath,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -127,30 +125,37 @@ const Pengujian = ({ navigation }) => {
       };
 
       const result = await RNFS.downloadFile(options).promise;
+
       if (result.statusCode === 200) {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
+
+        // Show toast message for success
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `Laporan PDF Berhasil Diunduh. ${Platform.OS === "ios"
-            ? "You can find it in the Files app."
-            : `Disimpan sebagai ${fileName} di folder Download.`
-            }`,
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
         });
       } else {
         throw new Error("Download failed");
       }
     } catch (error) {
-      console.error("Download Report error:", error);
+      console.error("Download error:", error);
+
+      // Show toast message for error
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: `Laporan PDF gagal diunduh: ${error.message}`,
+        text2: `PDF gagal diunduh: ${error.message}`,
       });
     }
   };
+
   const PickerButton = ({ label, value, style }) => (
     <View
       style={[{
