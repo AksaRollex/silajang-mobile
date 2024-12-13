@@ -95,6 +95,19 @@ const Detail = ({ route, navigation }) => {
     }
   }, [formData]);
 
+  const handleGenerateVA = () => {
+    setLoading(true);
+    axios
+      .post(`${API_URL}/pembayaran/pengujian/${uuid}`)
+      .then(() => {
+        Alert.alert("Success", "kode pembayaran berhasil dibuat");
+        fetchData();
+      })
+      .catch(err => {
+        setLoading(false);
+        Alert.alert("ERROR", "Kode Pembayaran gagal dibuat" || "Gagal Memuat");
+      });
+  };
 
   /**
    * Download QRIS dan QRIS template ke galeri perangkat
@@ -260,24 +273,34 @@ const Detail = ({ route, navigation }) => {
     // Only render if there's no payment data
     if (!formData?.payment) {
       return (
-        <View className="flex-row">
-          <View className="flex-1 mr-2">
-            <Text className="form-label font-poppins-bold text-dark text-sm mb-1">
-              Harga
-            </Text>
-            <Text className="text-base font-poppins-semibold">
-              {formatCurrency(formData?.harga || 0)}
-            </Text>
+        <>
+          <View className="flex-col">
+            <View className="flex-row justify-between mr-2">
+              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+                Harga
+              </Text>
+              <Text className="text-base font-poppins-semibold text-black">
+                {formatCurrency(formData?.harga || 0)}
+              </Text>
+            </View>
+            <View className="flex-row justify-between">
+              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+                Atas Nama
+              </Text>
+              <Text className="text-base font-poppins-semibold text-black">
+                {formData?.permohonan?.user?.nama || "-"}
+              </Text>
+            </View>
+            <View className="flex-row justify-between mr-2">
+              <Text className="form-label font-poppins-bold text-black text-sm mb-1">
+                Denda
+              </Text>
+              <Text className="text-base font-poppins-semibold text-black">
+                {formatCurrency(formData?.harga || 0)}
+              </Text>
+            </View>
           </View>
-          <View className="flex-1">
-            <Text className="form-label font-poppins-bold text-dark text-sm mb-1">
-              Atas Nama
-            </Text>
-            <Text className="text-base font-poppins-semibold">
-              {formData?.permohonan?.user?.nama || "-"}
-            </Text>
-          </View>
-        </View>
+        </>
       );
     }
 
@@ -287,18 +310,31 @@ const Detail = ({ route, navigation }) => {
   const renderNoPaymentAlert = () => {
     if (!formData?.payment) {
       return (
-        <View className="bg-blue-100 p-4 rounded-lg items-center">
-          <Text className="text-base font-poppins-semibold mb-2">
-            {formData?.payment_type === "va"
-              ? "VA Pembayaran Belum Dibuat"
-              : "QRIS Belum Dibuat"}
-          </Text>
-          <Text className="text-sm text-gray-700 text-center">
-            {formData?.payment_type === "va"
-              ? "Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran"
-              : "Silahkan klik Tombol Di Bawah untuk Membuat QRIS"}
-          </Text>
-        </View>
+        <>
+          <View className="bg-indigo-200 p-4 rounded-lg items-center my-4">
+            <Text className="text-base font-poppins-semibold mb-2 text-black">
+              {formData?.payment_type === "va"
+                ? "VA Pembayaran Belum Dibuat"
+                : "QRIS Belum Dibuat"}
+            </Text>
+            <Text className="text-sm text-indigo-600 font-poppins-regular text-center">
+              {formData?.payment_type === "va"
+                ? "Silahkan klik Tombol Di Bawah untuk Membuat VA Pembayaran"
+                : "Silahkan klik Tombol Di Bawah untuk Membuat QRIS"}
+            </Text>
+          </View>
+          <View className="flex items-end my-2">
+            <TouchableOpacity
+              className="bg-indigo-500 p-3 rounded-lg"
+              onPress={handleGenerateVA}>
+              <Text
+                style={styles.buttonText}
+                className="font-poppins-semibold text-white">
+                Buat VA Pembayaran
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </>
       );
     }
     return null;
@@ -311,21 +347,21 @@ const Detail = ({ route, navigation }) => {
     }
 
     return (
-      <View className="space-y-4 mb-20">
-        <View className="rounded-xl shadow-lg overflow-hidden">
+      <View className="space-y-4 ">
+        <View className="rounded-xl shadow-lg overflow-hidden mb-20">
           {formData.payment?.status === "success" && (
             <View className="bg-green-500 flex-row items-center p-4">
-              <MaterialCommunityIcons
-                name="check-decagram"
-                size={28}
+              <MaterialIcons
+                name="verified"
+                size={33}
                 color="white"
                 className="mr-4"
               />
-              <View>
-                <Text className="text-white font-poppins-semibold text-base ml-3">
+              <View className="">
+                <Text className="text-white font-poppins-semibold text-base ml-10">
                   Pembayaran Berhasil
                 </Text>
-                <Text className="text-green-100 font-poppins-regular text-sm mt-1 ml-3">
+                <Text className="text-green-100 font-poppins-regular text-sm mt-1 ml-8">
                   Dilakukan pada:{" "}
                   {moment(formData.payment.tanggal_bayar).format("DD-MM-YYYY")}
                 </Text>
@@ -346,14 +382,14 @@ const Detail = ({ route, navigation }) => {
                       Lakukan Pembayaran Sebelum :
                     </Text>
                     <Text className="text-blue-700 font-poppins-regular text-sm mt-1">
-                    {countdown}
+                      {countdown}
                     </Text>
                   </View>
                 </View>
               )}
 
             {formData.payment?.is_expired && (
-              <View className="flex-row items-center mb-4 pb-4 border-b border-gray-100">
+              <View className="flex-row  justify-between items-center mb-4 pb-4 border-b border-gray-100">
                 <AntDesign
                   name="exclamationcircle"
                   size={28}
@@ -398,10 +434,19 @@ const Detail = ({ route, navigation }) => {
               </View>
               {formData.payment?.type === "va" && (
                 <TouchableOpacity
+                  disabled={formData.payment.is_expired}
                   onPress={() => copyToClipboard(formData.payment.va_number)}
-                  disabled={formData.payment?.is_expired}
-                  className="bottom-4">
-                  <Text className="text-green-600 font-poppins-semibold">
+                  className="bottom-4"
+                  style={{
+                    opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity tombol Salin
+                  }}
+                  >
+                  <Text
+                    className={`font-poppins-semibold ${
+                      formData.payment.is_expired
+                        ? "text-gray-400"
+                        : "text-green-600"
+                    }`}>
                     Salin
                   </Text>
                 </TouchableOpacity>
@@ -429,7 +474,9 @@ const Detail = ({ route, navigation }) => {
                     }}>
                     <Text
                       className={`font-poppins-semibold ${
-                        formData.payment.is_expired ? "text-gray-400" : "text-blue-600"
+                        formData.payment.is_expired
+                          ? "text-gray-400"
+                          : "text-blue-600"
                       }`}>
                       Unduh QRIS
                     </Text>
@@ -466,7 +513,9 @@ const Detail = ({ route, navigation }) => {
                 }}>
                 <Text
                   className={`font-poppins-semibold ${
-                    formData.payment.is_expired ? "text-gray-400" : "text-green-600"
+                    formData.payment.is_expired
+                      ? "text-gray-400"
+                      : "text-green-600"
                   }`}>
                   Salin
                 </Text>
@@ -477,6 +526,7 @@ const Detail = ({ route, navigation }) => {
       </View>
     );
   };
+
 
   return (
     <SafeAreaView className="flex-1 bg-gray-100">

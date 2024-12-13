@@ -133,7 +133,7 @@ export default function IndexKonfigurasi() {
                   right={props => (
                     <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
                   )}
-                  className="px-5 bg-[#f8f8f8] ml-3 mr-3"
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("LogTte")}
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -150,7 +150,7 @@ export default function IndexKonfigurasi() {
                       <Ionicons name="create" size={17} color={'white'} style={{ padding: 5 }} />
                     </View>
                   )}
-                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("TandaTangan")}
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -166,7 +166,7 @@ export default function IndexKonfigurasi() {
                       <Ionicons name="chatbubble-ellipses" size={17} color={'white'} style={{ padding: 5 }} />
                     </View>
                   )}
-                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("UmpanBalik")}
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
@@ -184,7 +184,7 @@ export default function IndexKonfigurasi() {
                       <Ionicons name="analytics" size={17} color={'white'} style={{ padding: 5 }} />
                     </View>
                   )}
-                  className='px-5 bg-[#f8f8f8] ml-3 mr-3'
+                  className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("TrackingPengujian")}
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
