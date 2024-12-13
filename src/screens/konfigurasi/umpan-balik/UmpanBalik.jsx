@@ -306,6 +306,7 @@ const handleImport = async () => {
       return false;
     }
   };
+  
   const [authToken, setAuthToken] = useState('');
   useEffect(() => {
     (async () => {
@@ -324,7 +325,7 @@ const handleImport = async () => {
       });
   
       const contentDisposition = response.headers['content-disposition'];
-      let fileName = 'RIO.xlsx'; // Nama default jika tidak ada header
+      let fileName = 'Template Import Umpan Balik.xlsx'; // Nama default jika tidak ada header
   
       if (contentDisposition && contentDisposition.includes('filename=')) {
         const matches = contentDisposition.match(/filename="(.+?)"/);
