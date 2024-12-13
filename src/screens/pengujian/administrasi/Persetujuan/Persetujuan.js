@@ -302,7 +302,7 @@ const Persetujuan = ({ navigation }) => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
-          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+          <View className="bg-white rounded-2xl w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
               <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity onPress={() => {

@@ -16,6 +16,7 @@ import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Platform } from 'react-native';
+import FastImage from "react-native-fast-image";
 
 export default memo(function Form({ route, navigation }) {
   const { uuid } = route.params || {};
@@ -459,6 +460,12 @@ export default memo(function Form({ route, navigation }) {
     }
   };
 
+  const handleDeletePhoto = () => {
+    setProfileImage(null);
+    setProfileImage(null);
+    setPhotos(null);
+  };
+
   if (isLoadingData && uuid) {
     return (
       <View className="h-full flex justify-center">
@@ -471,6 +478,7 @@ export default memo(function Form({ route, navigation }) {
     <ScrollView>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
+          <BackButton action={() => navigation.goBack()} size={26} />
           <View className="">
             <View className="w-full items-center mt-5 justify-center">
               <TouchableOpacity
@@ -483,17 +491,16 @@ export default memo(function Form({ route, navigation }) {
                 {isLoading ? (
                   <ActivityIndicator size="large" color="#312e81" />
                 ) : profileImage ? (
-                  <View className="rounded-full w-40 h-40 overflow-hidden relative">
+                  <View className="rounded-full w-40 h-40 relative">
                     <Image
                       source={{ uri: profileImage.uri || profileImage }}
-                      className="w-full h-full"
+                      className="w-full h-full rounded-full"
                       resizeMode="cover"
                     />
                     <TouchableOpacity
-                      onPress={handleRemovePhoto}
-                      className="absolute bottom-0 right-0 bg-red-500 p-1 rounded-full"
-                    >
-                      <MaterialIcons name="delete" size={20} color="white" />
+                     className="absolute -top-2 -right-2 bg-white rounded-full w-9 h-9 items-center justify-center shadow-lg border border-red-100"
+                     onPress={handleDeletePhoto}>
+                     <Icons name="close" size={23} color="#dc2626" />
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -758,9 +765,11 @@ export default memo(function Form({ route, navigation }) {
                     <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
                       <View className="items-center">
                         <View className="relative">
-                          <Image
-                            source={{ uri: tandaTanganUrl }}
+                          <FastImage
                             className="w-48 h-48 rounded-lg"
+                            source={{ 
+                              uri: tandaTanganUrl?.tanda_tangan
+                            }}
                             resizeMode="contain"
                             onError={(e) => {
                               console.log("Error loading image:", e.nativeEvent.error);

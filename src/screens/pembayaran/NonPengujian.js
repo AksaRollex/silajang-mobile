@@ -6,9 +6,16 @@ import Paginate from "@/src/screens/components/Paginate";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 import { rupiah } from "@/src/libs/utils";
 import { useDelete } from '@/src/hooks/useDelete';
 import { useQueryClient } from "@tanstack/react-query";
+import Pdf from 'react-native-pdf';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { APP_URL } from "@env";
+import RNFS, { downloadFile } from "react-native-fs";
+import Toast from "react-native-toast-message";
+
 
 const rem = multiplier => 16 * multiplier;
 
@@ -16,9 +23,12 @@ const NonPengujian = ({ navigation }) => {
   const queryClient = useQueryClient();
   const [refreshKey, setRefreshKey] = useState(0);
   const paginateRef = useRef();
-  const [tahun, setTahun] = useState(2024);
+  const [tahun, setTahun] = useState(new Date().getFullYear());
   const [bulan, setBulan] = useState("-");
   const [type, setType] = useState("va");
+
+  const [reportUrl, setReportUrl] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
 
   const { delete: deleteNonPengujian, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -73,6 +83,76 @@ const NonPengujian = ({ navigation }) => {
     setType(selectedId);
     paginateRef.current?.refetch();
   }, []);
+
+  const handlePreviewReport = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+
+      const baseUrl = `/api/v1/report/pembayaran/non-pengujian`;
+      const reportUrl = `${APP_URL}${baseUrl}?tahun=${tahun}&type=${type}&token=${authToken}`;
+
+      setReportUrl(reportUrl);
+      setModalVisible(true);
+    } catch (error) {
+      console.error("Preview Report error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal memuat laporan",
+      });
+    }
+  };
+
+  const handleDownloadReport = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `Pembayaran Non Pengujian-${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: reportUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const result = await RNFS.downloadFile(options).promise;
+
+      if (result.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        // Show toast message for success
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+
+      // Show toast message for error
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
 
   const PickerButton = ({ label, value, style }) => (
     <View
@@ -297,6 +377,52 @@ const NonPengujian = ({ navigation }) => {
         </MenuView>
       </View>
 
+      
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-bold text-black">Preview PDF </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDownloadReport();
+                  setModalVisible(false);
+                }}
+                className="p-2 rounded flex-row items-center"
+              >
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+            <Pdf
+              source={{ uri: reportUrl, cache: true }}
+              style={{ flex: 1, width: '100%', height: '100%' }}
+              trustAllCerts={false}
+              onError={(error) => {
+                console.log('PDF Load Error:', error);
+                Toast.show({
+                  type: "error",
+                  text1: "Error",
+                  text2: "Gagal memuat PDF",
+                });
+              }}
+            />
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
+              >
+                <Text className="text-white font-bold text-center">Tutup</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <Paginate
         ref={paginateRef}
         url="/pembayaran/non-pengujian"
@@ -312,7 +438,7 @@ const NonPengujian = ({ navigation }) => {
       />
 
       <TouchableOpacity
-        // onPress={handlePreviewReport}
+        onPress={handlePreviewReport}
         className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
         style={{
           position: 'absolute',
@@ -333,6 +459,7 @@ const NonPengujian = ({ navigation }) => {
         }}>
         <FontAwesome5 name="file-pdf" size={19} color="white" />
       </TouchableOpacity>
+
 
       <DeleteConfirmationModal />
     </View>

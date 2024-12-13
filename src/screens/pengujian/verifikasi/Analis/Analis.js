@@ -1,3 +1,4 @@
+
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
@@ -9,6 +10,7 @@ import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
@@ -121,7 +123,7 @@ const Analis = ({ navigation }) => {
     setInitialRender(false);
   }, []);
 
- const renderItem = ({ item }) => {
+  const renderItem = ({ item }) => {
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -130,13 +132,20 @@ const Analis = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
+              
+            {item.check_param && (
+              <View className="mt-2">
+                <MaterialIcons name="verified" size={20} color="green" style={{ marginBottom: 4 }}/>
+              </View>
+            )}
+
             <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.kode}
             </Text>
-
+  
             <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
-
+  
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.lokasi}
             </Text>
@@ -144,7 +153,7 @@ const Analis = ({ navigation }) => {
             <Text className="text-xs font-poppins-regular text-gray-500">
               Diterima pada
             </Text>
-
+  
             {item.tanggal_diterima && (
               <Text >
                 <Text className="text-md font-poppins-semibold text-black mb-2">
@@ -167,7 +176,7 @@ const Analis = ({ navigation }) => {
         </View>
         
         <View className="h-[1px] bg-gray-300 my-3"/>
-
+  
         <View className="flex-row justify-end mt-1 space-x-2">
           <TouchableOpacity
             onPress={() => navigation.navigate("DetailAnalis", {
@@ -181,15 +190,14 @@ const Analis = ({ navigation }) => {
             </Text>
           </TouchableOpacity>
                 
-            <TouchableOpacity
-              onPress={() => handlePreviewSPP({ uuid: item.uuid })}
-              className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
-              <FontAwesome5Icon name="file-pdf" size={16} color="white" />
-              <Text className="text-white text-xs ml-1 font-poppins-medium">
-                SPP
-              </Text>
-            </TouchableOpacity>
-
+          <TouchableOpacity
+            onPress={() => handlePreviewSPP({ uuid: item.uuid })}
+            className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
+            <FontAwesome5Icon name="file-pdf" size={16} color="white" />
+            <Text className="text-white text-xs ml-1 font-poppins-medium">
+              SPP
+            </Text>
+          </TouchableOpacity>
         </View>
       </View>
     );
