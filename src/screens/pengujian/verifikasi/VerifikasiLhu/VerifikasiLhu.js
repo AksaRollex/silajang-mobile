@@ -6,8 +6,7 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
 import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
-import AntDesign from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
@@ -220,9 +219,6 @@ const VerifikasiLhu = ({ navigation }) => {
     }
   };
 
-  
-
-
   const renderItem = ({ item }) => {
     const dropdownOptionsMenunggu = [
       { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => confirmationModal('verify', item.uuid) },
@@ -257,7 +253,7 @@ const VerifikasiLhu = ({ navigation }) => {
                 </Text>
               </View>
               
-              {dropdownOptionsForItem.length > 0 && (
+              {/* {dropdownOptionsForItem.length > 0 && (
                 <MenuView
                   title="dropdownOptions"
                   actions={dropdownOptionsForItem}
@@ -275,7 +271,7 @@ const VerifikasiLhu = ({ navigation }) => {
                     <Entypo name="dots-three-vertical" size={18} color="#312e81" />
                   </View>
                 </MenuView>
-              )}
+              )} */}
             </View>
           </View>
 
@@ -286,10 +282,43 @@ const VerifikasiLhu = ({ navigation }) => {
           <Text className="text-xs font-poppins-regular text-gray-500">Peraturan</Text>
           <Text className="ftext-md font-poppins-semibold text-black">{item.peraturan?.nama || '-'}</Text>
         </View>
+
+        
+
           
         <View className="h-[1px] bg-gray-300 my-3"/>
-  
-        <View className="flex-row justify-end mt-2">
+        <View className="flex-row justify-end mt-2 space-x-2">
+          {/* Verify Button */}
+          {item.status <= 7 && (
+            <TouchableOpacity 
+              onPress={() => confirmationModal('verify', item.uuid)}
+              className="flex-row items-center bg-green-500 px-2 py-2 rounded-md"
+            >
+              <Ionicons name="checkmark-done" size={20} color="#fff"/>
+            </TouchableOpacity>
+          )}
+
+          {/* Reject Button */}
+          {item.status <= 7 && (
+            <TouchableOpacity 
+              onPress={() => confirmationModal('reject', item.uuid)}
+              className="flex-row items-center bg-red-500 px-2 py-2 rounded-md"
+            >
+              <Ionicons name="close" size={20} color="#fff" />
+            </TouchableOpacity>
+          )}
+
+          {/* Rollback Button */}
+          {item.status > 7 && item.status < 9 && (
+            <TouchableOpacity 
+              onPress={() => Rollback(item.uuid)}
+              className="flex-row items-center bg-yellow-100 px-2 py-2 rounded-md"
+            >
+              <Ionicons name="refresh-circle" size={16} color="#eab308" style={{ marginRight: 8 }} />
+              <Text className="text-yellow-600 font-poppins-medium text-xs">Rollback</Text>
+            </TouchableOpacity>
+          )}
+
           <TouchableOpacity 
             onPress={() => PreviewVerifikasi(item)}
             className="flex-row items-center bg-red-100 px-2 py-2 rounded-md"
@@ -410,10 +439,10 @@ const VerifikasiLhu = ({ navigation }) => {
               : 'Konfirmasi Tolak Verifikasi'}
           </Text>
           
-          <Text className="text-black mb-4">
+          <Text className="text-black mb-4 font-poppins-regular">
             {confirmAction === 'verify'
-              ? 'Apakah Anda yakin ingin memverifikasi LHU ini?'
-              : 'Apakah Anda yakin ingin menolak verifikasi LHU ini?'}
+              ? 'Apakah Anda yakin ingin memverifikasi LHU?'
+              : 'Apakah Anda yakin ingin menolak verifikasi LHU?'}
           </Text>
 
           <View className="flex-row justify-end space-x-2">
@@ -421,14 +450,14 @@ const VerifikasiLhu = ({ navigation }) => {
               onPress={() => setConfirmModalVisible(false)}
               className="bg-gray-200 p-2 rounded-md"
             >
-              <Text className="text-black">Batal</Text>
+              <Text className="text-black font-poppins-regular">Batal</Text>
             </TouchableOpacity>
 
             <TouchableOpacity 
               onPress={handleConfirm}
               className="bg-indigo-900 p-2 rounded-md"
             >
-              <Text className="text-white">Ya, Lanjutkan</Text>
+              <Text className="text-white font-poppins-regular">Ya, Lanjutkan</Text>
             </TouchableOpacity>
           </View>
         </View>

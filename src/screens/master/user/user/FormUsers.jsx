@@ -489,12 +489,6 @@ export default memo(function Form({ route, navigation }) {
                       className="w-full h-full"
                       resizeMode="cover"
                     />
-                    <TouchableOpacity
-                      onPress={handleRemovePhoto}
-                      className="absolute bottom-0 right-0 bg-red-500 p-1 rounded-full"
-                    >
-                      <MaterialIcons name="delete" size={20} color="white" />
-                    </TouchableOpacity>
                   </View>
                 ) : (
                   <View

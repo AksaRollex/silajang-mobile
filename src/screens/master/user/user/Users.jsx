@@ -179,7 +179,7 @@ const Users = ({ navigation, route }) => {
         ref={paginateRef}
         url="/master/user"
         payload={{
-          golongan_id: golongan_id ?? selectedMenu,
+          golongan_id: selectedMenu ?? golongan_id,
           page: 1,
           per: 10,
         }}
