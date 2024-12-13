@@ -378,22 +378,25 @@ const Global = ({ navigation }) => {
           onPress={() => setModalVisible(true)}
           style={{
             position: 'absolute',
-            zIndex: 999, // Pastikan berada di lapisan paling atas
             bottom: 75,
             right: 20,
             backgroundColor: '#177a44',
-            padding: 10,
             borderRadius: 50,
+            width: 55,
+            height: 55,
+            justifyContent: 'center',
+            alignItems: 'center',
             elevation: 5,
             shadowColor: '#000',
             shadowOffset: { width: 0, height: 2 },
             shadowOpacity: 0.25,
             shadowRadius: 3.84,
-          }}
-        >
-          <MaterialCommunityIcons 
-            name="file-excel-outline" 
-            size={32} 
+            zIndex: 1000
+          }}>
+  
+          <FontAwesome5 
+            name="file-excel" 
+            size={20} 
             color="#fff" 
           />
         </TouchableOpacity>
