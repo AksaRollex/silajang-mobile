@@ -351,11 +351,11 @@ const DetailNonPengujian = ({ route, navigation }) => {
 
     return (
       <View className="space-y-4 ">
-        <View className="rounded-xl shadow-lg overflow-hidden">
+        <View className="rounded-xl shadow-lg overflow-hidden mb-20">
           {formData.status === "success" && (
             <View className="bg-green-500 flex-row items-center p-4">
-              <MaterialCommunityIcons
-                name="check-decagram"
+              <MaterialIcons
+                name="verified"
                 size={28}
                 color="white"
                 className="mr-4"

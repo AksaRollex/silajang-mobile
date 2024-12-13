@@ -1,10 +1,12 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useEffect } from "react";
 import { View, Text, TouchableOpacity, Modal } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
+import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import RNPickerSelect from "react-native-picker-select";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -21,7 +23,7 @@ const Global = ({ navigation }) => {
   const [selectedStatus, setSelectedStatus] = useState("-");
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
-  const [reportUrl, setReportUrl] = useState("");
+
 
   const generateYears = () => {
     const currentYear = new Date().getFullYear();
@@ -76,54 +78,60 @@ const Global = ({ navigation }) => {
     </View>
   );
 
+  const [authToken, setAuthToken] = useState('');
+  useEffect(() => {
+    (async () => {
+      const token = await AsyncStorage.getItem('@auth-token');
+      setAuthToken(token)
+    })()
+  })
+
   const downloadReport = async () => {
     try {
-      const authToken = await AsyncStorage.getItem("@auth-token");
-      const fileName = `Laporan_Pembayaran_${selectedYear}_${selectedStatus}_${Date.now()}.xlsx`;
-      
-      const downloadUrl = `${APP_URL}/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`;
-      
-      const downloadPath =
-        Platform.OS === "ios"
-          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
-          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
-      const options = {
-        fromUrl: downloadUrl,
-        toFile: downloadPath,
+      const response = await axios.get(`pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`, {
         headers: {
-          Authorization: `Bearer ${authToken}`,
+          Authorization: `Bearer ${authToken}`, // Menambahkan Authorization header
         },
-      };
-
-      const result = await RNFS.downloadFile(options).promise;
-
-      if (result.statusCode === 200) {
-        if (Platform.OS === "android") {
-          await RNFS.scanFile(downloadPath);
-        }
-
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: `Laporan Berhasil Diunduh. ${
-            Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Saved as ${fileName} in your Downloads folder.`
-          }`,
-        });
-      } else {
-        throw new Error("Download failed");
-      }
-    } catch (error) {
-      console.error("Download error:", error);
-      Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: `Laporan gagal diunduh: ${error.message}`,
+        responseType: 'arraybuffer', // Konfigurasi respons biner
       });
-    }
-  };
+  
+      const contentDisposition = response.headers['content-disposition'];
+      let fileName = `Laporan Pembayaran Global ${selectedYear} - ${selectedStatus}.xlsx`; // Nama default jika tidak ada header
+  
+      if (contentDisposition && contentDisposition.includes('filename=')) {
+        const matches = contentDisposition.match(/filename="(.+?)"/);
+        if (matches && matches[1]) {
+          fileName = matches[1];
+        }
+      }
+  
+      // Tentukan path untuk menyimpan file
+      const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+  
+      // Konversi buffer ke string ASCII untuk menyimpan file
+      const buffer = new Uint8Array(response.data);
+      const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
+  
+      // Menyimpan file ke perangkat lokal
+      await RNFS.writeFile(path, fileContent, 'ascii');
+      
+      console.log('File berhasil diunduh dan disimpan di:', path);
+
+      Toast.show({ 
+        type: 'success',
+        text1: 'Berhasil!',
+        text2: 'Laporan berhasil diunduh',
+      })
+    } catch (error) {
+      console.error('Error saat mengunduh file:', error);
+      
+      Toast.show({ 
+        type: 'error',
+        text1: 'Gagal!',
+        text2: 'Tidak dapat mengunduh laporan',
+      })
+   }
+  }
 
   const getStatusStyle = status => {
     switch (status) {
@@ -308,6 +316,51 @@ const Global = ({ navigation }) => {
         </View>
       </View>
 
+       <Modal
+            animationType="fade"
+            transparent
+            visible={modalVisible}
+            onRequestClose={() => setModalVisible(false)}
+          >
+            <View
+              style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+              className="flex-1 justify-center items-center"
+            >
+              <View className="bg-white rounded-lg w-[90%] p-6">
+                <View className="flex-row justify-between items-center mb-6">
+                  <Text className="text-lg font-poppins-medium text-black">Konfirmasi Download</Text>
+                  <TouchableOpacity onPress={() => setModalVisible(false)}>
+                    <MaterialIcons name="close" size={24} color="black" />
+                  </TouchableOpacity>
+                </View>
+                
+                <View className="mb-6">
+                  <Text className="text-base font-poppins-regular text-black text-center">
+                    Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+                  </Text>
+                </View>
+        
+                <View className="flex-row justify-center gap-3">
+                  <TouchableOpacity 
+                    onPress={() => setModalVisible(false)} 
+                    className="px-6 py-2 bg-gray-400 rounded-lg"
+                  >
+                    <Text className="text-white font-poppins-medium">Batal</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity 
+                    onPress={() => {
+                      downloadReport();
+                      setModalVisible(false);
+                    }}
+                    className="px-6 py-2 bg-green-500 rounded-lg"
+                  >
+                    <Text className="text-white font-poppins-medium">Download</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </View>
+          </Modal>
+
       <Paginate
         ref={paginateRef}
         url="/pembayaran/global"
@@ -321,31 +374,32 @@ const Global = ({ navigation }) => {
         className="px-4 mb-12"
       />
 
-    <TouchableOpacity
-        onPress={downloadReport}
-        className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
-        style={{
-          position: 'absolute',
-          bottom: 75,
-          right: 20,
-          backgroundColor: '#dc2626',
-          borderRadius: 50,
-          width: 55,
-          height: 55,
-          justifyContent: 'center',
-          alignItems: 'center',
-          elevation: 5,
-          shadowColor: '#000',
-          shadowOffset: { width: 0, height: 2 },
-          shadowOpacity: 0.25,
-          shadowRadius: 3.84,
-          zIndex: 1000
-        }}>
-        <FontAwesome5 name="file-pdf" size={19} color="white" />
-        
-      </TouchableOpacity>
-
-
+        <TouchableOpacity
+          onPress={() => setModalVisible(true)}
+          style={{
+            position: 'absolute',
+            bottom: 75,
+            right: 20,
+            backgroundColor: '#177a44',
+            borderRadius: 50,
+            width: 55,
+            height: 55,
+            justifyContent: 'center',
+            alignItems: 'center',
+            elevation: 5,
+            shadowColor: '#000',
+            shadowOffset: { width: 0, height: 2 },
+            shadowOpacity: 0.25,
+            shadowRadius: 3.84,
+            zIndex: 1000
+          }}>
+  
+          <FontAwesome5 
+            name="file-excel" 
+            size={20} 
+            color="#fff" 
+          />
+        </TouchableOpacity>
     </View>
   );
 };
