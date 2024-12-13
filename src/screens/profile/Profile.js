@@ -8,6 +8,7 @@ import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/Feather";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import FastImage from "react-native-fast-image";
 import { TextFooter } from "../components/TextFooter";
 // import ImagePreviewModal from "./ImagePreviewModal";
 
@@ -21,6 +22,11 @@ export default function Profile({ navigation }) {
   const [imageViewerVisible, setImageViewerVisible] = useState(false);
   const [selectedImage, setSelectedImage] = useState("");
 
+  const openImageViewer = imageUrl => {
+    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
+    setImageViewerVisible(true);
+  };
+  
   const { data: userData, isLoading } = useUser();
 
   const handleLogout = () => {
@@ -51,10 +57,6 @@ export default function Profile({ navigation }) {
     },
   });
 
-  const openImageViewer = (imageUrl) => {
-    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
-    setImageViewerVisible(true);
-  };
 
   return (
     <View
@@ -70,35 +72,27 @@ export default function Profile({ navigation }) {
               className="w-full py-5 rounded-b-2xl">
               <Text className="text-white text-xl font-poppins-bold mx-6 top-32 self-start">
               </Text>
-              <View className="w-full items-center mt-32 justify-center">
+              <View className="w-full items-center mt-40 justify-center">
                 {userData ? (
                   <TouchableOpacity
                     onPress={() => openImageViewer(userData.photo)}
                     style={{ position: "absolute", zIndex: 10, top: "50%", alignSelf: "center" }}
                   >
-                    {userData.photo ? (
-                      <View className="rounded-full w-28 h-28 overflow-hidden">
-                        <Image
-                          source={{ uri: `${process.env.APP_URL}${userData.photo}` }}
-                          className="w-full h-full"
-                          resizeMode="cover"
+                        <FastImage
+                          className="rounded-full w-28 h-28"
+                          source={{ 
+                            uri: userData?.photo
+                             ? `${process.env.APP_URL}${userData.photo}`
+                             : "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg", 
+                            priority: FastImage.priority.high,
+                            }}
+                            style={{ 
+                              borderWidth: 3, 
+                              borderColor: "#ececec",
+                             }}
+                            resizeMode={FastImage.resizeMode.cover}
                         />
-                      </View>
-                    ) : (
-                      <View
-                        className="rounded-full  bg-gray-300 items-center justify-center w-28 h-28"
-                        style={{ borderWidth: 2, borderColor: "#E2E8F0" }}
-                      >
-                        <IonIcons
-                          name="person"
-                          size={50}
-                          color="#666666"
-                        />
-                      </View>
-                      
-                    )}
                   </TouchableOpacity>
-                  
                 ) : (
                   <View></View>
                 )}
@@ -258,19 +252,21 @@ export default function Profile({ navigation }) {
           visible={imageViewerVisible}  
           onRequestClose={() => setImageViewerVisible(false)}
         >
-          <View className="flex-1 bg-black justify-center items-center">
-            <TouchableOpacity
-              className="absolute top-10 right-5 p-2  "
-              onPress={() => setImageViewerVisible(false)}
-            >
-              <Text className="text-white text-2xl font-bold">✕</Text>
-            </TouchableOpacity>
-            <Image
-              source={{ uri: selectedImage }}
-              className="w-[90%] h-[70%] "
-              resizeMode="contain"
-            />
-          </View>
+          <View style={styles.imageViewerContainer}>
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setImageViewerVisible(false)}>
+                  <IonIcons name="close" size={40} color="white" />
+                </TouchableOpacity>
+                <FastImage
+                  style={styles.fullScreenImage}
+                  source={{
+                    uri: selectedImage,
+                    priority: FastImage.priority.high,
+                  }}
+                  resizeMode={FastImage.resizeMode.contain}
+                />
+              </View>
         </Modal>
 
           </View>
