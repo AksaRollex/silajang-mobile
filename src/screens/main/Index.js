@@ -29,6 +29,7 @@ import IndexKonfigurasi from "../masterdash/index/IndexKonfig";
 import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
 import { create } from "zustand";
+
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
@@ -507,7 +508,9 @@ const Admin = () => {
         },
         headerTintColor: "white",
         headerLeft: () => null,
-        gestureEnabled: false,
+        gestureEnabled: false, 
+        animation:'slide_from_right'
+      
       }}
     >
       <Stack.Screen name="Home" component={TabNavigator} />

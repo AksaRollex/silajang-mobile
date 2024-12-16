@@ -69,7 +69,7 @@ export default memo(function form({ route, navigation }) {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: uuid ? "Data updated successfully" : "Success create data",
+          text2: uuid ? "Data updated successfully" : "Sukses menambahkan data",
         });
         queryClient.invalidateQueries(["/master/kecamatan"]);
         navigation.navigate("Kecamatan");

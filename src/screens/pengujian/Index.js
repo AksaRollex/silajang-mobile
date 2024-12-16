@@ -43,6 +43,7 @@ const Stack = createNativeStackNavigator();
 const screenOptions = {
   tabBarShowLabel: false,
   headerShown: false,
+  animation : "slide_from_right",
   tabBarStyle: {
     position: "absolute",
     bottom: 0,
@@ -50,8 +51,9 @@ const screenOptions = {
     left: 0,
     elevation: 0,
     height: 60,
-    backgroundColor: "#fff",
+    backgroundColor: "#fff",  
   },
+  
 };
 
 export default function MainScreen() {

@@ -21,6 +21,7 @@ const Stack = createNativeStackNavigator();
 const screenOptions = {
   tabBarShowLabel: false,
   headerShown: false,
+  animation: "slide_from_right",
   tabBarStyle: {
     position: 'absolute',
     bottom: 0,

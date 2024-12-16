@@ -151,7 +151,7 @@ export default function DetailPersetujuan({ route, navigation }) {
     }finally{
       Toast.show({
         type: 'success',
-        text1: 'Berhasil',
+        text1: 'Berhasil', 
         text2: 'Data Petugas telah diperbarui',
       })
     }

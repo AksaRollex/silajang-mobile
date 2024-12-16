@@ -53,7 +53,7 @@ export default memo(function form({ route, navigation }) {
                 Toast.show({
                     type: "success",
                     text1: "Success",
-                    text2: uuid ? "Success update data" : "Success create data",
+                    text2: uuid ? "Sukses update data" : "Sukses menambahkan datadata",
                 });
                 queryClient.invalidateQueries(["/master/libur-cuti"])
                 navigation.navigate("LiburCuti")

@@ -11,10 +11,20 @@ import SearchInput from "@/src/screens/components/SearchInput";
 import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "@/src/screens/components/BackButton";
 import IonIcon from "react-native-vector-icons/Ionicons";
+import { useHeaderStore } from "@/src/screens/main/Index";
+
 
 const Peraturan = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+    
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
 
   const { delete: deletePeraturan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -43,9 +53,9 @@ const Peraturan = ({ navigation }) => {
         </View>
 
         <View className="h-[1px] bg-gray-300 my-3" />
-        
+
         <View className="flex-row justify-end gap-2">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate("ParameterPeraturan", { selected: item.uuid })}
             className="flex-row items-center bg-green-600 px-2 py-2 rounded"
           >
@@ -53,7 +63,7 @@ const Peraturan = ({ navigation }) => {
             <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate("FormPeraturan", { uuid: item.uuid })}
             className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
           >
@@ -61,7 +71,7 @@ const Peraturan = ({ navigation }) => {
             <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => deletePeraturan(`/master/acuan-peraturan/${item.uuid}`)}
             className="flex-row items-center bg-red-500 px-2 py-2 rounded"
           >
@@ -75,18 +85,24 @@ const Peraturan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="flex-row items-center justify-center mt-4">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[19px] font-poppins-medium text-black ml-4">Metode</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Peraturan</Text>
+        <View className="bg-emerald-500 rounded-full">
+          <IonIcon name="document-text" size={17} color={'white'} style={{ padding: 5 }} />
+        </View>
       </View>
       <Paginate
         ref={paginateRef}
         url="/master/peraturan"
         renderItem={CardPeraturan}
       />
-       <Icons
+      <Icons
         name="plus"
         size={28}
         color="#fff"
