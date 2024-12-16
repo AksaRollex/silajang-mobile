@@ -348,20 +348,20 @@ const Detail = ({ route, navigation }) => {
 
     return (
       <View className="space-y-4 ">
-        <View className="rounded-xl shadow-lg overflow-hidden">
+        <View className="rounded-xl shadow-lg overflow-hidden mb-20">
           {formData.payment?.status === "success" && (
             <View className="bg-green-500 flex-row items-center p-4">
-              <MaterialCommunityIcons
-                name="check-decagram"
-                size={28}
+              <MaterialIcons
+                name="verified"
+                size={33}
                 color="white"
                 className="mr-4"
               />
-              <View>
-                <Text className="text-white font-poppins-semibold text-base ml-3">
+              <View className="">
+                <Text className="text-white font-poppins-semibold text-base ml-10">
                   Pembayaran Berhasil
                 </Text>
-                <Text className="text-green-100 font-poppins-regular text-sm mt-1 ml-3">
+                <Text className="text-green-100 font-poppins-regular text-sm mt-1 ml-8">
                   Dilakukan pada:{" "}
                   {moment(formData.payment.tanggal_bayar).format("DD-MM-YYYY")}
                 </Text>

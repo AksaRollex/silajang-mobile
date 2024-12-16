@@ -139,17 +139,17 @@ const UserProfileForm = ({ navigation }) => {
 
   const isSubmitDisabled = isSubmitting || 
     (name.trim() === userData?.nama && 
-     (!profileImage || profileImage === userData?.photo));
+    profileImage === userData?.photo);
 
   return (
-    <ScrollView className="bg-gray-100 py-3">
+    <ScrollView className="bg-gray-100">
       {isLoading ? (
         <View className="flex-1 items-center justify-center">
           <ActivityIndicator size="large" color="#312e81" />
         </View>
       ) : (
-        <View className="mt-5" style={{ alignItems: "center" }}>
-          <View className="bg-white rounded-lg p-6 w-[95%] shadow-lg">
+        <View className="mt-5 " style={{ alignItems: "center" }}>
+          <View className="bg-white rounded-lg p-6 w-[95%] shadow-lg "  style={{ marginBottom: 80 }}>
           <View className="flex-row items-center space-x-2 mb-10 ">
             <BackButton action={() => navigation.goBack()} size={26} />
             <View className="absolute left-0 right-3 items-center">
@@ -237,7 +237,7 @@ const UserProfileForm = ({ navigation }) => {
             <TouchableOpacity
               onPress={handleSubmit}
               disabled={isSubmitDisabled}
-              className="rounded-lg py-3 flex items-center mt-3 mb-5"
+              className="rounded-lg py-3 flex items-center mt-3 "
               style={{ 
                 backgroundColor: "#312e81",
               }}
