@@ -33,7 +33,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
     if (name === "peralatan") setPeralatan(updatedValue);
     if (name === "reagen") setReagen(updatedValue);
     if (name === "akomodasi") setAkomodasi(updatedValue);
-    if (name === "bebanKerja") setBebanKerja(updatedValue);
+    if (name === "beban_kerja") setBebanKerja(updatedValue);
 
     // Prepare data for API request
     const updateData = {
@@ -43,16 +43,14 @@ const Parameter = ({ selectedParameter, uuid }) => {
       }
     };
 
-    try {
-      // Make API request to update the pivot data
-      await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
-        parameters: [updateData],
-      });
-      console.log("Parameter Terupdate" ,updateData)
-    } catch (error) {
-      console.error("Error updating parameter:", error);
-    }
-  };
+    // Make API request to update the pivot data
+    await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
+      parameters: [updateData],
+    });
+
+    console.log("Parameter Terupdate", updateData);
+};
+
 
   const checkAllSwitches = async () => {
     const updatedValues = {
@@ -78,15 +76,10 @@ const Parameter = ({ selectedParameter, uuid }) => {
       pivot: updatedValues,
     };
   
-    try {
       // Make API request to update the pivot data
       await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
         parameters: [updateData],
       });
-      console.log("Parameter Terupdate", updateData);
-    } catch (error) {
-      console.error("Error updating parameter:", error);
-    }
   };
   
 
@@ -162,7 +155,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
            trackColor={{ false: "#767577", true: "#312e81" }}
            thumbColor={bebanKerja === 1 ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(bebanKerja)}
-          onValueChange={(value) => handleSwitchChange("bebanKerja", value)}
+          onValueChange={(value) => handleSwitchChange("beban_kerja", value)}
         />
       </View>
     </View>
