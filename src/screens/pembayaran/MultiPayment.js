@@ -181,7 +181,7 @@ const MultiPayment = ({ navigation }) => {
                 <MaterialIcons name="arrow-drop-down" size={24} color="black" />
                 </View>
             </View>
-            </MenuView>
+          </MenuView>
 
         
 
