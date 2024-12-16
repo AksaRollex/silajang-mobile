@@ -102,7 +102,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
             <WithPhone />
           </If>
 
-          <Button
+          {/* <Button
             labelStyle={{ fontFamily: "Poppins-Regular" }}
             size="small"
             label="Daftar Akun Baru"
@@ -113,11 +113,12 @@ export default memo(function Login({ navigation }): React.JSX.Element {
             color={'#312e81'}
             hyperlink
             onPress={() => navigation.navigate("register")}
-          ></Button>
-            <View style={{ alignItems: 'center'}}>
+          ></Button> */}
+          <View 
+          style={{ alignItems: 'center', position: 'absolute', bottom: 30,}} className="self-center">
             <Image
               source={require("@/assets/images/bse.png")}
-              style={{ width: 140, height: 70 }}
+              style={{ width: 150, height: 80 }}
             />
           </View>
         </View>

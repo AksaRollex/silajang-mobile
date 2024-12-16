@@ -32,6 +32,8 @@ import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { API_URL } from "@env";
 import { APP_URL } from "@env";
+import FileViewer from 'react-native-file-viewer';
+import { number } from "yup";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -148,12 +150,12 @@ const HasilUjis = ({ navigation, route }) => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `LHU_${Date.now()}.pdf`;
-
+  
       const downloadPath =
         Platform.OS === "ios"
           ? `${RNFS.DocumentDirectoryPath}/${fileName}`
           : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
+  
       const options = {
         fromUrl: reportUrl,
         toFile: downloadPath,
@@ -161,31 +163,27 @@ const HasilUjis = ({ navigation, route }) => {
           Authorization: `Bearer ${authToken}`,
         },
       };
-
+  
       const result = await RNFS.downloadFile(options).promise;
-
+  
       if (result.statusCode === 200) {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
-
-        // Show toast message for success
+  
+        await FileViewer.open(downloadPath);
+  
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+          text2: `PDF Berhasil Diunduh dan Dibuka`,
         });
       } else {
         throw new Error("Download failed");
       }
     } catch (error) {
       console.error("Download error:", error);
-
-      // Show toast message for error
+  
       Toast.show({
         type: "error",
         text1: "Error",
@@ -808,6 +806,21 @@ const HasilUjis = ({ navigation, route }) => {
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
+              activityIndicator={
+                <View style={{ flex:1, justifyContent:'center', alignItems:'center' }}>
+                  <ActivityIndicator size={"large"} color={"#0000ff"}/>
+                  <Text>Memuat Pdf....</Text>
+                </View>
+              }
+              onLoadComplete={(numberOfPages) => {
+                console.log(`Number Of Page: ${numberOfPages}`)
+              }}
+              onPageChanged={(page, numberOfPages) => {
+                console.log(`Current page ${page}`)
+              }}
+              onError={(error) => {
+                console.log('PDF loading error:', error);
+              }}
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
