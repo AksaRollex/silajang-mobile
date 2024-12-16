@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef } from "react";
+import React, { useState, useCallback, useRef, useMemo } from "react";
 import { View, Text, TouchableOpacity, Modal } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import BackButton from "@/src/screens/components/BackButton";
@@ -16,15 +16,16 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import TTEModal from './TTEModal';
 import KwitansiModal from "./KwitansiModal";
 
-const Pengujian = ({ navigation }) => {
+const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const paginateRef = useRef();
 
-  const currentYear = new Date().getFullYear();
-  const currentMonth = new Date().getMonth() + 1;
+  const getCurrentYear =() => new Date().getFullYear();
+  const getCurrentMonth =() => new Date().getMonth() + 1;
 
-  const [tahun, setTahun] =  useState(currentYear.toString());
-  const [bulan, setBulan] = useState(currentMonth.toString());
+  const [tahun, setTahun] = useState(getCurrentYear());
+  const [bulan, setBulan] = useState(getCurrentMonth());
+
   const [type, setType] = useState('va');
   const [modalVisible, setModalVisible] = useState(false);
   const [tteModalVisible, setTTEModalVisible] = useState(false);
@@ -32,13 +33,16 @@ const Pengujian = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const tahuns = Array.from(
-    { length: new Date().getFullYear() - 2021 },
-    (_, i) => ({
-      id: 2022 + i,
-      text: `${2022 + i}`,
-    }),
-  );
+ const tahuns = useMemo(() => {
+    const currentYear = getCurrentYear();
+    return Array.from(
+      { length: currentYear - 2021 },
+      (_, i) => ({
+        id: 2022 + i,
+        text: `${2022 + i}`,
+      })
+    );
+  }, []);
 
   const bulans = [
     { id: 1, text: "Januari" },
@@ -61,14 +65,22 @@ const Pengujian = ({ navigation }) => {
   ];
 
   const handleYearChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
-    setTahun(parseInt(selectedId));
-    paginateRef.current?.refetch();
-  }, []);
+    const selectedYear = parseInt(selectedId);
+    setTahun(selectedYear);
+    
+    if (selectedYear === getCurrentYear()) {
+      setBulan(getCurrentMonth());
+    }
+    
+    onSelectYearMonth(selectedYear, bulan);
+  }, [onSelectYearMonth, bulan]);
 
   const handleBulanChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
-    setBulan(parseInt(selectedId));
-    paginateRef.current?.refetch();
-  }, []);
+    const selectedMonth = parseInt(selectedId);
+    setBulan(selectedMonth);
+    
+    onSelectYearMonth(tahun, selectedMonth);
+  }, [onSelectYearMonth, tahun]);
 
   const handleMetodeChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
     setType(selectedId);
@@ -457,7 +469,7 @@ const Pengujian = ({ navigation }) => {
             <View style={{ marginEnd: 8 }}>
               <PickerButton
                 label="Tahun"
-                value={tahun}
+                value={tahun.toString()}
               />
             </View>
           </MenuView>
