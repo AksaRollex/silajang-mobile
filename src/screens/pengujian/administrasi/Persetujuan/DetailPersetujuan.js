@@ -148,8 +148,6 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
     
       fetchData();
-    } catch (error) {  
-      console.error("Error updating petugas:", error);
     }finally{
       Toast.show({
         type: 'success',
@@ -159,11 +157,11 @@ export default function DetailPersetujuan({ route, navigation }) {
     }
   };
 
-  useEffect(() => {
-    if (selectedPetugas.length > 0) {
-      savePetugas(); // Panggil savePetugas setelah state terupdate
-    }
-  }, [selectedPetugas]);
+  // useEffect(() => {
+  //   if (selectedPetugas.length > 0) {
+  //     savePetugas(); // Panggil savePetugas setelah state terupdate
+  //   }
+  // }, [selectedPetugas]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -376,9 +374,7 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
   
       fetchData();
-    } catch (error) {  
-      console.error("Error updating status:", error);
-    }finally {
+    } finally {
       Toast.show({
         type: 'success',
         text1: 'Berhasil',

@@ -22,6 +22,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
 import moment from "moment";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -70,6 +71,14 @@ const PenerimaSampel = ({ navigation }) => {
   const [revisionModalVisible, setRevisionModalVisible] = useState(false);
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
+
+    const { setHeader } = useHeaderStore();
+  
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
 
   const kembali = () => {
     setModalVisible(false);
