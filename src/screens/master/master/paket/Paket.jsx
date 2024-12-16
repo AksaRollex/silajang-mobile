@@ -9,10 +9,19 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { rupiah } from "@/src/libs/utils";
 import BackButton from "@/src/screens/components/BackButton";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const Paket = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+
+   React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
+  
 
   const { delete: deletePaket, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {

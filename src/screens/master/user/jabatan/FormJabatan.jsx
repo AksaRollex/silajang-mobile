@@ -41,7 +41,7 @@ export default memo(function Form({ route, navigation}){
                 Toast.show({
                     type: 'success',
                     text1: 'Success',
-                    text2: name ? 'Success update data' : 'Success create data'
+                    text2: name ? 'Sukses update data' : 'Sukses menambahkan data'
                 });
                 queryClient.invalidateQueries(['/master/jabatan']);
                 navigation.navigate("Jabatan")

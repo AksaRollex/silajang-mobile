@@ -6,10 +6,18 @@ import Paginate from '@/src/screens/components/Paginate'
 import Icon from 'react-native-vector-icons/AntDesign'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import BackButton from '@/src/screens/components/BackButton'
+import { useHeaderStore } from '@/src/screens/main/Index'
 
 const LiburCuti = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+        
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
 
   const { delete: deleteLiburCuti, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
