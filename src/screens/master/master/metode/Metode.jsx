@@ -68,15 +68,15 @@ const Metode = ({ navigation }) => {
   return (
     <View className="bg-[#ececec] w-full h-full">
       <View 
-        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        className="flex-row items-center justify-between py-2.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: '#fff' }}
       >
         <View className="flex-row items-center">
-          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-          <Text className="text-[19px] font-poppins-medium text-black ml-4">Metode</Text>
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={30} color="#312e81" />
         </View>
-        <View className="bg-blue-600 rounded-full">
-          <IonIcon name="flask" size={17} color={'white'} style={{padding: 5}}/>
+        <View className="flex-row items-center">
+          <Text className="text-[21px] font-poppins-semibold text-black ml-1">Metode</Text>
+          <IonIcon name="flask" size={25} color={'#312e81'} style={{padding: 5}}/>
         </View>
       </View>
       <Paginate

@@ -14,12 +14,12 @@ const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
   const paginateRef = useRef();
   const { setHeader } = useHeaderStore();
-  
+
   React.useLayoutEffect(() => {
-      setHeader(false)
-  
-      return () => setHeader(true)
-    }, [])
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: deleteParameter, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -109,11 +109,17 @@ const Parameter = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="flex-row items-center justify-center mt-4">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[19px] font-poppins-medium text-black ml-4">Parameter</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Parameter</Text>
+        <View className="bg-purple-500 rounded-full">
+          <IonIcon name="filter" size={17} color={'white'} style={{ padding: 5 }} />
+        </View>
       </View>
       <Paginate
         ref={paginateRef}

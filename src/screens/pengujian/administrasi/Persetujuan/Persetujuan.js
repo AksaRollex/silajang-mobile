@@ -1,7 +1,6 @@
 import { useDelete } from '@/src/hooks/useDelete';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
 import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
