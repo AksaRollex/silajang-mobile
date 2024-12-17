@@ -1,6 +1,5 @@
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import React, { useState, useRef } from "react";
 import { Text, View, TouchableOpacity } from "react-native";

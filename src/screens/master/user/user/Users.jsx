@@ -8,7 +8,6 @@ import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
 import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
-import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
 import IndexMaster from '../../../masterdash/IndexMaster';
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';

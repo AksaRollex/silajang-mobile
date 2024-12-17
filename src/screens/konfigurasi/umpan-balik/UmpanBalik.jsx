@@ -8,7 +8,6 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import HorizontalFilterMenu from '../../components/HorizontalFilterMenu';
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
