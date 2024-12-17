@@ -15,13 +15,15 @@ import Feather from "react-native-vector-icons/Feather";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import TTEModal from './TTEModal';
 import KwitansiModal from "./KwitansiModal";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const paginateRef = useRef();
 
-  const getCurrentYear =() => new Date().getFullYear();
-  const getCurrentMonth =() => new Date().getMonth() + 1;
+  const getCurrentYear = () => new Date().getFullYear();
+  const getCurrentMonth = () => new Date().getMonth() + 1;
 
   const [tahun, setTahun] = useState(getCurrentYear());
   const [bulan, setBulan] = useState(getCurrentMonth());
@@ -33,7 +35,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [reportUrl, setReportUrl] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
 
- const tahuns = useMemo(() => {
+  const tahuns = useMemo(() => {
     const currentYear = getCurrentYear();
     return Array.from(
       { length: currentYear - 2021 },
@@ -67,18 +69,18 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const handleYearChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
     const selectedYear = parseInt(selectedId);
     setTahun(selectedYear);
-    
+
     if (selectedYear === getCurrentYear()) {
       setBulan(getCurrentMonth());
     }
-    
+
     onSelectYearMonth(selectedYear, bulan);
   }, [onSelectYearMonth, bulan]);
 
   const handleBulanChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
     const selectedMonth = parseInt(selectedId);
     setBulan(selectedMonth);
-    
+
     onSelectYearMonth(tahun, selectedMonth);
   }, [onSelectYearMonth, tahun]);
 
@@ -143,15 +145,58 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === "ios"
               ? "You can find it in the Files app."
               : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+            }`,
         });
       } else {
         throw new Error("Download failed");
@@ -193,7 +238,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
   );
 
   const getStatusStyle = (item) => {
-  // console.log('item: ', item.payment_type)
+    // console.log('item: ', item.payment_type)
     if (item.payment?.is_expired) {
       return {
         text: "text-red-700",
@@ -350,7 +395,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         <View className="flex-row justify-end mt-1 space-x-2">
           <View className="flex-row space-x-2">
             <TouchableOpacity
-               onPress={() => navigation.navigate('Detail', { uuid: item.uuid })}  
+              onPress={() => navigation.navigate('Detail', { uuid: item.uuid })}
               className="bg-blue-500 px-3 py-2 rounded-md flex-row items-center">
               <MaterialIcons name="credit-card" size={13} color="white" />
               <Text className="text-white text-xs ml-1 font-poppins-medium">
@@ -359,40 +404,40 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
             </TouchableOpacity>
 
             <MenuView
-            title="TTE SKRD"
-            actions={[
-              { id: 'apply', title: 'Ajukan TTE' }
-            ]}
-            onPressAction={({ nativeEvent }) => {
-              if (nativeEvent.event === 'apply') {
-                setSelectedItem(item);
-                setTTEModalVisible(true);x
-              }
-            }}
-          >
-            <TouchableOpacity
-              className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center"
-            >
-              <FontAwesome5 name="file-signature" size={13} color="white" />
-              <Text className="text-white text-xs ml-1 font-poppins-medium">
-                TTE SKRD
-              </Text>
-              <MaterialIcons name="arrow-drop-down" size={16} color="white" />
-            </TouchableOpacity>
-          </MenuView>
-
-            {item.payment?.is_lunas == 1 && (
-              <MenuView
-              title="TTE Kwitansi"
+              title="TTE SKRD"
               actions={[
                 { id: 'apply', title: 'Ajukan TTE' }
               ]}
               onPressAction={({ nativeEvent }) => {
                 if (nativeEvent.event === 'apply') {
                   setSelectedItem(item);
-                  setKwitansiModalVisible(true);
+                  setTTEModalVisible(true); x
                 }
               }}
+            >
+              <TouchableOpacity
+                className="bg-[#312e81] px-3 py-2 rounded-md flex-row items-center"
+              >
+                <FontAwesome5 name="file-signature" size={13} color="white" />
+                <Text className="text-white text-xs ml-1 font-poppins-medium">
+                  TTE SKRD
+                </Text>
+                <MaterialIcons name="arrow-drop-down" size={16} color="white" />
+              </TouchableOpacity>
+            </MenuView>
+
+            {item.payment?.is_lunas == 1 && (
+              <MenuView
+                title="TTE Kwitansi"
+                actions={[
+                  { id: 'apply', title: 'Ajukan TTE' }
+                ]}
+                onPressAction={({ nativeEvent }) => {
+                  if (nativeEvent.event === 'apply') {
+                    setSelectedItem(item);
+                    setKwitansiModalVisible(true);
+                  }
+                }}
               >
                 <TouchableOpacity className="bg-yellow-500 px-3 py-2 rounded-md flex-row items-center">
                   <FontAwesome5 name="file-signature" size={13} color="white" />
@@ -522,7 +567,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
                   setModalVisible(false);
                 }}
                 className="p-2 rounded flex-row items-center">
-                <Feather name="download" size={21} color="black"/>
+                <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
             <Pdf
@@ -544,13 +589,13 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         </View>
       </Modal>
 
-      <TTEModal 
+      <TTEModal
         visible={tteModalVisible}
         onClose={() => setTTEModalVisible(false)}
         onSubmit={handleTTESubmit}
       />
 
-      <KwitansiModal 
+      <KwitansiModal
         visible={kwitansiModalVisible}
         onClose={() => setKwitansiModalVisible(false)}
         onSubmit={handleKwitansiSubmit}
@@ -570,7 +615,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         className="px-4 mb-12"
       />
 
-    <TouchableOpacity
+      <TouchableOpacity
         onPress={handlePreviewReport}
         className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
         style={{
@@ -591,7 +636,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
           zIndex: 1000
         }}>
         <FontAwesome5 name="file-pdf" size={19} color="white" />
-        
+
       </TouchableOpacity>
 
     </View>

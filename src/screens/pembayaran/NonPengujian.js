@@ -15,6 +15,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 
 const rem = multiplier => 16 * multiplier;
@@ -127,16 +129,57 @@ const NonPengujian = ({ navigation }) => {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
 
-        // Show toast message for success
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === "ios"
               ? "You can find it in the Files app."
               : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+            }`,
         });
       } else {
         throw new Error("Download failed");
@@ -298,7 +341,7 @@ const NonPengujian = ({ navigation }) => {
 
           <View className="flex-row justify-end space-x-3">
             <TouchableOpacity
-              onPress={() => navigation.navigate('DetailNonPengujian', { uuid: item.uuid })} 
+              onPress={() => navigation.navigate('DetailNonPengujian', { uuid: item.uuid })}
               className="bg-indigo-500 px-3 py-2.5 rounded-md flex-row items-center">
               <Ionicons name="eye-outline" size={15} color="white" />
               <Text className="text-white text-xs ml-2 font-poppins-medium">
@@ -377,7 +420,7 @@ const NonPengujian = ({ navigation }) => {
         </MenuView>
       </View>
 
-      
+
       <Modal
         transparent={true}
         animationType="slide"

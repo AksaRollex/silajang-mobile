@@ -16,6 +16,8 @@ import Pdf from 'react-native-pdf';
 import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
 import axios from '@/src/libs/axios';
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -47,7 +49,7 @@ const VerifikasiLhu = ({ navigation }) => {
     setSelectedUuid(uuid);
     setConfirmModalVisible(true);
   };
-  
+
   const handleConfirm = async () => {
     try {
       if (confirmAction === 'verify') {
@@ -103,6 +105,50 @@ const VerifikasiLhu = ({ navigation }) => {
         if (Platform.OS === 'android') {
           await RNFS.scanFile(downloadPath);
         }
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
 
         // Show toast message for success
         Toast.show({
@@ -135,7 +181,7 @@ const VerifikasiLhu = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.status.success = 'success') {
         queryClient.invalidateQueries(['verifikasi/kepala-upt']);
         paginateRef.current?.refetch();
@@ -165,8 +211,8 @@ const VerifikasiLhu = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
       });
-  
-      if (response.data.status === 'success') { 
+
+      if (response.data.status === 'success') {
         queryClient.invalidateQueries(['verifikasi/kepala-upt']);
         paginateRef.current?.refetch();
         Toast.show({
@@ -186,7 +232,7 @@ const VerifikasiLhu = ({ navigation }) => {
       });
     }
   };
-  
+
   const TolakVerifikasi = async (uuid) => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
@@ -196,7 +242,7 @@ const VerifikasiLhu = ({ navigation }) => {
           'Content-Type': 'application/json',
         },
       });
-  
+
       if (response.status.success = 'success') {
         queryClient.invalidateQueries(['verifikasi/kepala-upt']);
         paginateRef.current?.refetch();
@@ -223,19 +269,19 @@ const VerifikasiLhu = ({ navigation }) => {
       { id: "Verifikasi LHU", title: "Verifikasi LHU", action: (item) => confirmationModal('verify', item.uuid) },
       { id: "Tolak Verifikasi", title: "Tolak Verifikasi", action: (item) => confirmationModal('reject', item.uuid) },
     ];
-    
+
     const dropdownOptionsTelah = [];
     if (item.status < 9 && item.status > 7) {
       dropdownOptionsTelah.push({
         id: "Rollback",
-        title: "Rollback", 
+        title: "Rollback",
         action: (item) => Rollback(item.uuid),
       });
     }
-  
+
     const dropdownOptionsForItem = item.status > 7 ? dropdownOptionsTelah : dropdownOptionsMenunggu;
     isConfirmed = item.text_status;
-  
+
     return (
       <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" style={{ elevation: 4 }}>
         <View className="mb-4">
@@ -244,14 +290,14 @@ const VerifikasiLhu = ({ navigation }) => {
               <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
               <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
             </View>
-            
+
             <View className="flex-row items-center">
               <View className="bg-slate-100 rounded-md px-2 py-1">
                 <Text className="text-[11px] text-indigo-600 font-poppins-semibold">
                   {item.text_status}
                 </Text>
               </View>
-              
+
               {/* {dropdownOptionsForItem.length > 0 && (
                 <MenuView
                   title="dropdownOptions"
@@ -282,24 +328,24 @@ const VerifikasiLhu = ({ navigation }) => {
           <Text className="ftext-md font-poppins-semibold text-black">{item.peraturan?.nama || '-'}</Text>
         </View>
 
-        
 
-          
-        <View className="h-[1px] bg-gray-300 my-3"/>
+
+
+        <View className="h-[1px] bg-gray-300 my-3" />
         <View className="flex-row justify-end mt-2 space-x-2">
           {/* Verify Button */}
           {item.status <= 7 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => confirmationModal('verify', item.uuid)}
               className="flex-row items-center bg-green-500 px-2 py-2 rounded-md"
             >
-              <Ionicons name="checkmark-done" size={20} color="#fff"/>
+              <Ionicons name="checkmark-done" size={20} color="#fff" />
             </TouchableOpacity>
           )}
 
           {/* Reject Button */}
           {item.status <= 7 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => confirmationModal('reject', item.uuid)}
               className="flex-row items-center bg-red-500 px-2 py-2 rounded-md"
             >
@@ -309,7 +355,7 @@ const VerifikasiLhu = ({ navigation }) => {
 
           {/* Rollback Button */}
           {item.status > 7 && item.status < 9 && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => Rollback(item.uuid)}
               className="flex-row items-center bg-yellow-100 px-2 py-2 rounded-md"
             >
@@ -318,7 +364,7 @@ const VerifikasiLhu = ({ navigation }) => {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => PreviewVerifikasi(item)}
             className="flex-row items-center bg-red-100 px-2 py-2 rounded-md"
           >
@@ -329,7 +375,7 @@ const VerifikasiLhu = ({ navigation }) => {
       </View>
     );
   };
-  
+
   return (
     <View className="bg-[#ececec] w-full h-full">
       {/* Header Section */}
@@ -340,11 +386,11 @@ const VerifikasiLhu = ({ navigation }) => {
               <BackButton action={() => navigation.goBack()} size={26} />
               <View className="absolute left-0 right-2 items-center">
                 <Text className="text-[20px] font-poppins-semibold text-black">
-                    Verifikasi LHU
+                  Verifikasi LHU
                 </Text>
               </View>
             </View>
-  
+
             {/* Filters Section */}
             <View className="flex-row justify-center">
               <View style={{ flex: 1, marginVertical: 8 }}>
@@ -354,7 +400,7 @@ const VerifikasiLhu = ({ navigation }) => {
                   onPress={(item) => setSelectedVerifikasi(item.id)}
                 />
               </View>
-  
+
               <MenuView
                 title="filterOptions"
                 actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
@@ -379,7 +425,7 @@ const VerifikasiLhu = ({ navigation }) => {
           </View>
         </View>
       </View>
-  
+
       {/* List Section */}
       <Paginate
         ref={paginateRef}
@@ -425,43 +471,43 @@ const VerifikasiLhu = ({ navigation }) => {
       </Modal>
 
       <Modal
-      transparent={true}
-      animationType="fade"
-      visible={confirmModalVisible}
-      onRequestClose={() => setConfirmModalVisible(false)}
-    >
-      <View className="flex-1 justify-center items-center bg-black/50">
-        <View className="bg-white rounded-lg w-[80%] p-4">
-          <Text className="text-lg font-poppins-semibold text-black mb-4">
-            {confirmAction === 'verify' 
-              ? 'Konfirmasi Verifikasi LHU'
-              : 'Konfirmasi Tolak Verifikasi'}
-          </Text>
-          
-          <Text className="text-black mb-4 font-poppins-regular">
-            {confirmAction === 'verify'
-              ? 'Apakah Anda yakin ingin memverifikasi LHU?'
-              : 'Apakah Anda yakin ingin menolak verifikasi LHU?'}
-          </Text>
+        transparent={true}
+        animationType="fade"
+        visible={confirmModalVisible}
+        onRequestClose={() => setConfirmModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-white rounded-lg w-[80%] p-4">
+            <Text className="text-lg font-poppins-semibold text-black mb-4">
+              {confirmAction === 'verify'
+                ? 'Konfirmasi Verifikasi LHU'
+                : 'Konfirmasi Tolak Verifikasi'}
+            </Text>
 
-          <View className="flex-row justify-end space-x-2">
-            <TouchableOpacity 
-              onPress={() => setConfirmModalVisible(false)}
-              className="bg-gray-200 p-2 rounded-md"
-            >
-              <Text className="text-black font-poppins-regular">Batal</Text>
-            </TouchableOpacity>
+            <Text className="text-black mb-4 font-poppins-regular">
+              {confirmAction === 'verify'
+                ? 'Apakah Anda yakin ingin memverifikasi LHU?'
+                : 'Apakah Anda yakin ingin menolak verifikasi LHU?'}
+            </Text>
 
-            <TouchableOpacity 
-              onPress={handleConfirm}
-              className="bg-indigo-900 p-2 rounded-md"
-            >
-              <Text className="text-white font-poppins-regular">Ya, Lanjutkan</Text>
-            </TouchableOpacity>
+            <View className="flex-row justify-end space-x-2">
+              <TouchableOpacity
+                onPress={() => setConfirmModalVisible(false)}
+                className="bg-gray-200 p-2 rounded-md"
+              >
+                <Text className="text-black font-poppins-regular">Batal</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={handleConfirm}
+                className="bg-indigo-900 p-2 rounded-md"
+              >
+                <Text className="text-white font-poppins-regular">Ya, Lanjutkan</Text>
+              </TouchableOpacity>
+            </View>
           </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
 
       <DeleteConfirmationModal />
     </View>
