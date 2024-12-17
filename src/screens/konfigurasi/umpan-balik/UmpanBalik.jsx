@@ -18,6 +18,7 @@ import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import DocumentPicker from 'react-native-document-picker';
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
@@ -42,6 +43,14 @@ const UmpanBalik = ({ navigation }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [loading, setLoading] = useState(false);
+   const { setHeader } = useHeaderStore();
+          
+        React.useLayoutEffect(() => {
+          setHeader(false)
+      
+          return () => setHeader(true)
+        }, [])
+
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',

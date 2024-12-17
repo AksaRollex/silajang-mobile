@@ -76,10 +76,10 @@ const LiburCuti = ({ navigation }) => {
           >
             <View className="flex-row items-center">
               <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-              <Text className="text-[19px] font-poppins-medium text-black ml-4">Libur Cuti</Text>
+              <Text className="text-[20px] font-poppins-medium text-black ml-4">Libur Cuti</Text>
             </View>
             <View className="bg-violet-500 rounded-full">
-              <IonIcon name="calendar" size={17} color={'white'} style={{ padding: 5 }} />
+              <IonIcon name="calendar" size={18} color={'white'} style={{ padding: 5 }} />
             </View>
           </View>
       <Paginate

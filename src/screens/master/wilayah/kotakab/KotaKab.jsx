@@ -75,10 +75,10 @@ const KotaKab = ({ navigation }) => {
              >
                <View className="flex-row items-center">
                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                 <Text className="text-[19px] font-poppins-medium text-black ml-4">Kota dan Kabupaten</Text>
+                 <Text className="text-[20px] font-poppins-medium text-black ml-4">Kota dan Kabupaten</Text>
                </View>
                <View className="bg-red-500 rounded-full">
-                 <IonIcon name="business" size={17} color={'white'} style={{ padding: 5 }} />
+                 <IonIcon name="business" size={18} color={'white'} style={{ padding: 5 }} />
                </View>
              </View>
 

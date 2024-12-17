@@ -175,10 +175,10 @@ const Users = ({ navigation, route }) => {
       >
         <View className="flex-row items-center">
           <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-          <Text className="text-[19px] font-poppins-medium text-black ml-4">User</Text>
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">User</Text>
         </View>
         <View className="bg-blue-600 rounded-full">
-          <IonIcon name="person" size={17} color={'white'} style={{ padding: 5 }} />
+          <IonIcon name="person" size={18} color={'white'} style={{ padding: 5 }} />
         </View>
       </View>
       <View className="flex-row justify-center mt-4">
