@@ -91,7 +91,7 @@ const Paket = ({ navigation }) => {
          >
            <View className="flex-row items-center">
              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-             <Text className="text-[20px] font-poppins-medium text-black ml-4">Paket</Text>
+             <Text className="text-[20px] font-poppins-medium text-black ml-3">Paket</Text>
            </View>
            <View className="bg-orange-500 rounded-full">
              <IonIcon name="cube" size={18} color={'white'} style={{ padding: 5 }} />
