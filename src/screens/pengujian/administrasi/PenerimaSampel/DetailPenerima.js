@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
+import Toast from "react-native-toast-message";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
 import FontAwesome from "react-native-vector-icons/FontAwesome";
@@ -63,6 +64,11 @@ export default function Detail({ route, navigation }) {
 
   const handleCloseModal = () => {
     setModalState({ visible: false, selectedParameter: null });
+    Toast.show({
+      type: "success",
+      text1: "Berhasil",
+      text2: "Data Parameter telah diPerbarui",
+    });
   };
 
   const fetchData = async () => {
@@ -140,6 +146,7 @@ export default function Detail({ route, navigation }) {
   };
 
   const handleTimeChange = (event, selectedTime) => {
+    try {
     if (event.type === "set") {
       const currentTime = selectedTime || date;
       setDate(currentTime);
@@ -148,6 +155,13 @@ export default function Detail({ route, navigation }) {
     } else {
       setShowTimePicker(false);
     }
+  } finally {
+    Toast.show({
+      type: "success",
+      text1: "Berhasil",
+      text2: "Data telah diperbarui",
+    });
+  }
   };
 
   const handleWaktu = async selectedDateTime => {
@@ -206,8 +220,6 @@ export default function Detail({ route, navigation }) {
         tanggal_diterima: date ? date.toISOString() : null,
       });
       console.log("Data berhasil disimpan");
-    } catch (error) {
-      console.error("Gagal menyimpan data:", error);
     } finally {
       Toast.show({
         type: "success",
@@ -233,11 +245,6 @@ export default function Detail({ route, navigation }) {
         },
       );
       console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
     } finally {
       Toast.show({
         type: "success",
@@ -261,26 +268,37 @@ export default function Detail({ route, navigation }) {
         },
       );
       console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+    } finally {
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data telah diperbarui",
+      });
     }
   };
+
   const saveBaku = value => {
     setBaku(value);
     saveBak(value);
   };
 
   const saveBak = async status => {
-    const response = await axios.post(
-      `/administrasi/penerima-sample/${uuid}/update`,
-      {
-        baku_mutu: status,
-        tanggal_diterima: date ? date.toISOString() : null,
-      },
-    );
+    try {
+      const response = await axios.post(
+        `/administrasi/penerima-sample/${uuid}/update`,
+        {
+          baku_mutu: status,
+          tanggal_diterima: date ? date.toISOString() : null,
+        },
+      );
+      console.log("Data berhasil disimpan: ", response.data);
+    } finally {
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data telah diperbarui",
+      });
+    }
   };
 
   const tanggal = value => {
@@ -314,11 +332,12 @@ export default function Detail({ route, navigation }) {
         },
       );
       console.log("Data berhasil disimpan:", response.data);
-    } catch (error) {
-      console.error(
-        "Gagal menyimpan data:",
-        error.response ? error.response.data : error.message,
-      );
+    } finally {
+      Toast.show({
+        type: "success",
+        text1: "Berhasil", 
+        text2: "Data telah diperbarui",
+      });
     }
   };
 

@@ -98,7 +98,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Personel (Mampu)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={personel ? "#312e81" : "#f4f3f4"}
+          thumbColor={personel ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(personel)}
           onValueChange={(value) => handleSwitchChange("personel", value)}
         />
@@ -109,7 +109,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Metode (Sesuai)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={metode ? "#312e81" : "#f4f3f4"}
+          thumbColor={metode ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(metode)}
           onValueChange={(value) => handleSwitchChange("metode", value)}
         />
@@ -120,7 +120,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Peralatan (Lengkap)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={peralatan ? "#312e81" : "#f4f3f4"}
+          thumbColor={peralatan ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(peralatan)}
           onValueChange={(value) => handleSwitchChange("peralatan", value)}
         />
@@ -131,7 +131,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Reagen (Lengkap)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={reagen ? "#312e81" : "#f4f3f4"}
+          thumbColor={reagen ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(reagen)}
           onValueChange={(value) => handleSwitchChange("reagen", value)}
         />
@@ -142,7 +142,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Akomodasi (Baik)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={akomodasi ? "#312e81" : "#f4f3f4"}
+          thumbColor={akomodasi ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(akomodasi)}
           onValueChange={(value) => handleSwitchChange("akomodasi", value)}
         />
@@ -153,7 +153,7 @@ const Parameter = ({ selectedParameter, uuid }) => {
         <Text style={styles.label}>Beban Kerja (Over)</Text>
         <Switch
           trackColor={{ false: "#767577", true: "#312e81" }}
-          thumbColor={bebanKerja ? "#312e81" : "#f4f3f4"}
+          thumbColor={bebanKerja ? "#f4f3f4" : "#f4f3f4"}
           value={Boolean(bebanKerja)}
           onValueChange={(value) => handleSwitchChange("beban_kerja", value)}
         />

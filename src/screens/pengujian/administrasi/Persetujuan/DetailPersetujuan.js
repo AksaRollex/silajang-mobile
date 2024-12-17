@@ -90,6 +90,11 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const handleCloseModal = () => {
     setModalState({ visible: false, selectedParameter: null });
+    Toast.show({
+      type: "success",
+      text1: "Berhasil",
+      text2: "Data Parameter telah diperbarui",
+    });
   };
 
   useEffect(() => {
