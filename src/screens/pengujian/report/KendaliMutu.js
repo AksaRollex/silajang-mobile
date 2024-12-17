@@ -21,6 +21,8 @@ import axios from '@/src/libs/axios';
 import { APP_URL } from "@env";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const TTEModal = ({ visible, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -33,10 +35,10 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
   useEffect(() => {
     const fetchTTDs = async () => {
       if (!visible) return;
-      
+
       setIsLoading(true);
       try {
-        const response = await axios.get('/konfigurasi/tanda-tangan'); 
+        const response = await axios.get('/konfigurasi/tanda-tangan');
         if (response.data?.data) {
           setTtds(response.data.data.map(ttd => ({
             id: ttd.id,
@@ -138,21 +140,21 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
                 onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
                 placeholder="Masukkan passphrase"
               />
-              <TouchableOpacity 
+              <TouchableOpacity
                 onPress={togglePasswordVisibility}
                 className="absolute right-4 top-4"
               >
-                {showPassword ? ( 
+                {showPassword ? (
                   <Ionicons name="eye-outline" size={20} color="grey" />
                 ) : (
-                  <Ionicons name="eye-off-outline" size={20} color="grey"/>
+                  <Ionicons name="eye-off-outline" size={20} color="grey" />
                 )}
               </TouchableOpacity>
             </View>
           </View>
 
           <View className="flex-row justify-end space-x-2">
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={handleSubmit}
               className="bg-indigo-600 px-4 py-2 rounded-md flex-row items-center"
             >
@@ -179,7 +181,7 @@ const KendaliMutu = ({ navigation }) => {
 
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-  
+
   const [paginatePayload, setPaginatePayload] = useState({
     status: [2, 3, 4, 5, 6, 7, 8, 9, 10, 11],
     tahun: currentYear.toString(),
@@ -265,10 +267,55 @@ const KendaliMutu = ({ navigation }) => {
       };
 
       const response = await RNFS.downloadFile(options).promise;
-      
+
       if (response.statusCode === 200) {
         if (Platform.OS === 'android') {
           await RNFS.scanFile(downloadPath);
+        }
+
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
         }
 
         Toast.show({
@@ -290,8 +337,8 @@ const KendaliMutu = ({ navigation }) => {
   };
 
   const CardKendaliMutu = ({ item }) => {
-    if (!item) return null; 
-    
+    if (!item) return null;
+
     return (
       <View
         className="my-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -315,7 +362,7 @@ const KendaliMutu = ({ navigation }) => {
               </View>
 
               <View>
-              <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+                <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
                 <Text className="text-md font-poppins-semibold text-black">
                   {item.lokasi || '-'}
                 </Text>
@@ -354,9 +401,9 @@ const KendaliMutu = ({ navigation }) => {
         </View>
 
         <View className="flex-row justify-end mt-4 space-x-2">
-          
+
           {!item.status_tte_kendali_mutu && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => {
                 setSelectedItem(item.uuid);
                 setTteModalVisible(true);
@@ -370,7 +417,7 @@ const KendaliMutu = ({ navigation }) => {
             </TouchableOpacity>
           )}
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => handlePreviewPDF(item.uuid)}
             className="bg-red-100 p-2 rounded-md flex-row items-center"
           >
@@ -402,7 +449,7 @@ const KendaliMutu = ({ navigation }) => {
               setPaginatePayload(prev => ({
                 ...prev,
                 tahun: newYear,
-                page: 1 
+                page: 1
               }));
             }}
             actions={generateYears().map(option => ({
@@ -489,7 +536,7 @@ const KendaliMutu = ({ navigation }) => {
               </TouchableOpacity>
             </View>
             {reportUrl ? (
-            
+
               <Pdf
                 source={{ uri: reportUrl, cache: true }}
                 style={{ flex: 1 }}
@@ -503,10 +550,10 @@ const KendaliMutu = ({ navigation }) => {
                 <Text className="text-xl font-poppins-semibold text-red-500">404 | File not found</Text>
               </View>
             )}
-            
+
             <View className="flex-row justify-between m-4">
-              <TouchableOpacity 
-                onPress={() => setModalVisible(false)} 
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
                 className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
               >
                 <Text className="text-white font-poppins-semibold text-center">Tutup</Text>

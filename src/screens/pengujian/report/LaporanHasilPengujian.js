@@ -19,6 +19,8 @@ import RNFS from 'react-native-fs';
 import Toast from 'react-native-toast-message';
 import axios from '@/src/libs/axios';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const CertificateBadge = ({ value }) => {
     return value ? (
@@ -70,10 +72,10 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
     useEffect(() => {
         const fetchTTDs = async () => {
             if (!visible) return;
-            
+
             setIsLoading(true);
             try {
-                const response = await axios.get('/konfigurasi/tanda-tangan'); 
+                const response = await axios.get('/konfigurasi/tanda-tangan');
                 if (response.data?.data) {
                     setTtds(response.data.data.map(ttd => ({
                         id: ttd.id,
@@ -111,7 +113,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
     const [showPassword, setShowPassword] = useState(false);
 
     const togglePasswordVisibility = () => {
-      setShowPassword(!showPassword);
+        setShowPassword(!showPassword);
     };
 
     return (
@@ -165,31 +167,31 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
 
                     <View className="mb-4">
                         <Text className="text-sm text-black font-poppins-bold mb-2">
-                        Passphrase<Text className="text-red-500">*</Text>
+                            Passphrase<Text className="text-red-500">*</Text>
                         </Text>
                         <View className="relative">
-                        <TextInput
-                            className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
-                            secureTextEntry={!showPassword}
-                            value={formData.passphrase}
-                            onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
-                            placeholder="Masukkan passphrase"
-                        />
-                        <TouchableOpacity 
-                            onPress={togglePasswordVisibility}
-                            className="absolute right-4 top-4"
-                        >
-                            {showPassword ? (
-                            <Ionicons name="eye-outline" size={20} color="grey" />
-                            ) : (
-                            <Ionicons name="eye-off-outline" size={20} color="grey"/>
-                            )}
-                        </TouchableOpacity>
+                            <TextInput
+                                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                                secureTextEntry={!showPassword}
+                                value={formData.passphrase}
+                                onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
+                                placeholder="Masukkan passphrase"
+                            />
+                            <TouchableOpacity
+                                onPress={togglePasswordVisibility}
+                                className="absolute right-4 top-4"
+                            >
+                                {showPassword ? (
+                                    <Ionicons name="eye-outline" size={20} color="grey" />
+                                ) : (
+                                    <Ionicons name="eye-off-outline" size={20} color="grey" />
+                                )}
+                            </TouchableOpacity>
                         </View>
                     </View>
 
                     <View className="flex-row justify-end space-x-2">
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             onPress={handleSubmit}
                             className="bg-indigo-600 px-4 py-2 rounded-md flex-row items-center"
                         >
@@ -202,7 +204,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
         </Modal>
     );
 }
-  
+
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
     let years = [];
@@ -234,7 +236,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
     const paginateRef = useRef();
     const queryClient = useQueryClient();
     const [modalVisible, setModalVisible] = useState(false);
-    const [reportUrl, setReportUrl] = useState('');     
+    const [reportUrl, setReportUrl] = useState('');
     const [tteModalVisible, setTteModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [tteType, setTteType] = useState('system');
@@ -247,14 +249,14 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 passphrase: formData.passphrase,
                 tipe: formData.tipe
             }).toString();
-    
+
             const response = await axios.get(`/report/${selectedItem}/kendali-mutu/tte?${queryParams}`);
-        
+
             if (response.data?.success) {
                 const authToken = await AsyncStorage.getItem('@auth-token');
                 setReportUrl(`${APP_URL}/api/v1/report/${selectedItem}/lhu/tte?token=${authToken}&tanda_tangan_id=${formData.tanda_tangan_id}&passphrase=${btoa(formData.passphrase)}`);
-                setModalVisible(true); 
-        
+                setModalVisible(true);
+
                 Toast.show({
                     type: 'success',
                     text1: 'Success',
@@ -288,7 +290,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
         }
     });
 
-      useEffect(() => {
+    useEffect(() => {
         // Set bulan saat ini sebagai nilai default
         const currentMonthId = new Date().getMonth() + 1;
         setSelectedMonth(currentMonthId); // Langsung set number, bukan title
@@ -326,10 +328,55 @@ const LaporanHasilPengujian = ({ navigation }) => {
             };
 
             const response = await RNFS.downloadFile(options).promise;
-            
+
             if (response.statusCode === 200) {
                 if (Platform.OS === 'android') {
                     await RNFS.scanFile(downloadPath);
+                }
+
+                // Use FileViewer with more comprehensive error handling
+                try {
+                    await FileViewer.open(downloadPath, {
+                        showOpenWithDialog: false,
+                        mimeType: 'application/pdf'
+                    });
+                } catch (openError) {
+                    console.log('Error opening file with FileViewer:', openError);
+
+                    // Fallback for Android using Intents
+                    if (Platform.OS === 'android') {
+                        try {
+                            const intent = new android.content.Intent(
+                                android.content.Intent.ACTION_VIEW
+                            );
+                            intent.setDataAndType(
+                                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                                'application/pdf'
+                            );
+                            intent.setFlags(
+                                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                            );
+
+                            await ReactNative.startActivity(intent);
+                        } catch (intentError) {
+                            console.log('Intent fallback failed:', intentError);
+
+                            // Last resort: show file location
+                            Toast.show({
+                                type: "info",
+                                text1: "PDF Downloaded",
+                                text2: `File saved at: ${downloadPath}`,
+                            });
+                        }
+                    } else {
+                        // Fallback for iOS
+                        Toast.show({
+                            type: "info",
+                            text1: "PDF Downloaded",
+                            text2: `File saved at: ${downloadPath}`,
+                        });
+                    }
                 }
 
                 Toast.show({
@@ -386,7 +433,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     try {
                         const authToken = await AsyncStorage.getItem('@auth-token');
                         const downloadUrl = `${APP_URL}/api/v1/report/${item.uuid}/lhu/tte/download?token=${authToken}`;
-                        
+
                         setReportUrl(downloadUrl);
                         setModalVisible(true);
                     } catch (error) {
@@ -398,7 +445,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     }
                 }
             },
-        
+
             {
                 id: "AjukanTTESystem",
                 title: "Ajukan TTE (System)",
@@ -409,10 +456,10 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     setTteModalVisible(true);
                 }
             },
-        
+
             Boolean(item.file_lhu) && {
                 id: "AjukanTTEManual",
-                title: "Ajukan TTE (Manual)",   
+                title: "Ajukan TTE (Manual)",
                 icon: () => <FontAwesome5Icon name="file-signature" size={16} color="#28a745" />,
                 action: () => {
                     setSelectedItem(item.uuid);
@@ -421,7 +468,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 }
             }
         ].filter(Boolean);
-    
+
         const handlePreviewLHU = async () => {
             try {
                 const authToken = await AsyncStorage.getItem('@auth-token');
@@ -435,7 +482,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 });
             }
         };
-    
+
         const handleRollback = () => {
             Alert.alert(
                 "Konfirmasi Rollback",
@@ -461,9 +508,9 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 { cancelable: false }
             );
         };
-    
+
         return (
-            <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{ 
+            <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{
                 elevation: 3,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
@@ -473,17 +520,17 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 <View className="border-b border-gray-100 pb-3 mb-3">
                     <View className="flex-row justify-between items-center mb-3">
                         <View>
-                            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Kode</Text>   
+                            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Kode</Text>
                             <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
                         </View>
-                        <CertificateBadge value={item.sertifikat}/>
+                        <CertificateBadge value={item.sertifikat} />
                     </View>
                     <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
                     <Text className="text-md font-poppins-semibold text-black mb-4">{item.permohonan.user.nama}</Text>
                     <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
                     <Text className="text-[14px] font-poppins-semibold text-black">{item.lokasi}</Text>
                 </View>
-    
+
                 <View className="flex-row justify-between mb-4">
                     <View className="flex-1">
                         <View className="mb-2">
@@ -499,18 +546,18 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             <StatusTTEBadge status={item.status_tte} />
                         </View>
                     </View>
-    
+
                     <View className="flex-col items-end justify-between">
                         <View className="bg-indigo-100 rounded-md px-2 py-1 mb-3">
-                            <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right" 
-                                  numberOfLines={2} 
-                                  ellipsizeMode="tail">
+                            <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right"
+                                numberOfLines={2}
+                                ellipsizeMode="tail">
                                 {item.text_status}
                             </Text>
                         </View>
                     </View>
                 </View>
-    
+
                 <View className="flex-row justify-end pt-2 border-t border-gray-100">
                     <MenuView
                         title="TTE Options"
@@ -524,22 +571,22 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         <View className="flex-row items-center p-2 bg-green-500 rounded-md mr-2">
                             <FontAwesome name="file-text-o" size={16} color="#fff" />
                             <Text className="ml-down2 text-white text-[13px] font-poppins-semibold mx-2">TTE</Text>
-                            <Ionicons name="chevron-down" size={16} color="#fff"/>
+                            <Ionicons name="chevron-down" size={16} color="#fff" />
                         </View>
                     </MenuView>
-    
+
                     {Boolean(item.file_lhu) && (
-                        <TouchableOpacity 
-                            onPress={handlePreviewLHU} 
+                        <TouchableOpacity
+                            onPress={handlePreviewLHU}
                             className="flex-row items-center p-2 bg-indigo-100 rounded-md"
                         >
                             <FontAwesome name="eye" size={16} color="#4f46e5" />
                             <Text className="ml-2 text-indigo-600 text-[13px] font-poppins-semibold"> Preview LHU</Text>
                         </TouchableOpacity>
                     )}
-    
+
                     {item.status < 11 && (
-                        <TouchableOpacity 
+                        <TouchableOpacity
                             onPress={handleRollback}
                             className="ml-2 flex-row items-center p-2 bg-yellow-100 rounded-md font-poppins-semibold"
                         >
@@ -579,17 +626,17 @@ const LaporanHasilPengujian = ({ navigation }) => {
                                 <View >
                                     <View
                                         style={{
-                                        flexDirection: "row",
-                                        alignItems: "center",
-                                        backgroundColor: "white",
-                                        padding: 12,
-                                        borderRadius: 8,
-                                        width: 185,
-                                        borderColor: "#d1d5db",
-                                        borderWidth: 1
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            backgroundColor: "white",
+                                            padding: 12,
+                                            borderRadius: 8,
+                                            width: 185,
+                                            borderColor: "#d1d5db",
+                                            borderWidth: 1
                                         }}>
                                         <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
-                                        {`Tahun: ${selectedYear}`}
+                                            {`Tahun: ${selectedYear}`}
                                         </Text>
                                         <MaterialIcons name="arrow-drop-down" size={24} color="black" />
                                     </View>
@@ -597,36 +644,36 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             </MenuView>
 
                             <MenuView
-                    title="Pilih Bulan"
-                    actions={months.map(month => ({
-                        id: month.id.toString(),
-                        title: month.title,
-                    }))}
-                    onPressAction={({ nativeEvent }) => {
-                        const monthId = parseInt(nativeEvent.event); // Parse string ke number
-                        setSelectedMonth(monthId);
-                    }}
-                    shouldOpenOnLongPress={false}
-                >
-                    <View>
-                        <View
-                            style={{
-                            flexDirection: "row",
-                            alignItems: "center",
-                            backgroundColor: "white",
-                            padding: 12,
-                            borderRadius: 8,
-                            width: 185,
-                            borderColor: "#d1d5db",
-                            borderWidth: 1
-                            }}>
-                            <Text style={{ color: "black", flex: 1, textAlign: "center" , fontFamily: "Poppins-SemiBold"}}>
-                                {`Bulan: ${months.find(m => m.id === selectedMonth)?.title || 'Pilih'}`}
-                            </Text>
-                            <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-                        </View>
-                    </View>
-                </MenuView>
+                                title="Pilih Bulan"
+                                actions={months.map(month => ({
+                                    id: month.id.toString(),
+                                    title: month.title,
+                                }))}
+                                onPressAction={({ nativeEvent }) => {
+                                    const monthId = parseInt(nativeEvent.event); // Parse string ke number
+                                    setSelectedMonth(monthId);
+                                }}
+                                shouldOpenOnLongPress={false}
+                            >
+                                <View>
+                                    <View
+                                        style={{
+                                            flexDirection: "row",
+                                            alignItems: "center",
+                                            backgroundColor: "white",
+                                            padding: 12,
+                                            borderRadius: 8,
+                                            width: 185,
+                                            borderColor: "#d1d5db",
+                                            borderWidth: 1
+                                        }}>
+                                        <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
+                                            {`Bulan: ${months.find(m => m.id === selectedMonth)?.title || 'Pilih'}`}
+                                        </Text>
+                                        <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                                    </View>
+                                </View>
+                            </MenuView>
                         </View>
                     </View>
                 </View>
@@ -661,7 +708,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
                         </View>
-                        
+
                         {reportUrl ? (
                             <Pdf
                                 source={{ uri: reportUrl, cache: true }}
@@ -673,7 +720,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                                 <Text className="text-xl font-poppins-semibold text-red-500">404 | File not found</Text>
                             </View>
                         )}
-                        
+
                         <View className="flex-row justify-between m-4">
                             <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
                                 <Text className="text-white font-poppins-semibold text-center">Tutup</Text>

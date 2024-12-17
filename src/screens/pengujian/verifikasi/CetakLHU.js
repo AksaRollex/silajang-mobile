@@ -34,6 +34,7 @@ import { API_URL } from "@env";
 import { APP_URL } from "@env";
 import FileViewer from 'react-native-file-viewer';
 import { number } from "yup";
+import { Platform } from 'react-native';
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -145,17 +146,15 @@ const HasilUjis = ({ navigation, route }) => {
       });
     }
   };
-
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `LHU_${Date.now()}.pdf`;
-  
       const downloadPath =
         Platform.OS === "ios"
           ? `${RNFS.DocumentDirectoryPath}/${fileName}`
           : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-  
+      
       const options = {
         fromUrl: reportUrl,
         toFile: downloadPath,
@@ -163,27 +162,70 @@ const HasilUjis = ({ navigation, route }) => {
           Authorization: `Bearer ${authToken}`,
         },
       };
-  
+      
       const result = await RNFS.downloadFile(options).promise;
-  
+      
       if (result.statusCode === 200) {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
-  
-        await FileViewer.open(downloadPath);
-  
+        
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+          
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)), 
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+              
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+              
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info", 
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+        
+        // Always show success toast
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh dan Dibuka`,
+          text2: `PDF Berhasil Diunduh`,
         });
       } else {
         throw new Error("Download failed");
       }
     } catch (error) {
       console.error("Download error:", error);
-  
       Toast.show({
         type: "error",
         text1: "Error",
