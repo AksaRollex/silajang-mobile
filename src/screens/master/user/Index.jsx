@@ -12,7 +12,7 @@ const Stack = createNativeStackNavigator()
 
 export default function MainScreen() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation : "slide_from_right" }}>
       <Stack.Screen name="IndexUser" component={User} />
       <Stack.Screen name="IndexMaster" component={IndexMaster} />
       <Stack.Screen name="Jabatan" component={Jabatan} />

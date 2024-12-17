@@ -97,7 +97,7 @@ export default memo(function Form({ route, navigation }) {
         Toast.show({
           type: 'success',
           text1: 'Success',
-          text2: uuid ? 'Success update data' : 'Success create data'
+          text2: uuid ? 'Sukses update data' : 'Sukses menambahkan data'
         })
         queryClient.invalidateQueries(["/master/parameter"])
         navigation.navigate("Parameter")

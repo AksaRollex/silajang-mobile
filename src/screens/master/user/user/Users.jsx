@@ -13,7 +13,7 @@ import IndexMaster from '../../../masterdash/IndexMaster';
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
 import axios from '@/src/libs/axios';
-
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const Users = ({ navigation, route }) => {
 
@@ -26,6 +26,14 @@ const Users = ({ navigation, route }) => {
   const [selectedMenu, setSelectedMenu] = useState(2);
   const paginateRef = useRef();
   const queryClient = useQueryClient();
+  const { setHeader } = useHeaderStore();
+        
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
+      
   const { delete: deleteUser, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(['/master/user']);

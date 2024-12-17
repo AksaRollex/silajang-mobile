@@ -363,43 +363,42 @@ const UmpanBalik = ({ navigation }) => {
       visible={downloadModalVisible}
       onRequestClose={() => setDownloadModalVisible(false)}
     >
-      <View
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-        className="flex-1 justify-center items-center"
-      >
-        <View className="bg-white rounded-lg w-[90%] p-6">
-          <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-lg font-poppins-medium text-black">Konfirmasi Download</Text>
-            <TouchableOpacity onPress={() => setDownloadModalVisible(false)}>
-              <MaterialIcons name="close" size={24} color="black" />
-            </TouchableOpacity>
-          </View>
+      <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+        <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
+          <FontAwesome5 size={40} color="#177a44" name="file-excel" />
+        </View>
 
-          <View className="mb-6">
-            <Text className="text-base font-poppins-regular text-black text-center">
-              Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
-            </Text>
-          </View>
+        <Text className="text-xl font-poppins-semibold text-black mb-3">
+          Konfirmasi Download
+        </Text>
 
-          <View className="flex-row justify-center gap-3">
-            <TouchableOpacity
-              onPress={() => setDownloadModalVisible(false)}
-              className="px-6 py-2 bg-gray-400 rounded-lg"
-            >
-              <Text className="text-white font-poppins-medium">Batal</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => {
-                downloadTemplate();
-                setDownloadModalVisible(false);
-              }}
-              className="px-6 py-2 bg-green-500 rounded-lg"
-            >
-              <Text className="text-white font-poppins-medium">Download</Text>
-            </TouchableOpacity>
-          </View>
+        <View className="w-full h-px bg-gray-200 mb-4" />
+
+        <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+          Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+        </Text>
+
+        <View className="flex-row w-full justify-between">
+          <TouchableOpacity
+            onPress={() => setDownloadModalVisible(false)}
+            className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+          >
+            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => {
+              downloadTemplate();
+              setDownloadModalVisible(false);
+            }}
+            className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
+          >
+            <Text className="text-white font-poppins-medium">Ya, Download</Text>
+          </TouchableOpacity>
         </View>
       </View>
+     </View>
     </Modal>
   );
 

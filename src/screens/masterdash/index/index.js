@@ -40,7 +40,7 @@ import ParameterUsers from '../../master/user/user/ParameterUsers'
 const Stack = createNativeStackNavigator()
 export default function MainScreen () {
   return (
-      <Stack.Navigator screenOptions={{ headerShown: false }}>
+      <Stack.Navigator screenOptions={{ headerShown: false, animation : "slide_from_right" }}>
         <Stack.Screen name="MasterIndex" component={IndexMaster} />
         <Stack.Screen name="Metode" component={Metode} />
         <Stack.Screen name="JasaPengambilan" component={JasaPengambilan} />

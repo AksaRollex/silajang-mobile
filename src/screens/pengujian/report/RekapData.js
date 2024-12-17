@@ -15,6 +15,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Feather from "react-native-vector-icons/Feather";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import FileViewer from 'react-native-file-viewer';
 
 const RekapData = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -114,6 +115,50 @@ const RekapData = ({ navigation }) => {
       if (result.statusCode === 200) {
         if (Platform.OS === 'android') {
           await RNFS.scanFile(downloadPath);
+        }
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
         }
         Toast.show({
           type: 'success',

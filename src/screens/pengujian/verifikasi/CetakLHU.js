@@ -32,6 +32,9 @@ import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { API_URL } from "@env";
 import { APP_URL } from "@env";
+import FileViewer from 'react-native-file-viewer';
+import { number } from "yup";
+import { Platform } from 'react-native';
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -143,17 +146,15 @@ const HasilUjis = ({ navigation, route }) => {
       });
     }
   };
-
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `LHU_${Date.now()}.pdf`;
-
       const downloadPath =
         Platform.OS === "ios"
           ? `${RNFS.DocumentDirectoryPath}/${fileName}`
           : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
+      
       const options = {
         fromUrl: reportUrl,
         toFile: downloadPath,
@@ -161,31 +162,70 @@ const HasilUjis = ({ navigation, route }) => {
           Authorization: `Bearer ${authToken}`,
         },
       };
-
+      
       const result = await RNFS.downloadFile(options).promise;
-
+      
       if (result.statusCode === 200) {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
-
-        // Show toast message for success
+        
+        // Use FileViewer with more comprehensive error handling
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+          
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)), 
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+              
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+              
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info", 
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+        
+        // Always show success toast
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+          text2: `PDF Berhasil Diunduh`,
         });
       } else {
         throw new Error("Download failed");
       }
     } catch (error) {
       console.error("Download error:", error);
-
-      // Show toast message for error
       Toast.show({
         type: "error",
         text1: "Error",
@@ -808,6 +848,21 @@ const HasilUjis = ({ navigation, route }) => {
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
+              activityIndicator={
+                <View style={{ flex:1, justifyContent:'center', alignItems:'center' }}>
+                  <ActivityIndicator size={"large"} color={"#0000ff"}/>
+                  <Text>Memuat Pdf....</Text>
+                </View>
+              }
+              onLoadComplete={(numberOfPages) => {
+                console.log(`Number Of Page: ${numberOfPages}`)
+              }}
+              onPageChanged={(page, numberOfPages) => {
+                console.log(`Current page ${page}`)
+              }}
+              onError={(error) => {
+                console.log('PDF loading error:', error);
+              }}
             />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
