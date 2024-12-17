@@ -1,21 +1,14 @@
 import React, { useEffect, useState } from "react";
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Image, TextInput, Alert, Platform, ActivityIndicator } from "react-native";
-import { Button, Colors, ComponentsColors, TextField } from "react-native-ui-lib";
-import Fontisto from "react-native-vector-icons/Fontisto";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
+import { Button, Colors, TextField } from "react-native-ui-lib";  
 import FontAwesome from "react-native-vector-icons/FontAwesome";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
-import Octicons from "react-native-vector-icons/Octicons";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import axios from "@/src/libs/axios";
 import { launchImageLibrary } from "react-native-image-picker";
 import { useForm, Controller } from "react-hook-form";
-import { rupiah } from "@/src/libs/utils";
 import Geolocation from 'react-native-geolocation-service';
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { useQueryClient, useMutation, useQuery } from "@tanstack/react-query";
@@ -23,8 +16,6 @@ import Toast from 'react-native-toast-message';
 import Foundation from "react-native-vector-icons/Foundation";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-
-
 
 export default function Detail({ route, navigation }) {
   const { uuid, status, pengambilOptions } = route.params;
@@ -111,10 +102,6 @@ export default function Detail({ route, navigation }) {
         });
       });
   };
-
-  const onSubmit = (data) => {
-    createOrUpdate(data);
-  }
 
   useEffect(() => {
       requestLocationPermission();
@@ -241,7 +228,7 @@ export default function Detail({ route, navigation }) {
 
   const createAutosave = (fieldName) => {
     return debounce((value) => {
-      const currentData = watch(); // Get current form data
+      const currentData = watch(); 
       const updatedData = { 
         ...currentData, 
         [fieldName]: value 
@@ -250,7 +237,6 @@ export default function Detail({ route, navigation }) {
     }, 1500);
   };
   
-  // Create autosave functions for specific fields
   const autosaveSuhuAir = createAutosave('lapangan.suhu_air');
   const autosavePh = createAutosave('lapangan.ph');
   const autosaveDhl = createAutosave('lapangan.dhl');

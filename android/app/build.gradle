@@ -84,9 +84,9 @@ android {
     }
     signingConfigs {
         release {
-            storeFile file('silajang.keystore')
+            storeFile file('admin-SILAJANG.keystore')
             storePassword 'riorio'
-            keyAlias 'silajang'
+            keyAlias 'admin-SILAJANG'
             keyPassword 'riorio'
         }
         debug {
