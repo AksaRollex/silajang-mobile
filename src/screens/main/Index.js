@@ -28,28 +28,19 @@ import IndexMaster from "../masterdash/index/index";
 import IndexKonfigurasi from "../masterdash/index/IndexKonfig";
 import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
+import { create } from "zustand";
+
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
 
-const screenOptions = {
-  tabBarShowLabel: false,
-  headerShown: false,
-  tabBarStyle: {
-    position: "absolute",
-    bottom: 0,
-    right: 0,
-    left: 0,
-    elevation: 0,
-    height: 65,
-    backgroundColor: "#ffffff",
-    borderTopWidth: 0.5,
-    borderTopColor: "#E5E7EB",
-    paddingHorizontal: 10,
-  },
-};
+const useHeaderStore = create((set) => ({
+  header: true,
+  setHeader: (state) => set({ header: state }),
+}));
+
 const Header = () => {
   return (
     <View className="flex flex-row gap-2 items-center">
@@ -154,6 +145,26 @@ const TabNavigator = () => {
       </View>
     </View>
   );
+
+  const { header } = useHeaderStore();
+
+  const screenOptions = {
+    tabBarShowLabel: false,
+    headerShown: false,
+    tabBarStyle: {
+      position: "absolute",
+      display: header ? "flex" : "none",
+      bottom: 0,
+      right: 0,
+      left: 0,
+      elevation: 0,
+      height: 65,
+      backgroundColor: "#ffffff",
+      borderTopWidth: 0.5,
+      borderTopColor: "#E5E7EB",
+      paddingHorizontal: 10,
+    },
+  };
   
   return (
     <Tab.Navigator 
@@ -481,11 +492,14 @@ const DrawerContent = (props) => {
   // );
 };
 
-const Admin = () => (
+const Admin = () => {
+    const { header } = useHeaderStore();
+  return (
   <NavigationContainer independent={true}>
     <Stack.Navigator
       screenOptions={{
-        headerRight: () => <Header />,
+        headerShown: header ? true : false,
+        headerRight: () => header ? <Header /> : null,
         headerTitle: () => <Text></Text>,
         headerBackVisible: false,
         headerStyle: {
@@ -494,7 +508,9 @@ const Admin = () => (
         },
         headerTintColor: "white",
         headerLeft: () => null,
-        gestureEnabled: false,
+        gestureEnabled: false, 
+        animation:'slide_from_right'
+      
       }}
     >
       <Stack.Screen name="Home" component={TabNavigator} />
@@ -507,7 +523,7 @@ const Admin = () => (
       <Stack.Screen name="IndexKonfigurasi" component={IndexKonfigurasi} />
     </Stack.Navigator>
   </NavigationContainer>
-);
+)};
 
 export default function MainScreen() {
   // const { data: user } = useUser();
@@ -520,6 +536,7 @@ export default function MainScreen() {
   );
 }
 
+export { useHeaderStore };
 const styles = StyleSheet.create({
   iconContainer: {
     alignItems: "center",

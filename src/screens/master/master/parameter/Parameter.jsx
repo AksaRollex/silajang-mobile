@@ -8,10 +8,19 @@ import Icon from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import BackButton from '@/src/screens/components/BackButton';
 import IonIcon from "react-native-vector-icons/Ionicons";
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+  
+  React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
+
   const { delete: deleteParameter, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(["/master/parameter"]);

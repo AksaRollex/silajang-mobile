@@ -7,10 +7,18 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import Paginate from '@/src/screens/components/Paginate';
 import BackButton from '@/src/screens/components/BackButton';
 import { rupiah } from '@/src/libs/utils';
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const JasaPengambilan = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+        
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
 
   const { delete: deleteJasaPengambilan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {

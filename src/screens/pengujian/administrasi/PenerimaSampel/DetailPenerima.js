@@ -9,7 +9,7 @@ import {
   Platform,
   ScrollView,
   Modal,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
@@ -65,57 +65,58 @@ export default function Detail({ route, navigation }) {
     setModalState({ visible: false, selectedParameter: null });
   };
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `/administrasi/penerima-sample/${uuid}`,
-        );
-        console.log("Response data:", response.data);
-        setData(response.data.data);
-        if (
-          response.data.data &&
-          response.data.data.kesimpulan_sampel !== undefined
-        ) {
-          setChecked(response.data.data.kesimpulan_sampel);
-        }
-        if (
-          response.data.data &&
-          response.data.data.pengawetan_oleh !== undefined
-        ) {
-          setPengawetan(response.data.data.pengawetan_oleh);
-        }
-        if (
-          response.data.data &&
-          response.data.data.hasil_pengujian !== undefined
-        ) {
-          setInterpretasi(response.data.data.hasil_pengujian);
-        }
-        if (response.data.data && response.data.data.baku_mutu !== undefined) {
-          setBaku(response.data.data.baku_mutu);
-        }
-        if (
-          response.data.data &&
-          response.data.data.tanggal_diterima !== undefined
-        ) {
-          setDate(new Date(response.data.data.tanggal_diterima));
-        }
-        if (
-          response.data.data &&
-          response.data.data.kondisi_sampel !== undefined
-        ) {
-          setIsAbnormal(response.data.data.kondisi_sampel === 1);
-        }
-        if(response.data.data && response.data.data.keterangan_kondisi_sampel !== undefined){
-          setKeterangan(response.data.data.keterangan_kondisi_sampel)
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(`/administrasi/penerima-sample/${uuid}`);
+      console.log("Response data:", response.data);
+      setData(response.data.data);
+      if (
+        response.data.data &&
+        response.data.data.kesimpulan_sampel !== undefined
+      ) {
+        setChecked(response.data.data.kesimpulan_sampel);
       }
-    };
+      if (
+        response.data.data &&
+        response.data.data.pengawetan_oleh !== undefined
+      ) {
+        setPengawetan(response.data.data.pengawetan_oleh);
+      }
+      if (
+        response.data.data &&
+        response.data.data.hasil_pengujian !== undefined
+      ) {
+        setInterpretasi(response.data.data.hasil_pengujian);
+      }
+      if (response.data.data && response.data.data.baku_mutu !== undefined) {
+        setBaku(response.data.data.baku_mutu);
+      }
+      if (
+        response.data.data &&
+        response.data.data.tanggal_diterima !== undefined
+      ) {
+        setDate(new Date(response.data.data.tanggal_diterima));
+      }
+      if (
+        response.data.data &&
+        response.data.data.kondisi_sampel !== undefined
+      ) {
+        setIsAbnormal(response.data.data.kondisi_sampel === 1);
+      }
+      if (
+        response.data.data &&
+        response.data.data.keterangan_kondisi_sampel !== undefined
+      ) {
+        setKeterangan(response.data.data.keterangan_kondisi_sampel);
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
+    }
+  };
 
+  useEffect(() => {
     fetchData();
   }, [uuid]);
 
@@ -144,7 +145,6 @@ export default function Detail({ route, navigation }) {
       setDate(currentTime);
       setShowTimePicker(false);
       handleWaktu(currentTime); // Simpan setelah memilih waktu
-
     } else {
       setShowTimePicker(false);
     }
@@ -172,7 +172,9 @@ export default function Detail({ route, navigation }) {
 
   if (loading) {
     return (
-      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+      <View className="h-full flex justify-center">
+        <ActivityIndicator size={"large"} color={"#312e81"} />
+      </View>
     );
   }
 
@@ -186,8 +188,8 @@ export default function Detail({ route, navigation }) {
 
   const jenisWadahValues = data.jenis_wadahs
     ? data.jenis_wadahs
-      .map(item => `${item.nama} (${item.keterangan})`)
-      .join(", ")
+        .map(item => `${item.nama} (${item.keterangan})`)
+        .join(", ")
     : "Tidak ada data";
 
   const parameters = data.parameters ? data.parameters : [];
@@ -196,24 +198,21 @@ export default function Detail({ route, navigation }) {
     setChecked(value);
     saveStatus(value);
   };
-  
+
   const saveStatus = async status => {
     try {
-      await axios.post(
-        `/administrasi/penerima-sample/${uuid}/update`,
-        {
-          kesimpulan_sampel: status,
-          tanggal_diterima: date ? date.toISOString() : null,
-        }
-      );
+      await axios.post(`/administrasi/penerima-sample/${uuid}/update`, {
+        kesimpulan_sampel: status,
+        tanggal_diterima: date ? date.toISOString() : null,
+      });
       console.log("Data berhasil disimpan");
     } catch (error) {
       console.error("Gagal menyimpan data:", error);
     } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data telah diperbarui",
         visibilityTime: 2000,
       });
     }
@@ -231,7 +230,6 @@ export default function Detail({ route, navigation }) {
         {
           pengawetan_oleh: status,
           tanggal_diterima: date ? date.toISOString() : null,
-
         },
       );
       console.log("Data berhasil disimpan:", response.data);
@@ -240,12 +238,11 @@ export default function Detail({ route, navigation }) {
         "Gagal menyimpan data:",
         error.response ? error.response.data : error.message,
       );
-    }
-    finally {
+    } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data telah diperbarui'
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data telah diperbarui",
       });
     }
   };
@@ -261,7 +258,6 @@ export default function Detail({ route, navigation }) {
         {
           hasil_pengujian: status,
           tanggal_diterima: date ? date.toISOString() : null,
-
         },
       );
       console.log("Data berhasil disimpan:", response.data);
@@ -326,7 +322,7 @@ export default function Detail({ route, navigation }) {
     }
   };
 
-  const handleKeteranganChange = (text) => {
+  const handleKeteranganChange = text => {
     setKeterangan(text);
     console.log("Keterangan changed:", text);
 
@@ -428,11 +424,7 @@ export default function Detail({ route, navigation }) {
               <Text style={styles.title}>Detail Uji</Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Feather
-                    name="target"
-                    size={30}
-                    color="#50cc96"
-                  />
+                  <Feather name="target" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Lokasi/Titik Uji</Text>
@@ -442,7 +434,11 @@ export default function Detail({ route, navigation }) {
 
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="warehouse" size={30} color="#50cc96" />
+                  <MaterialCommunityIcons
+                    name="warehouse"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Nama Industri</Text>
@@ -504,7 +500,9 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text className="mt-5" style={styles.value}>Kesimpulan Sampel</Text>
+              <Text className="mt-5" style={styles.value}>
+                Kesimpulan Sampel
+              </Text>
 
               <View style={styles.radioContainer}>
                 <View style={styles.radioItem}>
@@ -533,7 +531,9 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text className="mt-3" style={styles.value}>Pengawetan Dilakukan Oleh</Text>
+              <Text className="mt-3" style={styles.value}>
+                Pengawetan Dilakukan Oleh
+              </Text>
 
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
@@ -558,7 +558,9 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text className="mt-3" style={styles.value}>Interpretasi Hasil Pengujian</Text>
+              <Text className="mt-3" style={styles.value}>
+                Interpretasi Hasil Pengujian
+              </Text>
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -578,7 +580,9 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text className="mt-3" style={styles.value}>Baku Mutu</Text>
+              <Text className="mt-3" style={styles.value}>
+                Baku Mutu
+              </Text>
               <View style={styles.radioContainer2}>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -598,7 +602,9 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
 
-              <Text className="mt-3" style={styles.value}>Tanggal Diterima</Text>
+              <Text className="mt-3" style={styles.value}>
+                Tanggal Diterima
+              </Text>
               <View>
                 <TouchableOpacity onPress={() => setShowDatePicker(true)}>
                   <View style={styles.dateTimeButton}>
@@ -637,17 +643,23 @@ export default function Detail({ route, navigation }) {
                 )}
               </View>
 
-              <Text className="font-poppins-semibold mt-5" style={styles.value}>Kondisi Sampel Saat Diterima</Text>
+              <Text className="font-poppins-semibold mt-5" style={styles.value}>
+                Kondisi Sampel Saat Diterima
+              </Text>
               <View style={styles.switchContainer}>
-                <Text className="text-black text-md font-poppins-medium">Abnormal</Text>
+                <Text className="text-black text-md font-poppins-medium">
+                  Abnormal
+                </Text>
                 <Switch
                   value={isAbnormal}
                   onValueChange={handleSwitchChange}
-                  trackColor={{ false: '#767577', true: '#312e81' }}
-                  thumbColor={isAbnormal ? '#f4f3f4' : '#f4f3f4'}
+                  trackColor={{ false: "#767577", true: "#312e81" }}
+                  thumbColor={isAbnormal ? "#f4f3f4" : "#f4f3f4"}
                 />
                 <View style={styles.normal}>
-                  <Text className="text-black text-md font-poppins-medium">Normal</Text>
+                  <Text className="text-black text-md font-poppins-medium">
+                    Normal
+                  </Text>
                 </View>
               </View>
               <View>
@@ -689,7 +701,9 @@ export default function Detail({ route, navigation }) {
                   <Text className="text-base ml-14 font-poppins-semibold text-black">
                     Nama
                   </Text>
-                  <Text className="text-base font-poppins-semibold text-black">Harga</Text>
+                  <Text className="text-base font-poppins-semibold text-black">
+                    Harga
+                  </Text>
                 </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
@@ -734,7 +748,7 @@ export default function Detail({ route, navigation }) {
                   </Text>
                 )}
                 <Modal
-                  animationType="slide"
+                  animationType="fade"
                   transparent={true}
                   visible={modalState.visible}
                   onRequestClose={() =>
@@ -748,7 +762,10 @@ export default function Detail({ route, navigation }) {
                         uuid={modalState.uuid}
                       />
                       <TouchableOpacity
-                        onPress={handleCloseModal}
+                        onPress={() => {
+                          handleCloseModal();
+                          fetchData();
+                        }}
                         style={styles.closeButton}>
                         <Text style={styles.closeButtonText}>Close</Text>
                       </TouchableOpacity>
@@ -776,7 +793,11 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <MaterialCommunityIcons name="smart-card-outline" size={30} color="#50cc96" />
+                  <MaterialCommunityIcons
+                    name="smart-card-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Petugas Pengambil</Text>
@@ -801,7 +822,11 @@ export default function Detail({ route, navigation }) {
               </View>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
-                  <Ionicons name="pricetags-outline" size={30} color="#50cc96" />
+                  <Ionicons
+                    name="pricetags-outline"
+                    size={30}
+                    color="#50cc96"
+                  />
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
@@ -935,7 +960,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   iconContainer: {
-    backgroundColor: '#e8fff3',
+    backgroundColor: "#e8fff3",
     padding: 10,
     borderRadius: 10,
     marginRight: 10,

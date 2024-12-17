@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Modal, View, Text, TouchableOpacity } from 'react-native';
 import axios from '../libs/axios';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import Toast from 'react-native-toast-message';
 
 const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message, iconName = "trash-outline" }) => (
   <Modal
@@ -65,6 +66,11 @@ export const useDelete = (callback) => {
       const response = await axios.delete(currentUrl);
       hideConfirmationModal();
       onSuccess && onSuccess(response);
+      Toast.show({
+        type: "success",
+        text1: "Berhasil!",
+        text1: "Data berhasil dihapus",
+      })
     } catch (error) {
       onError && onError(error);
     } finally {

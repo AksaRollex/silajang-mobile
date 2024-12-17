@@ -66,11 +66,11 @@ const Global = ({ navigation }) => {
         borderColor: "#d1d5db",
         borderWidth: 1
       }, style]}>
-      <Text style={{ 
-        color: "black", 
-        flex: 1, 
-        textAlign: "center", 
-        fontFamily: "Poppins-SemiBold" 
+      <Text style={{
+        color: "black",
+        flex: 1,
+        textAlign: "center",
+        fontFamily: "Poppins-SemiBold"
       }}>
         {label}: {value}
       </Text>
@@ -94,43 +94,43 @@ const Global = ({ navigation }) => {
         },
         responseType: 'arraybuffer', // Konfigurasi respons biner
       });
-  
+
       const contentDisposition = response.headers['content-disposition'];
       let fileName = `Laporan Pembayaran Global ${selectedYear} - ${selectedStatus}.xlsx`; // Nama default jika tidak ada header
-  
+
       if (contentDisposition && contentDisposition.includes('filename=')) {
         const matches = contentDisposition.match(/filename="(.+?)"/);
         if (matches && matches[1]) {
           fileName = matches[1];
         }
       }
-  
+
       // Tentukan path untuk menyimpan file
       const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-  
+
       // Konversi buffer ke string ASCII untuk menyimpan file
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
-  
+
       // Menyimpan file ke perangkat lokal
       await RNFS.writeFile(path, fileContent, 'ascii');
-      
+
       console.log('File berhasil diunduh dan disimpan di:', path);
 
-      Toast.show({ 
+      Toast.show({
         type: 'success',
         text1: 'Berhasil!',
         text2: 'Laporan berhasil diunduh',
       })
     } catch (error) {
       console.error('Error saat mengunduh file:', error);
-      
-      Toast.show({ 
+
+      Toast.show({
         type: 'error',
         text1: 'Gagal!',
         text2: 'Tidak dapat mengunduh laporan',
       })
-   }
+    }
   }
 
   const getStatusStyle = status => {
@@ -161,7 +161,7 @@ const Global = ({ navigation }) => {
         };
     }
   };
-  
+
   const getStatusText = status => {
     switch (status) {
       case "pending":
@@ -181,67 +181,67 @@ const Global = ({ navigation }) => {
 
     return (
       <View
-      className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
-      style={{
-        elevation: 4,
-      }}>
-      <View className="flex-row justify-between">
-        <View className="flex-1 pr-4">
-          <Text className="text-xs font-poppins-regular text-gray-500">Virtual Account</Text>
-          <Text className="text-md font-poppins-semibold text-black mb-4">
-            {item.va_number || "Nomor VA Kosong"}
-          </Text>
-
-          <View className="flex-row justify-between mb-2">
-            <View className="flex-1 pr-5">
-              <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
-              <Text className="text-md font-poppins-semibold text-black">
-                {item.nama || "-"}
-              </Text>
-            </View>
-            <View className="flex-1">
-              <Text className="text-xs font-poppins-regular text-gray-500">Jumlah Nominal</Text>
-              <Text className="text-md font-poppins-semibold text-black">
-                {rupiah(item.jumlah)}
-              </Text>
-            </View>
-          </View>
-
-          <View className="flex-row justify-between mb-2">
-            <View className="flex-1 pr-3">
-              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Dibuat</Text>
-              <Text className="text-md font-poppins-semibold text-black">
-                {item.tanggal_dibuat}
-              </Text>
-            </View>
-            <View className="flex-1">
-              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Kedaluwarsa</Text>
-              <Text className="text-md font-poppins-semibold text-black">
-                {item.tanggal_exp_indo || "-"}
-              </Text>
-              {item.is_expired && (
-                <View className="bg-yellow-100 px-1.5 py-0.5 rounded-md mt-1 self-start">
-                  <Text className="text-[11px] font-bold text-yellow-500">
-                    Kedaluwarsa
-                  </Text>
-                </View>
-              )}
-            </View>
-          </View>
-        </View>
-        
-        <View className="flex-shrink-0 items-end">
-          <View className={`rounded-md px-1.5 py-1 border ${statusStyle.background} ${statusStyle.border}`}>
-            <Text
-              className={`text-[11px] font-bold text-right ${statusStyle.text}`}
-              numberOfLines={2}
-              ellipsizeMode="tail">
-              {statusText}
+        className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
+        style={{
+          elevation: 4,
+        }}>
+        <View className="flex-row justify-between">
+          <View className="flex-1 pr-4">
+            <Text className="text-xs font-poppins-regular text-gray-500">Virtual Account</Text>
+            <Text className="text-md font-poppins-semibold text-black mb-4">
+              {item.va_number || "Nomor VA Kosong"}
             </Text>
+
+            <View className="flex-row justify-between mb-2">
+              <View className="flex-1 pr-5">
+                <Text className="text-xs font-poppins-regular text-gray-500">Nama</Text>
+                <Text className="text-md font-poppins-semibold text-black">
+                  {item.nama || "-"}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs font-poppins-regular text-gray-500">Jumlah Nominal</Text>
+                <Text className="text-md font-poppins-semibold text-black">
+                  {rupiah(item.jumlah)}
+                </Text>
+              </View>
+            </View>
+
+            <View className="flex-row justify-between mb-2">
+              <View className="flex-1 pr-3">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Dibuat</Text>
+                <Text className="text-md font-poppins-semibold text-black">
+                  {item.tanggal_dibuat}
+                </Text>
+              </View>
+              <View className="flex-1">
+                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Kedaluwarsa</Text>
+                <Text className="text-md font-poppins-semibold text-black">
+                  {item.tanggal_exp_indo || "-"}
+                </Text>
+                {item.is_expired && (
+                  <View className="bg-yellow-100 px-1.5 py-0.5 rounded-md mt-1 self-start">
+                    <Text className="text-[11px] font-bold text-yellow-500">
+                      Kedaluwarsa
+                    </Text>
+                  </View>
+                )}
+              </View>
+            </View>
+          </View>
+
+          <View className="flex-shrink-0 items-end">
+            <View className={`rounded-md px-1.5 py-1 border ${statusStyle.background} ${statusStyle.border}`}>
+              <Text
+                className={`text-[11px] font-bold text-right ${statusStyle.text}`}
+                numberOfLines={2}
+                ellipsizeMode="tail">
+                {statusText}
+              </Text>
+            </View>
           </View>
         </View>
       </View>
-    </View>
     );
   };
 
@@ -272,16 +272,16 @@ const Global = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-    <View className="p-4">
-      <View className="flex-row items-center justify-between mb-4">
-        <View className="flex-row items-center flex-1">
-          <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center" >
-            Global
-          </Text>
+      <View className="p-4">
+        <View className="flex-row items-center justify-between mb-4">
+          <View className="flex-row items-center flex-1">
+            <BackButton action={() => navigation.goBack()} size={26} />
+            <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center" >
+              Global
+            </Text>
+          </View>
+
         </View>
-        
-      </View>
 
         <View className="flex-row space-x-2 ">
           <MenuView
@@ -307,7 +307,7 @@ const Global = ({ navigation }) => {
               title: option.title,
             }))}>
             <View style={{ marginEnd: 8 }}>
-            <PickerButton
+              <PickerButton
                 label="Status"
                 value={statusOptions.find(opt => opt.id === selectedStatus)?.title}
               />
@@ -316,50 +316,46 @@ const Global = ({ navigation }) => {
         </View>
       </View>
 
-       <Modal
-            animationType="fade"
-            transparent
-            visible={modalVisible}
-            onRequestClose={() => setModalVisible(false)}
-          >
-            <View
-              style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-              className="flex-1 justify-center items-center"
-            >
-              <View className="bg-white rounded-lg w-[90%] p-6">
-                <View className="flex-row justify-between items-center mb-6">
-                  <Text className="text-lg font-poppins-medium text-black">Konfirmasi Download</Text>
-                  <TouchableOpacity onPress={() => setModalVisible(false)}>
-                    <MaterialIcons name="close" size={24} color="black" />
-                  </TouchableOpacity>
-                </View>
-                
-                <View className="mb-6">
-                  <Text className="text-base font-poppins-regular text-black text-center">
-                    Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
-                  </Text>
-                </View>
-        
-                <View className="flex-row justify-center gap-3">
-                  <TouchableOpacity 
-                    onPress={() => setModalVisible(false)} 
-                    className="px-6 py-2 bg-gray-400 rounded-lg"
-                  >
-                    <Text className="text-white font-poppins-medium">Batal</Text>
-                  </TouchableOpacity>
-                  <TouchableOpacity 
-                    onPress={() => {
-                      downloadReport();
-                      setModalVisible(false);
-                    }}
-                    className="px-6 py-2 bg-green-500 rounded-lg"
-                  >
-                    <Text className="text-white font-poppins-medium">Download</Text>
-                  </TouchableOpacity>
-                </View>
-              </View>
+      <Modal
+        animationType="fade"
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
+              <FontAwesome5 size={40} color="#177a44" name="file-excel" />
             </View>
-          </Modal>
+
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Konfirmasi Download
+            </Text>
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+               Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+            </Text>
+
+            <View className="flex-row w-full justify-between">
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+              >
+                <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={downloadReport}
+                className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
+              >
+                <Text className="text-white font-poppins-medium">Ya, Download</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
 
       <Paginate
         ref={paginateRef}
@@ -374,32 +370,32 @@ const Global = ({ navigation }) => {
         className="px-4 mb-12"
       />
 
-        <TouchableOpacity
-          onPress={() => setModalVisible(true)}
-          style={{
-            position: 'absolute',
-            bottom: 75,
-            right: 20,
-            backgroundColor: '#177a44',
-            borderRadius: 50,
-            width: 55,
-            height: 55,
-            justifyContent: 'center',
-            alignItems: 'center',
-            elevation: 5,
-            shadowColor: '#000',
-            shadowOffset: { width: 0, height: 2 },
-            shadowOpacity: 0.25,
-            shadowRadius: 3.84,
-            zIndex: 1000
-          }}>
-  
-          <FontAwesome5 
-            name="file-excel" 
-            size={20} 
-            color="#fff" 
-          />
-        </TouchableOpacity>
+      <TouchableOpacity
+        onPress={() => setModalVisible(true)}
+        style={{
+          position: 'absolute',
+          bottom: 75,
+          right: 20,
+          backgroundColor: '#177a44',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+
+        <FontAwesome5
+          name="file-excel"
+          size={20}
+          color="#fff"
+        />
+      </TouchableOpacity>
     </View>
   );
 };
