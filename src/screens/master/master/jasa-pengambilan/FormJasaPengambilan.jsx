@@ -56,6 +56,11 @@ export default memo(function FormJasaPengambilan({ route, navigation }) {
         }
     )
 
+    const formattedRupiah = (value) => {
+        const cleanValue = value.replace(/[^0-9]/g, "");
+        return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     const onSubmit = (data) => {
         createOrUpdate(data)
     }
@@ -97,15 +102,25 @@ export default memo(function FormJasaPengambilan({ route, navigation }) {
                     <Controller
                         control={control}
                         name="harga"
-                        rules={{ required: 'Harga is required' }}
+                        rules={{ 
+                            required: 'Harga is required',
+                            pattern: {
+                                value: /^[0-9.]*$/,
+                                message: "Harga harus berupa angka"
+                            }
+                        }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
                                 style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Harga"
                                 enableErrors
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
-                                onChangeText={onChange}
+                                onChangeText={(text) => {
+                                    const formattedValue = formattedRupiah(text);
+                                    onChange(formattedValue);
+                                }}
                                 value={value}
+                                keyboardType="numeric"
                             />
                         )}
                     />

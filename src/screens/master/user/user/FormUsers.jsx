@@ -543,11 +543,22 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="nip"
+              rules={{ 
+                required: "Nip harus diisi", 
+                pattern: {
+                  value: /^[0-9]*$/,
+                  message: "Nip harus berupa angka",
+                }
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const numericValue = text.replace(/[^0-9]/g, "");
+                    onChange(numericValue);
+                    keyboardType="numeric";
+                  }}
                 />
               )}
             />
@@ -558,11 +569,22 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="nik"
+              rules={{ 
+                required: "Nik harus diisi",
+                pattern: {
+                  value: /^[0-9]*$/,
+                  message: "Nik harus berupa angka",
+                }
+               }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const numericValues = text.replace(/[^0-9]/g, "");
+                    onChange(numericValues);
+                    keyboardType="numeric";
+                  }}
                 />
               )}
             />
@@ -610,7 +632,10 @@ export default memo(function Form({ route, navigation }) {
                 <TextInput
                   style={styles.input}
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const filteredValue = text.replace(/[^0-9]/g, "");
+                    onChange(filteredValue);
+                  }}
                   keyboardType="phone-pad"
                 />
               )}
@@ -870,13 +895,22 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>Email</Text>
             <Controller
               control={control}
-              name="detail.pj_mutu"
+              name="detail.email"
+              rules={{ 
+                required: "Email harus diisi",
+                pattern: {
+                  value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                  message: "Email harus Invalid",
+                }
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
                   value={value}
                   onChangeText={onChange}
+                  keyboardType="email-address"
                 />
+                //700010
               )}
             />
           </View>
@@ -884,12 +918,23 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>No. Telepon</Text>
             <Controller
               control={control}
-              name="detail.pj_mutu"
+              name="detail.telepon"
+              rules={{ 
+                required: "No. Telepon harus diisi",
+                pattern: {
+                  value: /^08[0-9]\d{8,11}$/,
+                  message: "No. Telepon harus berupa angka",
+                }
+               }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                    const filteredValue = text.replace(/[^0-9]/g, "");
+                    onChange(filteredValue);
+                  }}
+                  keyboardType="phone-pad"
                 />
               )}
             />
@@ -898,7 +943,7 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>FAX</Text>
             <Controller
               control={control}
-              name="detail.pj_mutu"
+              name="detail.fax"
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
@@ -912,7 +957,7 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>Jenis Kegiatan</Text>
             <Controller
               control={control}
-              name="detail.pj_mutu"
+              name="detail.jenis_kegiatan"
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}

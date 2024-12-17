@@ -62,6 +62,11 @@ export default memo(function form({ route, navigation }) {
         },
     );
 
+    const formatRupiah = (value) => {
+        const cleanValue = value.replace(/[^0-9]/g, "");
+        return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     const onSubmit = data => {
        createOrUpdate(data)
     };
@@ -108,15 +113,25 @@ export default memo(function form({ route, navigation }) {
                         control={control}
                         name="harga"
                         defaultValue=""
-                        rules={{ required: "Harga is required" }}
+                        rules={{ 
+                            required: "Harga is required", 
+                            pattern:{
+                                value: /^[0-9.]*$/,
+                                message: "Harga harus berupa number",
+                            },  
+                        }}
                         render={({ field: { onChange, onBlur, value } }) => (
                             <TextField
                                 style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Harga Paket"
                                 value={value}
-                                onChangeText={onChange}
+                                onChangeText={(text) => {
+                                    const formattedValue = formatRupiah(text);
+                                    onChange(formattedValue);
+                                }}
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
                                 error={errors?.harga?.message}
+                                keyboardType="numeric"
                             />
                         )}
                     />

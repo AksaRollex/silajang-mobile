@@ -9,6 +9,7 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -157,6 +158,10 @@ const ListContent = ({
       removeClippedSubviews={false}
       ListEmptyComponent={() => (
         <View className="flex-1 items-center justify-center mt-4">
+          <Image 
+            source={require("@/assets/images/notfnd.png")}
+            className="w-60 h-60 opacity-60"
+          />
           <Text className="text-gray-500 font-poppins-regular">
             Data Tidak Tersedia
           </Text>
