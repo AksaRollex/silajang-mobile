@@ -12,10 +12,19 @@ import { useDelete } from "@/src/hooks/useDelete";
 import SearchInput from "@/src/screens/components/SearchInput";
 import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "@/src/screens/components/BackButton";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const TandaTangan = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+   const { setHeader } = useHeaderStore();
+          
+        React.useLayoutEffect(() => {
+          setHeader(false)
+      
+          return () => setHeader(true)
+        }, [])
+        
 
   const { delete: deletePeraturan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
