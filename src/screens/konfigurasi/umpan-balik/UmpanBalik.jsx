@@ -8,7 +8,6 @@ import IonIcons from 'react-native-vector-icons/Ionicons';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import HorizontalFilterMenu from '../../components/HorizontalFilterMenu';
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
@@ -19,6 +18,7 @@ import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import DocumentPicker from 'react-native-document-picker';
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
@@ -43,6 +43,14 @@ const UmpanBalik = ({ navigation }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [loading, setLoading] = useState(false);
+   const { setHeader } = useHeaderStore();
+          
+        React.useLayoutEffect(() => {
+          setHeader(false)
+      
+          return () => setHeader(true)
+        }, [])
+
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',

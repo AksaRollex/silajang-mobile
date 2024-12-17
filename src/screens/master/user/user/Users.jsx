@@ -8,7 +8,6 @@ import Icon from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import BackButton from "@/src/screens/components/BackButton";
 import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
-import HorizontalScrollMenu from '@nyashanziramasanga/react-native-horizontal-scroll-menu';
 import IndexMaster from '../../../masterdash/IndexMaster';
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
@@ -27,13 +26,13 @@ const Users = ({ navigation, route }) => {
   const paginateRef = useRef();
   const queryClient = useQueryClient();
   const { setHeader } = useHeaderStore();
-        
-      React.useLayoutEffect(() => {
-        setHeader(false)
-    
-        return () => setHeader(true)
-      }, [])
-      
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
   const { delete: deleteUser, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
       queryClient.invalidateQueries(['/master/user']);
@@ -137,44 +136,50 @@ const Users = ({ navigation, route }) => {
         <View className="h-[1px] bg-gray-300 my-3" />
 
         <View className="flex-row justify-end gap-2">
-        {selectedMenu !== 1 && (
-          <TouchableOpacity 
-            onPress={() => navigation.navigate("ParameterUsers", { uuid: item.uuid })}
-            className="flex-row items-center bg-green-500 px-2 py-2 rounded"
+          {selectedMenu !== 1 && (
+            <TouchableOpacity
+              onPress={() => navigation.navigate("ParameterUsers", { uuid: item.uuid })}
+              className="flex-row items-center bg-green-500 px-2 py-2 rounded"
+            >
+              <IonIcon name="filter" size={14} color="#fff" />
+              <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
+            </TouchableOpacity>
+          )}
+
+          <TouchableOpacity
+            onPress={() => navigation.navigate("FormUsers", { uuid: item.uuid })}
+            className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
           >
-            <IonIcon name="filter" size={14} color="#fff" />
-            <Text className="text-white ml-1 text-xs font-poppins-medium">Parameter</Text>
+            <IonIcon name="pencil" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
           </TouchableOpacity>
-        )}
 
-        <TouchableOpacity 
-          onPress={() => navigation.navigate("FormUsers", { uuid: item.uuid })}
-          className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
-        >
-          <IonIcon name="pencil" size={14} color="#fff" />
-          <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity 
-          onPress={() => deleteUser(`/master/user/${item.uuid}`)}
-          className="flex-row items-center bg-red-500 px-2 py-2 rounded"
-        >
-          <IonIcon name="trash" size={14} color="#fff" />
-          <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
-        </TouchableOpacity>
+          <TouchableOpacity
+            onPress={() => deleteUser(`/master/user/${item.uuid}`)}
+            className="flex-row items-center bg-red-500 px-2 py-2 rounded"
+          >
+            <IonIcon name="trash" size={14} color="#fff" />
+            <Text className="text-white ml-1 text-xs font-poppins-medium">Hapus</Text>
+          </TouchableOpacity>
+        </View>
       </View>
-    </View>
-  );
-}
+    );
+  }
 
 
   return (
     <GestureHandlerRootView className="flex-1 bg-[#ececec]">
-      <View className="flex-row items-center justify-center mt-4 mb-2">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">User</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">User</Text>
+        <View className="bg-blue-600 rounded-full">
+          <IonIcon name="person" size={18} color={'white'} style={{ padding: 5 }} />
+        </View>
       </View>
       <View className="flex-row justify-center mt-4">
         <HorizontalFilterMenu
