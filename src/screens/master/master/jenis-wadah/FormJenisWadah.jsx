@@ -97,7 +97,7 @@ export default memo(function FormJenisWadah({ route, navigation}) {
                     <Controller
                         control={control}
                         name="keterangan"
-                        rules={{  required: 'Kode is required' }}
+                        rules={{  required: 'Keterangan is required' }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
                                 style={{ fontFamily: "Poppins-Regular" }}
