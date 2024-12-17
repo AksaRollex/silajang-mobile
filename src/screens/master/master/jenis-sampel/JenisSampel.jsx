@@ -6,10 +6,18 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const JenisSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+      
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
 
   const { delete: deleteJenisSampel, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {

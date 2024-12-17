@@ -11,11 +11,11 @@ import {
   Modal,
   FlatList,
   Button,
-  ActivityIndicator
+  ActivityIndicator,
 } from "react-native";
-import Toast from 'react-native-toast-message';
-import { useCallback } from 'react';
-import { useFocusEffect } from '@react-navigation/native';
+import Toast from "react-native-toast-message";
+import { useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
 import Fontisto from "react-native-vector-icons/Fontisto";
 import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
@@ -40,7 +40,7 @@ import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MultiSelect from "react-native-multiple-select";
 import { API_URL } from "@env";
 
-const currency = number => { 
+const currency = number => {
   return number.toLocaleString("id-ID", {
     style: "currency",
     currency: "IDR",
@@ -144,60 +144,57 @@ export default function DetailPersetujuan({ route, navigation }) {
           headers: {
             "Content-Type": "application/json",
           },
-        }
+        },
       );
-    
+
       fetchData();
-    } catch (error) {  
-      console.error("Error updating petugas:", error);
-    }finally{
+    } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data Petugas telah diperbarui',
-      })
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data Petugas telah diperbarui",
+      });
+    }
+  };
+
+  // useEffect(() => {
+  //   if (selectedPetugas.length > 0) {
+  //     savePetugas(); // Panggil savePetugas setelah state terupdate
+  //   }
+  // }, [selectedPetugas]);
+
+  const fetchData = async () => {
+    try {
+      const response = await axios.get(
+        `/administrasi/pengambil-sample/${uuid}`,
+      );
+      console.log("Response data:", response.data);
+      setData(response.data.data);
+
+      if (response.data.data.permohonan.radius_pengambilan) {
+        setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id);
+      }
+      if (response.data.data.acuan_metode) {
+        setSelectedMetode(response.data.data.acuan_metode.id);
+      }
+      if (response.data.data.petugas_pengambil_ids) {
+        setSelectedPetugas(response.data.data.petugas_pengambil_ids);
+      }
+
+      if (response.data.data) {
+        setObyekPelayanan(response.data.data.obyek_pelayanan || ""); // Atur state ke obyek_pelayanan
+      }
+      setLoading(false);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    if (selectedPetugas.length > 0) {
-      savePetugas(); // Panggil savePetugas setelah state terupdate
-    }
-  }, [selectedPetugas]);
-
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(
-          `/administrasi/pengambil-sample/${uuid}`,
-        );
-        console.log("Response data:", response.data);
-        setData(response.data.data);
-
-        if (response.data.data.permohonan.radius_pengambilan) {
-          setSelectedRadius(
-            response.data.data.permohonan.radius_pengambilan_id,
-          );
-        }
-        if (response.data.data.acuan_metode) {
-          setSelectedMetode(response.data.data.acuan_metode.id);
-        }
-        if (response.data.data.petugas_pengambil_ids) {
-          setSelectedPetugas(response.data.data.petugas_pengambil_ids);
-        }
-
-        if (response.data.data) {
-          setObyekPelayanan(response.data.data.obyek_pelayanan || ""); // Atur state ke obyek_pelayanan
-        }
-        setLoading(false);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-        setLoading(false);
-      }
-    };
-
     fetchData();
   }, [uuid]);
+
 
   useEffect(() => {
     const fetchData = async () => {
@@ -278,9 +275,9 @@ export default function DetailPersetujuan({ route, navigation }) {
       }
     } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data Tanggal & Waktu berhasil disimpan',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data Tanggal & Waktu berhasil disimpan",
       });
     }
   };
@@ -319,11 +316,11 @@ export default function DetailPersetujuan({ route, navigation }) {
       console.log("Data successfully updated on server:", response.data);
     } catch (error) {
       console.error("Error updating data to server:", error);
-    }finally {
+    } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Data telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data telah diperbarui",
         visibilityTime: 2000,
       });
     }
@@ -341,7 +338,9 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   if (loading) {
     return (
-      <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
+      <View className="h-full flex justify-center">
+        <ActivityIndicator size={"large"} color={"#312e81"} />
+      </View>
     );
   }
 
@@ -366,23 +365,21 @@ export default function DetailPersetujuan({ route, navigation }) {
     saveStatus(value);
   };
 
-  const saveStatus = async (status) => {
+  const saveStatus = async status => {
     try {
       const response = await axios.post(
         `/administrasi/pengambil-sample/${uuid}/update`,
         {
           kesimpulan_permohonan: status,
-        }
+        },
       );
-  
+
       fetchData();
-    } catch (error) {  
-      console.error("Error updating status:", error);
-    }finally {
+    } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Status telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Status telah diperbarui",
         visibilityTime: 2000,
       });
     }
@@ -395,19 +392,16 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const saveInter = async status => {
     try {
-      await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          hasil_pengujian: status,
-        }
-      );
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
+        hasil_pengujian: status,
+      });
     } catch (error) {
       console.error("Error saat menyimpan data:", error);
     } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Interpretasi telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Interpretasi telah diperbarui",
         visibilityTime: 2000,
       });
     }
@@ -420,24 +414,20 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const saveObyek = async status => {
     try {
-      await axios.post(
-        `/administrasi/pengambil-sample/${uuid}/update`,
-        {
-          obyek_pelayanan: status,
-        }
-      );
+      await axios.post(`/administrasi/pengambil-sample/${uuid}/update`, {
+        obyek_pelayanan: status,
+      });
     } catch (error) {
       console.error("Error saat menyimpan data:", error);
     } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Obyek pelayanan telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Obyek pelayanan telah diperbarui",
         visibilityTime: 2000,
       });
     }
   };
-  
 
   const saveAcuanMetode = value => {
     setMetode(value);
@@ -464,11 +454,11 @@ export default function DetailPersetujuan({ route, navigation }) {
     } catch (error) {
       // Log jika ada error
       console.error("Error saat menyimpan data:", error);
-    }finally {
+    } finally {
       Toast.show({
-        type: 'success',
-        text1: 'Berhasil',
-        text2: 'Metode telah diperbarui',
+        type: "success",
+        text1: "Berhasil",
+        text2: "Metode telah diperbarui",
         visibilityTime: 2000,
       });
     }
@@ -528,19 +518,25 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Icon name="arrowleft" size={20} color="white" />
                 </TouchableOpacity>
                 <View>
-                  <Text className="font-poppins-semibold" style={styles.kode}>{data.kode}</Text>
+                  <Text className="font-poppins-semibold" style={styles.kode}>
+                    {data.kode}
+                  </Text>
                 </View>
               </View>
             </View>
             {/* Card Pertama */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title} className="font-poppins-semibold">Informasi Pemohon</Text>
+              <Text style={styles.title} className="font-poppins-semibold">
+                Informasi Pemohon
+              </Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather name="user" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular" >Customer</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Customer
+                  </Text>
                   <Text style={styles.value}>{data.permohonan.user.nama}</Text>
                 </View>
               </View>
@@ -550,7 +546,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <FontAwesome name="building-o" size={33} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Instansi</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Instansi
+                  </Text>
                   <Text style={styles.value}>
                     {data.permohonan.user.detail.instansi}
                   </Text>
@@ -566,7 +564,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Alamat</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Alamat
+                  </Text>
                   <Text style={styles.value}>
                     {data.permohonan.user.detail.alamat}
                   </Text>
@@ -578,7 +578,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Feather name="phone" size={28} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">No. Telepon/WhatsApp</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    No. Telepon/WhatsApp
+                  </Text>
                   <Text style={styles.value}>{data.permohonan.user.phone}</Text>
                 </View>
               </View>
@@ -586,13 +588,17 @@ export default function DetailPersetujuan({ route, navigation }) {
 
             {/* Card Kedua */}
             <View style={styles.cardContainer}>
-              <Text style={styles.title} className="font-poppins-semibold">Detail Uji</Text>
+              <Text style={styles.title} className="font-poppins-semibold">
+                Detail Uji
+              </Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <Feather name="target" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label}className="font-poppins-regular">Lokasi/Titik Uji</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Lokasi/Titik Uji
+                  </Text>
                   <Text style={styles.value}>{data.lokasi}</Text>
                 </View>
               </View>
@@ -606,7 +612,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Nama Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Nama Industri
+                  </Text>
                   <Text style={styles.value}>{data.permohonan.industri}</Text>
                 </View>
               </View>
@@ -621,7 +629,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Alamat Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Alamat Industri
+                  </Text>
                   <Text style={styles.value}>{data.permohonan.alamat}</Text>
                 </View>
               </View>
@@ -636,7 +646,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Jenis Kegiatan Industri</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Jenis Kegiatan Industri
+                  </Text>
                   <Text style={styles.value}>{data.permohonan.kegiatan}</Text>
                 </View>
               </View>
@@ -645,7 +657,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <AntDesign name="filter" size={30} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Jenis Sampel</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Jenis Sampel
+                  </Text>
                   <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View>
               </View>
@@ -662,24 +676,38 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.value}>{data.jenis_sampel.nama}</Text>
                 </View> */}
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Jenis Wadah</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Jenis Wadah
+                  </Text>
                   <Text style={styles.value}>{data.jenis_wadah?.nama}</Text>
                 </View>
               </View>
 
-              <Text style={styles.value} className="font-poppins-semibold">Interpretasi Hasil Pengujian</Text>
+              <Text style={styles.value} className="font-poppins-semibold">
+                Interpretasi Hasil Pengujian
+              </Text>
               <View style={styles.switchContainer}>
-                <Text style={styles.optionText} className="font-poppins-regular">Tidak</Text>
+                <Text
+                  style={styles.optionText}
+                  className="font-poppins-regular">
+                  Tidak
+                </Text>
                 <Switch
                   value={interpretasi === 1}
                   onValueChange={value => saveInterpretasi(value ? 1 : 0)}
                   trackColor={{ false: "#767577", true: "#312e81" }}
                   thumbColor={interpretasi === 1 ? "#f4f3f4" : "#f4f3f4"}
                 />
-                <Text style={styles.optionText} className="font-poppins-regular">Ada</Text>
+                <Text
+                  style={styles.optionText}
+                  className="font-poppins-regular">
+                  Ada
+                </Text>
               </View>
 
-              <Text style={styles.value} className="font-poppins-semibold">Kesimpulan Permohonan</Text>
+              <Text style={styles.value} className="font-poppins-semibold">
+                Kesimpulan Permohonan
+              </Text>
 
               <View style={styles.radioContainer}>
                 <View style={styles.radioItem}>
@@ -688,7 +716,11 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 0 ? "checked" : "unchecked"}
                     onPress={() => handleSave(0)}
                   />
-                  <Text style={styles.radioLabel} className="font-poppins-medium">Menunggu</Text>
+                  <Text
+                    style={styles.radioLabel}
+                    className="font-poppins-medium">
+                    Menunggu
+                  </Text>
                 </View>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -696,7 +728,11 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 1 ? "checked" : "unchecked"}
                     onPress={() => handleSave(1)}
                   />
-                  <Text style={styles.radioLabel} className="font-poppins-medium">Diterima</Text>
+                  <Text
+                    style={styles.radioLabel}
+                    className="font-poppins-medium">
+                    Diterima
+                  </Text>
                 </View>
                 <View style={styles.radioItem}>
                   <RadioButton
@@ -704,7 +740,11 @@ export default function DetailPersetujuan({ route, navigation }) {
                     status={checked === 2 ? "checked" : "unchecked"}
                     onPress={() => handleSave(2)}
                   />
-                  <Text style={styles.radioLabel} className="font-poppins-medium">Ditolak</Text>
+                  <Text
+                    style={styles.radioLabel}
+                    className="font-poppins-medium">
+                    Ditolak
+                  </Text>
                 </View>
               </View>
 
@@ -729,13 +769,17 @@ export default function DetailPersetujuan({ route, navigation }) {
               )}
             </View>
             <View style={styles.cardContainer}>
-              <Text style={styles.title} className="font-poppins-semibold">Peraturan/Parameter</Text>
+              <Text style={styles.title} className="font-poppins-semibold">
+                Peraturan/Parameter
+              </Text>
               <View style={styles.infoItem}>
                 <View style={styles.iconContainer}>
                   <FontAwesome name="file-text-o" size={34} color="#50cc96" />
                 </View>
                 <View style={styles.textContainer}>
-                  <Text style={styles.label} className="font-poppins-regular">Peraturan</Text>
+                  <Text style={styles.label} className="font-poppins-regular">
+                    Peraturan
+                  </Text>
                   <Text style={styles.value}>
                     {data?.peraturan?.nama || ""} -{" "}
                     {data?.peraturan?.nomor || ""}
@@ -747,7 +791,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <View className="bg-[#e8fff3] p-2 rounded-lg mr-2">
                     <FontAwesome6 name="vial" size={32} color="#50cc96" />
                   </View>
-                  <Text style={styles.label} className="font-poppins-regular mb-2">
+                  <Text
+                    style={styles.label}
+                    className="font-poppins-regular mb-2">
                     Parameter
                   </Text>
                 </View>
@@ -755,7 +801,9 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text className="text-base ml-14 font-poppins-semibold text-black">
                     Nama
                   </Text>
-                  <Text className="text-base font-poppins-semibold text-black">Harga</Text>
+                  <Text className="text-base font-poppins-semibold text-black">
+                    Harga
+                  </Text>
                 </View>
                 {parameters.length > 0 ? (
                   parameters.map((item, index) => (
@@ -814,9 +862,16 @@ export default function DetailPersetujuan({ route, navigation }) {
                         uuid={modalState.uuid}
                       />
                       <TouchableOpacity
-                        onPress={handleCloseModal}
+                        onPress={() => {
+                          handleCloseModal();
+                          fetchData();
+                        }}
                         style={styles.closeButton}>
-                        <Text style={styles.closeButtonText}  className="font-poppins-medium">Close</Text>
+                        <Text
+                          style={styles.closeButtonText}
+                          className="font-poppins-medium">
+                          Close
+                        </Text>
                       </TouchableOpacity>
                     </View>
                   </View>
@@ -829,7 +884,8 @@ export default function DetailPersetujuan({ route, navigation }) {
                   fontSize: 15,
                   marginBottom: 20,
                   color: Colors.black,
-                }} className="font-poppins-semibold">
+                }}
+                className="font-poppins-semibold">
                 Detail Pengambilan
               </Text>
               <View style={styles.infoItem}>
@@ -861,7 +917,6 @@ export default function DetailPersetujuan({ route, navigation }) {
                   <Text style={styles.label}>Radius Pengambilan</Text>
                   <View style={styles.pickerContainer}>
                     <RNPickerSelect
-                    
                       placeholder={{ label: "Pilih Radius", value: null }}
                       onValueChange={value => {
                         console.log("Selected radius value:", value);
@@ -1069,12 +1124,12 @@ export default function DetailPersetujuan({ route, navigation }) {
                       style={{
                         inputIOS: {
                           ...styles.pickerStyle,
-                          fontFamily : 'Poppins-Medium',
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
                         },
                         inputAndroid: {
                           ...styles.pickerStyle,
-                          fontFamily : 'Poppins-Medium',
+                          fontFamily: "Poppins-Medium",
                           fontSize: 12,
                         },
                         iconContainer: {
@@ -1144,18 +1199,16 @@ const styles = StyleSheet.create({
     backgroundColor: "white",
     borderRadius: 10,
     alignItems: "center",
-    
   },
   closeButton: {
     marginTop: 20,
     padding: 10,
     backgroundColor: "#312e81",
     borderRadius: 5,
-    marginBottom: 15
+    marginBottom: 15,
   },
   closeButtonText: {
     color: "white",
-
   },
   param: {
     marginRight: 10,
@@ -1364,9 +1417,9 @@ const styles = StyleSheet.create({
 
   inputStyle: {
     fontSize: 13.5,
-    fontFamily : 'Poppins-Medium',
+    fontFamily: "Poppins-Medium",
     paddingVertical: 8,
-    paddingHorizontal: 15,  
+    paddingHorizontal: 15,
     color: "#333333",
     width: "100%",
     height: 40, // Sama dengan tinggi picker

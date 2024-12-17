@@ -16,6 +16,7 @@ import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Platform } from 'react-native';
+import FastImage from "react-native-fast-image";
 
 export default memo(function Form({ route, navigation }) {
   const { uuid } = route.params || {};
@@ -348,7 +349,7 @@ export default memo(function Form({ route, navigation }) {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: uuid ? "Success update data" : "Success create data",
+          text2: uuid ? "Sukses update data" : "Sukses menambahkan data",
         });
         queryClient.invalidateQueries(["/master/user"]);
         navigation.navigate("Users");
@@ -764,9 +765,11 @@ export default memo(function Form({ route, navigation }) {
                     <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
                       <View className="items-center">
                         <View className="relative">
-                          <Image
-                            source={{ uri: tandaTanganUrl }}
+                          <FastImage
                             className="w-48 h-48 rounded-lg"
+                            source={{ 
+                              uri: tandaTanganUrl?.tanda_tangan
+                            }}
                             resizeMode="contain"
                             onError={(e) => {
                               console.log("Error loading image:", e.nativeEvent.error);

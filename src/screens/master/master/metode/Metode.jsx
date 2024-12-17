@@ -4,13 +4,21 @@ import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef } from "react";
 import { Text, View, TouchableOpacity } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import BackButton from "@/src/screens/components/BackButton";
 import IonIcon from "react-native-vector-icons/Ionicons";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+
+  const { setHeader } = useHeaderStore();
+    
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -59,11 +67,17 @@ const Metode = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="flex-row items-center justify-center mt-4">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View 
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[19px] font-poppins-medium text-black ml-4">Metode</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Metode</Text>
+        <View className="bg-blue-600 rounded-full">
+          <IonIcon name="flask" size={17} color={'white'} style={{padding: 5}}/>
+        </View>
       </View>
       <Paginate
         ref={paginateRef}
@@ -71,7 +85,7 @@ const Metode = ({ navigation }) => {
         payload={{}}
         renderItem={renderItem}
       />
-       <Icon
+      <Icon
         name="plus"
         size={28}
         color="#fff"

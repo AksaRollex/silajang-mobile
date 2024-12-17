@@ -13,7 +13,7 @@ const Stack = createNativeStackNavigator()
 
 export default function MainScreen() {
   return (
-    <Stack.Navigator screenOptions={{ headerShown: false }}>
+    <Stack.Navigator screenOptions={{ headerShown: false, animation : "slide_from_right" }}>
       <Stack.Screen name="IndexWilayah" component={Wilayah}/>
       <Stack.Screen name="KotaKab" component={KotaKab}/>
       <Stack.Screen name="Kecamatan" component={Kecamatan}/>
