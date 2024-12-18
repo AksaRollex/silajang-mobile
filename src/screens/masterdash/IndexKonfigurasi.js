@@ -211,7 +211,9 @@ export default function IndexKonfigurasi() {
 
           </>
         )}
+        <View className="mt-[80%]">
         <TextFooter />
+        </View>
       </ScrollView>
     </View>
   );
@@ -222,9 +224,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
     justifyContent: "flex-start", // Ensure content starts from the top
-  },
-  contentContainer: {
-    paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
   },
   headerContainer: {
     width: "100%",

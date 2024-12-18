@@ -78,7 +78,7 @@ const Kelurahan = ({ navigation }) => {
              >
                <View className="flex-row items-center">
                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                 <Text className="text-[20px] font-poppins-medium text-black ml-4">Kelurahan</Text>
+                 <Text className="text-[20px] font-poppins-medium text-black ml-3">Kelurahan</Text>
                </View>
                <View className="bg-yellow-400 rounded-full">
                  <IonIcon name="home" size={18} color={'white'} style={{ padding: 5 }} />

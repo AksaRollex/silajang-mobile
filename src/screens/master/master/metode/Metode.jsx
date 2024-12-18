@@ -2,11 +2,12 @@ import { useDelete } from '@/src/hooks/useDelete';
 import Paginate from '@/src/screens/components/Paginate';
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import Icon from "react-native-vector-icons/AntDesign";
 import BackButton from "@/src/screens/components/BackButton";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -66,7 +67,7 @@ const Metode = ({ navigation }) => {
   };
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
+     <View className="bg-[#ececec] w-full h-full relative">
       <View 
         className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: '#fff' }}
@@ -79,12 +80,17 @@ const Metode = ({ navigation }) => {
           <IonIcon name="flask" size={18} color={'white'} style={{padding: 5}}/>
         </View>
       </View>
+      <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <Paginate
         ref={paginateRef}
         url="/master/acuan-metode"
         payload={{}}
         renderItem={renderItem}
       />
+      <View className="mt-12 mb-8">
+      <TextFooter />
+      </View>
+      </ScrollView>
       <Icon
         name="plus"
         size={28}

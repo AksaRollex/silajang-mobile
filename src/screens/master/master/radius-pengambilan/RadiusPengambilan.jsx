@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDelete } from '@/src/hooks/useDelete';
@@ -8,17 +8,18 @@ import IonIcon from 'react-native-vector-icons/Ionicons';
 import { rupiah } from '@/src/libs/utils';
 import BackButton from '@/src/screens/components/BackButton';
 import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const RadiusPengambilan = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const { setHeader } = useHeaderStore();
-        
-      React.useLayoutEffect(() => {
-        setHeader(false)
-    
-        return () => setHeader(true)
-      }, [])
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: deleteRadiusPengambilan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -73,22 +74,23 @@ const RadiusPengambilan = ({ navigation }) => {
   );
 
   return (
-     <View className="bg-[#ececec] w-full h-full">
-          <View
-            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-            style={{ backgroundColor: '#fff' }}
-          >
-            <View className="flex-row items-center">
-              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-              <Text className="text-[20px] font-poppins-medium text-black ml-4">Radius Pengambilan</Text>
-            </View>
-            <View className="bg-cyan-600 rounded-full">
-              <IonIcon name="location" size={18} color={'white'} style={{ padding: 5 }} />
-            </View>
-          </View>
+    <View className="bg-[#ececec] w-full h-full relative">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[20px] font-poppins-medium text-black ml-3">Radius Pengambilan</Text>
+        </View>
+        <View className="bg-cyan-600 rounded-full">
+          <IonIcon name="location" size={18} color={'white'} style={{ padding: 5 }} />
+        </View>
+      </View>
 
+      <ScrollView>
       <Paginate ref={paginateRef} url="/master/radius-pengambilan" payload={{}} renderItem={renderItem} />
-
+      </ScrollView>
       <Icon
         name="plus"
         size={28}
@@ -104,6 +106,9 @@ const RadiusPengambilan = ({ navigation }) => {
         onPress={() => navigation.navigate('FormRadiusPengambilan')}
       />
       <DeleteConfirmationModal />
+      <View className="mt-12 mb-8">
+        <TextFooter />
+      </View>
     </View>
   );
 };

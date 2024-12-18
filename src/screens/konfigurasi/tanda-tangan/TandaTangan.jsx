@@ -64,7 +64,7 @@ const TandaTangan = ({ navigation }) => {
           <View className="flex-row justify-end gap-2">
             <TouchableOpacity 
               onPress={() => navigation.navigate("FormTandaTangan", { uuid: item.uuid })}
-              className="flex-row items-center bg-[#312e81] px-2 py-2 rounded"
+              className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
             >
               <IonIcon name="pencil" size={14} color="#fff" />
               <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
@@ -75,12 +75,18 @@ const TandaTangan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="flex-row items-center justify-center mt-4">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-        </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Tanda Tangan</Text>
-      </View>
+         <View 
+           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+           style={{ backgroundColor: '#fff' }}
+         >
+           <View className="flex-row items-center">
+             <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+             <Text className="text-[20px] font-poppins-medium text-black ml-3">Tanda Tangan</Text>
+           </View>
+           <View className="bg-orange-600 rounded-full">
+             <IonIcon name="create" size={18} color={'white'} style={{padding: 5}}/>
+           </View>
+         </View>
       <Paginate
         ref={paginateRef}
         url="/konfigurasi/tanda-tangan"

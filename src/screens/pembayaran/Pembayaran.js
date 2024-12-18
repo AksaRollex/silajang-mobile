@@ -104,7 +104,9 @@ const Pembayaran = () => {
             />
           <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
           </View> 
-      <TextFooter/>
+          <View className="mt-[97%]">
+            <TextFooter/>
+          </View>
       </ScrollView>
     </View>
   );
