@@ -54,7 +54,7 @@ export default memo(function form({ route, navigation }) {
 
   const formattedKabKota = kotaKab?.map(item => ({
     value: item.id,
-    label: item.nama,
+    title: item.nama,
   }));
 
   const queryClient = useQueryClient();
@@ -145,12 +145,12 @@ export default memo(function form({ route, navigation }) {
             rules={{ required: "kota/kabupaten harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={value => {
+                onSelect={value => {
                   onChange(value);
                 }}
-                value={value}
-                items={formattedKabKota}
-                placeholder={{ label: "Pilih Kota/Kabupaten", value: null }}
+                defaultValue={value}
+                data={formattedKabKota}
+                placeholder="Pilih Kota/Kabupaten"
               />
             )}
           />

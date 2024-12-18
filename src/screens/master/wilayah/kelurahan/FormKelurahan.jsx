@@ -33,7 +33,7 @@ export default memo(function form({ route, navigation }) {
       );
       if (response.data && response.data.data) {
         const formattedKecamatan = response.data.data.map(item => ({
-          label: item.nama,
+          title: item.nama,
           value: item.id,
         }));
         setKecamatan(formattedKecamatan);
@@ -55,7 +55,7 @@ export default memo(function form({ route, navigation }) {
         // Fetch kota/kabupaten
         const kotaKabResponse = await axios.get("/master/kota-kabupaten");
         const formattedKotaKab = kotaKabResponse.data.data.map(item => ({
-          label: item.nama,
+          title: item.nama,
           value: item.id,
         }));
         setKotaKab(formattedKotaKab);
@@ -173,7 +173,7 @@ export default memo(function form({ route, navigation }) {
             rules={{ required: "Kota/Kabupaten harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={async newValue => {
+                onSelect={async newValue => {
                   onChange(newValue);
                   setValue("kecamatan_id", null); // Reset kecamatan
                   setKecamatan([]); // Clear kecamatan list
@@ -181,9 +181,9 @@ export default memo(function form({ route, navigation }) {
                     await fetchKecamatan(newValue);
                   }
                 }}
-                value={value}
-                items={kotaKab}
-                placeholder={{ label: "Pilih kota/kabupaten", value: null }}
+                defaultValue={value}
+                data={kotaKab}
+                placeholder="Pilih kota/kabupaten"
               />
             )}
           />
@@ -198,10 +198,10 @@ export default memo(function form({ route, navigation }) {
             rules={{ required: "Kecamatan harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={onChange}
-                value={value}
-                items={kecamatan}
-                placeholder={{ label: "Pilih kecamatan", value: null }}
+                onSelect={onChange}
+                defaultValue={value}
+                data={kecamatan}
+                placeholder= "Pilih kecamatan"
               />
             )}
           />

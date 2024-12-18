@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
 import { Picker } from "@react-native-picker/picker";
 import IonIcon from "react-native-vector-icons/Ionicons";
+import Select2 from "../../components/Select2";
 
 export default memo(function TandaTanganForm({ route, navigation }) {
     const { uuid } = route.params || {};

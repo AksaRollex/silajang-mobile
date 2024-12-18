@@ -327,11 +327,11 @@ export default memo(function Form({ route, navigation }) {
     setGolongan([
       {
         value: 1,
-        label: "Customer",
+        title: "Customer",
       },
       {
         value: 2,
-        label: "Dinas Internal",
+        title: "Dinas Internal",
       },
     ]);
     fetchJabatan();
@@ -477,7 +477,7 @@ export default memo(function Form({ route, navigation }) {
 
   return (
     <ScrollView>
-        <View
+       <View
                 className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
                 style={{ backgroundColor: '#fff' }}
               >
@@ -686,7 +686,7 @@ export default memo(function Form({ route, navigation }) {
                         backgroundColor: "#f8f8f8",
                       },
                       chipText: {
-                        color: "#FF0000",
+                        color: "#333",
                         fontSize: 12,
                         fontFamily: "Poppins-Regular",
                       },
@@ -775,10 +775,11 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "Tipe harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={onChange}
-                value={value}
-                items={golongan}
-                placeholder={{ label: "Pilih Tipe", value: null }}
+              style={styles.input}
+                onSelect={onChange}
+                defaultValue={value}
+                data={golongan}
+                placeholder="Pilih Tipe"
               />
             )}
           />
@@ -1047,10 +1048,10 @@ export default memo(function Form({ route, navigation }) {
           <Controller
             control={control}
             name="kecamatan_id"
-            // rules={{ required: "Kecamatan harus diisi" }}
+            rules={{ required: "Kecamatan harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={async newValue => {
+                onSelect={async newValue => {
                   onChange(newValue);
                   setValue("kecamatan_id", null); // Reset kecamatan
                   setKecamatan([]); // Clear kecamatan list
@@ -1058,9 +1059,9 @@ export default memo(function Form({ route, navigation }) {
                     await fetchKecamatan(newValue);
                   }
                 }}
-                value={value}
-                items={kotaKab}
-                placeholder={{ label: "Pilih Kecamatan", value: null }}
+                defaultValue={value}
+                data={kotaKab}
+                placeholder="Pilih Kecamatan"
               />
             )}
           />
@@ -1072,13 +1073,13 @@ export default memo(function Form({ route, navigation }) {
           <Controller
             control={control}
             name="kecamatan_id"
-            // rules={{ required: "Kecamatan harus diisi" }}
+            rules={{ required: "Kecamatan harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={onChange}
-                value={value}
-                items={kecamatan}
-                placeholder={{ label: "Pilih kelurahan", value: null }}
+                onSelect={onChange}
+                defaultValue={value}
+                data={kecamatan}
+                placeholder="Pilih kelurahan"
               />
             )}
           />
@@ -1179,6 +1180,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
     color: "#4b5563",
     fontFamily: "Poppins-SemiBold",
+    marginTop: 10,
   },
   input: {
     borderWidth: 1,
