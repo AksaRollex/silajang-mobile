@@ -118,13 +118,13 @@ export default memo(function WithEmail() {
                 onPress={togglePasswordVisibility}
                 style={{
                   position: "absolute",
-                  right: 10,
-                  top: 12,
+                  right: 15,
+                  top: 9,
                 }}
               >
                 <Ionicons
                   name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
-                  size={20}
+                  size={24}
                   color="grey"
                 />
               </TouchableOpacity>

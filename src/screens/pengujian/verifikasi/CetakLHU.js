@@ -415,7 +415,7 @@ const HasilUjis = ({ navigation, route }) => {
           <MaterialIcons 
             name={activeItem === item.uuid ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
             size={20} 
-            color="#059669" 
+            color="#22c55e" 
           />
         </TouchableOpacity>
 
@@ -530,10 +530,10 @@ const HasilUjis = ({ navigation, route }) => {
                 setSelectedRevisionItem(item);
                 setRevisionModalVisible(true);
               }}
-              className="flex-row items-center p-2 bg-yellow-100 rounded-md mr-2"
+              className="flex-row items-center p-2 bg-amber-100 rounded-md mr-2"
             >
-              <FontIcon name="pencil-alt" size={16} color="#facc15" />
-              <Text className="ml-2 text-yellow-400 text-[13px] font-poppins-semibold">
+              <FontIcon name="pencil-alt" size={16} color="#fbbf24" />
+              <Text className="ml-2 text-amber-400 text-[13px] font-poppins-semibold">
                 Revisi
               </Text>
             </TouchableOpacity>
@@ -705,14 +705,14 @@ const HasilUjis = ({ navigation, route }) => {
                 numberOfLines={4}
                 value={revisionNote}
                 onChangeText={setRevisionNote}
-                className="border border-gray-300 rounded-lg p-3 text-sm"
+                className="border border-gray-300 rounded-lg p-3 text-sm "
                 placeholder="Masukkan keterangan revisi..."
                 textAlignVertical="top"
               />
             </View>
 
             <View className="flex-row justify-end space-x-2">
-              <TouchableOpacity
+              {/* <TouchableOpacity
                 onPress={() => {
                   setRevisionModalVisible(false);
                   setRevisionNote("");
@@ -720,11 +720,11 @@ const HasilUjis = ({ navigation, route }) => {
                 }}
                 className="bg-gray-200 px-4 py-2 rounded">
                 <Text className="text-gray-800 font-poppins-semibold">Batal</Text>
-              </TouchableOpacity>
+              </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={handleRevision}
-                className="bg-yellow-500 px-4 py-2 rounded">
-                <Text className="text-white font-poppins-semibold">Simpan</Text>
+                className="bg-indigo-600 px-4 py-2 rounded">
+                <Text className="text-white font-poppins-semibold">Revisi</Text>
               </TouchableOpacity>
             </View>
           </View>
@@ -915,7 +915,7 @@ const HasilUjis = ({ navigation, route }) => {
 
       <Modal
         transparent={true}
-        animationType="slide"
+        animationType="fade"
         visible={uploadModalVisible}
         onRequestClose={() => {
           setUploadModalVisible(false);
@@ -955,7 +955,7 @@ const HasilUjis = ({ navigation, route }) => {
                   <TouchableOpacity
                     onPress={handleUploadPDF}
                     className="bg-indigo-600 px-4 py-2 rounded">
-                    <Text className="text-white font-poppins-semibold">Upload</Text>
+                    <Text className="text-white font-poppins-semibold">Upload & Simpan</Text>
                   </TouchableOpacity>
                 </View>
               </View>
