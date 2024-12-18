@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native';
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native';
 import React, { useRef } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { useDelete } from '@/src/hooks/useDelete';
@@ -8,6 +8,7 @@ import Paginate from '@/src/screens/components/Paginate';
 import BackButton from '@/src/screens/components/BackButton';
 import { rupiah } from '@/src/libs/utils';
 import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const JasaPengambilan = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -70,7 +71,7 @@ const JasaPengambilan = ({ navigation }) => {
   );
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
+    <View className="bg-[#ececec] w-full h-full" contentContainerStyle={{ flexGrow: 1 }}>
          <View
            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
            style={{ backgroundColor: '#fff' }}
@@ -83,11 +84,16 @@ const JasaPengambilan = ({ navigation }) => {
              <IonIcon name="car" size={17} color={'white'} style={{ padding: 5 }} />
            </View>
          </View>
+         <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/jasa-pengambilan"
         renderItem={renderJasaPengambilan}
       />
+      </ScrollView>
+      <View className="mt-12 mb-8">
+        <TextFooter />
+      </View>
       <Icon
         name="plus"
         size={28}

@@ -2,14 +2,14 @@ import { useDelete } from '@/src/hooks/useDelete';
 import Paginate from '@/src/screens/components/Paginate';
 import { useQueryClient } from "@tanstack/react-query";
 import React, { useRef } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import { rupiah } from '@/src/libs/utils';
 import Icon from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import BackButton from '@/src/screens/components/BackButton';
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { useHeaderStore } from '@/src/screens/main/Index';
-
+import { TextFooter } from '@/src/screens/components/TextFooter';
 const Parameter = ({ navigation }) => {
   const queryClient = useQueryClient()
   const paginateRef = useRef();
@@ -108,11 +108,11 @@ const Parameter = ({ navigation }) => {
   );
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
+    <View className="bg-[#ececec] w-full h-full relative">
       <View
         className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: '#fff' }}
-      >
+        >
         <View className="flex-row items-center">
           <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
           <Text className="text-[20px] font-poppins-medium text-black ml-3">Parameter</Text>
@@ -121,12 +121,17 @@ const Parameter = ({ navigation }) => {
           <IonIcon name="filter" size={18} color={'white'} style={{ padding: 5 }} />
         </View>
       </View>
+        <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/parameter"
         payload={{}}
         renderItem={renderItem}
       />
+      <View className="mt-12 mb-8">
+        <TextFooter />
+        </View>
+        </ScrollView>
       <Icon
         name="plus"
         size={28}

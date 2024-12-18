@@ -350,7 +350,9 @@ export default function Pengujian() {
             )}
           </>
         )}
+        <View className="mt-10">
         <TextFooter />
+        </View>
       </ScrollView>
     </View>
   );

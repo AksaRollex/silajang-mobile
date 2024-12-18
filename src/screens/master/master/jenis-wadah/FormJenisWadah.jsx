@@ -6,6 +6,7 @@ import { ActivityIndicator } from "react-native-paper"
 import axios from "@/src/libs/axios"
 import Toast from "react-native-toast-message"
 import BackButton from "@/src/screens/components/BackButton"
+import IonIcon from "react-native-vector-icons/Ionicons"
 
 export default memo(function FormJenisWadah({ route, navigation}) {
     const  { uuid } = route.params || {}
@@ -66,11 +67,14 @@ export default memo(function FormJenisWadah({ route, navigation}) {
 
     return (
         <View className="bg-[#ececec] h-full">
+             <View
+                     className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                     style={{ backgroundColor: '#fff' }}
+                   >
+                       <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+                       <Text className="text-lg font-poppins-semibold ml-3">{ data ? 'Edit Jenis Wadah' : 'Tambah Jenis Wadah'}</Text>
+                   </View>
             <View className="bg-white rounded m-3">
-                <View className="flex-row justify-between mx-3 mt-4">
-                    <BackButton action={() => navigation.goBack()} size={26}/>
-                    <Text className="text-base font-poppins-semibold">{ data ? 'Edit Jenis Wadah' : 'Tambah Jenis Wadah'}</Text>
-                </View>
                 <View className="p-5">
                     <Text className="mb-3 text-lg font-poppins-semibold">Nama</Text>
                     <Controller

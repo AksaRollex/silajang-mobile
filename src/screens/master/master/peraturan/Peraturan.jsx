@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, ScrollView } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icon from "react-native-vector-icons/Feather";
@@ -12,6 +12,7 @@ import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "@/src/screens/components/BackButton";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 
 const Peraturan = ({ navigation }) => {
@@ -84,7 +85,7 @@ const Peraturan = ({ navigation }) => {
   );
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
+    <View className="bg-[#ececec] w-full h-full relative">
       <View
         className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: '#fff' }}
@@ -97,11 +98,16 @@ const Peraturan = ({ navigation }) => {
           <IonIcon name="document-text" size={18} color={'white'} style={{ padding: 5 }}/>
         </View>
       </View>
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/peraturan"
         renderItem={CardPeraturan}
       />
+      <View className="mt-12 mb-8">
+        <TextFooter />
+        </View>
+    </ScrollView>
       <Icons
         name="plus"
         size={28}
