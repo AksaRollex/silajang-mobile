@@ -19,6 +19,8 @@ import Toast from "react-native-toast-message";
 import Ionicons from "react-native-vector-icons/Ionicons"
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -87,15 +89,57 @@ const Analis = ({ navigation }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === "ios"
               ? "You can find it in the Files app."
               : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+            }`,
         });
       } else {
         throw new Error("Download failed");
@@ -131,10 +175,10 @@ const Analis = ({ navigation }) => {
         }}>
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
-              
+
             {item.check_param && (
               <View className="mt-2">
-                <MaterialIcons name="verified" size={20} color="green" style={{ marginBottom: 4 }}/>
+                <MaterialIcons name="verified" size={20} color="green" style={{ marginBottom: 4 }} />
               </View>
             )}
 
@@ -142,17 +186,17 @@ const Analis = ({ navigation }) => {
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.kode}
             </Text>
-  
+
             <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
-  
+
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.lokasi}
             </Text>
-            
+
             <Text className="text-xs font-poppins-regular text-gray-500">
               Diterima pada
             </Text>
-  
+
             {item.tanggal_diterima && (
               <Text >
                 <Text className="text-md font-poppins-semibold text-black mb-2">
@@ -161,7 +205,7 @@ const Analis = ({ navigation }) => {
               </Text>
             )}
           </View>
-          
+
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md px-2 py-1 max-w-[150px] mb-2">
               <Text
@@ -173,9 +217,9 @@ const Analis = ({ navigation }) => {
             </View>
           </View>
         </View>
-        
-        <View className="h-[1px] bg-gray-300 my-3"/>
-  
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+
         <View className="flex-row justify-end mt-1 space-x-2">
           <TouchableOpacity
             onPress={() => navigation.navigate("DetailAnalis", {
@@ -188,7 +232,7 @@ const Analis = ({ navigation }) => {
               Hasil Uji
             </Text>
           </TouchableOpacity>
-                
+
           <TouchableOpacity
             onPress={() => handlePreviewSPP({ uuid: item.uuid })}
             className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
@@ -293,7 +337,7 @@ const Analis = ({ navigation }) => {
               source={{ uri: reportUrl, cache: true }}
               style={{ flex: 1 }}
               trustAllCerts={false}
-            />  
+            />
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}

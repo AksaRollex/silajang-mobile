@@ -5,7 +5,7 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View , Modal, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -17,6 +17,8 @@ import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -54,7 +56,7 @@ const PengambilSampel = ({ navigation }) => {
   });
 
   const dropdownOptions1 = [
-    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status })}
+    { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status }) }
   ]
 
   const dropdownOptions = [
@@ -119,6 +121,49 @@ const PengambilSampel = ({ navigation }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: 'success',
@@ -145,7 +190,7 @@ const PengambilSampel = ({ navigation }) => {
   const renderItem = ({ item }) => {
     const isDiterima = item.kesimpulan_permohonan;
 
-  
+
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -155,91 +200,91 @@ const PengambilSampel = ({ navigation }) => {
         <View className="flex-row justify-between items-center p-2 relative">
           <View className="flex-shrink mr-20">
 
-          {isConfirmed ? (
+            {isConfirmed ? (
               <>
-              <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
                 <Text className="text-md text-black font-poppins-semibold mb-3">
                   {item.kode}
                 </Text>
-                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text> 
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
                 <Text className="text-md text-black font-poppins-semibold mb-3">
                   {item.permohonan.user.nama}
                 </Text>
               </>
             ) : (
               <>
-              <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text> 
-              <Text className="text-md font-poppins-semibold text-black mb-3">
-                {item.permohonan.industri}
-              </Text>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold text-black mb-3">
+                  {item.permohonan.industri}
+                </Text>
               </>
             )}
-            <Text className="text-xs text-gray-500 font-poppins-regular">Titik/Uji Lokasi</Text> 
+            <Text className="text-xs text-gray-500 font-poppins-regular">Titik/Uji Lokasi</Text>
             <Text className="text-md font-poppins-semibold mb-3 text-black">{item.lokasi}</Text>
 
             <Text className="text-xs text-gray-500 font-poppins-regular">Detail Pengambilan</Text>
-             <Text className="text-md font-poppins-semibold text-black"><Text className="text-sm text-black font-poppins-medium">Diambil Pada: </Text>{item.tanggal_pengambilan}</Text>
-             <Text className="text-md font-poppins-semibold text-black"><Text className="text-sm text-black font-poppins-medium">Oleh: </Text>{item.pengambil?.nama}</Text>
+            <Text className="text-md font-poppins-semibold text-black"><Text className="text-sm text-black font-poppins-medium">Diambil Pada: </Text>{item.tanggal_pengambilan}</Text>
+            <Text className="text-md font-poppins-semibold text-black"><Text className="text-sm text-black font-poppins-medium">Oleh: </Text>{item.pengambil?.nama}</Text>
 
           </View>
           <View className="absolute right-1 flex-col items-center">
-          <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
-              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500' 
-                : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500' 
-                : 'bg-indigo-100 text-indigo-500'}`}>
-              {item.kesimpulan_permohonan == 1 ? 'Diterima' 
-                : item.kesimpulan_permohonan == 2 ? 'Ditolak' 
-                : 'Menunggu'}
+            <Text className={`text-[12px] font-poppins-semibold px-2 py-1 rounded-md mb-3
+              ${item.kesimpulan_permohonan == 1 ? 'bg-green-100 text-green-500'
+                : item.kesimpulan_permohonan == 2 ? 'bg-red-50 text-red-500'
+                  : 'bg-indigo-100 text-indigo-500'}`}>
+              {item.kesimpulan_permohonan == 1 ? 'Diterima'
+                : item.kesimpulan_permohonan == 2 ? 'Ditolak'
+                  : 'Menunggu'}
             </Text>
           </View>
         </View>
         <View className="h-[1px] bg-gray-300 my-3" />
         <View className="flex-row justify-end items-center space-x-2 mr-[-10px]">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate("DetailPengambilSample", { uuid: item.uuid })}
             className="bg-indigo-500 px-3 py-2 rounded-md"
           >
-              <View className="flex-row">
-                <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
-                <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
-              </View>
+            <View className="flex-row">
+              <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
+              <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+            </View>
           </TouchableOpacity>
 
           {isConfirmed && (
-            <TouchableOpacity 
+            <TouchableOpacity
               onPress={() => handlePreviewPS({ uuid: item.uuid })}
               className="bg-red-600 px-3 py-2 rounded-md"
             >
-               <View className="flex-row">
-                  <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
-                  <Text className="text-white font-poppins-medium text-[11px]">Cetak Sampling</Text>
-                </View>
+              <View className="flex-row">
+                <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
+                <Text className="text-white font-poppins-medium text-[11px]">Cetak Sampling</Text>
+              </View>
             </TouchableOpacity>
           )}
 
           {isConfirmed && (
             <MenuView
-            title="Berita Acara"
-            actions={[
-              {
-                id: "Berita Acara Pengambilan",
-                title: "Berita Acara Pengambilan",
-                action: () => BeritaAcara({ uuid: item.uuid }),
-              },
-              {
-                id: "Data Pengambilan",
-                title: "Data Pengambilan",
-                action: () => DataPengambilan({ uuid: item.uuid }),
-              },
-            ]}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = nativeEvent.event;
-              if (selectedOption === "Berita Acara Pengambilan") {
-                BeritaAcara({ uuid: item.uuid });
-              } else if (selectedOption === "Data Pengambilan") {
-                DataPengambilan({ uuid: item.uuid });
-              }
-            }}
+              title="Berita Acara"
+              actions={[
+                {
+                  id: "Berita Acara Pengambilan",
+                  title: "Berita Acara Pengambilan",
+                  action: () => BeritaAcara({ uuid: item.uuid }),
+                },
+                {
+                  id: "Data Pengambilan",
+                  title: "Data Pengambilan",
+                  action: () => DataPengambilan({ uuid: item.uuid }),
+                },
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                const selectedOption = nativeEvent.event;
+                if (selectedOption === "Berita Acara Pengambilan") {
+                  BeritaAcara({ uuid: item.uuid });
+                } else if (selectedOption === "Data Pengambilan") {
+                  DataPengambilan({ uuid: item.uuid });
+                }
+              }}
             >
               <TouchableOpacity className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
                 <Text className="text-red-500 font-poppins-medium text-[11px] mr-2">Berita Acara</Text>
@@ -291,7 +336,7 @@ const PengambilSampel = ({ navigation }) => {
                   }
                 }}
                 shouldOpenOnLongPress={false}
-                
+
               >
                 <View>
                   <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />

@@ -588,9 +588,9 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     {item.status < 11 && (
                         <TouchableOpacity
                             onPress={handleRollback}
-                            className="ml-2 flex-row items-center p-2 bg-yellow-100 rounded-md font-poppins-semibold"
+                            className="ml-2 flex-row items-center p-2 bg-amber-100 rounded-md font-poppins-semibold"
                         >
-                            <AntDesign name="sync" size={16} color="orange" />
+                            <AntDesign name="sync" size={16} color="#fbbf24" />
                         </TouchableOpacity>
                     )}
                 </View>

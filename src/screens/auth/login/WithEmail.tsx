@@ -125,7 +125,7 @@ export default memo(function WithEmail() {
                 <Ionicons
                   name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
                   size={20}
-                  color="black"
+                  color="grey"
                 />
               </TouchableOpacity>
             </View>
