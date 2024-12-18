@@ -41,7 +41,7 @@ const LogTte = ({ navigation }) => {
       <View className="flex-row justify-between items-center">
         <View className="flex-col">
           <Text className="text-xs font-poppins-regular text-gray-500">Kode Sampel</Text>
-          <Text className="text-md font-poppins-bold text-black mb-3">{item.titik_permohonan.kode}</Text>
+          <Text className="text-md font-poppins-bold text-black mb-3">{item.titik_permohonan?.kode}</Text>
 
           <Text className="text-xs font-poppins-regular text-gray-500">NIK</Text>
           <Text className="text-md font-poppins-semibold text-black mb-3">{item.nik}</Text>

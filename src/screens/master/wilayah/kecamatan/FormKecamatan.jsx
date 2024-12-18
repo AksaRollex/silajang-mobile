@@ -8,6 +8,7 @@ import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
 import { ActivityIndicator } from "react-native-paper";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 export default memo(function form({ route, navigation }) {
   const [kotaKab, setKotaKab] = useState([]);
@@ -30,7 +31,7 @@ export default memo(function form({ route, navigation }) {
       onSuccess: data => {
         if (data) {
           setValue("nama", data.nama);
-          setValue('kab_kota_id', data.kab_kota_id)
+          setValue("kab_kota_id", data.kab_kota_id);
         }
       },
       onError: error => {
@@ -99,15 +100,24 @@ export default memo(function form({ route, navigation }) {
 
   return (
     <View className="bg-[#ececec] h-full">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: "#fff" }}>
+        <IonIcon
+          name="arrow-back-outline"
+          onPress={() => navigation.goBack()}
+          size={25}
+          color="#312e81"
+        />
+        <Text className="text-lg font-poppins-semibold">
+          {data ? "Edit Kecamatan" : "Tambah Kecamatan"}
+        </Text>
+      </View>
       <View className="bg-white rounded m-3">
-        <View className="flex-row justify-between mx-3 mt-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-xl font-poppins-semibold">
-            {data ? "Edit Kecamatan" : "Tambah Kecamatan"}
-          </Text>
-        </View>
         <View className="p-5">
-          <Text className="mb-3 text-lg font-poppins-semibold text-black">Nama</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold text-black">
+            Nama
+          </Text>
           <Controller
             control={control}
             name="nama"
@@ -126,12 +136,14 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.nama.message}</Text>
           )}
 
-          <Text className="mb-3 text-lg font-poppins-semibold">Kota/Kabupaten</Text>
+          <Text className="mb-3 text-lg font-poppins-semibold">
+            Kota/Kabupaten
+          </Text>
           <Controller
             control={control}
             name="kab_kota_id"
             rules={{ required: "kota/kabupaten harus diisi" }}
-            render={({ field: { onChange, value }}) => (
+            render={({ field: { onChange, value } }) => (
               <Select2
                 onChangeValue={value => {
                   onChange(value);

@@ -92,28 +92,17 @@ export default memo(function Form({ route, navigation }) {
       <View
         className="flex-row items-center justify-between py-2.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: "#fff" }}>
-        <View className="flex-row items-center">
           <IonIcon
             name="arrow-back-outline"
             onPress={() => navigation.goBack()}
             size={30}
             color="#312e81"
           />
-          <Text className="text-xl font-poppins-semibold ml-3">
+          <Text className="text-lg font-poppins-semibold ml-3">
             {data ? "Edit Metode" : "Tambah Metode"}
           </Text>
-        </View>
-        <View className="flex-row items-center">
-          <IonIcon
-            name="flask"
-            size={25}
-            color={"#312e81"}
-            style={{ padding: 5 }}
-          />
-        </View>
       </View>
       <View className="bg-white rounded-md m-3">
-        <View className="flex-row justify-between mx-3 mt-4"></View>
         <View className="p-5">
           <Text className="mb-3 text-lg font-poppins-semibold">Nama</Text>
           <Controller
