@@ -14,7 +14,6 @@ import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import { MouseButton } from "react-native-gesture-handler";
 import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';

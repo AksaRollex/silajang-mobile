@@ -113,6 +113,24 @@ export default memo(function Form({ route, navigation }) {
     }
   )
 
+  const formatRupiah = (value) => {
+    const cleanValue = value.replace(/[^0-9]/g, "");
+    return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+  }
+
+  const formatDesimal = (value) => {
+  // Hapus semua karakter selain angka dan koma
+  let cleanValue = value.replace(/[^0-9,]/g, "");
+
+  // Jika koma sudah ada, blokir tanda koma kedua
+  const hasComma = cleanValue.indexOf(",") !== -1;
+  if (hasComma) {
+    cleanValue = cleanValue.split(",")[0] + "," + cleanValue.split(",").slice(1).join("").replace(/,/g, "");
+  }
+
+  return cleanValue;
+};
+
   const onSubmit = data => {
     const formattedData = {
       ...data,
@@ -228,16 +246,25 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="harga"
-              rules={{ required: "Harga is required" }}
+              rules={{ required: "Harga is required",
+                pattern: {
+                  value: /^[0-9.]*$/,
+                  message: "Harga harus berupa number",
+                }
+               }}
               render={({ field: { onChange, onBlur, value } }) => (
                 <TextField
                   style={{ fontFamily: "Poppins-Regular" }}
                   placeholder="Masukkan Harga"
                   value={value}
-                  onChangeText={onChange}
+                  onChangeText={(text) => {
+                   const formattedValue = formatRupiah(text);
+                   onChange(formattedValue);
+                  }}
                   className="py-3 px-5 rounded border-[1px] border-gray-700"
                   onBlur={onBlur}
                   error={errors?.harga?.message}
+                  keyboardType="numeric"
                 />
               )}
             />
@@ -264,6 +291,36 @@ export default memo(function Form({ route, navigation }) {
             />
             {errors.satuan && (
               <Text className="text-red-500">{errors.satuan.message}</Text>
+            )}
+
+            <Text className="text-md font-poppins-medium mb-2">Mdl</Text>
+            <Controller
+              control={control}
+              name="mdl"
+              rules={{ required: "Mdl harus diisi", 
+                pattern: {
+                  value: /^[0-9,]*$/,
+                  message: "Mdl harus berupa number",
+                }
+               }}
+              render={({ field: { onChange, onBlur, value } }) => (
+                <TextField
+                  style={{ fontFamily: "Poppins-Regular" }}
+                  placeholder="Masukkan Mdl"
+                  value={value}
+                  onChangeText={(text) => {
+                    const formattedValue = formatDesimal(text);
+                    onChange(formattedValue);
+                  }}
+                  className="py-3 px-5 rounded border-[1px] border-gray-700"
+                  onBlur={onBlur}
+                  error={errors?.mdl?.message}
+                  keyboardType="numeric"
+                />
+              )}
+            />
+            {errors.mdl && (
+              <Text className="text-red-500">{errors.mdl.message}</Text>
             )}
 
             <Text className="text-md font-poppins-medium mb-2">Pengawetan</Text>

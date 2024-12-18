@@ -58,6 +58,11 @@ export default memo(function form({ route, navigation }) {
         },
     );
 
+    const formattedRupiah = (value) => {
+        const cleanValue = value.replace(/[^0-9]/g, "");
+        return cleanValue.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+    }
+
     const onSubmit = (data) => {
        createOrUpdate(data)
     };
@@ -80,13 +85,22 @@ export default memo(function form({ route, navigation }) {
                     <Controller
                         control={control}
                         name="radius"
-                        rules={{ required: "radius harus diisi" }}
+                        rules={{ 
+                            required: "radius harus diisi",
+                            pattern: {
+                                value: /^[0-9]+$/,
+                                message: "radius harus berupa angka",
+                            }
+                        }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
                                 style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Radius"
                                 value={value}
-                                onChangeText={onChange}
+                                onChangeText={(text) => {
+                                    const formattedValue = text.replace(/[^0-9]/g, "");
+                                    onChange(formattedValue);
+                                }}
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
                                enableErrors
                                 />
@@ -118,15 +132,25 @@ export default memo(function form({ route, navigation }) {
                     <Controller
                         control={control}
                         name="harga"
-                        rules={{ required: "Harga harus diisi" }}
+                        rules={{ 
+                            required: "Harga harus diisi",
+                            pattern: {
+                                value: /^[0-9.]*$/,
+                                message: "Harga harus berupa angka",
+                            },
+                          }}
                         render={({ field: { onChange, value } }) => (
                             <TextField
                                 style={{ fontFamily: "Poppins-Regular" }}
                                 placeholder="Masukkan Harga"
                                 value={value}
-                                onChangeText={onChange}
+                                onChangeText={(text) => {
+                                    const formattedValue = formattedRupiah(text);
+                                    onChange(formattedValue);
+                                }}
                                 className="py-3 px-5 rounded border-[1px] border-gray-700"
                                 enableErrors
+                                keyboardType="numeric"
                                 />
                         )}
                     />

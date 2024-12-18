@@ -10,7 +10,6 @@ import FontIcon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
-import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-scroll-menu";
 import HorizontalFilterMenu from '../../components/HorizontalFilterMenu';
 import Paginate from '@/src/screens/components/Paginate';
 import Toast from "react-native-toast-message";
@@ -21,6 +20,7 @@ import { APP_URL } from "@env";
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { BarChart } from 'react-native-chart-kit';
 import DocumentPicker from 'react-native-document-picker';
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const Options = [
   { id: 0, name: "Data Umpan Balik" },
@@ -45,6 +45,14 @@ const UmpanBalik = ({ navigation }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isImporting, setIsImporting] = useState(false);
   const [loading, setLoading] = useState(false);
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
   const [formData, setFormData] = useState({
     uuid: '',
     kode: '',
@@ -366,41 +374,41 @@ const UmpanBalik = ({ navigation }) => {
       onRequestClose={() => setDownloadModalVisible(false)}
     >
       <View className="flex-1 justify-center items-center bg-black/50">
-      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
-        <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
-          <FontAwesome5 size={40} color="#177a44" name="file-excel" />
-        </View>
+        <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+          <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
+            <FontAwesome5 size={40} color="#177a44" name="file-excel" />
+          </View>
 
-        <Text className="text-xl font-poppins-semibold text-black mb-3">
-          Konfirmasi Download
-        </Text>
+          <Text className="text-xl font-poppins-semibold text-black mb-3">
+            Konfirmasi Download
+          </Text>
 
-        <View className="w-full h-px bg-gray-200 mb-4" />
+          <View className="w-full h-px bg-gray-200 mb-4" />
 
-        <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
-          Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
-        </Text>
+          <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+            Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+          </Text>
 
-        <View className="flex-row w-full justify-between">
-          <TouchableOpacity
-            onPress={() => setDownloadModalVisible(false)}
-            className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
-          >
-            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
-          </TouchableOpacity>
+          <View className="flex-row w-full justify-between">
+            <TouchableOpacity
+              onPress={() => setDownloadModalVisible(false)}
+              className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+            >
+              <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+            </TouchableOpacity>
 
-          <TouchableOpacity
-            onPress={() => {
-              downloadTemplate();
-              setDownloadModalVisible(false);
-            }}
-            className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
-          >
-            <Text className="text-white font-poppins-medium">Ya, Download</Text>
-          </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => {
+                downloadTemplate();
+                setDownloadModalVisible(false);
+              }}
+              className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
+            >
+              <Text className="text-white font-poppins-medium">Ya, Download</Text>
+            </TouchableOpacity>
+          </View>
         </View>
       </View>
-     </View>
     </Modal>
   );
 
@@ -862,11 +870,17 @@ const UmpanBalik = ({ navigation }) => {
 
   return (
     <SafeAreaView className="flex-1 bg-[#ececec]">
-      <View className="flex-row items-center justify-center mt-4 mb-2">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcons name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[20px] font-poppins-medium text-black ml-3">Umpan Balik</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Umpan Balik</Text>
+        <View className="bg-green-600 rounded-full">
+          <IonIcons name="chatbubble-ellipses" size={18} color={'white'} style={{ padding: 5 }} />
+        </View>
       </View>
       <View className="flex-1">
         <View className="flex-row justify-center mt-4 ml-10">

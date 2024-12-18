@@ -12,10 +12,19 @@ import { useDelete } from "@/src/hooks/useDelete";
 import SearchInput from "@/src/screens/components/SearchInput";
 import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "@/src/screens/components/BackButton";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const TandaTangan = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+   const { setHeader } = useHeaderStore();
+          
+        React.useLayoutEffect(() => {
+          setHeader(false)
+      
+          return () => setHeader(true)
+        }, [])
+        
 
   const { delete: deletePeraturan, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -66,12 +75,18 @@ const TandaTangan = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="flex-row items-center justify-center mt-4">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-        </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Tanda Tangan</Text>
-      </View>
+         <View 
+           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+           style={{ backgroundColor: '#fff' }}
+         >
+           <View className="flex-row items-center">
+             <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+             <Text className="text-[20px] font-poppins-medium text-black ml-3">Tanda Tangan</Text>
+           </View>
+           <View className="bg-orange-600 rounded-full">
+             <IonIcon name="create" size={18} color={'white'} style={{padding: 5}}/>
+           </View>
+         </View>
       <Paginate
         ref={paginateRef}
         url="/konfigurasi/tanda-tangan"
