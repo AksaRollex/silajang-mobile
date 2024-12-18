@@ -75,35 +75,63 @@ export default function FormNonPengujian() {
             <View className="h-px w-[120%] bg-gray-200 top-5" />
           </View>
         </View>
-        <Text className="font-poppins-bold text-black mb-2">Metode Pembayaran</Text>
-        <View className="w-full mb-4 space-y-3">
-          <TouchableOpacity
-            className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'va' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
-            onPress={() => {
-              setPaymentType('va');
-              setValue('type', 'va');
-            }}
-          >
-            <AntDesign name="calculator" size={20} color={paymentType === 'va' ? 'white' : 'black'} />
-            <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'va' ? 'text-white' : 'text-black'}`}>
-              Virtual Account
-            </Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            className={`flex flex-row items-center p-3 rounded w-full ${paymentType === 'qris' ? 'bg-[#312e81]' : 'bg-gray-300'}`}
-            onPress={() => {
-              setPaymentType('qris');
-              setValue('type', 'qris');
-            }}
-          >
-            <AntDesign name="qrcode" size={20} color={paymentType === 'qris' ? 'white' : 'black'} />
-            <Text className={`ml-2 font-poppins-regular text-base ${paymentType === 'qris' ? 'text-white' : 'text-black'}`}>
-              QRIS
-            </Text>
-          </TouchableOpacity>
-        </View>
+      <View>
 
-        
+      <Text className="text-lg text-black mb-4 font-poppins-semibold text-center">
+        Metode Pembayaran
+      </Text>
+      <View style={styles.cardContainer}>
+        <TouchableOpacity 
+          className="rounded-2xl" 
+          style={[
+            styles.cardPembayaran, 
+            paymentType === "va" ? styles.selectedCard : styles.unselectedCard
+          ]} 
+          onPress={() => {
+            setPaymentType('va');
+            setValue('type', 'va');
+          }}
+        >
+          <AntDesign 
+            name="calculator" 
+            size={40} 
+            color={paymentType === "va" ? "white" : "black"} 
+          />
+          <Text 
+            className={`mt-2 font-poppins-bold text-center ${
+              paymentType === "va" ? "text-white" : "text-black"
+            }`}
+          >
+            Virtual Account
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity 
+          className="rounded-2xl" 
+          style={[
+            styles.cardPembayaran, 
+            paymentType === "qris" ? styles.selectedCard : styles.unselectedCard
+          ]} 
+          onPress={() => {
+            setPaymentType('qris');
+            setValue('type', 'qris');
+          }}
+        >
+          <AntDesign 
+            name="qrcode" 
+            size={40} 
+            color={paymentType === "qris" ? "white" : "black"} 
+          />
+          <Text 
+            className={`mt-2 font-poppins-bold text-center ${
+              paymentType === "qris" ? "text-white" : "text-black"
+            }`}
+          >
+            QRIS
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      </View>
         <Controller
           control={control}
           name="kode_retribusi_id"
@@ -222,4 +250,26 @@ export default function FormNonPengujian() {
   );
 }
 
-const styles = StyleSheet.create({});
+const styles = StyleSheet.create({
+  cardContainer: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 20,
+    marginBottom: 16,
+  },
+  cardPembayaran: {
+    width: 140, 
+    height: 140, 
+    backgroundColor: '#E5E5E5',
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 16,
+    padding: 16,
+  },
+  selectedCard: {
+    backgroundColor: '#312e81', 
+  },
+  unselectedCard: {
+    backgroundColor: '#E5E5E5', 
+  },
+});

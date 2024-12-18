@@ -7,6 +7,7 @@ import UmpanBalik from '../../konfigurasi/umpan-balik/UmpanBalik'
 import TrackingPengujian from '../../konfigurasi/tracking-pengujian/TrackingPengujian'
 import FormTandaTangan from '../../konfigurasi/tanda-tangan/FormTandaTangan'
 import DetailTracking from '../../konfigurasi/tracking-pengujian/DetailTracking'
+import Denda from '../../konfigurasi/denda/Denda'
 const Stack = createNativeStackNavigator();
 
 export default function MainScreen() {
@@ -21,6 +22,7 @@ export default function MainScreen() {
         >
             <Stack.Screen name="KonfigurasiIndex" component={Konfigurasi} />
             <Stack.Screen name="LogTte" component={LogTte} />
+            <Stack.Screen name="Denda" component={Denda} />
             <Stack.Screen name="TandaTangan" component={TandaTangan} />
             <Stack.Screen name="UmpanBalik" component={UmpanBalik} />
             <Stack.Screen name="TrackingPengujian" component={TrackingPengujian} />

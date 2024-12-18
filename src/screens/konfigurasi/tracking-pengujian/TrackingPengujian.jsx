@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, ScrollView } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather";
@@ -14,6 +14,7 @@ import moment from 'moment';
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "../../components/BackButton";
+import { TextFooter } from "../../components/TextFooter";
 import { useHeaderStore } from '@/src/screens/main/Index';
 
 const TrackingPengujian = ({ navigation }) => {
@@ -224,7 +225,7 @@ const TrackingPengujian = ({ navigation }) => {
           <Text className="text-[20px] font-poppins-medium text-black ml-3">Tracking Pengujian</Text>
         </View>
         <View className="bg-purple-600 rounded-full">
-          <IonIcon name="analytics" size={18} color={'white'} style={{ padding: 5 }}/>
+          <IonIcon name="analytics" size={18} color={'white'} style={{ padding: 5 }} />
         </View>
       </View>
       <View className="bg-gray-100 p-4 shadow-sm">
@@ -285,17 +286,22 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/tracking"
-        payload={{
-          tahun: selectedYear,
-          bulan: selectedMonth,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={CardTrackingPengujian}
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/tracking"
+          payload={{
+            tahun: selectedYear,
+            bulan: selectedMonth,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={CardTrackingPengujian}
+        />
+        <View className="mt-[67%] mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <DeleteConfirmationModal />
     </View>

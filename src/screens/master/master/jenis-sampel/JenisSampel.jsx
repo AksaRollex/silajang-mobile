@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useRef } from "react";
 import Paginate from "@/src/screens/components/Paginate";
 import { useQueryClient } from "@tanstack/react-query";
@@ -7,6 +7,7 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import { useDelete } from "@/src/hooks/useDelete";
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const JenisSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -67,7 +68,7 @@ const JenisSampel = ({ navigation }) => {
   );
 
   return (
-   <View className="bg-[#ececec] w-full h-full">
+   <View className="bg-[#ececec] w-full h-full relative">
         <View
           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
           style={{ backgroundColor: '#fff' }}
@@ -80,12 +81,17 @@ const JenisSampel = ({ navigation }) => {
             <IonIcon name="beaker" size={18} color={'white'} style={{ padding: 5 }} />
           </View>
         </View>
+        <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/jenis-sampel"
         payload={{}}
         renderItem={renderItem}
       />
+      <View className="mt-12 mb-8">
+        <TextFooter />
+      </View>
+      </ScrollView>
 
       <Icon
         name="plus"
