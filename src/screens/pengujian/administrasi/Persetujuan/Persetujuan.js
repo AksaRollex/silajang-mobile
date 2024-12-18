@@ -18,6 +18,8 @@ import { APP_URL } from "@env";
 import Pdf from 'react-native-pdf';
 import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -96,6 +98,49 @@ const Persetujuan = ({ navigation }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: 'success',
@@ -132,7 +177,7 @@ const Persetujuan = ({ navigation }) => {
           <View className="flex-shrink mr-20">
             {isConfirmed ? (
               <>
-               <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
+                <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
                 <Text className="text-md font-poppins-semibold mb-3 text-black">
                   {item.kode}
                 </Text>
@@ -142,11 +187,11 @@ const Persetujuan = ({ navigation }) => {
                 </Text>
               </>
             ) : (
-              <>  
-              <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>            
-              <Text className="text-md font-poppins-semibold mb-3 text-black">
-                {item.permohonan.industri}
-              </Text>
+              <>
+                <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+                <Text className="text-md font-poppins-semibold mb-3 text-black">
+                  {item.permohonan.industri}
+                </Text>
               </>
 
             )}
@@ -155,8 +200,8 @@ const Persetujuan = ({ navigation }) => {
 
 
             <Text className="text-xs text-gray-500 font-poppins-regular">Detail Pengambilan</Text>
-             <Text className="text-md font-poppins-semibold text-black">Diambil Pada: {item.tanggal_pengambilan}</Text>
-             <Text className="text-md font-poppins-semibold text-black">Oleh: {item.pengambil?.nama}</Text>
+            <Text className="text-md font-poppins-semibold text-black">Diambil Pada: {item.tanggal_pengambilan}</Text>
+            <Text className="text-md font-poppins-semibold text-black">Oleh: {item.pengambil?.nama}</Text>
           </View>
           <View className="absolute right-0 flex-col items-center">
             {!isConfirmed && (

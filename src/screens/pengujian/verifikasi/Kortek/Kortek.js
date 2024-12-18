@@ -17,6 +17,8 @@ import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -130,15 +132,57 @@ const Kortek = ({ navigation }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `PDF Berhasil Diunduh. ${
-            Platform.OS === "ios"
+          text2: `PDF Berhasil Diunduh. ${Platform.OS === "ios"
               ? "You can find it in the Files app."
               : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+            }`,
         });
       } else {
         throw new Error("Download failed");
@@ -157,7 +201,7 @@ const Kortek = ({ navigation }) => {
 
   const renderItem = ({ item }) => {
     const isMenungguKonfirmasi = selectedKortek === 5;
-  
+
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -170,23 +214,23 @@ const Kortek = ({ navigation }) => {
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.kode}
             </Text>
-            
+
             <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.permohonan.user.nama}
             </Text>
-  
+
             <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.lokasi}
             </Text>
-  
+
             <Text className="text-xs font-poppins-regular text-gray-500">Peraturan</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">
               {item.peraturan?.nama}
             </Text>
           </View>
-  
+
           <View className="flex-shrink-0 items-end">
             <View className="bg-slate-100 rounded-md py-1 px-2 max-w-[120px] mb-2">
               <Text
@@ -198,9 +242,9 @@ const Kortek = ({ navigation }) => {
             </View>
           </View>
         </View>
-  
+
         <View className="h-[1px] bg-gray-300 my-3" />
-  
+
         <View className="flex-row justify-end mt-1 space-x-2">
           <TouchableOpacity
             onPress={() => navigation.navigate("HasilUjis", {
@@ -208,28 +252,28 @@ const Kortek = ({ navigation }) => {
               status: item.status,
             })}
             className="bg-indigo-500 px-3 py-2 rounded-md flex-row items-center mr-1">
-             <FontAwesome6Icon name="vial" size={13} color="white" />
+            <FontAwesome6Icon name="vial" size={13} color="white" />
             <Text className="text-white text-xs ml-1 font-poppins-medium">
               Hasil Uji
             </Text>
           </TouchableOpacity>
-  
+
           {!isMenungguKonfirmasi && (
             <>
               <TouchableOpacity
                 onPress={() => handlePreviewRDPS({ uuid: item.uuid })}
                 className="bg-red-500 px-3 py-2 rounded-md flex-row items-center mr-1">
-                   <FontAwesome5Icon name="file-pdf" size={16} color="white" />
+                <FontAwesome5Icon name="file-pdf" size={16} color="white" />
                 <Text className="text-white text-xs ml-1 font-poppins-medium">
                   RDPS
                 </Text>
               </TouchableOpacity>
-  
+
               <TouchableOpacity
                 onPress={() => handlePreviewLhu({ uuid: item.uuid })}
-                className="bg-red-500 px-3 py-2 rounded-md flex-row items-center">
-                    <FontAwesome5Icon name="file-pdf" size={16} color="white" />
-                <Text className="text-white text-xs ml-1 font-poppins-medium">
+                className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
+                <FontAwesome5Icon name="file-pdf" size={16} color="#ef4444" />
+                <Text className="text-red-500 text-xs ml-1 font-poppins-medium">
                   Preview LHU
                 </Text>
               </TouchableOpacity>

@@ -35,6 +35,7 @@ import { APP_URL } from "@env";
 import FileViewer from 'react-native-file-viewer';
 import { number } from "yup";
 import { Platform } from 'react-native';
+import { ProgressBar } from 'react-native-paper'; // Make sure to install this package
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -66,6 +67,9 @@ const HasilUjis = ({ navigation, route }) => {
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
   const [tteModalVisible, setTteModalVisible] = useState(false);
+  // const [loadingProgress, setLoadingProgress] = useState(0);
+  const [pdfError, setPdfError] = useState(false);
+  const [pdfLoaded, setPdfLoaded] = useState(false);
   const [formTte, setFormTte] = useState({
     tanda_tangan_id: "",
     passphrase: "",
@@ -76,6 +80,13 @@ const HasilUjis = ({ navigation, route }) => {
   const [activeItem, setActiveItem] = useState(null);
 
   const dropdownOptions = [];
+
+  useEffect(() => {
+    if (modalVisible) {
+      setPdfLoaded(false);
+      setPdfError(false);
+    }
+  }, [modalVisible]);
 
   const handlePreviewLHU = async item => {
     const authToken = await AsyncStorage.getItem("@auth-token");
@@ -466,7 +477,7 @@ const HasilUjis = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
-    const canUpload = selectedCetak === 0 && item.can_upload === 1;
+    const canUpload = selectedCetak === 0 ;
     const showPreview = selectedCetak !== 0 || item.status === 8;
     const canRevision = selectedCetak === 0; 
     const canPrev = selectedCetak === 0;
@@ -840,37 +851,65 @@ const HasilUjis = ({ navigation, route }) => {
                   handleDownloadPDF();
                   setModalVisible(false);
                 }}
-                className=" p-2 rounded flex-row items-center">
+                className="p-2 rounded flex-row items-center">
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
-            <Pdf
-              source={{ uri: reportUrl, cache: true }}
-              style={{ flex: 1 }}
-              trustAllCerts={false}
-              activityIndicator={
-                <View style={{ flex:1, justifyContent:'center', alignItems:'center' }}>
-                  <ActivityIndicator size={"large"} color={"#0000ff"}/>
-                  <Text>Memuat Pdf....</Text>
-                </View>
-              }
-              onLoadComplete={(numberOfPages) => {
-                console.log(`Number Of Page: ${numberOfPages}`)
-              }}
-              onPageChanged={(page, numberOfPages) => {
-                console.log(`Current page ${page}`)
-              }}
-              onError={(error) => {
-                console.log('PDF loading error:', error);
-              }}
-            />
-            <View className="flex-row justify-between m-4">
-              <TouchableOpacity
-                onPress={() => setModalVisible(false)}
-                className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
-              </TouchableOpacity>
-            </View>
+
+            {!pdfLoaded && !pdfError && (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                <ActivityIndicator size="large" color="#0000ff" />
+                <Text className="mt-2">Memuat PDF...</Text>
+              </View>
+            )}
+
+            {!pdfError && (
+              <Pdf
+                key={reportUrl} 
+                source={{ uri: reportUrl, cache: true }}
+                style={{ 
+                  flex: 1, 
+                  display: pdfLoaded ? 'flex' : 'none' 
+                }}
+                trustAllCerts={false}
+                onLoadComplete={(numberOfPages) => {
+                  console.log(`Number Of Page: ${numberOfPages}`);
+                  setPdfLoaded(true);
+                }}
+                onPageChanged={(page, numberOfPages) => {
+                  console.log(`Current page ${page}`);
+                }}
+                onError={(error) => {
+                  console.log('PDF loading error:', error);
+                  setPdfError(true);
+                  setPdfLoaded(false);
+                }}
+              />
+            )}
+
+            {pdfError && (
+              <View className="flex-1 justify-center items-center p-4">
+                <Text className="text-lg text-red-500 mb-4">PDF Tidak Ditemukan</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false);
+                    setPdfError(false);
+                  }}
+                  className="bg-[#dc3546] p-2 rounded">
+                  <Text className="text-white font-poppins-semibold">Tutup</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {pdfLoaded && (
+              <View className="flex-row justify-between m-4">
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                  <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
       </Modal>

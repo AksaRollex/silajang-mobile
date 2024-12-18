@@ -5,6 +5,8 @@ import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import IonIcons from 'react-native-vector-icons/Ionicons';
+import AntDesign from 'react-native-vector-icons/AntDesign';
+import FontIcon from 'react-native-vector-icons/FontAwesome5';
 import FontAwesome5 from 'react-native-vector-icons/FontAwesome5';
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
@@ -796,18 +798,18 @@ const UmpanBalik = ({ navigation }) => {
             <View className="flex-row justify-center space-x-2 mb-4">
               <TouchableOpacity
                 onPress={handleResetConfirmation}
-                className="flex-row items-center bg-[#fff8dd] px-6 py-2 rounded-lg"
+                className="flex-row items-center bg-amber-100 px-6 py-2 rounded-lg"
               >
-                <MaterialIcons name="refresh" size={20} color="#ffa800" />
-                <Text className="ml-2 text-[#ffa800] font-poppins-medium">Reset Data</Text>
+                <AntDesign name="sync" size={20} color="#fbbf24" />
+                <Text className="ml-2 text-amber-400 font-poppins-medium">Reset Data</Text>
               </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => setImportModalVisible(true)}
-                className="flex-row items-center bg-indigo-100 px-6 py-2 rounded-lg"
+                className="flex-row items-center bg-red-100 px-6 py-2 rounded-lg"
               >
-                <MaterialIcons name="file-upload" size={20} color="#6366f1" />
-                <Text className="ml-2 text-indigo-500 font-poppins-medium">Import Data</Text>
+                <FontIcon name="file-upload" size={20} color="#ef4444" />
+                <Text className="ml-2 text-red-500 font-poppins-medium">Import Data</Text>
               </TouchableOpacity>
             </View>
 
