@@ -99,7 +99,6 @@ export default function IndexKonfigurasi() {
       <ScrollView contentContainerStyle={styles.contentContainer}>
         {hasAccess('konfigurasi') && (
           <>
-
             <View className="flex-row items-center space-x-2 mt-5 bg-white p-2 ml-3 mr-3 rounded-xl py-2.5">
               <BackButton action={() => navigation.goBack()} size={26} className="ml-2" />
 
@@ -118,12 +117,31 @@ export default function IndexKonfigurasi() {
               <Text className="font-poppins-semibold text-black text-lg ml-2">Konfigurasi</Text>
             </View>
 
-            {hasItemAccess('log-tte') && (
-              <View>
+            <View>
 
                 <List.Item
 
                   style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                  title={<Text className="font-poppins-medium text-[15px]">Denda</Text>}
+                  left={() => (
+                    <View className="bg-rose-600 rounded-full">
+                      <Ionicons name="receipt" size={17} color={'white'} style={{ padding: 5 }} />
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                  )}
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
+                  onPress={() => navigation.navigate("Denda")}
+                />
+                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              </View>
+
+
+            {hasItemAccess('log-tte') && (
+              <View>
+
+                <List.Item
                   title={<Text className="font-poppins-medium text-[15px]">Log TTE</Text>}
                   left={() => (
                     <View className="bg-blue-600 rounded-full">

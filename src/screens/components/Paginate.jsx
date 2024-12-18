@@ -9,6 +9,7 @@ import {
   LayoutAnimation,
   UIManager,
   Platform,
+  Image,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -23,12 +24,60 @@ if (Platform.OS === "android" && UIManager.setLayoutAnimationEnabledExperimental
 }
 
 // Skeleton loader for list items
-const ListItemSkeleton = () => (
-  <View className="flex-col items-center mt-4">
-    <Skeleton animation="wave" width={390} height={20} style={{ borderRadius: 10 }} LinearGradientComponent={LinearGradient} />
-    <Skeleton animation="wave" width={390} height={180} style={{ marginTop: 10, borderRadius: 10 }} LinearGradientComponent={LinearGradient} />
-  </View>
+const SkeletonLoader = ({ width, height, style, circle }) => (
+  <Skeleton
+    animation="wave"
+    width={width}
+    height={height}
+    LinearGradientComponent={LinearGradient}
+    style={style}
+    circle={circle || false}
+  />
 );
+
+// Single skeleton item component
+const ListItemSkeleton = () => (
+  <View
+    style={{
+      flexDirection: "column",
+      alignItems: "center",
+      justifyContent: "space-between",
+      marginTop: 12,
+    }}
+  >
+    <View>
+      <SkeletonLoader
+        width={390}
+        height={20}
+        style={{
+          borderTopLeftRadius: 20,
+          borderTopRightRadius: 20,
+          overflow: "hidden",
+        }}
+      />
+      <View style={{ width: "90%" }}>
+        <SkeletonLoader width={390} height={180} />
+        <View style={{ position: "absolute", top: "5%", left: "5%" }}>
+          <SkeletonLoader width={150} height={20} />
+          <SkeletonLoader width={220} height={55} style={{ marginTop: 10 }} />
+          <SkeletonLoader width={160} height={14} style={{ marginTop: 10 }} />
+          <SkeletonLoader width={160} height={14} style={{ marginTop: 10 }} />
+          <SkeletonLoader width={160} height={14} style={{ marginTop: 10 }} />
+        </View>
+      </View>
+      <View
+        style={{
+          width: "10%",
+          position: "absolute",
+          justifyContent: "flex-end",
+          right: 0,
+          top: "40%",
+        }}
+      >     
+      </View>
+    </View>
+  </View>
+);  
 
 // Komponen Pagination Numbers
 const PaginationNumbers = ({ currentPage, totalPages, onPageChange }) => {
@@ -154,6 +203,7 @@ const Paginate = forwardRef(({ url, renderItem, payload, style }, ref) => {
           ListFooterComponent={() => (isFetchingMore ? <ActivityIndicator size="large" color="#312e81" /> : null)}
           ListEmptyComponent={() => (
             <View className="flex-1 items-center mt-4">
+              <Image source={require("@/assets/images/notfnd.png")} className="w-60 h-60 opacity-60"/>
               <Text className="text-gray-500">Data Tidak Tersedia</Text>
             </View>
           )}
