@@ -17,6 +17,7 @@ import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { Platform } from 'react-native';
 import FastImage from "react-native-fast-image";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 export default memo(function Form({ route, navigation }) {
   const { uuid } = route.params || {};
@@ -476,9 +477,15 @@ export default memo(function Form({ route, navigation }) {
 
   return (
     <ScrollView>
+        <View
+                className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                style={{ backgroundColor: '#fff' }}
+              >
+                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+                  <Text className="text-lg font-poppins-semibold">{data ? "Edit User" : "Tambah User" }</Text>
+              </View>
       <View style={styles.container}>
         <View style={styles.cardContainer}>
-          <BackButton action={() => navigation.goBack()} size={26} />
           <View className="">
             <View className="w-full items-center mt-5 justify-center">
               <TouchableOpacity

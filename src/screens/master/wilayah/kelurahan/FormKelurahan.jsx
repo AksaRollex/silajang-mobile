@@ -7,6 +7,7 @@ import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
 import { ActivityIndicator } from "react-native-paper";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 export default memo(function form({ route, navigation }) {
   const [isLoading, setIsLoading] = useState(false);
@@ -23,15 +24,17 @@ export default memo(function form({ route, navigation }) {
   } = useForm();
 
   // Fungsi fetch kecamatan
-  const fetchKecamatan = async (kotaKabId) => {
+  const fetchKecamatan = async kotaKabId => {
     if (!kotaKabId) return;
-    
+
     try {
-      const response = await axios.get(`/wilayah/kota-kabupaten/${kotaKabId}/kecamatan`);
+      const response = await axios.get(
+        `/wilayah/kota-kabupaten/${kotaKabId}/kecamatan`,
+      );
       if (response.data && response.data.data) {
         const formattedKecamatan = response.data.data.map(item => ({
           label: item.nama,
-          value: item.id
+          value: item.id,
         }));
         setKecamatan(formattedKecamatan);
       }
@@ -60,17 +63,19 @@ export default memo(function form({ route, navigation }) {
         // If in edit mode, fetch kelurahan data
         if (uuid) {
           setIsLoading(true);
-          const kelurahanResponse = await axios.get(`/master/kelurahan/${uuid}/edit`);
+          const kelurahanResponse = await axios.get(
+            `/master/kelurahan/${uuid}/edit`,
+          );
           const data = kelurahanResponse.data.data;
           setEditData(data);
-          
+
           // Set form values
           setValue("nama", data.nama);
           setValue("kab_kota_id", data.kab_kota_id);
-          
+
           // Fetch kecamatan for the selected kota/kabupaten
           await fetchKecamatan(data.kab_kota_id);
-          
+
           // Set kecamatan value after fetching kecamatan data
           setValue("kecamatan_id", data.kecamatan_id);
         }
@@ -89,14 +94,14 @@ export default memo(function form({ route, navigation }) {
     loadInitialData();
   }, [uuid]);
 
-  const handleSubmitForm = async (data) => {
+  const handleSubmitForm = async data => {
     setIsLoading(true);
     try {
       await axios.post(
         uuid ? `/master/kelurahan/${uuid}/update` : "/master/kelurahan/store",
-        data
+        data,
       );
-      
+
       Toast.show({
         type: "success",
         text1: "Success",
@@ -118,20 +123,27 @@ export default memo(function form({ route, navigation }) {
   if (isLoading) {
     return (
       <View className="h-full flex justify-center">
-        <ActivityIndicator size={"large"} color={"#312e81"}/>
+        <ActivityIndicator size={"large"} color={"#312e81"} />
       </View>
     );
   }
 
   return (
     <View className="bg-[#ececec] h-full">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: "#fff" }}>
+        <IonIcon
+          name="arrow-back-outline"
+          onPress={() => navigation.goBack()}
+          size={25}
+          color="#312e81"
+        />
+        <Text className="text-lg font-poppins-semibold">
+          {uuid ? "Edit Kelurahan" : "Tambah Kelurahan"}
+        </Text>
+      </View>
       <View className="bg-white rounded m-3">
-        <View className="flex-row justify-between mx-3 mt-4">
-          <BackButton action={() => navigation.goBack()} size={34}/>
-          <Text className="text-xl font-poppins-semibold">
-            {uuid ? "Edit Kelurahan" : "Tambah Kelurahan"}
-          </Text>
-        </View>
         <View className="p-5">
           <Text className="mb-3 text-lg font-poppins-semibold">Nama</Text>
           <Controller
@@ -139,7 +151,7 @@ export default memo(function form({ route, navigation }) {
             name="nama"
             rules={{ required: "Nama harus diisi" }}
             render={({ field: { onChange, value } }) => (
-              <TextField 
+              <TextField
                 placeholder="Masukkan Nama Kelurahan"
                 enableErrors
                 className="py-3 px-5 rounded border-[1px] border-gray-700 font-poppins-regular"
@@ -152,16 +164,18 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.nama.message}</Text>
           )}
 
-          <Text className="mb-2 text-lg font-poppins-semibold">Kota/Kabupaten</Text>
+          <Text className="mb-2 text-lg font-poppins-semibold">
+            Kota/Kabupaten
+          </Text>
           <Controller
             control={control}
             name="kab_kota_id"
             rules={{ required: "Kota/Kabupaten harus diisi" }}
-            render={({ field: { onChange, value }}) => (
+            render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={async (newValue) => {
+                onChangeValue={async newValue => {
                   onChange(newValue);
-                  setValue('kecamatan_id', null); // Reset kecamatan
+                  setValue("kecamatan_id", null); // Reset kecamatan
                   setKecamatan([]); // Clear kecamatan list
                   if (newValue) {
                     await fetchKecamatan(newValue);
@@ -177,12 +191,12 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.kab_kota_id.message}</Text>
           )}
 
-          <Text className="mb-2 text-lg font-poppins-semibold">Kecamatan</Text>
-          <Controller 
+          <Text className="mb-2 text-lg font-poppins-semibold mt-2">Kecamatan</Text>
+          <Controller
             control={control}
             name="kecamatan_id"
             rules={{ required: "Kecamatan harus diisi" }}
-            render={({ field: { onChange, value }}) => (
+            render={({ field: { onChange, value } }) => (
               <Select2
                 onChangeValue={onChange}
                 value={value}
@@ -195,7 +209,7 @@ export default memo(function form({ route, navigation }) {
             <Text className="text-red-500">{errors.kecamatan_id.message}</Text>
           )}
 
-          <Button 
+          <Button
             labelStyle={{ fontFamily: "Poppins-Medium" }}
             label={isLoading ? "Loading..." : "Simpan"}
             onPress={handleSubmit(handleSubmitForm)}

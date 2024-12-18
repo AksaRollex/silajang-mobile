@@ -8,6 +8,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 export default memo(function form({ route, navigation }) {
     const { uuid } = route.params || {};
@@ -88,13 +89,16 @@ export default memo(function form({ route, navigation }) {
 
     return (
         <View className="bg-[#ececec] h-full">
-            <View className="bg-white rounded m-3">
-                <View className="flex-row justify-between mx-3 mt-4">
-                    <BackButton action={() => navigation.goBack()} size={26} />
-                    <Text className="text-xl font-poppins-semibold">
+             <View
+                        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                        style={{ backgroundColor: '#fff' }}
+                      >
+                          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+                          <Text className="text-lg font-poppins-semibold">
                         {data ? "Edit Libur Cuti" : "Tambah Libur Cuti"}
-                    </Text>
-                </View>
+                    </Text>                     
+                      </View>
+            <View className="bg-white rounded m-3">
                 <View className="p-5 flex-col space-y-4">
                     <Text className="text-lg mb-2 font-poppins-semibold">Tanggal</Text>
                     <Controller
