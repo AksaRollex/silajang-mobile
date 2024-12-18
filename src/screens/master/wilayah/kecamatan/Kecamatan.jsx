@@ -78,7 +78,7 @@ const Kecamatan = ({ navigation }) => {
               >
                 <View className="flex-row items-center">
                   <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                  <Text className="text-[19px] font-poppins-medium text-black ml-4">Kecamatan</Text>
+                  <Text className="text-[19px] font-poppins-medium text-black ml-3">Kecamatan</Text>
                 </View>
                 <View className="bg-lime-400 rounded-full">
                   <IonIcon name="map" size={17} color={'white'} style={{ padding: 5 }} />

@@ -40,10 +40,10 @@ import RekapParameter from "./report/RekapParameter";
 import { LinearProgress } from "@rneui/base";
 
 const Stack = createNativeStackNavigator();
-const screenOptions = {
+const getScreenOptions = (animation = "slide_from_right") => ({
   tabBarShowLabel: false,
   headerShown: false,
-  animation : "slide_from_right",
+  animation: animation,
   tabBarStyle: {
     position: "absolute",
     bottom: 0,
@@ -53,131 +53,122 @@ const screenOptions = {
     height: 60,
     backgroundColor: "#fff",  
   },
-  
-};
+});
 
 export default function MainScreen() {
   return (
-    <Stack.Navigator screenOptions={screenOptions}>
+    <Stack.Navigator>
       <Stack.Screen
         name="PengujianIndex"
         component={Pengujian}
-      />
-      
-      <Stack.Screen
-        name="TrackingList"
-        component={TrackingList}
-      />
-      <Stack.Screen
-        name="TitikUji"
-        component={TitikUji}
-      />
-      <Stack.Screen
-        name="Parameter"
-        component={Parameter}
-      />
-      <Stack.Screen
-        name="EditPermohonan"
-        component={EditPermohonan}
-      />
-      <Stack.Screen
-        name="EditTitikUji"
-        component={EditTitikUji}
-      />
-      <Stack.Screen
-        name="EditPembayaran"
-        component={EditPembayaran}
-      />
-      <Stack.Screen
-        name="TambahPermohonan"
-        component={TambahPermohonan}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="Kontrak"
         component={Kontrak}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="DetailKontrak"
         component={DetailKontrak}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="Persetujuan"
         component={Persetujuan}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="DetailPersetujuan"
         component={DetailPersetujuan}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="IndexPenerima"
         component={IndexPenerima}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="DetailPenerima"
         component={DetailPenerima}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="PengambilSample"
         component={PengambilSample}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="DetailPengambilSample"
         component={DetailPengambilSample}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="DetailPengisian"
         component={DetailPengisian}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="CetakLHU"
         component={CetakLHU}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="Analis"
         component={Analis}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="DetailAnalis"
         component={DetailAnalis}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
       <Stack.Screen
         name="Kortek"
         component={Kortek}
+        options={{ ...getScreenOptions() }}
       />
       <Stack.Screen
         name="HasilUjis"
         component={HasilUjis}
+        options={{ ...getScreenOptions("fade_from_bottom") }}
       />
      
       <Stack.Screen
         name="VerifikasiLhu"
         component={VerifikasiLhu}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="LaporanHasilPengujian"
         component={LaporanHasilPengujian}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="KendaliMutu"
         component={KendaliMutu}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="RegistrasiSampel"
         component={RegistrasiSampel}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="RekapData"
         component={RekapData}
+        options={{ ...getScreenOptions() }}
       />
 
       <Stack.Screen
         name="RekapParameter"
         component={RekapParameter}
+        options={{ ...getScreenOptions() }}
       />
 
    </Stack.Navigator>

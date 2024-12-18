@@ -69,7 +69,7 @@ const Pengawetan = ({ navigation }) => {
          >
            <View className="flex-row items-center">
              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-             <Text className="text-[20px] font-poppins-medium text-black ml-4">Pengawetan</Text>
+             <Text className="text-[20px] font-poppins-medium text-black ml-3">Pengawetan</Text>
            </View>
            <View className="bg-pink-500 rounded-full">
              <IonIcon name="water" size={18} color={'white'} style={{ padding: 5 }} />

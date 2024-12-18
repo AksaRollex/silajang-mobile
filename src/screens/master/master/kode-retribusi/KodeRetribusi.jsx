@@ -80,7 +80,7 @@ const KodeRetribusi = ({ navigation }) => {
          >
            <View className="flex-row items-center">
              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-             <Text className="text-[20px] font-poppins-medium text-black ml-4">Kode Retribusi</Text>
+             <Text className="text-[20px] font-poppins-medium text-black ml-3">Kode Retribusi</Text>
            </View>
            <View className="bg-amber-500 rounded-full">
              <IonIcon name="barcode" size={18} color={'white'} style={{ padding: 5 }} />

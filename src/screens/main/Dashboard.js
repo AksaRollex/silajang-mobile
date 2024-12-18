@@ -402,7 +402,7 @@ const Dashboard = () => {
 
         <View className="items-center mt-[85px]">
           {/* card picker tahun */}
-          <View className="bg-white rounded-xl w-[90%] h-16 overflow-hidden"
+          <View className="bg-white rounded-xl w-[91%] h-16 overflow-hidden"
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
@@ -756,7 +756,7 @@ const Dashboard = () => {
                       hasLegend={false}
                     />
                     <View
-                      className="absolute"
+                      className="absolute "
                       style={{
                         marginLeft: 72,
                         marginTop: 59,
@@ -773,7 +773,7 @@ const Dashboard = () => {
                     {chartPeraturans.data.map((item, index) => (
                       <View key={index} className="flex-row items-center mb-1">
                         <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
-                        <Text className="font-poppins-semibold break-words max-w-[92%]">
+                        <Text className="font-poppins-semibold break-words max-w-[92%] text-gray-500">
                           <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
                         </Text>
                       </View>
@@ -831,7 +831,7 @@ const Dashboard = () => {
                     {chartParameters.data.map((item, index) => (
                       <View key={index} className="flex-row items-center mb-1">
                         <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
-                        <Text className="font-poppins-semibold break-words max-w-[92%]">
+                        <Text className="font-poppins-semibold break-words max-w-[92%] text-gray-500">
                           <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
                         </Text>
                       </View>

@@ -22,6 +22,8 @@ import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
 import moment from "moment";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import FileViewer from 'react-native-file-viewer';
+import { Platform } from "react-native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -71,13 +73,13 @@ const PenerimaSampel = ({ navigation }) => {
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
 
-    const { setHeader } = useHeaderStore();
-  
-    React.useLayoutEffect(() => {
-      setHeader(false)
-  
-      return () => setHeader(true)
-    }, [])
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const kembali = () => {
     setModalVisible(false);
@@ -159,6 +161,49 @@ const PenerimaSampel = ({ navigation }) => {
           await RNFS.scanFile(downloadPath);
         }
 
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: 'application/pdf'
+          });
+        } catch (openError) {
+          console.log('Error opening file with FileViewer:', openError);
+
+          // Fallback for Android using Intents
+          if (Platform.OS === 'android') {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                'application/pdf'
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log('Intent fallback failed:', intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
         // Show toast message for success
         Toast.show({
           type: 'success',

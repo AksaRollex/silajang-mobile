@@ -77,7 +77,7 @@ const JasaPengambilan = ({ navigation }) => {
          >
            <View className="flex-row items-center">
              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-             <Text className="text-[19px] font-poppins-medium text-black ml-4">Jasa Pengambilan</Text>
+             <Text className="text-[19px] font-poppins-medium text-black ml-3">Jasa Pengambilan</Text>
            </View>
            <View className="bg-rose-500 rounded-full">
              <IonIcon name="car" size={17} color={'white'} style={{ padding: 5 }} />
