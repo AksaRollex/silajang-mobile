@@ -58,12 +58,7 @@ const PengambilSampel = ({ navigation }) => {
   ]
 
   const dropdownOptions = [
-    // {
-    //   id: "Edit",
-    //   title: "Edit",
-    //   action: item => navigation.navigate("FormMetode", { uuid: item.uuid }),
-    // },
-    // { id: "Hapus", title: "Hapus", action: item => deleteMetode(`/master/acuan-metode/${item.uuid}`) },
+
     { id: "Detail", title: "Detail", action: item => navigation.navigate("DetailPengambilSample", { uuid: item.uuid, status: item.status }) },
     { id: "Cetak Sampling", title: "Cetak Sampling", action: item => handlePreviewPS({ uuid: item.uuid }) },
     {
@@ -320,13 +315,7 @@ const PengambilSampel = ({ navigation }) => {
         className="mb-16"
       />
 
-      {/* <AntDesign
-        name="plus"
-        size={28}
-        color="white"
-        style={{ position: "absolute", bottom: 90, right: 30, backgroundColor: "#312e81", padding: 10, borderRadius: 50 }}
-      onPress={() => navigation.navigate("FormMetode")}
-      /> */}
+     
       <DeleteConfirmationModal />
       <Modal
         transparent={true}
