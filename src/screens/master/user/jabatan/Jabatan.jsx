@@ -84,14 +84,17 @@ const Jabatan = ({ navigation }) => {
              <IonIcon name="briefcase" size={18} color={'white'} style={{ padding: 5 }} />
            </View>
          </View>
-
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/jabatan"
         payload={{}}
         renderItem={renderItem}
       />
-
+      <View className="mt-12 mb-8">
+              <TextFooter />
+              </View>
+        </ScrollView>
       <Icon
         name="plus"
         size={28}
