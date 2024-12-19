@@ -10,7 +10,7 @@ const MultiPayment = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [tahun, setTahun] = useState(2024);
-  const [bulan, setBulan] = useState("-");
+const [bulan, setBulan] = useState("-");
   const [type, setType] = useState("va");
 
 //   const { delete: deleteMultiPayment, DeleteConfirmationModal } = useDelete({
@@ -71,7 +71,7 @@ const MultiPayment = ({ navigation }) => {
   useEffect(() => {
     const currentMonthId = new Date().getMonth() + 1;
     setBulan(currentMonthId);
-  })
+  }, [])
 
   const handleMetodeChange = useCallback(
     ({ nativeEvent: { event: selectedId } }) => {
@@ -110,7 +110,7 @@ const MultiPayment = ({ navigation }) => {
   );
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
+    <View className="bg-[#ececec] w-full h-full items-center">
       <View className="p-4">
         <View className="flex-row items-center justify-between mb-4">
           <View className="flex-row items-center flex-1">
@@ -123,7 +123,7 @@ const MultiPayment = ({ navigation }) => {
 
 
             
-        <View className="flex-row ml-2">
+        <View className="flex-row">
             <MenuView
               title="Pilih Tahun"
               onPressAction={handleYearChange}
@@ -139,19 +139,7 @@ const MultiPayment = ({ navigation }) => {
                 </View>
             </MenuView>
 
-              <TouchableOpacity 
-              onPress={() => navigation.navigate("#")}
-              className="bg-[#312e81] px-14 py-1.5 rounded-md flex-row items-center ml-2"
-              style={{  height: 49.5, marginTop: 10.8, bottom: 10 }}
-              >
-                <MaterialIcons name="add" size={20} color="white" style={{ right: 6 }}/>
-                <Text className="text-white ml-2 font-poppins-medium right-2">
-                 Buat
-                </Text>
-              </TouchableOpacity>
-        </View>
-         
-        <MenuView 
+            <MenuView 
             title="Pilih Bulan"
             actions={bulans.map(bulan => ({
                 id: bulan.id.toString(),
@@ -173,7 +161,8 @@ const MultiPayment = ({ navigation }) => {
                         borderRadius: 8,
                         width: 185,
                         borderColor: "#d1d5db",
-                        borderWidth: 1
+                        borderWidth: 1,
+                        marginBottom: 15,
                     }}>
                    <Text style={{ color: "black", flex: 1, textAlign: "center" , fontFamily: "Poppins-SemiBold"}}>
                     {`Bulan: ${bulans.find(m => m.id === bulan)?.text || 'Pilih'}`}
@@ -182,9 +171,9 @@ const MultiPayment = ({ navigation }) => {
                 </View>
             </View>
           </MenuView>
-
-        
-
+        </View>
+         
+       
         <MenuView
           title="Pilih Metode"
           onPressAction={handleMetodeChange}
@@ -192,7 +181,7 @@ const MultiPayment = ({ navigation }) => {
             id: option.id,
             title: option.text,
           }))}>
-          <View style={{ marginStart: 8, width: 250, marginTop: 10 }}>
+          <View style={{ marginStart: 3, width: 250, marginTop: 7 }}>
             <PickerButton
               label="Metode"
               value={metodes.find(m => m.id === type)?.text}
@@ -202,6 +191,16 @@ const MultiPayment = ({ navigation }) => {
         </MenuView>
       </View>
 
+            <TouchableOpacity 
+            onPress={() => navigation.navigate("#")}
+            className="bg-[#312e81] px-14 py-1.5 rounded-md flex-row items-center ml-2 justify-center"
+            style={{  height: 49.5, marginTop: 10.8, bottom: 10, width: 380, marginStart: 9 }}
+            >
+              <MaterialIcons name="add" size={25} color="white" style={{ right: 6 }}/>
+              <Text className="text-white ml-2 font-poppins-medium right-2 text-lg">
+               Buat
+              </Text>
+            </TouchableOpacity>
     </View>
   );
 };

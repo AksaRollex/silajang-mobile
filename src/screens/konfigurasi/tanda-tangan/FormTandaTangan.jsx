@@ -8,6 +8,8 @@ import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
 import { Picker } from "@react-native-picker/picker";
+import IonIcon from "react-native-vector-icons/Ionicons";
+import Select2 from "../../components/Select2";
 
 export default memo(function TandaTanganForm({ route, navigation }) {
     const { uuid } = route.params || {};
@@ -85,11 +87,20 @@ export default memo(function TandaTanganForm({ route, navigation }) {
 
     return (
         <View className="bg-[#ececec] h-full">
+              <View
+                    className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                    style={{ backgroundColor: "#fff" }}>
+                    <IonIcon
+                      name="arrow-back-outline"
+                      onPress={() => navigation.goBack()}
+                      size={25}
+                      color="#312e81"
+                    />
+                    <Text className="text-lg font-poppins-semibold">
+                        Edit Tanda Tangan
+                    </Text>
+                  </View>
             <View className="bg-white rounded m-3">
-                <View className="flex-row justify-between mx-3 mt-4">
-                    <BackButton action={() => navigation.goBack()} size={26} />
-                    <Text className="text-xl font-poppins-semibold">Edit Tanda Tangan</Text>
-                </View>
                 <View className="p-5 flex-col space-y-4">
                     <View className="mb-4">
                         <Text className="text-lg font-poppins-medium text-black mb-2">Dokumen</Text>

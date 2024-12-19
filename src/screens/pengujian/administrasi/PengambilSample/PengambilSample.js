@@ -50,8 +50,6 @@ const PengambilSampel = ({ navigation }) => {
     return () => setHeader(true)
   }, [])
 
-
-
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
 
     onSuccess: () => {

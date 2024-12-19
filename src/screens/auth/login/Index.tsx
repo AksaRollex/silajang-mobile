@@ -70,7 +70,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   style={{
                     textAlign: "center",
                     fontFamily: activeTab === 1 ? "Poppins-SemiBold" : "Poppins-Regular",
-                    color: "#312e81",
+                    color: activeTab === 1 ? "#312e81" : "black",
                   }}>
                   EMAIL
                 </Text>
@@ -89,7 +89,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   style={{
                     textAlign: "center",
                     fontFamily: activeTab === 1 ? "Poppins-Regular" : "Poppins-SemiBold",
-                    color: "#312e81",
+                    color: activeTab === 1 ? "black" : "#312e81",
                   }}>
                   NO. TELEPON
                 </Text>

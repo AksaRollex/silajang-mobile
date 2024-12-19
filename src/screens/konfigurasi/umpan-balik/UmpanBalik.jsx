@@ -836,6 +836,9 @@ const UmpanBalik = ({ navigation }) => {
             )}
           </View>
         </View>
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
       </ScrollView>
     );
   };
@@ -848,23 +851,28 @@ const UmpanBalik = ({ navigation }) => {
     return (
       <View className="flex-1 mt-2">
         {renderCardTemplate()}
-        <Paginate
-          ref={paginateRef}
-          url="/konfigurasi/umpan-balik/keterangan"
-          renderItem={renderPaginateItem}
-          className=""
-          ListEmptyComponent={() => (
-            <View className="flex-1 items-center justify-center p-4">
-              <Text className="text-gray-500">Tidak ada data</Text>
-            </View>
-          )}
-          refreshing={false}
-          onRefresh={() => {
-            if (paginateRef.current) {
-              paginateRef.current.refresh();
-            }
-          }}
-        />
+        <ScrollView>
+          <Paginate
+            ref={paginateRef}
+            url="/konfigurasi/umpan-balik/keterangan"
+            renderItem={renderPaginateItem}
+            className=""
+            ListEmptyComponent={() => (
+              <View className="flex-1 items-center justify-center p-4">
+                <Text className="text-gray-500">Tidak ada data</Text>
+              </View>
+            )}
+            refreshing={false}
+            onRefresh={() => {
+              if (paginateRef.current) {
+                paginateRef.current.refresh();
+              }
+            }}
+          />
+          <View className="mt-12 mb-8">
+            <TextFooter />
+          </View>
+        </ScrollView>
       </View>
     );
   };

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView } from "react-native";
 import React, { useRef } from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
@@ -7,6 +7,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons"; // Change from Entypo to Ionicons
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const Jabatan = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -77,20 +78,23 @@ const Jabatan = ({ navigation }) => {
          >
            <View className="flex-row items-center">
              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-             <Text className="text-[20px] font-poppins-medium text-black ml-3">Parameter</Text>
+             <Text className="text-[20px] font-poppins-medium text-black ml-4">Jabatan</Text>
            </View>
            <View className="bg-sky-500 rounded-full">
              <IonIcon name="briefcase" size={18} color={'white'} style={{ padding: 5 }} />
            </View>
          </View>
-
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/jabatan"
         payload={{}}
         renderItem={renderItem}
       />
-
+      <View className="mt-12 mb-8">
+              <TextFooter />
+              </View>
+        </ScrollView>
       <Icon
         name="plus"
         size={28}

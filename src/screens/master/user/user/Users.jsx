@@ -13,6 +13,7 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
 import axios from '@/src/libs/axios';
 import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const Users = ({ navigation, route }) => {
 
@@ -188,6 +189,7 @@ const Users = ({ navigation, route }) => {
           onPress={(item) => setSelectedMenu(item.id)}
         />
       </View>
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/user"
@@ -198,6 +200,10 @@ const Users = ({ navigation, route }) => {
         }}
         renderItem={renderItem}
       />
+      <View className="mt-12 mb-8">
+              <TextFooter />
+              </View>
+      </ScrollView>
       <Icon
         name="plus"
         size={28}

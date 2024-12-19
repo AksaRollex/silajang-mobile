@@ -18,7 +18,6 @@ import Toast from "react-native-toast-message";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 
-
 const rem = multiplier => 16 * multiplier;
 
 const NonPengujian = ({ navigation }) => {
@@ -195,7 +194,6 @@ const NonPengujian = ({ navigation }) => {
       });
     }
   };
-
 
   const PickerButton = ({ label, value, style }) => (
     <View

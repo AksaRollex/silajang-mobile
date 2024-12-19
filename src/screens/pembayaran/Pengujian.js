@@ -74,14 +74,20 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
       setBulan(getCurrentMonth());
     }
 
-    onSelectYearMonth(selectedYear, bulan);
+     // Cek apakah onSelectYearMonth didefinisikan sebelum dipanggil
+     if (typeof onSelectYearMonth === "function") {
+      onSelectYearMonth(selectedYear, bulan);
+    }
   }, [onSelectYearMonth, bulan]);
 
   const handleBulanChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
     const selectedMonth = parseInt(selectedId);
     setBulan(selectedMonth);
 
-    onSelectYearMonth(tahun, selectedMonth);
+    // Cek apakah onSelectYearMonth didefinisikan sebelum dipanggil
+    if (typeof onSelectYearMonth === "function") {
+      onSelectYearMonth(tahun, selectedMonth);
+    }
   }, [onSelectYearMonth, tahun]);
 
   const handleMetodeChange = useCallback(({ nativeEvent: { event: selectedId } }) => {

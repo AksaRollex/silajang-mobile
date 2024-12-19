@@ -20,6 +20,8 @@ import Toast from "react-native-toast-message";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
+    const scrollViewRef = useRef(null);
+
   const requestTypes = [
     { label: "Permohonan Baru", value: "new" },
     { label: "Permohonan Proses", value: "process" },

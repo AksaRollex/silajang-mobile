@@ -356,8 +356,8 @@ const PenerimaSampel = ({ navigation }) => {
             className="bg-indigo-500 px-3 py-2 rounded-md"
           >
             <View className="flex-row">
-              <Ionicons name="eye-outline" size={15} color="white" style={{ marginRight: 5 }} />
-              <Text className="text-white font-poppins-medium text-[11px]">Detail</Text>
+              <Ionicons name="eye-outline" size={15} color="white"/>
+              <Text className="text-white font-poppins-medium text-[11px] ml-1">Detail</Text>
             </View>
           </TouchableOpacity>
 
@@ -373,8 +373,8 @@ const PenerimaSampel = ({ navigation }) => {
               className="bg-amber-400 px-3 py-2 rounded-md"
             >
               <View className="flex-row">
-                <Ionicons name="pencil" size={15} color="white" style={{ marginRight: 5 }} />
-                <Text className="text-white font-poppins-medium text-[11px]">Revisi</Text>
+                <Ionicons name="pencil" size={15} color="white"/>
+                <Text className="text-white font-poppins-medium text-[11px] ml-1">Revisi</Text>
               </View>
             </TouchableOpacity>
           )}
