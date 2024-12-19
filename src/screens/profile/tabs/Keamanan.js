@@ -1,6 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, Text, Modal, Image } from "react-native";
-import { TextInput } from "react-native-paper";
+import { View, StyleSheet, Text, Modal } from "react-native";
 import { Colors, Button, TextField } from "react-native-ui-lib";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
@@ -8,11 +7,9 @@ import { useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
 import axios from "@/src/libs/axios";
-import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Back from "../../components/Back";
-import LottieView from "lottie-react-native";
-import { API_URL } from "@env";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 import { TouchableOpacity } from "react-native-ui-lib";
 
@@ -52,16 +49,18 @@ const Keamanan = () => {
     data => axios.post("/user/security", data),
     {
       onSuccess: () => {
-       setModalVisible(true);
+        setModalVisible(true);
         queryClient.invalidateQueries("/auth");
 
         setTimeout(() => {
           setModalVisible(false);
           navigation.navigate("IndexProfile");
         }, 2000);
-      },  
+      },
       onError: error => {
-        setErrorMessage(error.response?.data?.message || "Gagal memperbarui data");
+        setErrorMessage(
+          error.response?.data?.message || "Gagal memperbarui data",
+        );
         setErrorModalVisible(true);
         setTimeout(() => {
           setErrorModalVisible(false);
@@ -84,211 +83,221 @@ const Keamanan = () => {
   return (
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
-      <View className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
-      style={{
+        <View
+          className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+          style={{
             elevation: 5,
             shadowColor: "rgba(0, 0, 0, 0.1)",
             shadowOffset: { width: 0, height: 0 },
             shadowOpacity: 0.5,
-            shadowRadius: 2,
-          }}>
-        <View className="flex-row mb-6">
-          <Back
-            size={30}
-            color={"black"}
-            action={() => navigation.goBack()}
-            className="mr-5 "
-            style={{
-              padding: 4,
-            }}
-          />
-          <Text className="font-poppins-semibold text-black text-xl mt-1 ">
-            Ganti Password
-          </Text>
-        </View>
-        <Controller
-          control={control}
-          name="old_password"
-          rules={{ required: "Password Lama Harus Diisi" }}
-          render={({ field: { onChange, value } }) => (
-            <View>
-              <Text className="text-black font-poppins-semibold mb-2">
-                Password Lama
-              </Text>
-              <TextField
-                secureTextEntry={!isPasswordVisible}
-                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.old_password}
-              />
-              <TouchableOpacity
-                onPress={togglePasswordVisibility}
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: "53%",
-                }}>
-                <Ionicons
-                  name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={Colors.brand}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        {errors.old_password && (
-          <Text style={{ color: "red" }} className="mb-2 ">
-            {errors.old_password.message}
-          </Text>
-        )}
-
-        <Controller
-          control={control}
-          name="password"
-          rules={{
-            required: "Password Baru Harus Diisi",
-            minLength: { value: 12, message: "Password minimal 12 karakter" },
-            pattern: {
-              value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
-              message:
-                "Password harus mengandung huruf kecil, huruf kapital, dan angka",
-            },
-          }}
-          render={({ field: { onChange, value } }) => (
-            <View>
-              <Text className="font-poppins-semibold my-2 text-black">
-                Password Baru
-              </Text>
-              <TextField
-                mode="outlined"
-                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                secureTextEntry={!isPasswordVisible2}
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.password}
-              />
-              <TouchableOpacity
-                onPress={togglePasswordVisibility2}
-                style={{
-                  position: "absolute",
-                  right: 10,
-                  top: "57%",
-                }}>
-                <Ionicons
-                  name={isPasswordVisible2 ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={Colors.brand}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        {errors.password && (
-          <Text style={{ color: "red" }} className="mb-2">
-            {errors.password.message}
-          </Text>
-        )}
-
-        <Controller
-          control={control}
-          name="password_confirmation"
-          rules={{
-            required: "Konfirmasi Password Baru Harus Diisi",
-            validate: value =>
-              value === getValues("password") || "Password tidak cocok",
-          }}
-          render={({ field: { onChange, value } }) => (
-            <View className="mt-2">
-              <Text className="font-poppins-semibold mb-2 text-black">
-                Konfirmasi Password Baru
-              </Text>
-              <TextField
-                mode="outlined"
-                secureTextEntry={!isPasswordVisible3}
-                className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                onChangeText={onChange}
-                value={value}
-                error={!!errors.password_confirmation}
-              />
-              <TouchableOpacity
-                onPress={togglePasswordVisibility3}
-                style={{
-                  position: "absolute",
-                  top: "53%",
-                  right: 10,
-                }}>
-                <Ionicons
-                  name={isPasswordVisible3 ? "eye-outline" : "eye-off-outline"}
-                  size={20}
-                  color={Colors.brand}
-                />
-              </TouchableOpacity>
-            </View>
-          )}
-        />
-        {errors.password_confirmation && (
-          <Text style={{ color: "red" }} className="mb-2">
-            {errors.password_confirmation.message}
-          </Text>
-        )}
-
-        <Button
-          className="p-3 rounded-3xl mt-8"
-          backgroundColor={Colors.brand}
-          borderRadius={5}
-          onPress={handleSubmit(onSubmit)}
-          disabled={isLoading}>
-          <Text className="text-white text-center text-base  font-poppins-semibold">
-            PERBARUI
-          </Text>
-        </Button>
-      </View>
-      <Modal animationType="fade" transparent={true} visible={modalVisible}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image 
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
+            shadowRadius: 2,
+          }}>
+          <View className="flex-row mb-6">
+            <Back
+              size={30}
+              color={"black"}
+              action={() => navigation.goBack()}
+              className="mr-5 "
+              style={{
+                padding: 4,
+              }}
             />
-            {/* <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-            /> */}
-            <Text style={styles.successTextTitle}>
-              Data berhasil diperbarui
-            </Text>
-            <Text style={styles.successText}>
-              Silahkan memastikan bahwa data yang anda kirim telah benar !
+            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
+              Ganti Password
             </Text>
           </View>
-        </View>
-      </Modal>
+          <Controller
+            control={control}
+            name="old_password"
+            rules={{ required: "Password Lama Harus Diisi" }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="text-black font-poppins-semibold mb-2">
+                  Password Lama
+                </Text>
+                <TextField
+                  secureTextEntry={!isPasswordVisible}
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.old_password}
+                />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: "53%",
+                  }}>
+                  <Ionicons
+                    name={isPasswordVisible ? "eye-outline" : "eye-off-outline"}
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          {errors.old_password && (
+            <Text style={{ color: "red" }} className="mb-2 ">
+              {errors.old_password.message}
+            </Text>
+          )}
 
-      <Modal animationType="fade" transparent={true} visible={errorModalVisible}>
-        <View style={styles.overlayView}>
-          <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image 
-              source={require("@/assets/images/error.png")}
-              style={styles.lottie}
-              />
-              <Text style={[styles.successTextTitle, styles.errortitle]}>
-                Gagal memperbarui data
-              </Text>
-              <Text style={[styles.successText, styles.errorText]}>
-                {errorMessage}
-              </Text>
-              {/* <TouchableOpacity 
-                style={styles.errorButton}
-                onPress={() => setErrorModalVisible(false)}>
-                  <Text style={styles.errorButtonText}>Tutup</Text>
-              </TouchableOpacity> */}
-          </View>
+          <Controller
+            control={control}
+            name="password"
+            rules={{
+              required: "Password Baru Harus Diisi",
+              minLength: { value: 12, message: "Password minimal 12 karakter" },
+              pattern: {
+                value: /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/,
+                message:
+                  "Password harus mengandung huruf kecil, huruf kapital, dan angka",
+              },
+            }}
+            render={({ field: { onChange, value } }) => (
+              <View>
+                <Text className="font-poppins-semibold my-2 text-black">
+                  Password Baru
+                </Text>
+                <TextField
+                  mode="outlined"
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  secureTextEntry={!isPasswordVisible2}
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.password}
+                />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility2}
+                  style={{
+                    position: "absolute",
+                    right: 10,
+                    top: "57%",
+                  }}>
+                  <Ionicons
+                    name={
+                      isPasswordVisible2 ? "eye-outline" : "eye-off-outline"
+                    }
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          {errors.password && (
+            <Text style={{ color: "red" }} className="mb-2">
+              {errors.password.message}
+            </Text>
+          )}
+
+          <Controller
+            control={control}
+            name="password_confirmation"
+            rules={{
+              required: "Konfirmasi Password Baru Harus Diisi",
+              validate: value =>
+                value === getValues("password") || "Password tidak cocok",
+            }}
+            render={({ field: { onChange, value } }) => (
+              <View className="mt-2">
+                <Text className="font-poppins-semibold mb-2 text-black">
+                  Konfirmasi Password Baru
+                </Text>
+                <TextField
+                  mode="outlined"
+                  secureTextEntry={!isPasswordVisible3}
+                  className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                  onChangeText={onChange}
+                  value={value}
+                  error={!!errors.password_confirmation}
+                />
+                <TouchableOpacity
+                  onPress={togglePasswordVisibility3}
+                  style={{
+                    position: "absolute",
+                    top: "53%",
+                    right: 10,
+                  }}>
+                  <Ionicons
+                    name={
+                      isPasswordVisible3 ? "eye-outline" : "eye-off-outline"
+                    }
+                    size={20}
+                    color={Colors.brand}
+                  />
+                </TouchableOpacity>
+              </View>
+            )}
+          />
+          {errors.password_confirmation && (
+            <Text style={{ color: "red" }} className="mb-2">
+              {errors.password_confirmation.message}
+            </Text>
+          )}
+
+          <Button
+            className="p-3 rounded-3xl mt-8"
+            backgroundColor={Colors.brand}
+            borderRadius={5}
+            onPress={handleSubmit(onSubmit)}
+            disabled={isLoading}>
+            <Text className="text-white text-center text-base  font-poppins-semibold">
+              PERBARUI
+            </Text>
+          </Button>
         </View>
-      </Modal>
+        <Modal animationType="fade" transparent={true} visible={modalVisible}>
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+              <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+                <IonIcons
+                  size={40}
+                  color="#95bb72"
+                  name="checkmark-done-sharp"
+                />
+              </View>
+              <Text className="text-xl font-poppins-semibold text-black mb-3">
+                Data Berhasil Dirubah !
+              </Text>
+
+              <View className="w-full h-px bg-gray-200 mb-4" />
+
+              <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+                Pastikan Data perusahaan kamu sudah benar / sesuai !
+              </Text>
+            </View>
+          </View>
+        </Modal>
+
+        <Modal
+          animationType="fade"
+          transparent={true}
+          visible={errorModalVisible}>
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+              <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+                <IonIcons
+                  size={40}
+                  color="#95bb72"
+                  name="checkmark-done-sharp"
+                />
+              </View>
+              <Text className="text-xl font-poppins-semibold text-black mb-3">
+                Data Gagal Dirubah !
+              </Text>
+
+              <View className="w-full h-px bg-gray-200 mb-4" />
+
+              <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+                {errorMessage ||
+                  "Terjadi kesalahan saat memperbarui data. Silahkan coba lagi !"}
+              </Text>
+            </View>
+          </View>
+        </Modal>
       </View>
     </>
   );
@@ -301,41 +310,45 @@ const styles = StyleSheet.create({
     alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.7)",
   },
+
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     paddingVertical: 30,
     borderRadius: 10,
   },
-  lottie: {
-    width: 170,
-    height: 170,
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
-
+  lottie: {
+    width: 200,
+    height: 200,
+  },
   successTextTitle: {
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontFamily: "Poppins-Bold",
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
-  errorContainer: {
-  },
+  errorContainer: {},
   errortitle: {
-    color: '#FF4B4B',
+    color: "#FF4B4B",
   },
   errorText: {
-    color: '#666',
+    color: "#fff",
   },
 });
 

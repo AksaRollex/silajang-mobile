@@ -6,9 +6,8 @@ import {
   TouchableOpacity,
   Dimensions,
   Modal,
+  ScrollView,
 } from "react-native";
-import { MenuView } from "@react-native-menu/menu";
-import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import Back from "../../components/Back";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -36,73 +35,59 @@ const TrackingPengujian = ({ navigation }) => {
     [tahun],
   );
 
-  const mapStatusPengujian = status => {
-    return status < 0 ? "Revisi" : "Dalam Proses";
-  };
-
   const renderItem = ({ item }) => (
-    <View style={styles.card}>
-      <View style={styles.roundedBackground} className="rounded-br-full" />
+    console.log(item),
+    (
+      <View style={styles.card}>
+        <View style={styles.roundedBackground} className="rounded-br-full" />
 
-      <TouchableOpacity onPress={() => navigation.navigate("TrackingList", { selected: item })} style={styles.cardWrapper}>
-        {/* Left section with rounded background */}
-        <View style={styles.leftSection}>
-          <View style={styles.cardContent}>
-            <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
-              Kode
+        <TouchableOpacity
+          onPress={() =>
+            navigation.navigate("TrackingList", { selected: item })
+          }
+          style={styles.cardWrapper}>
+          {/* Left section with rounded background */}
+          <View style={styles.leftSection}>
+            <View style={styles.cardContent}>
+              <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+                Kode
+              </Text>
+              <Text className=" font-poppins-regular text-black  text-base">
+                {item.kode}
+              </Text>
+              <Text className=" font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+                Lokasi
+              </Text>
+              <Text className="text-black font-poppins-regular text-base">
+                {item.lokasi}
+              </Text>
+              <Text className="text-slate-600 text-xs font-poppins-semibold mt-3 uppercase ">
+                Status
+              </Text>
+              <Text className="text-indigo-600 font-poppins-regular ">
+                {item.text_status}
+              </Text>
+            </View>
+          </View>
+
+          {/* Middle section */}
+          <View style={styles.cardContents}>
+            <Text className=" uppercase text-xs text-slate-600 font-poppins-semibold">
+              Tanggal Diterima
             </Text>
-            <Text className=" font-poppins-regular text-black  text-base">
-              {item.kode}
+            <Text className=" text-base text-black font-poppins-regular">
+              {item.tanggal_diterima || "Tanggal Belum Tersedia"}
             </Text>
-            <Text className=" font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
-              Lokasi
+            <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
+              Tanggal Selesai
             </Text>
-            <Text className="text-black font-poppins-regular text-base">
-              {item.lokasi}
-            </Text>
-            <Text className="text-slate-600 text-xs font-poppins-semibold mt-3 uppercase ">
-              Status
-            </Text>
-            <Text className="text-indigo-600 font-poppins-regular ">
-              {item.text_status}
+            <Text className=" text-base text-black font-poppins-regular">
+              {item.tanggal_selesai || "Tanggal Belum Tersedia"}
             </Text>
           </View>
-        </View>
-
-        {/* Middle section */}
-        <View style={styles.cardContents}>
-          <Text className=" uppercase text-xs text-slate-600 font-poppins-semibold">
-            Tanggal Diterima
-          </Text>
-          <Text className=" text-base text-black font-poppins-regular">
-            {item.tanggal_diterima || "Tanggal Belum Tersedia"}
-          </Text>
-          <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
-            Tanggal Selesai
-          </Text>
-          <Text className=" text-base text-black font-poppins-regular">
-            {item.tanggal_selesai || "Tanggal Belum Tersedia"}
-          </Text>
-        </View>
-
-        {/* Right section (dots menu)
-        <View style={styles.cardActions} className="mb-4 ">
-          <MenuView
-            actions={[
-              {
-                id: "Tracking",
-                title: "Tracking",
-                systemIcon: "list.bullet",
-              },
-            ]}
-            onPressAction={() => {
-              navigation.navigate("TrackingList", { selected: item });
-            }}>
-            <Entypo name="dots-three-vertical" size={20} color="#312e81" />
-          </MenuView>
-        </View> */}
-      </TouchableOpacity>
-    </View>
+        </TouchableOpacity>
+      </View>
+    )
   );
 
   const filtah = () => {
@@ -110,7 +95,7 @@ const TrackingPengujian = ({ navigation }) => {
       <>
         <View className="flex-row justify-end">
           <TouchableOpacity
-            onPress={handleFilterPress} // Gunakan handler terpisah
+            onPress={handleFilterPress}
             style={{
               flexDirection: "row",
               alignItems: "center",
@@ -147,6 +132,20 @@ const TrackingPengujian = ({ navigation }) => {
       { length: currentYear - 2021 },
       (_, i) => 2022 + i,
     );
+    const [tempYear, setTempYear] = useState(selectedYear);
+
+    useEffect(() => {
+      if (visible) {
+        setTempYear(selectedYear);
+      }
+    }, [visible]);
+
+    const handleConfirm = () => {
+      if (tempYear) {
+        onSelect(tempYear);
+      }
+    };
+    const canConfirm = tempYear;
 
     return (
       <Modal
@@ -154,42 +153,47 @@ const TrackingPengujian = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun</Text>
+              <Text style={styles.modalTitle}>Pilih Tahun </Text>
               <TouchableOpacity onPress={onClose}>
                 <MaterialIcons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
-            <View style={styles.yearList}>
-              {years.map(year => (
-                <TouchableOpacity
-                  key={year}
-                  style={[
-                    styles.yearItem,
-                    selectedYear === year && styles.selectedYear,
-                  ]}
-                  onPress={() => {
-                    console.log(onSelect(year));
-                    onSelect(year);
-                    onClose();
-                  }}>
-                  <Text
-                    style={[
-                      styles.yearText,
-                      selectedYear === year && styles.selectedYearText,
-                    ]}>
-                    {year}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View className=" ">
+              <View className="flex-col items-center justify-center">
+                <ScrollView className="max-h-64">
+                  {years.map(year => (
+                    <TouchableOpacity
+                      key={year}
+                      className={`mt-2 justify-center items-center ${
+                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                      }`}
+                      onPress={() => setTempYear(year)}>
+                      <Text className="text-black font-poppins-semibold my-1">
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
@@ -211,10 +215,11 @@ const TrackingPengujian = ({ navigation }) => {
           </View>
           <View className="w-full h-full">
             <Paginate
-              ref={paginateRef}
+              key={refreshKey}
               url="/tracking"
               className="mb-20"
               Plugin={filtah}
+              ref={paginateRef}
               payload={{ tahun: tahun }}
               renderItem={renderItem}
             />

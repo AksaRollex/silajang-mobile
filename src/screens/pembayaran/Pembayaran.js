@@ -8,6 +8,7 @@ import {
   Dimensions,
   ImageBackground,
   RefreshControl,
+  Image,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -213,93 +214,92 @@ export default function Pembayaran() {
 
             <Text style={styles.sectionTitle}>Aktivitas Terakhir</Text>
             <View style={styles.activityContainer}>
-              {data?.map((activity, index) => (
-                <View key={index} style={styles.activityCard}>
-                  <View style={styles.activityBadge}>
-                    <MaterialIcons name="assignment" size={20} color="#FFF" />
-                  </View>
-
-                  <View style={styles.activityContent}>
-                    <View style={styles.activityHeader}>
-                      <View style={styles.locationContainer}>
-                        <MaterialIcons
-                          name="location-on"
-                          size={16}
-                          color="#4CAF50"
-                        />
-                        <Text style={styles.locationText} numberOfLines={1}>
-                          {activity.lokasi}
-                        </Text>
-                      </View>
+              {data && data.length > 0 ? (
+                data?.map((activity, index) => (
+                  <View key={index} style={styles.activityCard}>
+                    <View style={styles.activityBadge}>
+                      <MaterialIcons name="assignment" size={20} color="#FFF" />
                     </View>
-                    <View style={styles.divider} />
-                    <View style={styles.infoSection}>
-                      <View style={styles.infoRow}>
-                        <MaterialIcons name="code" size={16} color="#666" />
-                        <View style={styles.infoGroup}>
-                          <Text style={styles.infoLabel}>Kode</Text>
-                          <Text style={styles.infoValue} numberOfLines={1}>
-                            {activity.kode || "Error, Harap Refresh"}
-                          </Text>
-                        </View>
-                      </View>
 
-                      <View style={styles.infoRow}>
-                        <MaterialIcons name="done" size={16} color="#666" />
-                        <View style={styles.infoGroup}>
-                          <Text style={[styles.infoLabel]}>
-                            Status Pembayaran
-                          </Text>
-                          <Text style={[styles.infoValue]}>
-                            {activity.payment?.status || "Error, Harap Refresh"}
-                            {/* {activity.payment?.status === "pending"
-                              ? "Pending"
-                              : "Error, Harap Refresh"}
-                            {activity.payment?.status === "success"
-                              ? "Sukses"
-                              : "Error, Harap Refresh"}
-                            {activity.payment?.status === "failed"
-                              ? "Gagal"
-                              : "Error, Harap Refresh"}
-                            {activity.payment?.status === "expired"
-                              ? "Expired"
-                              : "Error, Harap Refresh"} */}
-                          </Text>
+                    <View style={styles.activityContent}>
+                      <View style={styles.infoSection}>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons name="location-pin" size={16} color="#666" />
+                          <View style={styles.infoGroup}>
+                            <Text style={styles.infoLabel}>Lokasi </Text>
+                            <Text style={styles.infoValue} numberOfLines={1}>
+                              {activity.lokasi}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={styles.infoRow}>
-                        <MaterialIcons
-                          name="account-balance-wallet"
-                          size={16}
-                          color="#666"
-                        />
-                        <View style={styles.infoGroup}>
-                          <Text style={styles.infoLabel}>Tipe Pembayaran</Text>
-                          <Text style={styles.infoValue}>
-                            {activity.payment_type || "Error, Harap Refresh"}
-                          </Text>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons name="code" size={16} color="#666" />
+                          <View style={styles.infoGroup}>
+                            <Text style={styles.infoLabel}>Kode</Text>
+                            <Text style={styles.infoValue} numberOfLines={1}>
+                              {activity.kode || "Error, Harap Refresh"}
+                            </Text>
+                          </View>
                         </View>
-                      </View>
-                      <View style={styles.infoRow}>
-                        <MaterialIcons
-                          name="attach-money"
-                          size={16}
-                          color="#666"
-                        />
-                        <View style={styles.infoGroup}>
-                          <Text style={styles.infoLabel}>Total Harga</Text>
-                          <Text style={styles.infoValue}>
-                            {rupiah(
-                              activity.payment?.jumlah ||
-                                "Error, Harap Refresh",
-                            )}
-                          </Text>
+
+                        <View style={styles.infoRow}>
+                          <MaterialIcons name="done" size={16} color="#666" />
+                          <View style={styles.infoGroup}>
+                            <Text style={[styles.infoLabel]}>
+                              Status Pembayaran
+                            </Text>
+                            <Text style={[styles.infoValue]}>
+                              {activity.payment?.status ||
+                                "Error, Harap Refresh"}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons
+                            name="account-balance-wallet"
+                            size={16}
+                            color="#666"
+                          />
+                          <View style={styles.infoGroup}>
+                            <Text style={styles.infoLabel}>
+                              Tipe Pembayaran
+                            </Text>
+                            <Text style={styles.infoValue}>
+                              {activity.payment_type || "Error, Harap Refresh"}
+                            </Text>
+                          </View>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons
+                            name="attach-money"
+                            size={16}
+                            color="#666"
+                          />
+                          <View style={styles.infoGroup}>
+                            <Text style={styles.infoLabel}>Total Harga</Text>
+                            <Text style={styles.infoValue}>
+                              {rupiah(
+                                activity.payment?.jumlah ||
+                                  "Error, Harap Refresh",
+                              )}
+                            </Text>
+                          </View>
                         </View>
                       </View>
                     </View>
                   </View>
+                ))
+              ) : (
+                <View style={styles.noActivityContainer}>
+                  <Image
+                    source={require("@/assets/images/pulu.png")}
+                    className="w-60 h-60 opacity-60"
+                  />
+                  <Text className="text-gray-500 font-poppins-regular ">
+                    Tidak ada aktivitas terakhir
+                  </Text>
                 </View>
-              ))}
+              )}
             </View>
           </View>
         </ScrollView>
@@ -311,10 +311,31 @@ export default function Pembayaran() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f5f5f5",
+    backgroundColor: "#F9FAFB",
   },
   scrollContent: {
     padding: 16,
+  },
+  noActivityContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
+  noActivityIcon: {
+    marginBottom: 10,
+  },
+  noActivityText: {
+    color: "#666",
+    fontSize: 16,
+    fontWeight: "500",
+    fontFamily: "Poppins-SemiBold",
   },
   welcomeCard: {
     backgroundColor: "#FFFFFF",

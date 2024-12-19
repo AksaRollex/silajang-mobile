@@ -1,5 +1,12 @@
 import React, { useState } from "react";
-import { Modal, View, Text, TouchableOpacity, StyleSheet, Image } from "react-native";
+import {
+  Modal,
+  View,
+  Text,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from "react-native";
 import axios from "../libs/axios";
 import LottieView from "lottie-react-native";
 import Toast from "react-native-toast-message";
@@ -19,36 +26,31 @@ const ConfirmationModal = ({
     transparent={true}
     visible={visible}
     onRequestClose={onCancel}>
-    <View style={styles.centeredView}>
-      <View style={[styles.modalView]}>
-        <View>
-          <View>
-            {/* <Image source={require("@/assets/images/sampah1.png")}
-              className="h-32 w-32 right-4 mb-5"
-              /> */}
-            {/* <IonIcons name="trash" size={80} color="red" /> */}
-          </View>
+    <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+        <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+          <IonIcons size={40} color="#f43f5e" name="trash-outline" />
         </View>
-        <View
-          style={{
-            flexDirection: "column",
-            alignItems: "center",
-            flex: 1,
-          }}>
-          <View style={{ alignItems: "center" }}>
-            <Text style={styles.modalTitle}>{title}</Text>
-            <Text style={styles.modalText}>{message}</Text>
-            <View style={styles.buttonContainer}>
-              <TouchableOpacity style={styles.cancelButton} onPress={onCancel}>
-                <Text style={styles.cancelButtonText}>Batalkan</Text>
-              </TouchableOpacity>
-              <TouchableOpacity
-                style={styles.confirmButton}
-                onPress={onConfirm}>
-                <Text style={styles.confirmButtonText}>Ya, Hapus</Text>
-              </TouchableOpacity>
-            </View>
-          </View>
+        <Text className="text-xl font-poppins-semibold text-black mb-3">
+          {title}
+        </Text>
+
+        <View className="w-full h-px bg-gray-200 mb-4" />
+
+        <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+          {message}
+        </Text>
+        <View className="flex-row w-full justify-between">
+          <TouchableOpacity
+            className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+            onPress={onCancel}>
+            <Text style={styles.cancelButtonText}>Batalkan</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+            className="flex-1 ml-3 bg-red-500 py-3 rounded-xl items-center"
+            onPress={onConfirm}>
+            <Text style={styles.confirmButtonText}>Ya, Hapus</Text>
+          </TouchableOpacity>
         </View>
       </View>
     </View>
@@ -57,21 +59,19 @@ const ConfirmationModal = ({
 
 const SuccessOverlay = ({ visible, message }) => (
   <Modal animationType="fade" transparent={true} visible={visible}>
-    <View style={styles.overlayView}>
-      <View style={styles.successContainer}>
-        <Image 
-          source={require("@/assets/images/cek.png")}
-          style={styles.lottie}
-        />
-        {/* <LottieView
-          source={require("../../assets/lottiefiles/success-animation.json")}
-          autoPlay
-          loop={false}
-          style={styles.lottie}
-        /> */}
-        <Text style={styles.successTextTitle}>Data berhasil di hapus</Text>
-        <Text style={styles.successText}>
-          Data yang telah di hapus sudah tidak dapat di kembalikan kembali !
+    <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+        <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+          <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+        </View>
+        <Text className="text-xl font-poppins-semibold text-black mb-3">
+          Berhasil Di Hapus !
+        </Text>
+
+        <View className="w-full h-px bg-gray-200 mb-4" />
+
+        <Text className="text-md text-center text-gray-600  font-poppins-regular">
+          Data yang telah dihapus tidak dapat dikembalikan !
         </Text>
       </View>
     </View>
@@ -79,17 +79,19 @@ const SuccessOverlay = ({ visible, message }) => (
 );
 const FailedOverlay = ({ visible, message }) => (
   <Modal animationType="fade" transparent={true} visible={visible}>
-    <View style={styles.overlayView}>
-      <View style={styles.successContainer}>
-        <LottieView
-          source={require("../../assets/lottiefiles/failed-animation.json")}
-          autoPlay
-          loop={false}
-          style={styles.lottie}
-        />
-        <Text style={styles.failedTextTitle}>Data gagal di hapus</Text>
-        <Text style={styles.failedText}>
-          Terjadi kesalahan, silahkan coba lagi untuk menghapus data !
+    <View className="flex-1 justify-center items-center bg-black/50">
+      <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+        <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+          <IonIcons size={40} color="#f43f5e" name="close-sharp" />
+        </View>
+        <Text className="text-xl font-poppins-semibold text-black mb-3">
+          Berhasil Gagal Dihapus !
+        </Text>
+
+        <View className="w-full h-px bg-gray-200 mb-4" />
+
+        <Text className="text-md text-center text-gray-600 font-poppins-regular">
+          Coba untuk menghapus kembali !
         </Text>
       </View>
     </View>
@@ -171,6 +173,12 @@ const styles = StyleSheet.create({
     // alignItems: "center",
     backgroundColor: "rgba(0, 0, 0, 0.5)",
   },
+  logo: {
+    width: 110,
+    height: 110,
+    marginBottom: 20,
+    tintColor: "red",
+  },
   modalView: {
     margin: 20,
     backgroundColor: "white",
@@ -189,18 +197,19 @@ const styles = StyleSheet.create({
     marginBottom: 15,
     textAlign: "center",
     fontFamily: "Poppins-SemiBold",
-    color: "#333",
+    color: "#ff0000",
     fontSize: 18,
   },
   modalText: {
     marginBottom: 15,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "#333",
+    color: "#fff",
   },
   buttonContainer: {
     flexDirection: "row",
-    width: "100%",
+    justifyContent: "center ",
+    alignItems: "center ",
   },
   confirmButton: {
     backgroundColor: "#ffcbd1",
@@ -212,7 +221,7 @@ const styles = StyleSheet.create({
   },
 
   confirmButtonText: {
-    color: "#de0a26",
+    color: "#fff",
     fontFamily: "Poppins-SemiBold",
     textAlign: "center",
   },
@@ -238,15 +247,13 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.8)",
   },
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     borderRadius: 10,
-    paddingVertical: 30,
   },
   lottie: {
     width: 170,
@@ -255,21 +262,21 @@ const styles = StyleSheet.create({
 
   successTextTitle: {
     textAlign: "center",
-    color: "black",
+    color: "#77DD77",
     fontSize: rem(1.5),
     marginBottom: rem(1.5),
     marginTop: rem(1),
-    fontFamily: "Poppins-Bold",
+    fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 16,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
   failedTextTitle: {
     textAlign: "center",
-    color: "black",
+    color: "#FF4B4B",
     fontSize: rem(1.5),
     fontFamily: "Poppins-SemiBold",
 
@@ -279,8 +286,7 @@ const styles = StyleSheet.create({
   failedText: {
     fontSize: 14,
     fontFamily: "Poppins-Regular",
-
     textAlign: "center",
-    color: "black",
+    color: "#fff",
   },
 });
