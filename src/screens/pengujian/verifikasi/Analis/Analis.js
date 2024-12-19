@@ -333,7 +333,7 @@ const Analis = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        className="bottom-2"
+        className="bottom-3"
       />
 
       <DeleteConfirmationModal />

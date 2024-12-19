@@ -19,7 +19,7 @@ export default function IndexKonfigurasi() {
   const roleAccess = {
     admin: {
       sections: ['konfigurasi'],
-      items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian']
+      items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian','denda']
     },
     'kepala-upt': {
       sections: ['konfigurasi'],
@@ -116,9 +116,8 @@ export default function IndexKonfigurasi() {
               {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
               <Text className="font-poppins-semibold text-black text-lg ml-2">Konfigurasi</Text>
             </View>
-
+            {hasItemAccess('denda') && (
             <View>
-
                 <List.Item
 
                   style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
@@ -136,6 +135,7 @@ export default function IndexKonfigurasi() {
                 />
                 <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
               </View>
+            )}
 
 
             {hasItemAccess('log-tte') && (
