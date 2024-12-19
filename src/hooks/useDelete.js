@@ -75,6 +75,7 @@ export const useDelete = (callback) => {
       onError && onError(error);
     } finally {
       onSettled && onSettled();
+      hideConfirmationModal();
     }
   };
 
