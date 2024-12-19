@@ -21,6 +21,9 @@ import axios from '@/src/libs/axios';
 import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from '../../main/Index';
+
+
 
 const CertificateBadge = ({ value }) => {
     return value ? (
@@ -240,6 +243,14 @@ const LaporanHasilPengujian = ({ navigation }) => {
     const [tteModalVisible, setTteModalVisible] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
     const [tteType, setTteType] = useState('system');
+    const { setHeader } = useHeaderStore();
+
+    React.useLayoutEffect(() => {
+        setHeader(false)
+
+        return () => setHeader(true)
+    }, [])
+
 
     const handleTTESubmit = async (formData) => {
         try {
@@ -601,81 +612,93 @@ const LaporanHasilPengujian = ({ navigation }) => {
 
     return (
         <View className="bg-[#ececec] w-full h-full">
+            <View
+                className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                style={{ backgroundColor: '#fff' }}
+            >
+                <View className="flex-row items-center">
+                    <Ionicons
+                        name="arrow-back-outline"
+                        onPress={() => navigation.goBack()}
+                        size={25}
+                        color="#312e81"
+                    />
+                    <Text className="text-[20px] font-poppins-medium text-black ml-4">Laporan Hasil Pengujian</Text>
+                </View>
+                <View className="bg-rose-600 rounded-full">
+                    <Ionicons
+                        name="newspaper"
+                        size={18}
+                        color={'white'}
+                        style={{ padding: 5 }}
+                    />
+                </View>
+            </View>
+
             <View className="p-4">
-                <View className="flex-row items-center space-x-2">
-                    <View className="flex-col w-full">
-                        <View className="flex-row items-center space-x-2 mb-4">
-                            <BackButton action={() => navigation.goBack()} size={26} />
-                            <View className="absolute left-0 right-2 items-center">
-                                <Text className="text-[20px] font-poppins-semibold text-black">Laporan Hasil Pengujian</Text>
+                <View className="flex-row justify-end space-x-2">
+                    <MenuView
+                        title="Pilih Tahun"
+                        actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
+                        onPressAction={({ nativeEvent }) => {
+                            const selectedOption = filterOptions.find(option => option.title === nativeEvent.event);
+                            if (selectedOption) {
+                                setSelectedYear(selectedOption.title);
+                            }
+                        }}
+                        shouldOpenOnLongPress={false}
+                    >
+                        <View >
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    backgroundColor: "white",
+                                    padding: 12,
+                                    borderRadius: 8,
+                                    width: 185,
+                                    borderColor: "#d1d5db",
+                                    borderWidth: 1
+                                }}>
+                                <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
+                                    {`Tahun: ${selectedYear}`}
+                                </Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color="black" />
                             </View>
                         </View>
+                    </MenuView>
 
-                        <View className="flex-row justify-end space-x-2">
-                            <MenuView
-                                title="Pilih Tahun"
-                                actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
-                                onPressAction={({ nativeEvent }) => {
-                                    const selectedOption = filterOptions.find(option => option.title === nativeEvent.event);
-                                    if (selectedOption) {
-                                        setSelectedYear(selectedOption.title);
-                                    }
-                                }}
-                                shouldOpenOnLongPress={false}
-                            >
-                                <View >
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            backgroundColor: "white",
-                                            padding: 12,
-                                            borderRadius: 8,
-                                            width: 185,
-                                            borderColor: "#d1d5db",
-                                            borderWidth: 1
-                                        }}>
-                                        <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
-                                            {`Tahun: ${selectedYear}`}
-                                        </Text>
-                                        <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-                                    </View>
-                                </View>
-                            </MenuView>
-
-                            <MenuView
-                                title="Pilih Bulan"
-                                actions={months.map(month => ({
-                                    id: month.id.toString(),
-                                    title: month.title,
-                                }))}
-                                onPressAction={({ nativeEvent }) => {
-                                    const monthId = parseInt(nativeEvent.event); // Parse string ke number
-                                    setSelectedMonth(monthId);
-                                }}
-                                shouldOpenOnLongPress={false}
-                            >
-                                <View>
-                                    <View
-                                        style={{
-                                            flexDirection: "row",
-                                            alignItems: "center",
-                                            backgroundColor: "white",
-                                            padding: 12,
-                                            borderRadius: 8,
-                                            width: 185,
-                                            borderColor: "#d1d5db",
-                                            borderWidth: 1
-                                        }}>
-                                        <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
-                                            {`Bulan: ${months.find(m => m.id === selectedMonth)?.title || 'Pilih'}`}
-                                        </Text>
-                                        <MaterialIcons name="arrow-drop-down" size={24} color="black" />
-                                    </View>
-                                </View>
-                            </MenuView>
+                    <MenuView
+                        title="Pilih Bulan"
+                        actions={months.map(month => ({
+                            id: month.id.toString(),
+                            title: month.title,
+                        }))}
+                        onPressAction={({ nativeEvent }) => {
+                            const monthId = parseInt(nativeEvent.event); // Parse string ke number
+                            setSelectedMonth(monthId);
+                        }}
+                        shouldOpenOnLongPress={false}
+                    >
+                        <View>
+                            <View
+                                style={{
+                                    flexDirection: "row",
+                                    alignItems: "center",
+                                    backgroundColor: "white",
+                                    padding: 12,
+                                    borderRadius: 8,
+                                    width: 185,
+                                    borderColor: "#d1d5db",
+                                    borderWidth: 1
+                                }}>
+                                <Text style={{ color: "black", flex: 1, textAlign: "center", fontFamily: "Poppins-SemiBold" }}>
+                                    {`Bulan: ${months.find(m => m.id === selectedMonth)?.title || 'Pilih'}`}
+                                </Text>
+                                <MaterialIcons name="arrow-drop-down" size={24} color="black" />
+                            </View>
                         </View>
-                    </View>
+                    </MenuView>
                 </View>
             </View>
 
@@ -691,7 +714,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     tahun: selectedYear,
                 }}
                 renderItem={renderItem}
-                className="mb-14"
+                className="bottom-2"
             />
 
             <Modal

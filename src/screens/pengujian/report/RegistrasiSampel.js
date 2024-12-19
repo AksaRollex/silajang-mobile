@@ -6,11 +6,13 @@ import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons"
 import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
 import {APP_URL} from "@env";
 import RNFetchBlob from 'rn-fetch-blob';
 import BackButton from "@/src/screens/components/BackButton";
+import { useHeaderStore } from "../../main/Index";
 
 const RegistrasiSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -22,6 +24,14 @@ const RegistrasiSampel = ({ navigation }) => {
 
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
+   const { setHeader } = useHeaderStore();
+      
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
+  
 
   const generateYears = () => {
     let years = [];
@@ -200,15 +210,32 @@ const RegistrasiSampel = ({ navigation }) => {
   );
 
   return (
-    <View className="flex-1 bg-gray-100 relative">
-      <View className="bg-gray-100 p-4 shadow-sm">
-        <View className="flex-row justify-between items-center mb-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-lg font-poppins-bold text-black">Registrasi Sampel</Text>
-          <View style={{ width: 40 }} />
-        </View>
+     <View className="bg-[#ececec] w-full h-full">
+          <View
+            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+            style={{ backgroundColor: '#fff' }}
+          >
+            <View className="flex-row items-center">
+              <Ionicons
+                name="arrow-back-outline"
+                onPress={() => navigation.goBack()}
+                size={25}
+                color="#312e81"
+              />
+              <Text className="text-[20px] font-poppins-medium text-black ml-4">Registrasi Sampel</Text>
+            </View>
+            <View className="bg-teal-600 rounded-full">
+              <Ionicons
+                name="list"
+                size={18}
+                color={'white'}
+                style={{ padding: 5 }}
+              />
+            </View>
+          </View>
 
-        <View className="flex-row justify-end space-x-3">
+        <View className= "p-4">
+        <View className="flex-row justify-center">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -275,6 +302,7 @@ const RegistrasiSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={CardRegistrasiSampel}
+        className="bottom-2"
       />
 
       <TouchableOpacity

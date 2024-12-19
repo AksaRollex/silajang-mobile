@@ -23,6 +23,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from '../../main/Index';
 
 const TTEModal = ({ visible, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -31,6 +32,14 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
   });
   const [ttds, setTtds] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+   const { setHeader } = useHeaderStore();
+      
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
+  
 
   useEffect(() => {
     const fetchTTDs = async () => {
@@ -433,14 +442,32 @@ const KendaliMutu = ({ navigation }) => {
   };
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <View className="bg-gray-100 p-4 shadow-sm">
-        <View className="flex-row items-center mb-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-          <Text className="text-lg ml-28 font-poppins-bold text-black">Kendali Mutu</Text>
-        </View>
-
-        <View className="flex-row justify-end space-x-3">
+    <View className="bg-[#ececec] w-full h-full">
+         <View
+           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+           style={{ backgroundColor: '#fff' }}
+         >
+           <View className="flex-row items-center">
+             <Ionicons
+               name="arrow-back-outline"
+               onPress={() => navigation.goBack()}
+               size={25}
+               color="#312e81"
+             />
+             <Text className="text-[20px] font-poppins-medium text-black ml-4">Kendali Mutu</Text>
+           </View>
+           <View className="bg-lime-600 rounded-full">
+             <Ionicons
+               name="create"
+               size={18}
+               color={'white'}
+               style={{ padding: 5 }}
+             />
+           </View>
+         </View>
+        
+        <View className="p-4">
+        <View className="flex-row justify-center">
           <MenuView
             title="Pilih Tahun"
             onPressAction={({ nativeEvent }) => {
@@ -519,6 +546,7 @@ const KendaliMutu = ({ navigation }) => {
         payload={paginatePayload}
         renderItem={CardKendaliMutu}
         onError={(error) => console.error('Paginate error:', error)}
+        className = "bottom-2"
       />
 
       <Modal
