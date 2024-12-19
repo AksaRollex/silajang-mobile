@@ -276,7 +276,7 @@ const Pengujian = ({ navigation }) => {
   const filtah = () => {
     return (
       <View className="flex-row justify-end gap-2 ">
-        <TouchableOpacity
+        {/* <TouchableOpacity
           onPress={handleTypePickerPress}
           className="flex-row items-center bg-[#ececec] px-2 py-3 rounded-md">
           <IonIcons name="card" size={24} color="black" />
@@ -284,7 +284,7 @@ const Pengujian = ({ navigation }) => {
             {types.find(t => t.id === type)?.text}
           </Text>
           <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-        </TouchableOpacity>
+        </TouchableOpacity> */}
         <TouchableOpacity
           onPress={handleDatePickerPress}
           className="flex-row items-center bg-[#ececec] px-2 py-1    rounded-md">
@@ -342,16 +342,16 @@ const Pengujian = ({ navigation }) => {
         <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun dan Bulan</Text>
+              {/* <Text style={styles.modalTitle}>Pilih Tahun</Text> */}
               <TouchableOpacity onPress={onClose}>
                 <MaterialIcons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
             <View className="flex-row ">
               <View className="w-1/2 flex-col items-center">
-                <Text className="text-black font-poppins-semibold text-base">
+                {/* <Text className="text-black font-poppins-semibold text-base">
                   Tahun
-                </Text>
+                </Text> */}
                 <ScrollView className="max-h-64">
                   {years.map(year => (
                     <TouchableOpacity
@@ -360,7 +360,7 @@ const Pengujian = ({ navigation }) => {
                         tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
                       }`}
                       onPress={() => setTempYear(year)}>
-                      <Text className="text-black font-poppins-regular">
+                      <Text className="text-black font-poppins-semibold my-1">
                         {year}
                       </Text>
                     </TouchableOpacity>
@@ -410,42 +410,42 @@ const Pengujian = ({ navigation }) => {
     );
   };
 
-  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
-    return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}>
-        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
-              <TouchableOpacity onPress={onClose}>
-                <MaterialIcons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.yearList} className="">
-              {types.map(item => (
-                <TouchableOpacity
-                  className={`mt-2 items-center ${
-                    selectedType === item.id
-                      ? "bg-[#ececec] p-3 rounded-md"
-                      : ""
-                  }`}
-                  key={item.id}
-                  onPress={() => onSelect(item.id)}>
-                  <Text className="text-black font-poppins-regular">
-                    {item.text}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
+  // const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
+  //   return (
+  //     <Modal
+  //       animationType="slide"
+  //       transparent={true}
+  //       visible={visible}
+  //       onRequestClose={onClose}>
+  //       <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+  //         <View style={styles.modalContent}>
+  //           <View style={styles.modalHeader}>
+  //             <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
+  //             <TouchableOpacity onPress={onClose}>
+  //               <MaterialIcons name="close" size={24} color="#000" />
+  //             </TouchableOpacity>
+  //           </View>
+  //           <View style={styles.yearList} className="">
+  //             {types.map(item => (
+  //               <TouchableOpacity
+  //                 className={`mt-2 items-center ${
+  //                   selectedType === item.id
+  //                     ? "bg-[#ececec] p-3 rounded-md"
+  //                     : ""
+  //                 }`}
+  //                 key={item.id}
+  //                 onPress={() => onSelect(item.id)}>
+  //                 <Text className="text-black font-poppins-regular">
+  //                   {item.text}
+  //                 </Text>
+  //               </TouchableOpacity>
+  //             ))}
+  //           </View>
+  //         </View>
+  //       </View>
+  //     </Modal>
+  //   );
+  // };
 
   return (
     <>
@@ -468,7 +468,7 @@ const Pengujian = ({ navigation }) => {
               className="mb-20"
               url="/pembayaran/multi-payment"
               Plugin={filtah}
-              payload={{ tahun, bulan, type }}
+              payload={{ tahun, bulan }}
               renderItem={CardPembayaran}
               ref={PaginateRef}></Paginate>
           </View>
@@ -481,12 +481,12 @@ const Pengujian = ({ navigation }) => {
           selectedYear={tahun}
           selectedMonth={bulan}
         />
-        <TypePicker
+        {/* <TypePicker
           visible={isTypePickerVisible}
           onClose={() => setIsTypePickerVisible(false)}
           onSelect={handleTypeSelect}
           selectedType={type}
-        />
+        /> */}
         <PDFConfirmationModal />
       </View>
     </>

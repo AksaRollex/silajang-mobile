@@ -7,7 +7,6 @@ import {
   Modal,
   Dimensions,
   StyleSheet,
-  Image,
   ImageBackground,
 } from "react-native";
 import axios from "@/src/libs/axios";
@@ -70,7 +69,7 @@ export default function Profile({ navigation }) {
   return (
     <ImageBackground
       source={require("../../../assets/images/background.png")}
-      style={{ flex: 1, height: "30%" }} // Pastikan gambar menutupi seluruh layar
+      style={{ flex: 1, height: "30%" }} 
       imageStyle={{
         borderBottomLeftRadius: 20,
         borderBottomRightRadius: 20,
@@ -79,7 +78,7 @@ export default function Profile({ navigation }) {
         {userData ? (
           <View className="z-10 bottom-20">
             <View className="w-full py-5 rounded-b-2xl">
-              <Text className="text-white text-xl font-poppins-bold mx-6 top-24">
+              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
                 Profil Saya
               </Text>
               <View className="w-full items-center mt-40 justify-center">
@@ -197,13 +196,12 @@ export default function Profile({ navigation }) {
             </TouchableOpacity>
             <View className="w-full h-px bg-gray-300 mt-1" />
             <View className="flex-end">
-              <View className="top-20 items-center justify-center flex-end">
+              <View className="top-3 items-center justify-center flex-end">
                 <Text className="flex-end">
                   <FooterText />
                 </Text>
               </View>
             </View>
-            {/* Modal Logout */}
             <Modal
               transparent={true}
               visible={modalVisible}
@@ -296,7 +294,6 @@ export default function Profile({ navigation }) {
                 </View>
               </View>
             </Modal>
-
             <Modal
               animationType="fade"
               transparent={true}

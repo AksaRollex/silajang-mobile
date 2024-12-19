@@ -2,15 +2,13 @@ import {
   View,
   Text,
   StyleSheet,
-  Modal,
   Dimensions,
   TouchableOpacity,
+  Modal,
   ScrollView,
 } from "react-native";
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
-import { MenuView } from "@react-native-menu/menu";
-import Entypo from "react-native-vector-icons/Entypo";
 import Paginate from "../../components/Paginate";
 import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
 import { API_URL } from "@env";
@@ -23,52 +21,19 @@ const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Pengujian = ({ navigation }) => {
   const PaginateRef = useRef();
-  const [tahun, setTahun] = useState(new Date().getFullYear());
-  const [bulan, setBulan] = useState(new Date().getMonth() + 1);
-  const [type, setType] = useState("va");
+  const [tahun, setTahun] = useState(new Date().getFullYear().toString());
   const [refreshKey, setRefreshKey] = useState(0);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isTypePickerVisible, setIsTypePickerVisible] = useState(false);
 
-  const bulans = [
-    { id: 1, text: "Januari" },
-    { id: 2, text: "Februari" },
-    { id: 3, text: "Maret" },
-    { id: 4, text: "April" },
-    { id: 5, text: "Mei" },
-    { id: 6, text: "Juni" },
-    { id: 7, text: "Juli" },
-    { id: 8, text: "Agustus" },
-    { id: 9, text: "September" },
-    { id: 10, text: "Oktober" },
-    { id: 11, text: "November" },
-    { id: 12, text: "Desember" },
-  ];
-
-  const types = [
-    { id: "va", text: "VA" },
-    { id: "qris", text: "QRIS" },
-  ];
-
-  const handleDateSelect = (selectedYear, selectedMonth) => {
-    setTahun(selectedYear);
-    setBulan(selectedMonth);
+  const handleDateSelect = selectedYear => {
+    setTahun(selectedYear.toString()); // Pastikan string
     setRefreshKey(prevKey => prevKey + 1);
     setIsDatePickerVisible(false);
   };
 
-  const handleTypeSelect = selectedType => {
-    setType(selectedType);
-    setRefreshKey(prevKey => prevKey + 1);
-    setIsTypePickerVisible(false);
-  };
-
   const handleDatePickerPress = () => {
     setIsDatePickerVisible(true);
-  };
-
-  const handleTypePickerPress = () => {
-    setIsTypePickerVisible(true);
   };
 
   const { download, PDFConfirmationModal } = useDownloadPDF({
@@ -265,177 +230,135 @@ const Pengujian = ({ navigation }) => {
 
   const filtah = () => {
     return (
-      <View className="flex-row justify-end gap-2 ">
-        <TouchableOpacity
-          onPress={handleTypePickerPress}
-          className="flex-row items-center bg-[#ececec] px-2 py-3 rounded-md">
-          <IonIcons name="card" size={24} color="black" />
-          <Text className="text-black font-poppins-regular  mx-2">
-            {types.find(t => t.id === type)?.text}
-          </Text>
-          <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={handleDatePickerPress}
-          className="flex-row items-center bg-[#ececec] px-2 py-1    rounded-md">
-          <IonIcons name="calendar" size={24} color="black" />
-          <View className="flex-col items-center">
-            <Text className="text-black font-poppins-regular  mx-2">
-              {bulans[bulan - 1]?.text}
-            </Text>
-
-            <Text className="text-black font-poppins-regular  mx-2">
-              {tahun}
-            </Text>
-          </View>
-          <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-        </TouchableOpacity>
-      </View>
+      <>
+        <View className=" flex-row justify-center gap-2">
+          <TouchableOpacity
+            onPress={handleDatePickerPress}
+            className="flex-row items-center bg-[#ececec]  rounded-md justify-between p-3">
+            <IonIcons name="calendar" size={24} color="black" />
+            <View className="flex-col items-center">
+              <Text className="text-black font-poppins-regular  mx-2">
+                {tahun}
+              </Text>
+            </View>
+            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+          </TouchableOpacity>
+        </View>
+      </>
     );
   };
 
-  const DatePicker = ({
-    visible,
-    onClose,
-    onSelect,
-    selectedYear,
-    selectedMonth,
-  }) => {
+  const DatePicker = ({ visible, onClose, onSelect, selectedYear }) => {
     const currentYear = new Date().getFullYear();
     const years = Array.from(
       { length: currentYear - 2021 },
       (_, i) => 2022 + i,
     );
     const [tempYear, setTempYear] = useState(selectedYear);
-    const [tempMonth, setTempMonth] = useState(selectedMonth);
 
     useEffect(() => {
       if (visible) {
         setTempYear(selectedYear);
-        setTempMonth(selectedMonth);
       }
     }, [visible]);
 
     const handleConfirm = () => {
-      if (tempYear && tempMonth) {
-        onSelect(tempYear, tempMonth);
+      if (tempYear) {
+        onSelect(tempYear);
       }
     };
-    const canConfirm = tempYear && tempMonth;
+    const canConfirm = tempYear;
 
     return (
       <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}>
-        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun dan Bulan</Text>
-              <TouchableOpacity onPress={onClose}>
-                <MaterialIcons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
-            <View className="flex-row ">
-              <View className="w-1/2 flex-col items-center">
-                <Text className="text-black font-poppins-semibold text-base">
-                  Tahun
-                </Text>
-                <ScrollView className="max-h-64">
-                  {years.map(year => (
-                    <TouchableOpacity
-                      key={year}
-                      className={`mt-2 justify-center items-center ${
-                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
-                      }`}
-                      onPress={() => setTempYear(year)}>
-                      <Text className="text-black font-poppins-regular">
-                        {year}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-              <View className="w-1/2 flex-col items-center">
-                <Text
-                  style={styles.sectionTitle}
-                  className="text-black font-poppins-semibold text-base">
-                  Bulan
-                </Text>
-                <ScrollView className="max-h-64">
-                  {bulans.map(month => (
-                    <TouchableOpacity
-                      key={month.id}
-                      className={`mt-2 justify-center items-center ${
-                        tempMonth === month.id
-                          ? "bg-[#ececec] p-3 rounded-md"
-                          : ""
-                      }`}
-                      onPress={() => setTempMonth(month.id)}>
-                      <Text className="text-black font-poppins-regular">
-                        {month.text}
-                      </Text>
-                    </TouchableOpacity>
-                  ))}
-                </ScrollView>
-              </View>
-            </View>
-
-            <View className="mt-4 px-4">
-              <TouchableOpacity
-                className={`py-3 rounded-md ${
-                  canConfirm ? "bg-blue-500" : "bg-gray-300"
-                }`}
-                disabled={!canConfirm}
-                onPress={handleConfirm}>
-                <Text className="text-white text-center font-poppins-semibold">
-                  Terapkan Filter
-                </Text>
-              </TouchableOpacity>
+      animationType="slide"
+      transparent={true}
+      visible={visible}
+      onRequestClose={onClose}>
+      <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+        <View style={styles.modalContent}>
+          <View style={styles.modalHeader}>
+            <Text style={styles.modalTitle}>Pilih Tahun</Text>
+            <TouchableOpacity onPress={onClose}>
+              <MaterialIcons name="close" size={24} color="#000" />
+            </TouchableOpacity>
+          </View>
+          <View className=" ">
+            <View className="flex-col items-center justify-center">
+              {/* <Text className="text-black font-poppins-semibold text-base">
+                Tahun
+              </Text> */}
+              <ScrollView className="max-h-64">
+                {years.map(year => (
+                  <TouchableOpacity
+                    key={year}
+                    className={`mt-2 justify-center items-center ${
+                      tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                    }`}
+                    onPress={() => setTempYear(year)}>
+                    <Text className="text-black font-poppins-semibold my-1">
+                      {year}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+              </ScrollView>
             </View>
           </View>
+
+          <View className="mt-4 px-4">
+            <TouchableOpacity
+              className={`py-3 rounded-md ${
+                canConfirm ? "bg-blue-500" : "bg-gray-300"
+              }`}
+              disabled={!canConfirm}
+              onPress={handleConfirm}>
+              <Text className="text-white text-center font-poppins-semibold">
+                Terapkan Filter
+              </Text>
+            </TouchableOpacity>
+          </View>
         </View>
-      </Modal>
+      </View>
+    </Modal>
     );
   };
 
-  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
-    return (
-      <Modal
-        animationType="slide"
-        transparent={true}
-        visible={visible}
-        onRequestClose={onClose}>
-        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-          <View style={styles.modalContent}>
-            <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
-              <TouchableOpacity onPress={onClose}>
-                <MaterialIcons name="close" size={24} color="#000" />
-              </TouchableOpacity>
-            </View>
-            <View style={styles.yearList} className="">
-              {types.map(item => (
-                <TouchableOpacity
-                  className={`mt-2 items-center ${
-                    selectedType === item.id
-                      ? "bg-[#ececec] p-3 rounded-md"
-                      : ""
-                  }`}
-                  key={item.id}
-                  onPress={() => onSelect(item.id)}>
-                  <Text className="text-black font-poppins-regular">
-                    {item.text}
-                  </Text>
-                </TouchableOpacity>
-              ))}
-            </View>
-          </View>
-        </View>
-      </Modal>
-    );
-  };
+  //  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
+  //    return (
+  //      <Modal
+  //        animationType="slide"
+  //        transparent={true}
+  //        visible={visible}
+  //        onRequestClose={onClose}>
+  //        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+  //          <View style={styles.modalContent}>
+  //            <View style={styles.modalHeader}>
+  //              <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
+  //              <TouchableOpacity onPress={onClose}>
+  //                <MaterialIcons name="close" size={24} color="#000" />
+  //              </TouchableOpacity>
+  //            </View>
+  //            <View style={styles.yearList} className="">
+  //              {types.map(item => (
+  //                <TouchableOpacity
+  //                  className={`mt-2 items-center ${
+  //                    selectedType === item.id
+  //                      ? "bg-[#ececec] p-3 rounded-md"
+  //                      : ""
+  //                  }`}
+  //                  key={item.id}
+  //                  onPress={() => onSelect(item.id)}>
+  //                  <Text className="text-black font-poppins-regular">
+  //                    {item.text}
+  //                  </Text>
+  //                </TouchableOpacity>
+  //              ))}
+  //            </View>
+  //          </View>
+  //        </View>
+  //      </Modal>
+  //    );
+  //  };
 
   return (
     <>
@@ -458,7 +381,8 @@ const Pengujian = ({ navigation }) => {
               className="mb-20"
               url="/pembayaran/pengujian"
               Plugin={filtah}
-              payload={{ tahun, bulan, type }}
+              plugan={false}
+              payload={{ tahun: tahun }}
               renderItem={CardPembayaran}
               ref={PaginateRef}></Paginate>
           </View>
@@ -469,14 +393,13 @@ const Pengujian = ({ navigation }) => {
           onClose={() => setIsDatePickerVisible(false)}
           onSelect={handleDateSelect}
           selectedYear={tahun}
-          selectedMonth={bulan}
         />
-        <TypePicker
+        {/* <TypePicker
           visible={isTypePickerVisible}
           onClose={() => setIsTypePickerVisible(false)}
           onSelect={handleTypeSelect}
           selectedType={type}
-        />
+        /> */}
         <PDFConfirmationModal />
       </View>
     </>

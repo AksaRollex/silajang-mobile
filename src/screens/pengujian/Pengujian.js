@@ -4,35 +4,36 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
-  RefreshControl,
   ScrollView,
   Dimensions,
-  useWindowDimensions,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import { useUser } from "@/src/services";
-import FooterText from "../components/FooterText";
 import axios from "@/src/libs/axios";
-import { Colors } from "react-native-ui-lib";
-import { color } from "@rneui/base";
 import { useQuery } from "@tanstack/react-query";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-
 const { width } = Dimensions.get("window");
 
 export default function Pengujian() {
-  const [refreshing, setRefreshing] = useState(false);
   const [dashboard, setDashboard] = useState(null);
   const [loading, setLoading] = useState(true);
   const { data: user } = useUser();
   const [data, setData] = useState([]);
+  
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    fetchUserData();
+    refetch();
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, [fetchUserData, refetch]);
 
   const navigation = useNavigation();
-  const window = useWindowDimensions();
-  // const [tahun, setTahun] = useState(new Date().getFullYear());
 
   const currentYear = new Date().getFullYear();
 
@@ -53,23 +54,8 @@ export default function Pengujian() {
       });
   }, [user.role.name]);
 
-  // const fetchData = useCallback(() => {
-  //   setLoading(true);
-  //   setRefreshing(true);
-  //   axios.get('/dashboard/history')
-  //     .then(response => {
-  //       setData(response.data.data);
-  //       console.log(response.data.data)
-  //   }).catch(() => {
-  //       console.error("error fetching data dashboard", error);
-  //   }).finally(() => {
-  //       setRefreshing(false);
-  //       setLoading(false);
-  //   })
-  // })
-
-  useQuery({
-    queryKey: ["history"],
+  const { refetch } = useQuery({
+    queryKey: ["historiPengujian"],
     queryFn: async () =>
       await axios.get("/dashboard/history").then(res => res.data.data),
 
@@ -82,10 +68,8 @@ export default function Pengujian() {
 
   useEffect(() => {
     fetchUserData();
-    // fetchData();
   }, [fetchUserData]);
 
-  // Data dummy untuk statistik
   const stats = [
     {
       label: "Permohonan Baru",
@@ -124,37 +108,27 @@ export default function Pengujian() {
     },
   ];
 
-  const recentActivity = [
-    { title: "Pengujian #123", status: "Dalam Proses", date: "22 Oct 2024" },
-    { title: "Pengujian #122", status: "Selesai", date: "20 Oct 2024" },
-  ];
-
   return (
     <>
       <View style={styles.container}>
         <ScrollView
           className="flex-col"
           showsVerticalScrollIndicator={false}
-          stickyHeaderIndices={[]}>
+          stickyHeaderIndices={[]}
+          refreshControl={
+            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+          }>
           <ImageBackground
             source={require("../../../assets/images/background.png")}
             style={{
               flex: 1,
-              height: "70%", // Pastikan gambar menutupi area yang diinginkan
-              // borderBottomLeftRadius: 20,
-              // borderBottomRightRadius: 20,
-            }}
-            // imageStyle={{
-            //   borderBottomLeftRadius: 20,
-            //   borderBottomRightRadius: 20,
-            // }}
-          >
+              height: "70%",
+            }}>
             <Header
               navigate={() => {
                 navigation.navigate("Profile");
               }}
             />
-            {/* Welcome Section */}
             <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
               <View style={styles.welcomeCard}>
                 <View style={styles.welcomeSection}>
@@ -175,7 +149,6 @@ export default function Pengujian() {
           </ImageBackground>
 
           <ScrollView contentContainerStyle={styles.scrollContent}>
-            {/* Statistics Section */}
             <View style={styles.statsContainer}>
               {stats.map((stat, index) => (
                 <View key={index} style={styles.statCard}>
@@ -192,7 +165,6 @@ export default function Pengujian() {
               ))}
             </View>
 
-            {/* Main Menu Grid */}
             <Text style={styles.sectionTitle}>Menu Utama</Text>
             <View style={styles.menuGrid}>
               {mainMenus.map((menu, index) => (
@@ -213,7 +185,6 @@ export default function Pengujian() {
               ))}
             </View>
 
-            {/* Recent Activity Section */}
             <Text style={styles.sectionTitle}>Aktivitas Terakhir</Text>
             <View style={styles.activityContainer}>
               {data?.map((activity, index) => (
@@ -234,9 +205,6 @@ export default function Pengujian() {
                           {activity.lokasi}
                         </Text>
                       </View>
-                      {/* <View style={styles.statusBadge}>
-            <Text style={styles.statusText}>Active</Text>
-          </View> */}
                     </View>
 
                     <View style={styles.divider} />
@@ -256,16 +224,6 @@ export default function Pengujian() {
                         <Text style={styles.infoValue}>{activity.tanggal}</Text>
                       </View>
                     </View>
-
-                    {/* <View style={styles.footerSection}>
-          <View style={styles.progressContainer}>
-            <View style={styles.progressBar}>
-              <View style={[styles.progressFill, { width: '100%' }]} />
-            </View>
-            <Text style={styles.progressText}>75% Complete</Text>
-          </View>
-          <Text style={styles.dateText}>{activity.date}</Text>
-        </View> */}
                   </View>
                 </View>
               ))}
@@ -288,17 +246,6 @@ const styles = StyleSheet.create({
   welcomeSection: {
     marginBottom: 20,
   },
-  // welcomeText: {
-  //   fontSize: 24,
-  //   color: "#333",
-  //   fontFamily: "Poppins-SemiBold",
-  // },
-  // dateText: {
-  //   fontSize: 14,
-  //   color: "#666",
-  //   marginTop: 4,
-  //   fontFamily: "Poppins-Regular",
-  // },
   statsContainer: {
     flexDirection: "row",
     justifyContent: "space-between",

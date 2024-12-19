@@ -5,45 +5,29 @@ import {
   Dimensions,
   Modal,
   TouchableOpacity,
+  ScrollView,
 } from "react-native";
-import React, { useRef, useState, useCallback, useEffect } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import { MenuView } from "@react-native-menu/menu";
 import Paginate from "../../components/Paginate";
 import { useQueryClient } from "@tanstack/react-query";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { useDelete } from "@/src/hooks/useDelete";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import IonIcons from "react-native-vector-icons/Ionicons";
 import { useUser } from "@/src/services";
+import { useQuery } from "@tanstack/react-query";
 import Back from "../../components/Back";
+import IonIcons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 
 const Permohonan = ({ navigation }) => {
-  const [refreshKey, setRefreshKey] = useState(0);
   const { data: user } = useUser();
-  const [tahun, setTahun] = useState(2024);
-  const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
-  const [shouldRefresh, setShouldRefresh] = useState(false);
-
-  const handleFilterPress = () => {
-    setIsYearPickerVisible(true);
-  };
-
-  const handleYearChange = useCallback(
-    selectedYear => {
-      if (selectedYear !== tahun) {
-        setTahun(selectedYear);
-        setShouldRefresh(true); // Set flag untuk refresh
-      }
-      setIsYearPickerVisible(false);
-    },
-    [tahun],
-  );
-
-  const paginateRef = useRef();
+  const [tahun, setTahun] = useState(new Date().getFullYear().toString());
+  const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
+  const paginateRef = useRef(null);
   const queryClient = useQueryClient();
 
   const {
@@ -62,11 +46,6 @@ const Permohonan = ({ navigation }) => {
   });
 
   const dropdownOptions = [
-    // {
-    //   id: "TitikUji",
-    //   title: "TitikUji",
-    //   action: item => navigation.navigate("TitikUji", { uuid: item.uuid }),
-    // },
     {
       id: "Edit",
       title: "Edit",
@@ -155,43 +134,60 @@ const Permohonan = ({ navigation }) => {
     );
   };
 
+  const handleDateSelect = selectedYear => {
+    setTahun(selectedYear.toString());
+    setIsDatePickerVisible(false);
+
+    // Panggil metode refetch dari ref paginate
+    if (paginateRef.current && paginateRef.current.refetch) {
+      paginateRef.current.refetch();
+    }
+  };
+
+  const handleDatePickerPress = () => {
+    setIsDatePickerVisible(true);
+  };
+
   const filtah = () => {
     return (
       <>
-        <View className="flex-row justify-end ">
+        <View className=" flex-row justify-center gap-2">
           <TouchableOpacity
-            onPress={handleFilterPress} // Gunakan handler terpisah
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderRadius: 4,
-              backgroundColor: "#ececec",
-            }}
-            className="px-2 py-3">
+            onPress={handleDatePickerPress}
+            className="flex-row items-center bg-[#ececec]  rounded-md justify-between p-3">
             <IonIcons name="calendar" size={24} color="black" />
-            <Text className="text-black font-poppins-regular mx-2">
-              {tahun}
-            </Text>
+            <View className="flex-col items-center">
+              <Text className="text-black font-poppins-regular  mx-2">
+                {tahun}
+              </Text>
+            </View>
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </TouchableOpacity>
         </View>
-
-        <YearPicker
-          visible={isYearPickerVisible}
-          onClose={() => setIsYearPickerVisible(false)}
-          onSelect={handleYearChange}
-          selectedYear={tahun}
-        />
       </>
     );
   };
 
-  const YearPicker = ({ visible, onClose, onSelect, selectedYear }) => {
+  const DatePicker = ({ visible, onClose, onSelect, selectedYear }) => {
     const currentYear = new Date().getFullYear();
     const years = Array.from(
       { length: currentYear - 2021 },
       (_, i) => 2022 + i,
     );
+    const [tempYear, setTempYear] = useState(selectedYear);
+
+    useEffect(() => {
+      if (visible) {
+        setTempYear(selectedYear);
+      }
+    }, [visible]);
+
+    const handleConfirm = () => {
+      if (tempYear) {
+        onSelect(tempYear);
+      }
+    };
+    const canConfirm = tempYear;
 
     return (
       <Modal
@@ -199,45 +195,53 @@ const Permohonan = ({ navigation }) => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun</Text>
+              <Text style={styles.modalTitle}>Pilih Tahun </Text>
               <TouchableOpacity onPress={onClose}>
                 <MaterialIcons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
-            <View style={styles.yearList}>
-              {years.map(year => (
-                <TouchableOpacity
-                  key={year}
-                  style={[
-                    styles.yearItem,
-                    selectedYear === year && styles.selectedYear,
-                  ]}
-                  onPress={() => {
-                    onSelect(year);
-                    onClose();
-                  }}>
-                  <Text
-                    style={[
-                      styles.yearText,
-                      selectedYear === year && styles.selectedYearText,
-                    ]}>
-                    {year}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View className=" ">
+              <View className="flex-col items-center justify-center">
+                {/* <Text className="text-black font-poppins-semibold text-base">
+                  Tahun
+                </Text> */}
+                <ScrollView className="max-h-64">
+                  {years.map(year => (
+                    <TouchableOpacity
+                      key={year}
+                      className={`mt-2 justify-center items-center ${
+                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                      }`}
+                      onPress={() => setTempYear(year)}>
+                      <Text className="text-black font-poppins-semibold my-1">
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
-
   return (
     <>
       <View className="p-3 bg-[#ececec]">
@@ -292,6 +296,13 @@ const Permohonan = ({ navigation }) => {
             onPress={() => navigation.navigate("TambahPermohonan")}
           />
         </View>
+
+        <DatePicker
+          visible={isDatePickerVisible}
+          onClose={() => setIsDatePickerVisible(false)}
+          onSelect={handleDateSelect}
+          selectedYear={tahun}
+        />
 
         <DeleteConfirmationModal />
         <SuccessOverlayModal />

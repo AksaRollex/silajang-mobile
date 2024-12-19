@@ -188,7 +188,7 @@ const Paginates = forwardRef(
               <View className="flex-row flex justify-center items-center">
                 <Skeleton
                   animation="wave"
-                  width={350}
+                  width={320}
                   LinearGradientComponent={LinearGradient}
                   height={50}
                 />
@@ -218,7 +218,7 @@ const Paginates = forwardRef(
                   <View LinearGradientComponent={LinearGradient}>
                     <Skeleton
                       animation="wave"
-                      width={350}
+                      width={320}
                       LinearGradientComponent={LinearGradient}
                       height={150}
                     />

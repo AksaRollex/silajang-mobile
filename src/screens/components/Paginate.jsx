@@ -35,7 +35,10 @@ if (
 }
 
 const Paginate = forwardRef(
-  ({ url, payload, renderItem, Plugin, isExternalLoading = false, ...props }, ref) => {
+  (
+    { url, payload, renderItem, Plugin, isExternalLoading = false, ...props },
+    ref,
+  ) => {
     const queryClient = useQueryClient();
     const [search, setSearch] = useState("");
     const [page, setPage] = useState(1);
@@ -61,17 +64,24 @@ const Paginate = forwardRef(
 
     useEffect(() => {
       if (!data.data?.length) queryClient.invalidateQueries([url]);
+      console.log(payload);
     }, [data]);
+
+    useEffect(() => {
+      console.log("Payload changed:", payload);
+      refetch();
+    }, [JSON.stringify(payload)]);
 
     useImperativeHandle(ref, () => ({
       refetch,
     }));
 
     useEffect(() => {
+      // Hanya refetch jika payload berubah dan halaman adalah 1
       if (page === 1) {
         refetch();
       }
-    }, [search, payload]);
+    }, [JSON.stringify(payload)]);
 
     const handleLoadMore = () => {
       if (!isFetchingMore && page < data.last_page) {
@@ -101,6 +111,17 @@ const Paginate = forwardRef(
       }
     };
 
+    const handleSearch = (query) => {
+      setSearch(query);
+
+      // Reset halaman ke 1 agar data baru dimuat dari awal
+      setPage(1);
+    
+      // Refetch data dengan query baru
+      refetch();
+    };
+    
+
     const ListHeader = () => (
       <>
         <View className=" mb-1 ">
@@ -108,28 +129,37 @@ const Paginate = forwardRef(
             control={control}
             name="search"
             render={({ field: { onChange, value } }) => (
-              <View className="relative flex-row items-center">
-                <View className="flex-1 relative">
+              <View
+                className={`relative ${
+                  Boolean(props.plugan)
+                    ? "flex-col justify-center"
+                    : "flex-row items-center"
+                }`}>
+                <View className={props.plugan ? "" : "flex-1 relative"}>
                   <TextInput
-                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md "
+                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px-3 "
                     value={value}
                     placeholderTextColor={"grey"}
                     placeholder="Cari..."
                     onChangeText={text => {
                       onChange(text);
-                      debouncedSearch(text);
                     }}
+                    onSubmitEditing={() => {
+              // Panggil fungsi pencarian ketika Enter ditekan
+              handleSearch(value);
+            }}
                   />
                   {/* Button Search */}
                   <TouchableOpacity
                     className="absolute right-2 top-2 -translate-y-1/2 p-2 rounded-md"
-                    activeOpacity={0.7}>
+                    activeOpacity={0.7}
+                    onPress={() => handleSearch(value)}>
                     <Icons name="search" size={18} color={"black"} />
                   </TouchableOpacity>
                 </View>
 
                 {/* Plugin Section */}
-                <View style={Plugin ? { marginLeft: 12 } : {}}>
+                <View style={Plugin ? { marginLeft: 10 } : {}}>
                   {Plugin && <Plugin />}
                 </View>
               </View>
@@ -160,53 +190,42 @@ const Paginate = forwardRef(
 
     if (shouldShowLoading) {
       return (
-        <View className="mt-5 items-center">
+        <View className="mt-5 items-center ">
+          {/* search */}
           <View
             className="flex-row justify-between items-center"
             LinearGradientComponent={LinearGradient}
             style={{
-              width: "93%", // Slightly smaller to allow padding space
+              width: "90%",
             }}>
             <Skeleton
               animation="wave"
-              width={220}
+              width={210}
               LinearGradientComponent={LinearGradient}
               height={53}
             />
             <Skeleton
               animation="wave"
-              width={75}
-              LinearGradientComponent={LinearGradient}
-              height={53}
-            />
-            <Skeleton
-              animation="wave"
-              width={75}
+              width={130}
               LinearGradientComponent={LinearGradient}
               height={53}
             />
           </View>
-
+          {/* card */}
           {cardData.map((item, index) => (
             <View
               key={index}
               style={{
                 flexDirection: "column",
                 alignItems: "center",
-                justifyContent: "center", // Center items vertically
+                justifyContent: "center",
                 marginTop: 12,
-                width: "90%", // Keeps everything centered
               }}>
               <View className="items-center">
-                <View
-                  LinearGradientComponent={LinearGradient}
-                  style={{
-                    width: "100%",
-                    alignItems: "center", // Centers skeletons horizontally
-                  }}>
+                <View LinearGradientComponent={LinearGradient}>
                   <Skeleton
                     animation="wave"
-                    width={390}
+                    width={370}
                     LinearGradientComponent={LinearGradient}
                     height={180}
                   />
@@ -330,6 +349,7 @@ const Paginate = forwardRef(
           keyExtractor={(item, index) => index.toString()}
           onScroll={handleScroll}
           onEndReached={handleLoadMore}
+          showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0.5}
           ListFooterComponent={ListFooter}
           ListEmptyComponent={() => (

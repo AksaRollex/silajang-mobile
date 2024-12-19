@@ -7,7 +7,6 @@ import {
   Image,
   ActivityIndicator,
   Modal,
-  ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
@@ -19,10 +18,7 @@ import { useNavigation } from "@react-navigation/native";
 import { launchImageLibrary } from "react-native-image-picker";
 import { APP_URL } from "@env";
 import Back from "../../components/Back";
-import LottieView from "lottie-react-native";
 import Icons from "react-native-vector-icons/AntDesign";
-import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 
 const Akun = () => {
@@ -70,8 +66,6 @@ const Akun = () => {
         console.error("Error fetching data:", error);
       });
   }, []);
-
-  // console.log(userData)
 
   // UPDATE DATA USER
   const updateUser = async () => {
@@ -130,11 +124,7 @@ const Akun = () => {
     }
   };
 
-  const {
-    mutate: update,
-    isLoading,
-    isSuccess,
-  } = useMutation(updateUser, {
+  const { mutate: update, isLoading } = useMutation(updateUser, {
     onSuccess: () => {
       setModalVisible(true);
       queryClient.invalidateQueries("/auth");
@@ -242,16 +232,12 @@ const Akun = () => {
                                 }
                               />
 
-                              {/* Overlay gradient */}
                               <View className="absolute inset-0 rounded-full bg-black/5" />
-                              {/* Delete button */}
                               <TouchableOpacity
                                 className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
                                 onPress={handleDeletePhoto}>
                                 <Icons name="close" size={18} color="#dc2626" />
                               </TouchableOpacity>
-
-                              {/* Change photo button */}
                               <TouchableOpacity
                                 className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
                                 onPress={handleChoosePhoto}>
@@ -265,7 +251,6 @@ const Akun = () => {
                           </View>
                         </View>
                       ) : (
-                        // State sebelum upload foto
                         <TouchableOpacity
                           className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
                           onPress={handleChoosePhoto}>

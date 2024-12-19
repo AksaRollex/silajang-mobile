@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   Modal,
   ImageBackground,
+  RefreshControl,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
@@ -17,8 +18,6 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
-import FooterText from "../components/FooterText";
-
 const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -87,13 +86,29 @@ const Dashboard = () => {
       setIsYearPickerVisible(false);
     };
 
+    const [refreshing, setRefreshing] = useState(false);
+    const onRefresh = React.useCallback(() => {
+      setRefreshing(true);
+      setTimeout(() => {
+        setRefreshing(false);
+      }, 2000);
+    }, []);
+
     return (
       <>
         <View className="px-4 py-2 w-full mt-2">
           <View
             className="bg-[#fff] rounded-lg border border-gray-200"
             style={{ elevation: 8 }}>
-            <View className="p-4 flex-row justify-between">
+            <ScrollView
+              contentContainerStyle={{
+                padding: 16,
+                flexDirection: "row",
+                justifyContent: "space-between",
+              }}
+              refreshControl={
+                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+              }>
               <View className="flex-row gap-2 items-center">
                 <IonIcons name="calendar" size={27} color={"#4d5b7a"} />
                 <Text
@@ -105,19 +120,19 @@ const Dashboard = () => {
 
               <TouchableOpacity
                 onPress={handleFilterPress}
-                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 px-4 py-3 rounded-lg">
+                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 p-3 rounded-lg">
                 <View className="flex-row items-center">
-                  <Text className="text-gray-700 font-poppins-semibold text-base ml-3">
+                  <Text className="text-gray-700 font-poppins-semibold text-base ">
                     {tahun}
                   </Text>
+                  <MaterialIcons
+                    name="keyboard-arrow-down"
+                    size={24}
+                    color={"#4d5b7a"}
+                  />
                 </View>
-                <MaterialIcons
-                  name="keyboard-arrow-down"
-                  size={24}
-                  className="text-gray-600"
-                />
               </TouchableOpacity>
-            </View>
+            </ScrollView>
           </View>
 
           <YearPicker
@@ -230,7 +245,6 @@ const Dashboard = () => {
             {dashboard ? (
               <>
                 <DashboardCard
-                  style={styles.cardNew}
                   number={dashboard.permohonanBaru}
                   text="Permohonan Baru"
                   icon="file-circle-plus"
@@ -238,7 +252,6 @@ const Dashboard = () => {
                   gradientColors={["#EEF2FF", "#C7D2FE"]}
                 />
                 <DashboardCard
-                  style={styles.cardProcess}
                   number={dashboard.permohonanDiproses}
                   text="Sedang Diproses"
                   icon="leaf"
@@ -246,7 +259,6 @@ const Dashboard = () => {
                   gradientColors={["#FCE7F3", "#FBCFE8"]}
                 />
                 <DashboardCard
-                  style={styles.cardCompleted}
                   number={dashboard.permohonanSelesai}
                   text="Telah Selesai"
                   icon="clipboard-check"
@@ -254,7 +266,6 @@ const Dashboard = () => {
                   gradientColors={["#ECFDF5", "#A7F3D0"]}
                 />
                 <DashboardCard
-                  style={styles.cardTotal}
                   className="mb-2"
                   number={dashboard.permohonanTotal}
                   text="Total Permohonan"
@@ -378,7 +389,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   card: {
-    width: (windowWidth - 36) / 1,
+    width: (windowWidth - 26) / 1,
     height: 150,
     borderRadius: 16,
     overflow: "hidden",

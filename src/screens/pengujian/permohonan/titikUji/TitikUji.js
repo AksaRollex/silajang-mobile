@@ -245,7 +245,7 @@ const TitikUji = ({ navigation, route, status, callback }) => {
       {/* Right section (dots menu) */}
       <View
         style={styles.cardActions}
-        className="mb-4 flex-end jusitfy-end items-end ml-80">
+        className="mb-4 flex-end justify-end items-end mr-2">
         <MenuView
           title="Menu Title"
           actions={dropdownOptions.map(option => ({
@@ -416,9 +416,6 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   cardActions: {
-    width: "10%",
-    alignItems: "center",
-    justifyContent: "flex-end",
   },
   cardTexts: {
     fontSize: 13,
