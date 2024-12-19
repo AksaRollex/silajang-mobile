@@ -9,6 +9,7 @@ import Toast from "react-native-toast-message";
 import BackButton from "@/src/screens/components/BackButton";
 import { Picker } from "@react-native-picker/picker";
 import IonIcon from "react-native-vector-icons/Ionicons";
+import Select2 from "../../components/Select2";
 
 export default memo(function TandaTanganForm({ route, navigation }) {
     const { uuid } = route.params || {};
@@ -17,6 +18,7 @@ export default memo(function TandaTanganForm({ route, navigation }) {
         user_id: '',
         nama: ''
     });
+    const [nama, setNama] = useState([]);
 
     const { handleSubmit, control, formState: { errors }, reset } = useForm({
         defaultValues: formData
@@ -25,8 +27,17 @@ export default memo(function TandaTanganForm({ route, navigation }) {
 
     const { data: dinasInternalData, isLoading: isLoadingDinas } = useQuery(
         ['dinas-internal'],
-        () => axios.get("/master/user?golongan_id=2").then(res => res.data.data)
+        () => axios.get("/master/user?golongan_id=2").then(res => res.data.data),
+        {
+            onSuccess: data => setNama(data),
+        }
     );
+
+    const formattedNama = nama?.map(item => ({
+        value: item.id,
+        title: item.nama,
+    }));
+
 
     const { isLoading: isLoadingData } = useQuery(
         ["tanda-tangan", uuid],
@@ -133,34 +144,18 @@ export default memo(function TandaTanganForm({ route, navigation }) {
                             control={control}
                             name="user_id"
                             rules={{ required: "Penanda Tangan harus diisi" }}
-                            render={({ field: { onChange } }) => (
+                            render={({ field: { onChange, value } }) => (
                                 <View className="border-[1px] border-gray-300 rounded">
-                                    <Picker
-                                        selectedValue={formData.user_id}
-                                        onValueChange={(value) => {
-                                            setFormData(prev => ({ ...prev, user_id: value }));
+                                    <Select2
+                                        onSelect={value => {
                                             onChange(value);
                                         }}
-                                        enabled={!isLoadingDinas}
-                                        style={{ 
-                                            backgroundColor: 'white',
-                                            fontFamily: 'Poppins-Regular',
-                                        }}
+                                        defaultValue={value}
+                                        data={formattedNama}
+                                        placeholder="Pilih Penanda Tangan"
                                     >
-                                        <Picker.Item 
-                                            label="Pilih Penanda Tangan" 
-                                            value="" 
-                                            style={{ fontFamily: 'Poppins-Regular' }}
-                                        />
-                                        {dinasInternalData?.map(item => (
-                                            <Picker.Item
-                                                key={item.id}
-                                                label={item.nama}
-                                                value={item.id}
-                                                style={{ fontFamily: 'Poppins-Regular' }}
-                                            />
-                                        ))}
-                                    </Picker>
+
+                                    </Select2>
                                 </View>
                             )}
                         />

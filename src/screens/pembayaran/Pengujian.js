@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useMemo } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
@@ -17,6 +17,7 @@ import TTEModal from './TTEModal';
 import KwitansiModal from "./KwitansiModal";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { TextFooter } from "../components/TextFooter";
 
 const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -74,14 +75,20 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
       setBulan(getCurrentMonth());
     }
 
-    onSelectYearMonth(selectedYear, bulan);
+     // Cek apakah onSelectYearMonth didefinisikan sebelum dipanggil
+     if (typeof onSelectYearMonth === "function") {
+      onSelectYearMonth(selectedYear, bulan);
+    }
   }, [onSelectYearMonth, bulan]);
 
   const handleBulanChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
     const selectedMonth = parseInt(selectedId);
     setBulan(selectedMonth);
 
-    onSelectYearMonth(tahun, selectedMonth);
+    // Cek apakah onSelectYearMonth didefinisikan sebelum dipanggil
+    if (typeof onSelectYearMonth === "function") {
+      onSelectYearMonth(tahun, selectedMonth);
+    }
   }, [onSelectYearMonth, tahun]);
 
   const handleMetodeChange = useCallback(({ nativeEvent: { event: selectedId } }) => {
@@ -600,20 +607,25 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         onClose={() => setKwitansiModalVisible(false)}
         onSubmit={handleKwitansiSubmit}
       />
-
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/pengujian"
-        payload={{
-          tahun: tahun,
-          bulan: bulan,
-          type: type,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={cardPengujian}
-        className="px-4 mb-12"
-      />
+ 
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/pengujian"
+          payload={{
+            tahun: tahun,
+            bulan: bulan,
+            type: type,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={cardPengujian}
+          className="px-4 mb-12"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={handlePreviewReport}

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
@@ -17,7 +17,7 @@ import RNFS, { downloadFile } from "react-native-fs";
 import Toast from "react-native-toast-message";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
-
+import { TextFooter } from "../components/TextFooter";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -195,7 +195,6 @@ const NonPengujian = ({ navigation }) => {
       });
     }
   };
-
 
   const PickerButton = ({ label, value, style }) => (
     <View
@@ -466,19 +465,24 @@ const NonPengujian = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/non-pengujian"
-        payload={{
-          tahun: tahun,
-          bulan: bulan,
-          type: type,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={cardNonPengujian}
-        className="px-4 mb-12"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/non-pengujian"
+          payload={{
+            tahun: tahun,
+            bulan: bulan,
+            type: type,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={cardNonPengujian}
+          className="px-4 mb-12"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={handlePreviewReport}

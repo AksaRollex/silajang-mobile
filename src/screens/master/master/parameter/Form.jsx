@@ -12,9 +12,9 @@ import { Switch } from "react-native-paper";
 import IonIcon from "react-native-vector-icons/Ionicons";
 
 export default memo(function Form({ route, navigation }) {
-  const [jenisParameter, setJenisParameter] = useState([]);
   const [pengawetan, setPengawetan] = useState([]);
-  const [selectedJenisParameter, setSelectedJenisParameter] = useState([]);
+  const [jenisParameter, setJenisParameter] = useState([]);
+  const [selectedJenisParameter, setSelectedJenisParameter] = useState(null);
   const [selectedPengawetan, setSelectedPengawetan] = useState([]);
   const queryClient = useQueryClient();
   const { uuid } = route.params || {};
@@ -69,7 +69,14 @@ export default memo(function Form({ route, navigation }) {
     ["jenis-parameter"],
     () => axios.get("/master/jenis-parameter").then(res => res.data.data),
     {
-      onSuccess: data => setJenisParameter(data),
+      onSuccess: data => {
+        const format = data.map(item => ({
+          title: item.nama,
+          value: item.id,
+        }));
+
+        setJenisParameter(format);
+      },
     },
   );
 
@@ -81,10 +88,6 @@ export default memo(function Form({ route, navigation }) {
     },
   );
 
-  const formattedJenisParameter = jenisParameter.map(item => ({
-    label: item.nama,
-    value: item.id,
-  }));
   const formattedPengawetan = pengawetan.map(item => ({
     id: item.id,
     name: item.nama,
@@ -148,7 +151,7 @@ export default memo(function Form({ route, navigation }) {
     createOrUpdate(formattedData);
   };
 
-  if (isLoadingData && uuid) {
+  if (isLoadingData) {
     return (
       <View className="h-full flex justify-center">
         <ActivityIndicator size={"large"} color={"#312e81"} />
@@ -161,20 +164,21 @@ export default memo(function Form({ route, navigation }) {
       <View
         className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
         style={{ backgroundColor: "#fff" }}>
-          <IonIcon
-            name="arrow-back-outline"
-            onPress={() => navigation.goBack()}
-            size={25}
-            color="#312e81"
-          />
-          <Text className="text-lg font-poppins-semibold ml-3">
-            {data ? "Edit Parameter" : "Tambah Parameter"}
-          </Text>
+        <IonIcon
+          name="arrow-back-outline"
+          onPress={() => navigation.goBack()}
+          size={25}
+          color="#312e81"
+        />
+        <Text className="text-lg font-poppins-semibold ml-3">
+          {data ? "Edit Parameter" : "Tambah Parameter"}
+        </Text>
       </View>
 
-      <ScrollView showsVerticalScrollIndicator={false} className="bg-white h-full rounded m-3">
-        <View
-          className="p-5 flex-col space-y-4">
+      <ScrollView
+        showsVerticalScrollIndicator={false}
+        className="bg-white h-full rounded m-3">
+        <View className="p-5 flex-col space-y-4">
           <Text className="text-md mb-2 font-poppins-medium">Nama</Text>
           <Controller
             control={control}
@@ -220,13 +224,13 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "Jenis Parameter is required" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-                onChangeValue={value => {
+                data={jenisParameter}
+                onSelect={value => {
                   onChange(value);
                   setSelectedJenisParameter(value);
                 }}
-                value={value}
-                items={formattedJenisParameter}
-                placeholder={{ label: "Pilih jenis parameter", value: null }}
+                defaultValue={value}
+                placeholder="Pilih jenis parameter"
               />
             )}
           />

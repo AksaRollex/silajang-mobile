@@ -28,18 +28,19 @@ const ConfirmationModal = ({ visible, onConfirm, onCancel, title, message, iconN
         </Text>
 
         <View className="flex-row w-full justify-between">
-          <TouchableOpacity
-            onPress={onCancel}
-            className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
-          >
-            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
-          </TouchableOpacity>
 
           <TouchableOpacity
             onPress={onConfirm}
-            className="flex-1 ml-3 bg-red-500 py-3 rounded-xl items-center"
+            className="flex-1 mr-2 bg-red-500 py-3 rounded-xl items-center"
           >
             <Text className="text-white font-poppins-medium">Ya, Hapus</Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={onCancel}
+            className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
+          >
+            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -75,6 +76,7 @@ export const useDelete = (callback) => {
       onError && onError(error);
     } finally {
       onSettled && onSettled();
+      hideConfirmationModal();
     }
   };
 

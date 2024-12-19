@@ -14,8 +14,10 @@ import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FileViewer from 'react-native-file-viewer';
+import { useHeaderStore } from '../../main/Index';
 
 const RekapData = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -26,6 +28,14 @@ const RekapData = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [mode, setMode] = useState('sampel-permohonan');
   const [reportUrl, setReportUrl] = useState('');
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
   const [selectedDate, setSelectedDate] = useState({
     start: moment().startOf('month').format('YYYY-MM-DD'),
     end: moment().format('YYYY-MM-DD')
@@ -260,15 +270,31 @@ const RekapData = ({ navigation }) => {
   );
 
   return (
-    <View className="flex-1 bg-gray-100">
-      <View className="bg-gray-100 p-4 ">
-        <View className="flex-row items-center mb-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-          <View className="flex-1 items-center">
-            <Text className="text-lg font-poppins-bold text-black">Rekap Data</Text>
-          </View>
+    <View className="bg-[#ececec] w-full h-full">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Rekap Data</Text>
         </View>
+        <View className="bg-fuchsia-600 rounded-full">
+          <Ionicons
+            name="reader"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
 
+      <View className="p-4">
         <TouchableOpacity
           onPress={() => handleDateSelection('start')}
           className="mb-4 bg-white p-3 rounded-lg ">

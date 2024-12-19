@@ -2,12 +2,13 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import React, { useState, useRef } from "react";
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { MenuView } from "@react-native-menu/menu";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 
 const currentYear = new Date().getFullYear()
@@ -145,18 +146,23 @@ const Kontrak = ({ navigation }) => {
           </MenuView>
         </View>
       </View>
-
-      <Paginate
-        ref={paginateRef}
-        url="/administrasi/kontrak"
-        payload={{
-          kesimpulan_kontrak: selectedKesimpulan,
-          tahun: selectedYear,
-          page: 1,
-          per: 10
-        }}
-        renderItem={renderItem}
-      />
+      
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/administrasi/kontrak"
+          payload={{
+            kesimpulan_kontrak: selectedKesimpulan,
+            tahun: selectedYear,
+            page: 1,
+            per: 10
+          }}
+          renderItem={renderItem}
+        />
+        <View className="mt-12 mb-8">
+                  <TextFooter />
+                </View>
+      </ScrollView>
     </View>
   );
 };

@@ -55,7 +55,7 @@ export default function FormNonPengujian() {
   };
 
   const formattedKodeRetribusi = kodeRetribusi.map(item => ({
-    label: item.nama,
+    title: item.nama,
     value: item.id,
   }));
 
@@ -139,10 +139,10 @@ export default function FormNonPengujian() {
             <View className="mb-4">
               <Text className="font-poppins-bold text-black mb-2">Kode Retribusi</Text>
               <Select2
-                placeholder={{ label: "Pilih Kode Retribusi", value: null }}
-                items={formattedKodeRetribusi}
-                value={value}
-                onChangeValue={value => onChange(value)}
+                placeholder="Pilih Kode Retribusi"
+                data={formattedKodeRetribusi}
+                defaultValue={value}
+                onSelect={value => onChange(value)}
               />
               {error && <Text className="text-red-500 font-poppins-regular">{error.message}</Text>}
             </View>

@@ -8,6 +8,7 @@ import IonIcon from "react-native-vector-icons/Ionicons"; // Ionicon import
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
 import { TextFooter } from "@/src/screens/components/TextFooter";
+import Toast from 'react-native-toast-message';
 
 const KotaKab = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -25,8 +26,20 @@ const KotaKab = ({ navigation }) => {
             queryClient.invalidateQueries(['/master/kota-kabupaten']);
             paginateRef.current?.refetch()
         },
-        onError: () => {
-            console.log('Delete error:', error);
+        onError: (error) => {
+           if (error?.response?.data?.message?.includes('masih memiliki kecamatan')) {
+            Toast.show({
+                type: 'error',
+                text1: 'Gagal Menghapus',
+                text2: 'Gagal menghapus data',
+            });
+           } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Data kota/kabupaten masih memiliki kecamatan',
+                text2: 'Tidak dapat menghapus kota/kabupaten yang masih memiliki kecamatan.',
+            });
+           }
         }
     });
 

@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
@@ -15,6 +15,7 @@ import Pdf from "react-native-pdf";
 import RNFS from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { rupiah } from "@/src/libs/utils";
+import { TextFooter } from "../components/TextFooter";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -330,7 +331,7 @@ const Global = ({ navigation }) => {
 
             <Text className="text-xl font-poppins-semibold text-black mb-3">
               Konfirmasi Download
-            </Text>
+            </Text> 
 
             <View className="w-full h-px bg-gray-200 mb-4" />
 
@@ -340,35 +341,41 @@ const Global = ({ navigation }) => {
 
             <View className="flex-row w-full justify-between">
               <TouchableOpacity
+                onPress={downloadReport}
+                className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
+              >
+                <Text className="text-white font-poppins-medium">Ya, Download</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+                className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
               >
                 <Text className="text-gray-700 font-poppins-medium">Batal</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={downloadReport}
-                className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
-              >
-                <Text className="text-white font-poppins-medium">Ya, Download</Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>
       </Modal>
 
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/global"
-        payload={{
-          status: selectedStatus,
-          tahun: selectedYear,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="px-4 mb-12"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/global"
+          payload={{
+            status: selectedStatus,
+            tahun: selectedYear,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="px-4 mb-12"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
