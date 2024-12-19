@@ -60,7 +60,6 @@ const Pembayaran = () => {
 
         <View>
           <List.Item
-          style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
           title={<Text className="font-poppins-medium text-[15px]">Multi Payment</Text>}
           left={() => (
             <View className="bg-green-600 rounded-full ml-3">

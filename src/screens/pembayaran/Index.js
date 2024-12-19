@@ -5,6 +5,7 @@ import Pengujian from './Pengujian'
 import EditPembayaran from '../formComponent/EditPembayaran'
 import Detail from './Detail'
 import MultiPayment from './MultiPayment'
+import FormMulti from './FormMulti'
 import NonPengujian from './NonPengujian'
 import DetailNonPengujian from './DetailNonPengujian'
 import FormNonPengujian from './Form'
@@ -23,6 +24,7 @@ export default function PembayaranStackScreen() {
             <Stack.Screen name="NonPengujian" component={NonPengujian} />
             <Stack.Screen name="DetailNonPengujian" component={DetailNonPengujian} />
             <Stack.Screen name="FormNonPengujian" component={FormNonPengujian} />
+            <Stack.Screen name="FormMulti" component={FormMulti} />
             <Stack.Screen name="Global" component={Global} />
         </Stack.Navigator>
     )
