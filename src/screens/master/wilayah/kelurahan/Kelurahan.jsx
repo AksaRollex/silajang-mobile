@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import React, { useRef } from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
@@ -7,17 +7,18 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const Kelurahan = ({ navigation }) => {
     const queryClient = useQueryClient();
     const paginateRef = useRef();
     const { setHeader } = useHeaderStore();
-          
-        React.useLayoutEffect(() => {
-          setHeader(false)
-      
-          return () => setHeader(true)
-        }, [])
+
+    React.useLayoutEffect(() => {
+        setHeader(false)
+
+        return () => setHeader(true)
+    }, [])
 
     const { delete: deleteKelurahan, DeleteConfirmationModal } = useDelete({
         onSuccess: () => {
@@ -50,7 +51,7 @@ const Kelurahan = ({ navigation }) => {
 
                 {/* Action Buttons */}
                 <View className="flex-row justify-end gap-2">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => navigation.navigate("FormKelurahan", { uuid: item.uuid })}
                         className="flex-row items-center bg-indigo-500 px-3 py-2 rounded"
                     >
@@ -58,7 +59,7 @@ const Kelurahan = ({ navigation }) => {
                         <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => deleteKelurahan(`/master/kelurahan/${item.uuid}`)}
                         className="flex-row items-center bg-red-500 px-3 py-2 rounded"
                     >
@@ -72,24 +73,29 @@ const Kelurahan = ({ navigation }) => {
 
     return (
         <View className="bg-[#ececec] w-full h-full">
-             <View
-               className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-               style={{ backgroundColor: '#fff' }}
-             >
-               <View className="flex-row items-center">
-                 <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                 <Text className="text-[20px] font-poppins-medium text-black ml-3">Kelurahan</Text>
-               </View>
-               <View className="bg-yellow-400 rounded-full">
-                 <IonIcon name="home" size={18} color={'white'} style={{ padding: 5 }} />
-               </View>
-             </View>
-            <Paginate
-                ref={paginateRef}
-                url="/master/kelurahan"
-                renderItem={renderItem}
-                payload={{}}
-            />
+            <View
+                className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                style={{ backgroundColor: '#fff' }}
+            >
+                <View className="flex-row items-center">
+                    <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+                    <Text className="text-[20px] font-poppins-medium text-black ml-3">Kelurahan</Text>
+                </View>
+                <View className="bg-yellow-400 rounded-full">
+                    <IonIcon name="home" size={18} color={'white'} style={{ padding: 5 }} />
+                </View>
+            </View>
+            <ScrollView>
+                <Paginate
+                    ref={paginateRef}
+                    url="/master/kelurahan"
+                    renderItem={renderItem}
+                    payload={{}}
+                />
+                <View className="mt-12 mb-8">
+                    <TextFooter />
+                </View>
+            </ScrollView>
             <Icon
                 name="plus"
                 size={28}

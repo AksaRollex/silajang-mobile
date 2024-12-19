@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
@@ -15,6 +15,7 @@ import Pdf from "react-native-pdf";
 import RNFS from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { rupiah } from "@/src/libs/utils";
+import { TextFooter } from "../components/TextFooter";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -357,18 +358,23 @@ const Global = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/global"
-        payload={{
-          status: selectedStatus,
-          tahun: selectedYear,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="px-4 mb-12"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/global"
+          payload={{
+            status: selectedStatus,
+            tahun: selectedYear,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="px-4 mb-12"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={() => setModalVisible(true)}

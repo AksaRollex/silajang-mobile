@@ -42,8 +42,6 @@ const PengambilSampel = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState('');
   const isConfirmed = selectedPengambil === 1; // Telah Diambil
 
-
-
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
 
     onSuccess: () => {
