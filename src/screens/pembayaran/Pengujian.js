@@ -5,6 +5,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Ionicons from "react-native-vector-icons/Ionicons"
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import { rupiah } from "@/src/libs/utils";
 import { APP_URL } from "@env";
@@ -17,6 +18,7 @@ import TTEModal from './TTEModal';
 import KwitansiModal from "./KwitansiModal";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from "../main/Index";
 
 const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -34,6 +36,13 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [kwitansiModalVisible, setKwitansiModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
   const [selectedItem, setSelectedItem] = useState(null);
+   const { setHeader } = useHeaderStore();
+            
+          React.useLayoutEffect(() => {
+            setHeader(false)
+        
+            return () => setHeader(true)
+          }, [])
 
   const tahuns = useMemo(() => {
     const currentYear = getCurrentYear();
@@ -499,17 +508,31 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="p-4">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center flex-1">
-            <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-[20px] font-poppins-semibold text-black mx-auto right-3">
-              Pengujian
-            </Text>
-          </View>
-        </View>
+         <View
+           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+           style={{ backgroundColor: '#fff' }}
+         >
+           <View className="flex-row items-center">
+             <Ionicons
+               name="arrow-back-outline"
+               onPress={() => navigation.goBack()}
+               size={25}
+               color="#312e81"
+             />
+             <Text className="text-[20px] font-poppins-medium text-black ml-4">Pengujian</Text>
+           </View>
+           <View className="bg-green-600 rounded-full">
+             <Ionicons
+               name="wallet"
+               size={18}
+               color={'white'}
+               style={{ padding: 5 }}
+             />
+           </View>
+         </View>
 
-        <View className="flex-row ml-2">
+      <View className="p-4">
+        <View className="flex-row">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -548,7 +571,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
             id: option.id,
             title: option.text,
           }))}>
-          <View style={{ marginStart: 8, width: 250, marginTop: 10 }}>
+          <View style={{  width: 250, marginTop: 10 }}>
             <PickerButton
               label="Metode"
               value={metodes.find(m => m.id === type)?.text}
@@ -618,7 +641,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
           per: 10,
         }}
         renderItem={cardPengujian}
-        className="px-4 mb-12"
+        className="bottom-2"
       />
 
       <TouchableOpacity
@@ -626,8 +649,8 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
         style={{
           position: 'absolute',
-          bottom: 75,
-          right: 20,
+          bottom: 25,
+          right: 15,
           backgroundColor: '#dc2626',
           borderRadius: 50,
           width: 55,
