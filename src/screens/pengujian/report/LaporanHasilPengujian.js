@@ -3,7 +3,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert, TextInput } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, TextInput, ScrollView } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -22,6 +22,8 @@ import FontAwesome5Icon from 'react-native-vector-icons/FontAwesome5';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from '../../main/Index';
+import { Scroll } from 'lucide-react-native';
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 
 
@@ -702,6 +704,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 </View>
             </View>
 
+<ScrollView>
             <Paginate
                 ref={paginateRef}
                 url="/report"
@@ -716,6 +719,10 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 renderItem={renderItem}
                 className="bottom-4"
             />
+             <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+            </ScrollView>
 
             <Modal
                 transparent={true}

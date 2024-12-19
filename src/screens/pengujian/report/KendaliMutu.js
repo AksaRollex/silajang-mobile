@@ -5,7 +5,8 @@ import {
   TouchableOpacity,
   Modal,
   Alert,
-  TextInput
+  TextInput,
+  ScrollView
 } from 'react-native';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -24,6 +25,8 @@ import Paginate from "@/src/screens/components/Paginate";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from '../../main/Index';
+import { TextFooter } from "@/src/screens/components/TextFooter";
+
 
 const TTEModal = ({ visible, onClose, onSubmit }) => {
   const [formData, setFormData] = useState({
@@ -540,14 +543,19 @@ const KendaliMutu = ({ navigation }) => {
         </View>
       </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/report"
-        payload={paginatePayload}
-        renderItem={CardKendaliMutu}
-        onError={(error) => console.error('Paginate error:', error)}
-        className="bottom-2"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/report"
+          payload={paginatePayload}
+          renderItem={CardKendaliMutu}
+          onError={(error) => console.error('Paginate error:', error)}
+          className="bottom-2"
+        />
+        <View className="bottom-2">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <Modal
         transparent={true}

@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import React, { useState, useEffect, useRef } from "react";
 import {
-  FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity, TextInput,
+  FlatList, Text, View, ActivityIndicator, Modal, Button, Alert, TouchableOpacity, TextInput, ScrollView
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -24,6 +24,7 @@ import moment from "moment";
 import { useHeaderStore } from "@/src/screens/main/Index";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -478,7 +479,7 @@ const PenerimaSampel = ({ navigation }) => {
               </MenuView>
             </View>
           </View>
-
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/administrasi/penerima-sample"
@@ -491,6 +492,10 @@ const PenerimaSampel = ({ navigation }) => {
         renderItem={renderItem}
         className="bottom-2"
       />
+      <View className="mt-12 mb-8">
+        <TextFooter/>
+      </View>
+      </ScrollView>
 
       <Modal
         animationType="slide"
