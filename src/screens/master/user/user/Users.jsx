@@ -13,6 +13,7 @@ import IonIcon from "react-native-vector-icons/Ionicons";
 import { GestureHandlerRootView, Switch } from 'react-native-gesture-handler';
 import axios from '@/src/libs/axios';
 import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const Users = ({ navigation, route }) => {
 
@@ -175,7 +176,7 @@ const Users = ({ navigation, route }) => {
       >
         <View className="flex-row items-center">
           <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-          <Text className="text-[20px] font-poppins-medium text-black ml-4">User</Text>
+          <Text className="text-[20px] font-poppins-medium text-black ml-3">User</Text>
         </View>
         <View className="bg-blue-600 rounded-full">
           <IonIcon name="person" size={18} color={'white'} style={{ padding: 5 }} />
@@ -188,6 +189,7 @@ const Users = ({ navigation, route }) => {
           onPress={(item) => setSelectedMenu(item.id)}
         />
       </View>
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/master/user"
@@ -198,6 +200,10 @@ const Users = ({ navigation, route }) => {
         }}
         renderItem={renderItem}
       />
+      <View className="mt-12 mb-8">
+              <TextFooter />
+              </View>
+      </ScrollView>
       <Icon
         name="plus"
         size={28}

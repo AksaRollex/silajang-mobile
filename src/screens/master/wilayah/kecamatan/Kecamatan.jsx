@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import React, { useRef } from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
@@ -7,17 +7,18 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const Kecamatan = ({ navigation }) => {
     const queryClient = useQueryClient();
     const paginateRef = useRef();
     const { setHeader } = useHeaderStore();
-          
-        React.useLayoutEffect(() => {
-          setHeader(false)
-      
-          return () => setHeader(true)
-        }, [])
+
+    React.useLayoutEffect(() => {
+        setHeader(false)
+
+        return () => setHeader(true)
+    }, [])
 
     const { delete: deleteKecamatan, DeleteConfirmationModal } = useDelete({
         onSuccess: () => {
@@ -50,7 +51,7 @@ const Kecamatan = ({ navigation }) => {
 
                 {/* Action buttons */}
                 <View className="flex-row justify-end gap-2">
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => navigation.navigate("FormKecamatan", { uuid: item.uuid })}
                         className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
                     >
@@ -58,7 +59,7 @@ const Kecamatan = ({ navigation }) => {
                         <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
                     </TouchableOpacity>
 
-                    <TouchableOpacity 
+                    <TouchableOpacity
                         onPress={() => deleteKecamatan(`/master/kecamatan/${item.uuid}`)}
                         className="flex-row items-center bg-red-500 px-2 py-2 rounded"
                     >
@@ -71,25 +72,30 @@ const Kecamatan = ({ navigation }) => {
     }
 
     return (
-         <View className="bg-[#ececec] w-full h-full">
-              <View
+        <View className="bg-[#ececec] w-full h-full">
+            <View
                 className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
                 style={{ backgroundColor: '#fff' }}
-              >
+            >
                 <View className="flex-row items-center">
-                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                  <Text className="text-[19px] font-poppins-medium text-black ml-4">Parameter</Text>
+                    <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+                    <Text className="text-[19px] font-poppins-medium text-black ml-3">Kecamatan</Text>
                 </View>
                 <View className="bg-lime-400 rounded-full">
-                  <IonIcon name="map" size={17} color={'white'} style={{ padding: 5 }} />
+                    <IonIcon name="map" size={17} color={'white'} style={{ padding: 5 }} />
                 </View>
-              </View>
-            <Paginate
-                ref={paginateRef}
-                url="/master/kecamatan"
-                payload={{}}
-                renderItem={renderItem}
-            />
+            </View>
+            <ScrollView>
+                <Paginate
+                    ref={paginateRef}
+                    url="/master/kecamatan"
+                    payload={{}}
+                    renderItem={renderItem}
+                />
+                <View className="mt-12 mb-8">
+                    <TextFooter />
+                </View>
+            </ScrollView>
             <Icon
                 name="plus"
                 size={28}

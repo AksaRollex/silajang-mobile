@@ -156,7 +156,6 @@ const Kontrak = ({ navigation }) => {
           per: 10
         }}
         renderItem={renderItem}
-        className="mb-14"
       />
     </View>
   );

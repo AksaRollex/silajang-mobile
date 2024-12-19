@@ -1,4 +1,4 @@
-import { Text, View, TouchableOpacity } from "react-native";
+import { Text, View, TouchableOpacity, ScrollView } from "react-native";
 import React, { useRef } from "react";
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
@@ -7,6 +7,7 @@ import Icon from "react-native-vector-icons/AntDesign";
 import IonIcon from "react-native-vector-icons/Ionicons"; // Ionicon import
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const KotaKab = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -75,20 +76,23 @@ const KotaKab = ({ navigation }) => {
              >
                <View className="flex-row items-center">
                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                 <Text className="text-[20px] font-poppins-medium text-black ml-4">Kota dan Kabupaten</Text>
+                 <Text className="text-[20px] font-poppins-medium text-black ml-3">Kota dan Kabupaten</Text>
                </View>
                <View className="bg-red-500 rounded-full">
                  <IonIcon name="business" size={18} color={'white'} style={{ padding: 5 }} />
                </View>
              </View>
-
+            <ScrollView>
             <Paginate
                 ref={paginateRef}
                 url="/master/kota-kabupaten"
                 payload={{}}
                 renderItem={renderItem}
             />
-
+            <View className="mt-12 mb-8">
+                    <TextFooter />
+                    </View>
+            </ScrollView>
             <Icon
                 name="plus"
                 size={28}

@@ -43,7 +43,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               style={{ width: 60, height: 80, marginTop: 8 }}
             />
             <View style={{ flexShrink: 1 }}>
-              <Text h1 color={Colors.brand} style={{ fontSize: 30, color: "#1e1b4b" }} className="font-poppins-semibold">
+              <Text h1 color={Colors.brand} style={{ fontSize: 30, color: "#312e81" }} className="font-poppins-semibold">
                 SELAMAT DATANG
               </Text>
               <Text className="font-poppins-regular">Sistem Informasi Laboratorium Lingkungan Jombang</Text>
@@ -62,7 +62,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               width="50%"
               style={{
                 borderBottomWidth: activeTab === 1 ? 3 : 0,
-                borderBottomColor: Colors.brand,
+                borderBottomColor: "#312e81",
               }}>
               <TouchableOpacity onPress={() => setActiveTab(1)}>
                 <Text
@@ -70,6 +70,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   style={{
                     textAlign: "center",
                     fontFamily: activeTab === 1 ? "Poppins-SemiBold" : "Poppins-Regular",
+                    color: activeTab === 1 ? "#312e81" : "black",
                   }}>
                   EMAIL
                 </Text>
@@ -80,7 +81,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
               width="50%"
               style={{
                 borderBottomWidth: activeTab === 2 ? 3 : 0,
-                borderBottomColor: Colors.brand,
+                borderBottomColor: "#312e81",
               }}>
               <TouchableOpacity onPress={() => setActiveTab(2)}>
                 <Text
@@ -88,6 +89,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
                   style={{
                     textAlign: "center",
                     fontFamily: activeTab === 1 ? "Poppins-Regular" : "Poppins-SemiBold",
+                    color: activeTab === 1 ? "black" : "#312e81",
                   }}>
                   NO. TELEPON
                 </Text>

@@ -1,4 +1,4 @@
-import { View, Text, TouchableOpacity } from 'react-native'
+import { View, Text, TouchableOpacity, ScrollView } from 'react-native'
 import React, { useRef } from 'react'
 import { useQueryClient } from '@tanstack/react-query'
 import { useDelete } from '@/src/hooks/useDelete'
@@ -7,17 +7,18 @@ import Icon from 'react-native-vector-icons/AntDesign'
 import IonIcon from 'react-native-vector-icons/Ionicons'
 import BackButton from '@/src/screens/components/BackButton'
 import { useHeaderStore } from '@/src/screens/main/Index'
+import { TextFooter } from '@/src/screens/components/TextFooter'
 
 const LiburCuti = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const { setHeader } = useHeaderStore();
-        
-      React.useLayoutEffect(() => {
-        setHeader(false)
-    
-        return () => setHeader(true)
-      }, [])
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: deleteLiburCuti, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -31,7 +32,7 @@ const LiburCuti = ({ navigation }) => {
 
   const renderItem = ({ item }) => {
     return (
-      <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5" 
+      <View className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between items-center">
           <View className="flex-col space-y-1">
@@ -48,7 +49,7 @@ const LiburCuti = ({ navigation }) => {
 
         {/* Buttons for Edit and Delete */}
         <View className="flex-row justify-end gap-2">
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => navigation.navigate("FormLiburCuti", { uuid: item.uuid })}
             className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
           >
@@ -56,7 +57,7 @@ const LiburCuti = ({ navigation }) => {
             <Text className="text-white ml-1 text-xs font-poppins-medium">Edit</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity 
+          <TouchableOpacity
             onPress={() => deleteLiburCuti(`/master/libur-cuti/${item.uuid}`)}
             className="flex-row items-center bg-red-500 px-2 py-2 rounded"
           >
@@ -69,25 +70,30 @@ const LiburCuti = ({ navigation }) => {
   };
 
   return (
-     <View className="bg-[#ececec] w-full h-full">
-          <View
-            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-            style={{ backgroundColor: '#fff' }}
-          >
-            <View className="flex-row items-center">
-              <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-              <Text className="text-[20px] font-poppins-medium text-black ml-4">Libur Cuti</Text>
-            </View>
-            <View className="bg-violet-500 rounded-full">
-              <IonIcon name="calendar" size={18} color={'white'} style={{ padding: 5 }} />
-            </View>
-          </View>
-      <Paginate
-        ref={paginateRef}
-        url="/master/libur-cuti"
-        payload={{}}
-        renderItem={renderItem}
-      />
+    <View className="bg-[#ececec] w-full h-full relative">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[20px] font-poppins-medium text-black ml-3">Libur Cuti</Text>
+        </View>
+        <View className="bg-violet-500 rounded-full">
+          <IonIcon name="calendar" size={18} color={'white'} style={{ padding: 5 }} />
+        </View>
+      </View>
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/master/libur-cuti"
+          payload={{}}
+          renderItem={renderItem}
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
       <Icon
         name="plus"
         size={28}

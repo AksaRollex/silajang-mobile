@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { FlatList, Text, View, ActivityIndicator, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, ScrollView } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather";
@@ -14,10 +14,19 @@ import moment from 'moment';
 import { useDelete } from "@/src/hooks/useDelete";
 import Paginate from "@/src/screens/components/Paginate";
 import BackButton from "../../components/BackButton";
+import { TextFooter } from "../../components/TextFooter";
+import { useHeaderStore } from '@/src/screens/main/Index';
 
 const TrackingPengujian = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -106,29 +115,29 @@ const TrackingPengujian = ({ navigation }) => {
     <View
       className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
       style={{ elevation: 4 }}>
-      
+
       <View className="absolute top-4 right-2">
         <View className={`py-1 px-3 rounded-full ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'}`}>
-          <Text 
-            className={`text-[12px] font-poppins-semibold ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'}`} 
+          <Text
+            className={`text-[12px] font-poppins-semibold ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'}`}
             numberOfLines={2}
           >
             {mapStatusPengujian(item.status)}
           </Text>
         </View>
       </View>
-  
+
       <View className="flex-row items-center">
         <View className="" style={{ width: "90%" }}>
           <View className="flex-col justify-between items-start mb-2">
             <Text className="font-poppins-regular text-xs text-gray-500">Kode</Text>
             <Text className="text-md font-poppins-bold text-black">{item.kode}</Text>
           </View>
-  
+
           <View className="flex-col space-y-2">
             <View>
               <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
-              <Text 
+              <Text
                 className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}
                 style={{ flexWrap: 'wrap' }}
@@ -136,17 +145,17 @@ const TrackingPengujian = ({ navigation }) => {
                 {item.permohonan?.user?.nama}
               </Text>
             </View>
-  
+
             <View>
               <Text className="text-xs font-poppins-regular text-gray-500">Titik Uji/Lokasi:</Text>
-              <Text 
+              <Text
                 className="text-md font-poppins-semibold text-black"
                 numberOfLines={2}
               >
                 {item.lokasi}
               </Text>
             </View>
-  
+
             {/* Updated dates section with two columns */}
             <View className="flex-row flex-wrap">
               <View className="w-1/2 space-y-2">
@@ -163,7 +172,7 @@ const TrackingPengujian = ({ navigation }) => {
                   </Text>
                 </View>
               </View>
-              
+
               <View className="w-1/2 space-y-2">
                 <View>
                   <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
@@ -182,11 +191,11 @@ const TrackingPengujian = ({ navigation }) => {
           </View>
         </View>
       </View>
-  
+
       <View className="h-[1px] bg-gray-300 my-3" />
-      
+
       <View className="flex-row justify-end gap-2">
-        <TouchableOpacity 
+        <TouchableOpacity
           onPress={() => navigation.navigate("DetailTracking", { selected: item })}
           className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
         >
@@ -194,7 +203,7 @@ const TrackingPengujian = ({ navigation }) => {
           <Feather name="chevrons-right" size={14} color="#fff" />
         </TouchableOpacity>
       </View>
-  
+
       {item.status < 0 && item.keterangan_revisi && (
         <View className="mt-3 bg-yellow-50 p-3 rounded-md">
           <Text className="text-[11px] text-yellow-800">
@@ -207,11 +216,17 @@ const TrackingPengujian = ({ navigation }) => {
 
   return (
     <View className="flex-1 bg-gray-100">
-      <View className="flex-row items-center justify-center mt-4 mb-1">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+          <Text className="text-[20px] font-poppins-medium text-black ml-3">Tracking Pengujian</Text>
         </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">Tracking Pengujian</Text>
+        <View className="bg-purple-600 rounded-full">
+          <IonIcon name="analytics" size={18} color={'white'} style={{ padding: 5 }} />
+        </View>
       </View>
       <View className="bg-gray-100 p-4 shadow-sm">
         <View className="flex-row justify-end space-x-3">
@@ -247,7 +262,7 @@ const TrackingPengujian = ({ navigation }) => {
             onPressAction={handleMonthChange}
             actions={monthOptions.map(option => ({
               id: option.id.toString(),
-              title: option.title, 
+              title: option.title,
             }))}>
             <View>
               <View
@@ -271,17 +286,22 @@ const TrackingPengujian = ({ navigation }) => {
         </View>
       </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/tracking"
-        payload={{
-          tahun: selectedYear,
-          bulan: selectedMonth,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={CardTrackingPengujian}
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/tracking"
+          payload={{
+            tahun: selectedYear,
+            bulan: selectedMonth,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={CardTrackingPengujian}
+        />
+        <View className="mt-[67%] mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <DeleteConfirmationModal />
     </View>
