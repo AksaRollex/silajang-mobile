@@ -5,7 +5,7 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, ScrollView } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -19,6 +19,9 @@ import RNFS, { downloadFile } from 'react-native-fs';
 import Toast from 'react-native-toast-message';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from "@/src/screens/components/TextFooter";
+
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -41,6 +44,13 @@ const PengambilSampel = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
   const isConfirmed = selectedPengambil === 1; // Telah Diambil
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
 
@@ -298,53 +308,65 @@ const PengambilSampel = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className=" p-4">
-        <View className="flex-row items-center space-x-2">
-          <View className="flex-col w-full">
-
-            <View className="flex-row items-center space-x-2 mb-4">
-              <BackButton action={() => navigation.goBack()} size={26} />
-              <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] text-black font-poppins-semibold">Pengambil Sampel</Text>
-              </View>
-            </View>
-
-            <View className="flex-row justify-center">
-              <View style={{ flex: 1, marginVertical: 8 }}>
-                <HorizontalFilterMenu
-                  items={pengambilOptions}
-                  selected={selectedPengambil}
-                  onPress={(item) => setSelectedPengambil(item.id)}
-                />
-              </View>
-
-              <MenuView
-                title="filterOptions"
-                actions={filterOptions.map(option => ({
-                  id: option.id.toString(),
-                  title: option.title,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = filterOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  if (selectedOption) {
-                    setSelectedYear(selectedOption.title)
-                    // console.log(selectedOption.title)
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-
-              >
-                <View>
-                  <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
-                </View>
-              </MenuView>
-            </View>
-          </View>
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Pengambil Sampel</Text>
+        </View>
+        <View className="bg-indigo-600 rounded-full">
+          <Ionicons
+            name="people"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
         </View>
       </View>
 
+      <View className="p-4">
+        <View className="flex-row justify-center">
+          <View style={{ flex: 1, marginVertical: 8 }}>
+            <HorizontalFilterMenu
+              items={pengambilOptions}
+              selected={selectedPengambil}
+              onPress={(item) => setSelectedPengambil(item.id)}
+            />
+          </View>
+
+          <MenuView
+            title="filterOptions"
+            actions={filterOptions.map(option => ({
+              id: option.id.toString(),
+              title: option.title,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = filterOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                setSelectedYear(selectedOption.title)
+                // console.log(selectedOption.title)
+              }
+            }}
+            shouldOpenOnLongPress={false}
+
+          >
+            <View>
+              <MaterialCommunityIcons name="filter-menu-outline" size={24} color="white" style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }} />
+            </View>
+          </MenuView>
+        </View>
+      </View>
+      
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/administrasi/pengambil-sample"
@@ -355,10 +377,14 @@ const PengambilSampel = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        className="mb-16"
+        className ="bottom-2"
       />
+      <View className="mt-12 mb-8">
+        <TextFooter/>
+      </View>
+      </ScrollView>
 
-     
+
       <DeleteConfirmationModal />
       <Modal
         transparent={true}
