@@ -18,6 +18,7 @@ import Toast from 'react-native-toast-message';
 import axios from '@/src/libs/axios';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from "@/src/screens/main/Index";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -43,6 +44,14 @@ const VerifikasiLhu = ({ navigation }) => {
   const [confirmModalVisible, setConfirmModalVisible] = useState(false);
   const [confirmAction, setConfirmAction] = useState(null);
   const [selectedUuid, setSelectedUuid] = useState(null);
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
 
   const confirmationModal = (action, uuid) => {
     setConfirmAction(action);
@@ -378,53 +387,62 @@ const VerifikasiLhu = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      {/* Header Section */}
-      <View className="p-4">
-        <View className="flex-row items-center space-x-2">
-          <View className="flex-col w-full">
-            <View className="flex-row items-center space-x-2 mb-4">
-              <BackButton action={() => navigation.goBack()} size={26} />
-              <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold text-black">
-                  Verifikasi LHU
-                </Text>
-              </View>
-            </View>
-
-            {/* Filters Section */}
-            <View className="flex-row justify-center">
-              <View style={{ flex: 1, marginVertical: 8 }}>
-                <HorizontalFilterMenu
-                  items={verifikasiOptions}
-                  selected={selectedVerifikasi}
-                  onPress={(item) => setSelectedVerifikasi(item.id)}
-                />
-              </View>
-
-              <MenuView
-                title="filterOptions"
-                actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = filterOptions.find(option => option.title === nativeEvent.event);
-                  if (selectedOption) {
-                    setSelectedYear(selectedOption.title);
-                  }
-                }}
-                shouldOpenOnLongPress={false}
-              >
-                <View>
-                  <MaterialCommunityIcons
-                    name="filter-menu-outline"
-                    size={24}
-                    color="white"
-                    style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
-                  />
-                </View>
-              </MenuView>
-            </View>
-          </View>
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Verifikasi LHU</Text>
+        </View>
+        <View className="bg-amber-600 rounded-full">
+          <Ionicons
+            name="shield-checkmark"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
         </View>
       </View>
+
+      <View className="p-4">
+        <View className="flex-row justify-center">
+          <View style={{ flex: 1, marginVertical: 8 }}>
+            <HorizontalFilterMenu
+              items={verifikasiOptions}
+              selected={selectedVerifikasi}
+              onPress={(item) => setSelectedVerifikasi(item.id)}
+            />
+          </View>
+
+          <MenuView
+            title="filterOptions"
+            actions={filterOptions.map(option => ({ id: option.id.toString(), title: option.title }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = filterOptions.find(option => option.title === nativeEvent.event);
+              if (selectedOption) {
+                setSelectedYear(selectedOption.title);
+              }
+            }}
+            shouldOpenOnLongPress={false}
+          >
+            <View>
+              <MaterialCommunityIcons
+                name="filter-menu-outline"
+                size={24}
+                color="white"
+                style={{ backgroundColor: "#312e81", padding: 12, borderRadius: 8 }}
+              />
+            </View>
+          </MenuView>
+        </View>
+      </View>
+
 
       {/* List Section */}
       <Paginate
@@ -437,7 +455,7 @@ const VerifikasiLhu = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        className="mb-14"
+        className="bottom-2"
       />
       <Modal
         transparent={true}

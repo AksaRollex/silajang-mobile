@@ -20,8 +20,10 @@ import { APP_URL } from "@env";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
+import { useHeaderStore } from "../../main/Index";
 
 const RekapParameter = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -37,6 +39,14 @@ const RekapParameter = ({ navigation }) => {
     const [shouldRefresh, setShouldRefresh] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [reportUrl, setReportUrl] = useState('');
+     const { setHeader } = useHeaderStore();
+        
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
+    
 
     // Memoize the payload to prevent unnecessary re-renders
     const paginatePayload = useMemo(() => ({
@@ -327,18 +337,31 @@ const RekapParameter = ({ navigation }) => {
     ), [dropdownOptions]);
 
     return (
-        <View className="flex-1 bg-gray-100">
-            <View className="bg-gray-100 p-4 shadow-sm">
-                <View className="flex-row justify-between items-center mb-2">
-                    <View className="left-1">
-                        <BackButton action={() => navigation.goBack()} size={26} />
-                    </View>
-                    <Text className="text-xl font-poppins-bold text-black">Rekap Parameter</Text>
-                    <View />
-                </View>
-            </View>
+        <View className="bg-[#ececec] w-full h-full">
+             <View
+               className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+               style={{ backgroundColor: '#fff' }}
+             >
+               <View className="flex-row items-center">
+                 <Ionicons
+                   name="arrow-back-outline"
+                   onPress={() => navigation.goBack()}
+                   size={25}
+                   color="#312e81"
+                 />
+                 <Text className="text-[20px] font-poppins-medium text-black ml-4">Rekap Parameter</Text>
+               </View>
+               <View className="bg-emerald-500 rounded-full">
+                 <Ionicons
+                   name="filter"
+                   size={18}
+                   color={'white'}
+                   style={{ padding: 5 }}
+                 />
+               </View>
+             </View>
 
-
+            
             <TouchableOpacity
                 onPress={() => handleDateSelection('start')}
                 className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg border border-gray-300 ">
@@ -360,7 +383,7 @@ const RekapParameter = ({ navigation }) => {
                 url="/report/parameter"
                 payload={paginatePayload}
                 renderItem={CardRekapParameter}
-                className="mb-10"
+                className="bottom-2"
             />
 
             <TouchableOpacity
