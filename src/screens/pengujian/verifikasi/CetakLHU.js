@@ -11,6 +11,7 @@ import {
   TextInput,
   Pressable,
   BackHandler,
+  ScrollView
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -38,6 +39,7 @@ import FileViewer from 'react-native-file-viewer';
 import { number } from "yup";
 import { Platform } from 'react-native';
 import { ProgressBar } from 'react-native-paper'; // Make sure to install this package
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -80,13 +82,13 @@ const HasilUjis = ({ navigation, route }) => {
   const [previewReport, setPreviewReport] = useState(true);
   const [showPrintOptions, setShowPrintOptions] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
-   const { setHeader } = useHeaderStore();
-      
-    React.useLayoutEffect(() => {
-      setHeader(false)
-  
-      return () => setHeader(true)
-    }, [])
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const dropdownOptions = [];
 
@@ -174,7 +176,7 @@ const HasilUjis = ({ navigation, route }) => {
         Platform.OS === "ios"
           ? `${RNFS.DocumentDirectoryPath}/${fileName}`
           : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-      
+
       const options = {
         fromUrl: reportUrl,
         toFile: downloadPath,
@@ -182,14 +184,14 @@ const HasilUjis = ({ navigation, route }) => {
           Authorization: `Bearer ${authToken}`,
         },
       };
-      
+
       const result = await RNFS.downloadFile(options).promise;
-      
+
       if (result.statusCode === 200) {
         if (Platform.OS === "android") {
           await RNFS.scanFile(downloadPath);
         }
-        
+
         // Use FileViewer with more comprehensive error handling
         try {
           await FileViewer.open(downloadPath, {
@@ -198,7 +200,7 @@ const HasilUjis = ({ navigation, route }) => {
           });
         } catch (openError) {
           console.log('Error opening file with FileViewer:', openError);
-          
+
           // Fallback for Android using Intents
           if (Platform.OS === 'android') {
             try {
@@ -206,18 +208,18 @@ const HasilUjis = ({ navigation, route }) => {
                 android.content.Intent.ACTION_VIEW
               );
               intent.setDataAndType(
-                android.net.Uri.fromFile(new java.io.File(downloadPath)), 
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
                 'application/pdf'
               );
               intent.setFlags(
-                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP | 
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
                 android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
               );
-              
+
               await ReactNative.startActivity(intent);
             } catch (intentError) {
               console.log('Intent fallback failed:', intentError);
-              
+
               // Last resort: show file location
               Toast.show({
                 type: "info",
@@ -228,13 +230,13 @@ const HasilUjis = ({ navigation, route }) => {
           } else {
             // Fallback for iOS
             Toast.show({
-              type: "info", 
+              type: "info",
               text1: "PDF Downloaded",
               text2: `File saved at: ${downloadPath}`,
             });
           }
         }
-        
+
         // Always show success toast
         Toast.show({
           type: "success",
@@ -331,11 +333,10 @@ const HasilUjis = ({ navigation, route }) => {
             Toast.show({
               type: "success",
               text1: "Success",
-              text2: `PDF Berhasil Diunduh dengan TTE. ${
-                Platform.OS === "ios"
+              text2: `PDF Berhasil Diunduh dengan TTE. ${Platform.OS === "ios"
                   ? "You can find it in the Files app."
                   : `Saved as ${fileName} in your Downloads folder.`
-              }`,
+                }`,
             });
           } else {
             throw new Error("Download failed");
@@ -389,11 +390,10 @@ const HasilUjis = ({ navigation, route }) => {
         Toast.show({
           type: "success",
           text1: "Success",
-          text2: `Word document berhasil diunduh. ${
-            Platform.OS === "ios"
+          text2: `Word document berhasil diunduh. ${Platform.OS === "ios"
               ? "You can find it in the Files app."
               : `Saved as ${fileName} in your Downloads folder.`
-          }`,
+            }`,
         });
       } else {
         throw new Error("Download failed");
@@ -422,10 +422,10 @@ const HasilUjis = ({ navigation, route }) => {
           <Text className="ml-2 text-green-500 text-[13px] font-poppins-semibold">
             Cetak LHU
           </Text>
-          <MaterialIcons 
-            name={activeItem === item.uuid ? "keyboard-arrow-up" : "keyboard-arrow-down"} 
-            size={20} 
-            color="#22c55e" 
+          <MaterialIcons
+            name={activeItem === item.uuid ? "keyboard-arrow-up" : "keyboard-arrow-down"}
+            size={20}
+            color="#22c55e"
           />
         </TouchableOpacity>
 
@@ -486,14 +486,14 @@ const HasilUjis = ({ navigation, route }) => {
   };
 
   const renderItem = ({ item }) => {
-    const canUpload = selectedCetak === 0 ;
+    const canUpload = selectedCetak === 0;
     const showPreview = selectedCetak !== 0 || item.status === 8;
-    const canRevision = selectedCetak === 0; 
+    const canRevision = selectedCetak === 0;
     const canPrev = selectedCetak === 0;
     // const canTte = selectedCetak === 0;
 
     return (
-      <View className="my-2 bg-white rounded-lg border-t-[6px] border-indigo-900 p-5" style={{ 
+      <View className="my-2 bg-white rounded-lg border-t-[6px] border-indigo-900 p-5" style={{
         elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
@@ -509,7 +509,7 @@ const HasilUjis = ({ navigation, route }) => {
                 <Text className="text-[10px] text-indigo-600 font-poppins-semibold text-right">
                   {item.text_status}
                 </Text>
-              </View> 
+              </View>
             </View>
           </View>
           <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
@@ -532,7 +532,7 @@ const HasilUjis = ({ navigation, route }) => {
         </View>
 
         <View className="flex-row justify-end pt-2">
-          {canPrev&&(
+          {canPrev && (
             <PrintOptionsDropdown item={item} />
           )}
           {canRevision && (
@@ -580,7 +580,7 @@ const HasilUjis = ({ navigation, route }) => {
               </Text>
             </TouchableOpacity>
           )}
-    
+
           {showPreview && (
             <TouchableOpacity
               onPress={() => handlePreviewLHU(item)}
@@ -622,78 +622,83 @@ const HasilUjis = ({ navigation, route }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-          <View
-            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-            style={{ backgroundColor: '#fff' }}
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Cetak LHU</Text>
+        </View>
+        <View className="bg-sky-600 rounded-full">
+          <Ionicons
+            name="print"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
+
+      <View className="p-4">
+        <View className="flex-row justify-center">
+          <View style={{ flex: 1, marginVertical: 8 }}>
+            <HorizontalFilterMenu
+              items={cetakOptions}
+              selected={selectedCetak}
+              onPress={(item) => setSelectedCetak(item.id)}
+            />
+          </View>
+
+          <MenuView
+            title="filterOptions"
+            actions={filterOptions.map(option => ({
+              id: option.id.toString(),
+              title: option.title,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = filterOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                setSelectedYear(selectedOption.title);
+              }
+            }}
+            shouldOpenOnLongPress={false}
           >
-            <View className="flex-row items-center">
-              <Ionicons
-                name="arrow-back-outline"
-                onPress={() => navigation.goBack()}
-                size={25}
-                color="#312e81"
-              />
-              <Text className="text-[20px] font-poppins-medium text-black ml-4">Cetak LHU</Text>
-            </View>
-            <View className="bg-sky-600 rounded-full">
-              <Ionicons
-                name="print"
-                size={18}
-                color={'white'}
-                style={{ padding: 5 }}
-              />
-            </View>
-          </View>
-
-        <View className="p-4">
-            <View className="flex-row justify-center">
-              <View style={{ flex: 1, marginVertical: 8 }}>
-                <HorizontalFilterMenu
-                  items={cetakOptions}
-                  selected={selectedCetak}
-                  onPress={(item) => setSelectedCetak(item.id)}
-                />
-              </View>
-
-              <MenuView
-                title="filterOptions"
-                actions={filterOptions.map(option => ({
-                  id: option.id.toString(),
-                  title: option.title,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = filterOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  if (selectedOption) {
-                    setSelectedYear(selectedOption.title);
-                  }
+            <View style={{ marginEnd: 5 }}>
+              <MaterialCommunityIcons
+                name="filter-menu-outline"
+                size={24}
+                color="white"
+                style={{
+                  backgroundColor: "#312e81",
+                  padding: 12,
+                  borderRadius: 8
                 }}
-                shouldOpenOnLongPress={false}
-              >
-                <View style={{ marginEnd: 5 }}>
-                  <MaterialCommunityIcons 
-                    name="filter-menu-outline" 
-                    size={24} 
-                    color="white" 
-                    style={{ 
-                      backgroundColor: "#312e81", 
-                      padding: 12, 
-                      borderRadius: 8 
-                    }} 
-                  />
-                </View>
-              </MenuView>
+              />
             </View>
-          </View>
+          </MenuView>
+        </View>
+      </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/administrasi/cetak-lhu"
-        payload={payload}
-        renderItem={renderItem}
-        className="bottom-2"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/administrasi/cetak-lhu"
+          payload={payload}
+          renderItem={renderItem}
+          className="bottom-2"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <Modal
         transparent={true}
@@ -792,8 +797,8 @@ const HasilUjis = ({ navigation, route }) => {
               </Text>
               <TextInput
                 value={formTte.tanda_tangan_id}
-                onChangeText={(text) => 
-                  setFormTte(prev => ({...prev, tanda_tangan_id: text}))
+                onChangeText={(text) =>
+                  setFormTte(prev => ({ ...prev, tanda_tangan_id: text }))
                 }
                 className="border border-gray-300 rounded-lg p-3 text-sm"
                 placeholder="Masukkan ID Tanda Tangan"
@@ -806,8 +811,8 @@ const HasilUjis = ({ navigation, route }) => {
               </Text>
               <TextInput
                 value={formTte.passphrase}
-                onChangeText={(text) => 
-                  setFormTte(prev => ({...prev, passphrase: text}))
+                onChangeText={(text) =>
+                  setFormTte(prev => ({ ...prev, passphrase: text }))
                 }
                 className="border border-gray-300 rounded-lg p-3 text-sm"
                 placeholder="Masukkan Passphrase"
@@ -888,11 +893,11 @@ const HasilUjis = ({ navigation, route }) => {
 
             {!pdfError && (
               <Pdf
-                key={reportUrl} 
+                key={reportUrl}
                 source={{ uri: reportUrl, cache: true }}
-                style={{ 
-                  flex: 1, 
-                  display: pdfLoaded ? 'flex' : 'none' 
+                style={{
+                  flex: 1,
+                  display: pdfLoaded ? 'flex' : 'none'
                 }}
                 trustAllCerts={false}
                 onLoadComplete={(numberOfPages) => {

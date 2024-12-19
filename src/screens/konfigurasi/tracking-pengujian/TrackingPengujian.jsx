@@ -297,6 +297,7 @@ const TrackingPengujian = ({ navigation }) => {
             per: 10,
           }}
           renderItem={CardTrackingPengujian}
+          className="bottom-2"
         />
         <View className="mt-[67%] mb-8">
           <TextFooter />

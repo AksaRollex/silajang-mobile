@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, Text, TouchableOpacity, ActivityIndicator, Platform, Modal } from 'react-native';
+import { View, Text, TouchableOpacity, ActivityIndicator, Platform, Modal, ScrollView } from 'react-native';
 import { MenuView } from "@react-native-menu/menu";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import moment from 'moment';
@@ -18,6 +18,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import FileViewer from 'react-native-file-viewer';
 import { useHeaderStore } from '../../main/Index';
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const RekapData = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -365,19 +366,25 @@ const RekapData = ({ navigation }) => {
         </View>
       </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/report/rekap"
-        payload={{
-          start: selectedDate.start,
-          end: selectedDate.end,
-          is_mandiri: isMandiri,
-          golongan_id: golonganId,
-          mode: mode
-        }}
-        renderItem={CardItem}
-        className="mb-8"
-      />
+
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/report/rekap"
+          payload={{
+            start: selectedDate.start,
+            end: selectedDate.end,
+            is_mandiri: isMandiri,
+            golongan_id: golonganId,
+            mode: mode
+          }}
+          renderItem={CardItem}
+          className="mb-8"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={handlePreviewPDF}
