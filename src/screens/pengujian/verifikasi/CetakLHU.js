@@ -14,6 +14,7 @@ import {
 } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import FontIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
@@ -24,6 +25,8 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useHeaderStore } from "@/src/screens/main/Index";
+
 // import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
@@ -77,6 +80,13 @@ const HasilUjis = ({ navigation, route }) => {
   const [previewReport, setPreviewReport] = useState(true);
   const [showPrintOptions, setShowPrintOptions] = useState(false);
   const [activeItem, setActiveItem] = useState(null);
+   const { setHeader } = useHeaderStore();
+      
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
 
   const dropdownOptions = [];
 
@@ -483,14 +493,15 @@ const HasilUjis = ({ navigation, route }) => {
     // const canTte = selectedCetak === 0;
 
     return (
-      <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{ 
+      <View className="my-2 bg-white rounded-lg border-t-[6px] border-indigo-900 p-5" style={{ 
         elevation: 3,
         shadowColor: '#000',
         shadowOffset: { width: 0, height: 2 },
         shadowOpacity: 0.1,
         shadowRadius: 4
       }}>
-        <View className="border-b border-gray-100 pb-3 mb-3">
+        <View className="pb-3 mb-2">
+          <Text className="text-xs font-poppins-regular text-gray-500 top-1">Kode</Text>
           <View className="flex-row justify-between items-center mb-2">
             <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
             <View className="flex-shrink-0 items-end">
@@ -511,7 +522,7 @@ const HasilUjis = ({ navigation, route }) => {
           </Text>
         </View>
 
-        <View className="border-b border-gray-100 pb-3 mb-3">
+        <View className="border-b border-gray-200 pb-3 mb-3">
           <View className="mb-2">
             <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Diterima</Text>
             <Text className="text-md font-poppins-semibold text-black">
@@ -611,16 +622,30 @@ const HasilUjis = ({ navigation, route }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="p-3">
-        <View className="flex-row items-center space-x-2">
-          <View className="flex-col w-full">
-            <View className="flex-row items-center space-x-2 mb-4">
-              <BackButton action={() => navigation.goBack()} size={26} />
-              <View className="absolute left-0 right-2 items-center">
-                <Text className="text-[20px] font-poppins-semibold text-black">Cetak LHU</Text>
-              </View>
+          <View
+            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+            style={{ backgroundColor: '#fff' }}
+          >
+            <View className="flex-row items-center">
+              <Ionicons
+                name="arrow-back-outline"
+                onPress={() => navigation.goBack()}
+                size={25}
+                color="#312e81"
+              />
+              <Text className="text-[20px] font-poppins-medium text-black ml-4">Cetak LHU</Text>
             </View>
+            <View className="bg-sky-600 rounded-full">
+              <Ionicons
+                name="print"
+                size={18}
+                color={'white'}
+                style={{ padding: 5 }}
+              />
+            </View>
+          </View>
 
+        <View className="p-4">
             <View className="flex-row justify-center">
               <View style={{ flex: 1, marginVertical: 8 }}>
                 <HorizontalFilterMenu
@@ -661,14 +686,13 @@ const HasilUjis = ({ navigation, route }) => {
               </MenuView>
             </View>
           </View>
-        </View>
-      </View>
 
       <Paginate
         ref={paginateRef}
         url="/administrasi/cetak-lhu"
         payload={payload}
         renderItem={renderItem}
+        className="bottom-2"
       />
 
       <Modal

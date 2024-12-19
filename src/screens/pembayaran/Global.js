@@ -330,7 +330,7 @@ const Global = ({ navigation }) => {
 
             <Text className="text-xl font-poppins-semibold text-black mb-3">
               Konfirmasi Download
-            </Text>
+            </Text> 
 
             <View className="w-full h-px bg-gray-200 mb-4" />
 
@@ -340,18 +340,19 @@ const Global = ({ navigation }) => {
 
             <View className="flex-row w-full justify-between">
               <TouchableOpacity
+                onPress={downloadReport}
+                className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
+              >
+                <Text className="text-white font-poppins-medium">Ya, Download</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
                 onPress={() => setModalVisible(false)}
-                className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+                className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
               >
                 <Text className="text-gray-700 font-poppins-medium">Batal</Text>
               </TouchableOpacity>
 
-              <TouchableOpacity
-                onPress={downloadReport}
-                className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
-              >
-                <Text className="text-white font-poppins-medium">Ya, Download</Text>
-              </TouchableOpacity>
             </View>
           </View>
         </View>

@@ -79,12 +79,14 @@ const Metode = ({ navigation }) => {
           <IonIcon name="flask" size={18} color={'white'} style={{padding: 5}}/>
         </View>
       </View>
+
       <Paginate
         ref={paginateRef}
         url="/master/acuan-metode"
         payload={{}}
         renderItem={renderItem}
       />
+      
       <Icon
         name="plus"
         size={28}

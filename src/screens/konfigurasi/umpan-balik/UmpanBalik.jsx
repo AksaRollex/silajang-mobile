@@ -391,21 +391,22 @@ const UmpanBalik = ({ navigation }) => {
 
           <View className="flex-row w-full justify-between">
             <TouchableOpacity
-              onPress={() => setDownloadModalVisible(false)}
-              className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
-            >
-              <Text className="text-gray-700 font-poppins-medium">Batal</Text>
-            </TouchableOpacity>
-
-            <TouchableOpacity
               onPress={() => {
                 downloadTemplate();
                 setDownloadModalVisible(false);
               }}
-              className="flex-1 ml-3 bg-green-500 py-3 rounded-xl items-center"
+              className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
             >
               <Text className="text-white font-poppins-medium">Ya, Download</Text>
             </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setDownloadModalVisible(false)}
+              className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
+            >
+              <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+            </TouchableOpacity>
+
           </View>
         </View>
       </View>
