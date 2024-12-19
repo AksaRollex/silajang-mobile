@@ -39,6 +39,9 @@ import { formatDate } from "@/src/libs/utils";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MultiSelect from "react-native-multiple-select";
 import { API_URL } from "@env";
+import Select2 from "@/src/screens/components/Select2";
+import { Controller, useForm } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 const currency = number => {
   return number.toLocaleString("id-ID", {
@@ -71,6 +74,8 @@ export default function DetailPersetujuan({ route, navigation }) {
 
   const [obyekPelayanan, setObyekPelayanan] = useState("");
 
+  const { control, handleSubmit, setValue } = useForm();
+
   const [modalVisible, setModalVisible] = useState({
     visible: false,
     selectedParameter: null,
@@ -97,31 +102,68 @@ export default function DetailPersetujuan({ route, navigation }) {
     });
   };
 
-  useEffect(() => {
-    const fetchRadiusPengambilan = async () => {
-      try {
-        const response = await axios.get("/master/radius-pengambilan");
-        setRadiusPengambilan(response.data.data);
-      } catch (error) {
-        console.error("Error fetching RadiusPengambilan data:", error);
+  // useEffect(() => {
+  //   const fetchRadiusPengambilan = async () => {
+  //     try {
+  //       const response = await axios.get("/master/radius-pengambilan");
+  //       setRadiusPengambilan(response.data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching RadiusPengambilan data:", error);
+  //     }
+  //   };
+
+  //   fetchRadiusPengambilan();
+  // }, []);
+
+  useQuery(
+    ["radius-pengambilan", uuid],
+    () => axios.get("/master/radius-pengambilan").then(res => res.data.data),
+    {
+      onSuccess: data => {
+        setRadiusPengambilan(data);
+        console.log(data, 99999)
+      },
+      onError: (err) => {
+        console.log(err)
       }
-    };
+      
+    },
+  );
 
-    fetchRadiusPengambilan();
-  }, []);
+  const formattedRadius = radiusPengambilan?.map(item => ({
+    value: item.id,
+    title: `${item.nama} (${item.radius}m) - ${currency(item.harga)}`,
+  }));
+  
 
-  useEffect(() => {
-    const fetchMetode = async () => {
-      try {
-        const response = await axios.get("/master/acuan-metode");
-        setMetode(response.data.data);
-      } catch (error) {
-        console.error("Error fetching Metode data:", error);
+
+  // useEffect(() => {
+  //   const fetchMetode = async () => {
+  //     try {
+  //       const response = await axios.get("/master/acuan-metode");
+  //       setMetode(response.data.data);
+  //     } catch (error) {
+  //       console.error("Error fetching Metode data:", error);
+  //     }
+  //   };
+
+  //   fetchMetode();
+  // }, []);
+
+  useQuery(
+    ["acuan-metode", uuid],
+    () => axios.get("/master/acuan-metode").then(res => res.data.data),
+    {
+      onSuccess: data => {
+        setMetode(data);
       }
-    };
+    }
+  )
 
-    fetchMetode();
-  }, []);
+  const formattedMetode = metode?.map(item => ({
+    value: item.id,
+    title: item.nama,
+  }));
 
   useEffect(() => {
     const fetchPengambilSample = async () => {
@@ -173,8 +215,11 @@ export default function DetailPersetujuan({ route, navigation }) {
       const response = await axios.get(
         `/administrasi/pengambil-sample/${uuid}`,
       );
-      console.log("Response data:", response.data);
+      console.log("Response data:", response.data.data.acuan_metode, 99888);
       setData(response.data.data);
+      setValue('radius_pengambilan', response.data.data.permohonan.radius_pengambilan_id)
+      setValue('acuan_metode', response.data.data.acuan_metode.id)
+
 
       if (response.data.data.permohonan.radius_pengambilan) {
         setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id);
@@ -920,64 +965,23 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Radius Pengambilan</Text>
-                  <View style={styles.pickerContainer}>
-                    <RNPickerSelect
-                      placeholder={{ label: "Pilih Radius", value: null }}
-                      onValueChange={value => {
-                        console.log("Selected radius value:", value);
-                        setData(prevData => {
-                          if (prevData) {
-                            const updatedData = {
-                              ...prevData,
-                              permohonan: {
-                                ...prevData.permohonan,
-                                radius_pengambilan_id: value, // Update radius_pengambilan_id
-                              },
-                            };
-
-                            updateDataToServer(updatedData);
-
-                            return updatedData;
-                          }
-                          return prevData; // Jika tidak ada data sebelumnya, kembalikan apa adanya
-                        });
-                      }}
-                      items={radiusPengambilan.map(item => ({
-                        label: `${item.nama} (${item.radius}m) - ${currency(
-                          item.harga,
-                        )}`,
-                        value: item.id,
-                      }))}
-                      style={{
-                        inputIOS: {
-                          ...styles.pickerStyle,
-                          fontSize: 12,
-                          fontFamily: "Poppins-Medium",
-                        },
-                        inputAndroid: {
-                          ...styles.pickerStyle,
-                          fontFamily: "Poppins-Medium",
-                          fontSize: 12,
-                        },
-                        iconContainer: {
-                          top: 10,
-                          right: 12,
-                        },
-                      }}
-                      value={selectedRadius}
-                      useNativeAndroidPickerStyle={false}
-                      Icon={() => {
-                        return (
-                          <FontAwesome6
-                            name="caret-down"
-                            size={11}
-                            color="#999"
-                            style={{ marginTop: 4 }}
-                          />
-                        );
-                      }}
-                    />
-                  </View>
+                  <Controller
+                    control={control}
+                    name="radius_pengambilan"
+                    rules={{ required: "Radius pengambilan harus diisi" }}
+                    render={({ field: { onChange, value } }) => (
+                      <Select2
+                        onSelect2={value => {
+                          onChange(value);
+                          setRadiusPengambilan(value);
+                          setSelectedRadius(value);
+                        }}
+                        defaultValue={value}
+                        data={formattedRadius}
+                        placeholder="Pilih Radius Pengambilan"
+                      />
+                    )}
+                  />
                 </View>
               </View>
 
@@ -1115,47 +1119,23 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
                 <View style={styles.textContainer}>
                   <Text style={styles.label}>Metode</Text>
-                  <View style={styles.pickerContainer}>
-                    <RNPickerSelect
-                      placeholder={{ label: "Pilih Metode", value: null }}
-                      onValueChange={value => {
-                        setSelectedMetode(value);
-                        saveMetode(value);
-                      }}
-                      items={metode.map(item => ({
-                        label: `${item.nama}`,
-                        value: item.id,
-                      }))}
-                      style={{
-                        inputIOS: {
-                          ...styles.pickerStyle,
-                          fontFamily: "Poppins-Medium",
-                          fontSize: 12,
-                        },
-                        inputAndroid: {
-                          ...styles.pickerStyle,
-                          fontFamily: "Poppins-Medium",
-                          fontSize: 12,
-                        },
-                        iconContainer: {
-                          top: 10,
-                          right: 12,
-                        },
-                      }}
-                      value={selectedMetode}
-                      useNativeAndroidPickerStyle={false}
-                      Icon={() => {
-                        return (
-                          <FontAwesome6
-                            name="caret-down"
-                            size={11}
-                            color="#999"
-                            style={{ marginTop: 4 }}
-                          />
-                        );
-                      }}
-                    />
-                  </View>
+                  <Controller
+                    control={control}
+                    name="acuan_metode"
+                    rules={{ required: "Acuan metode harus diisi" }}
+                    render={({ field: { onChange, value } }) => (
+                      <Select2
+                        onSelect2={value => {
+                          onChange(value);
+                          setMetode(value);
+                          setSelectedMetode(value);
+                        }}
+                        defaultValue={value}
+                        data={formattedMetode}
+                        placeholder="Pilih Radius Pengambilan"
+                      />
+                    )}
+                  />
                 </View>
               </View>
               <View style={styles.infoItem}>

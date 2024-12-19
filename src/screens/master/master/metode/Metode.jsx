@@ -13,13 +13,13 @@ const Metode = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
 
-  const { setHeader } = useHeaderStore();
-    
-  React.useLayoutEffect(() => {
-    setHeader(false)
+    const { setHeader } = useHeaderStore();
+      
+    React.useLayoutEffect(() => {
+      setHeader(false)
 
-    return () => setHeader(true)
-  }, [])
+      return () => setHeader(true)
+    }, [])
 
   const { delete: deleteMetode, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
