@@ -4,7 +4,7 @@ import Paginate from '@/src/screens/components/Paginate';
 import HorizontalFilterMenu from '@/src/screens/components/HorizontalFilterMenu';
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, ScrollView } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -19,6 +19,7 @@ import axios from '@/src/libs/axios';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from '@/src/screens/components/TextFooter';
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -443,20 +444,24 @@ const VerifikasiLhu = ({ navigation }) => {
         </View>
       </View>
 
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/verifikasi/kepala-upt"
+          payload={{
+            status: selectedVerifikasi,
+            tahun: selectedYear,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="bottom-2"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
-      {/* List Section */}
-      <Paginate
-        ref={paginateRef}
-        url="/verifikasi/kepala-upt"
-        payload={{
-          status: selectedVerifikasi,
-          tahun: selectedYear,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="bottom-2"
-      />
       <Modal
         transparent={true}
         animationType="slide"
