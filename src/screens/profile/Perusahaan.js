@@ -213,7 +213,7 @@ const Perusahaan = () => {
       .get("/master/kota-kabupaten")
       .then(response => {
         const formattedKotaKabupaten = response.data.data.map(item => ({
-          label: item.nama,
+          title: item.nama,
           value: item.id,
         }));
         console.log("Response data from API:", response.data);
@@ -232,7 +232,7 @@ const Perusahaan = () => {
         .get(`/wilayah/kota-kabupaten/${selectedKotaKabupaten}/kecamatan`)
         .then(response => {
           const formattedKecamatan = response.data.data.map(item => ({
-            label: item.nama,
+            title: item.nama,
             value: item.id,
           }));
           console.log("Response data kecamatan:", response.data);
@@ -263,7 +263,7 @@ const Perusahaan = () => {
         .get(`/wilayah/kecamatan/${selectedKecamatan}/kelurahan`)
         .then(response => {
           const formattedKelurahan = response.data.data.map(item => ({
-            label: item.nama,
+            title: item.nama,
             value: item.id,
           }));
           // console.log("Response data kelurahan:", response.data);
@@ -1038,7 +1038,7 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKotaKabupatenLoaded ? kotaKabupaten : []}
-                      onChangeValue={value => {
+                      onSelect={value => {
                         onChange(value);
                         setSelectedKotaKabupaten(value);
                         setSelectedKecamatan(null); // Reset Kecamatan
@@ -1048,13 +1048,8 @@ const Perusahaan = () => {
                         setKecamatan([]);
                         setKelurahan([]);
                       }}
-                      items={isKotaKabupatenLoaded ? kotaKabupaten : []}
-                      value={value}
-                      defaultValue={watch("kab_kota_id")}
-                      placeholder={{
-                        label: "Pilih Kabupaten/Kota",
-                        value: null,
-                      }}
+                      defaultValue={value}
+                      placeholder="Pilih Kabupaten/Kota"
                     />
                   </View>
                 </View>
@@ -1075,15 +1070,13 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKecamatanLoaded ? kecamatan : []}
-                      onChangeValue={value => {
+                      onSelect={value => {
                         onChange(value);
                         setSelectedKecamatan(value);
                         setKelurahan([]);
                       }}
-                      items={isKecamatanLoaded ? kecamatan : []}
-                      value={value}
                       defaultValue={selectedKecamatan} // Use local state to reset
-                      placeholder={{ label: "Pilih Kecamatan", value: null }}
+                      placeholder="Pilih Kecamatan"
                       disabled={!selectedKotaKabupaten} // Disable if Kota/Kabupaten not selected
                     />
                   </View>
@@ -1105,14 +1098,12 @@ const Perusahaan = () => {
                     className="rounded-2xl">
                     <Select2
                       data={isKelurahanLoaded ? kelurahan : []}
-                      onChangeValue={value => {
+                      onSelect={value => {
                         onChange(value);
                         setSelectedKelurahan(value);
                       }}
-                      items={isKelurahanLoaded ? kelurahan : []}
-                      value={value}
                       defaultValue={selectedKelurahan} // Use local state to reset
-                      placeholder={{ label: "Pilih Kelurahan", value: null }}
+                      placeholder="Pilih Kelurahan"
                       disabled={!selectedKecamatan} // Disable if Kecamatan not selected
                     />
                   </View>

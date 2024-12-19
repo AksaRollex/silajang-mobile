@@ -5,7 +5,7 @@ import HorizontalScrollMenu from "@nyashanziramasanga/react-native-horizontal-sc
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, ScrollView } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -20,6 +20,8 @@ import Toast from 'react-native-toast-message';
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from '@/src/screens/main/Index';
+import { TextFooter } from "@/src/screens/components/TextFooter";
+
 
 const currentYear = new Date().getFullYear()
 const generateYears = () => {
@@ -363,7 +365,8 @@ const PengambilSampel = ({ navigation }) => {
           </MenuView>
         </View>
       </View>
-
+      
+      <ScrollView>
       <Paginate
         ref={paginateRef}
         url="/administrasi/pengambil-sample"
@@ -376,6 +379,10 @@ const PengambilSampel = ({ navigation }) => {
         renderItem={renderItem}
         className ="bottom-2"
       />
+      <View className="mt-12 mb-8">
+        <TextFooter/>
+      </View>
+      </ScrollView>
 
 
       <DeleteConfirmationModal />
