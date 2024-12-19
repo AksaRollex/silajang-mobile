@@ -1,10 +1,11 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
 import RNPickerSelect from "react-native-picker-select";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -15,6 +16,8 @@ import Pdf from "react-native-pdf";
 import RNFS from "react-native-fs";
 import Toast from "react-native-toast-message";
 import { rupiah } from "@/src/libs/utils";
+import { TextFooter } from "../components/TextFooter";
+import { useHeaderStore } from "../main/Index";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -23,6 +26,13 @@ const Global = ({ navigation }) => {
   const [selectedStatus, setSelectedStatus] = useState("-");
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
+  const { setHeader } = useHeaderStore();
+        
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
 
 
   const generateYears = () => {
@@ -271,19 +281,33 @@ const Global = ({ navigation }) => {
   };
 
   return (
-    <View className="bg-[#ececec] w-full h-full">
-      <View className="p-4">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center flex-1">
-            <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center" >
-              Global
-            </Text>
+     <View className="bg-[#ececec] w-full h-full">
+          <View
+            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+            style={{ backgroundColor: "#fff" }}>
+            <View className="flex-row items-center">
+              <Ionicons
+                name="arrow-back-outline"
+                onPress={() => navigation.goBack()}
+                size={25}
+                color="#312e81"
+              />
+              <Text className="text-[20px] font-poppins-medium text-black ml-4">
+                Global
+              </Text>
+            </View>
+            <View className="bg-green-600 rounded-full">
+              <Ionicons
+                name="globe"
+                size={18}
+                color={"white"}
+                style={{ padding: 5 }}
+              />
+            </View>
           </View>
 
-        </View>
-
-        <View className="flex-row space-x-2 ">
+        <View className= "p-4">
+        <View className="flex-row">
           <MenuView
             title="Pilih Tahun"
             onPressAction={handleYearChange}
@@ -358,25 +382,30 @@ const Global = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/global"
-        payload={{
-          status: selectedStatus,
-          tahun: selectedYear,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="px-4 mb-12"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/global"
+          payload={{
+            status: selectedStatus,
+            tahun: selectedYear,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="bottom-2"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={() => setModalVisible(true)}
         style={{
           position: 'absolute',
-          bottom: 75,
-          right: 20,
+          bottom: 15,
+          right: 15,
           backgroundColor: '#177a44',
           borderRadius: 50,
           width: 55,

@@ -39,6 +39,9 @@ import { formatDate } from "@/src/libs/utils";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MultiSelect from "react-native-multiple-select";
 import { API_URL } from "@env";
+import Select2 from "@/src/screens/components/Select2";
+import { useForm, Controller } from "react-hook-form";
+import { useQuery } from "@tanstack/react-query";
 
 const currency = number => {
   return number.toLocaleString("id-ID", {
@@ -79,6 +82,8 @@ export default function DetailPersetujuan({ route, navigation }) {
     visible: false,
     selectedParameter: null,
   });
+
+  const {control, setValue} = useForm();
 
   const handleParameter = (parameter, uuid) => {
     setModalState({
@@ -122,6 +127,19 @@ export default function DetailPersetujuan({ route, navigation }) {
 
     fetchMetode();
   }, []);
+
+  useQuery(
+    ["acuan-metode", uuid],
+    () => axios.get("/master/acuan-metode").then(res => res.data.data),
+    {
+      onSuccess: data => setMetode(data),
+    },
+  );
+
+  const formattedMetode = metode?.map(item => ({
+    value: item.id,
+    title: item.nama,
+  }))
 
   useEffect(() => {
     const fetchPengambilSample = async () => {
@@ -175,6 +193,7 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
       console.log("Response data:", response.data);
       setData(response.data.data);
+      setValue("acuanMetode",acuan_metode)
 
       if (response.data.data.permohonan.radius_pengambilan) {
         setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id);

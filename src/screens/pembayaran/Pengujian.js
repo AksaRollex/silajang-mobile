@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useMemo } from "react";
-import { View, Text, TouchableOpacity, Modal } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
@@ -19,6 +19,7 @@ import KwitansiModal from "./KwitansiModal";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "../main/Index";
+import { TextFooter } from "../components/TextFooter";
 
 const Pengujian = ({ navigation, onSelectYearMonth }) => {
   const [refreshKey, setRefreshKey] = useState(0);
@@ -629,27 +630,32 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
         onClose={() => setKwitansiModalVisible(false)}
         onSubmit={handleKwitansiSubmit}
       />
-
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/pengujian"
-        payload={{
-          tahun: tahun,
-          bulan: bulan,
-          type: type,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={cardPengujian}
-        className="bottom-2"
-      />
+ 
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/pengujian"
+          payload={{
+            tahun: tahun,
+            bulan: bulan,
+            type: type,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={cardPengujian}
+          className="px-4 mb-12"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={handlePreviewReport}
         className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
         style={{
           position: 'absolute',
-          bottom: 25,
+          bottom: 15,
           right: 15,
           backgroundColor: '#dc2626',
           borderRadius: 50,
