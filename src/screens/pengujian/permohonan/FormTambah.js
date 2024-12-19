@@ -1,38 +1,69 @@
 import * as React from "react";
+import "moment/locale/id";
 import { useState, useEffect } from "react";
 import {
   View,
   StyleSheet,
   TouchableOpacity,
   Text,
-  ScrollView,
   Modal,
   Image,
+  ScrollView,
 } from "react-native";
+import moment from "moment";
 import { useForm, Controller } from "react-hook-form";
 import { useMutation } from "@tanstack/react-query";
 import { TextField, Colors, Button, TextArea } from "react-native-ui-lib";
-import Toast, { BaseToast } from "react-native-toast-message";
+import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
 import Back from "../../components/Back";
-import { useQueryClient, useQuery } from "@tanstack/react-query";
+import { useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Select2 from "../../components/Select2";
-import LottieView from "lottie-react-native";
+import DateTimePicker from "@react-native-community/datetimepicker";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import { launchImageLibrary } from "react-native-image-picker";
+import Icons from "react-native-vector-icons/AntDesign";
+import DocumentPicker from "react-native-document-picker";
+import AntDesign from "react-native-vector-icons/AntDesign";
+import FontIcon from "react-native-vector-icons/FontAwesome5";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 const TambahPermohonan = ({ navigation }) => {
   const [jasaPengambilan, setJasaPengambilan] = useState([]);
   const [selectedJasaPengambilan, setSelectedJasaPengambilan] = useState(null);
-  const [OpenJasaPengambilan, setOpenJasaPengambilan] = useState(false);
   const [selectedCara, setSelectedCara] = useState(null);
   const [selectedPembayaran, setSelectedPembayaran] = useState(null);
-  const [modalVisible, setModalVisible] = useState(false);
   const [percuy, setPercuy] = useState(null);
   const [modalPercuy, setModalPercuy] = useState(false);
-
-  console.log("percuy", percuy);
+  const [date, setDate] = useState(null);
+  const [showDatePicker, setShowDatePicker] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
+  const [file, setFile] = React.useState(null);
+
+  const [selectedFile, setSelectedFile] = useState(null);
+  const [uploadModalVisible, setUploadModalVisible] = useState(false);
+  const [currentItem, setCurrentItem] = useState(null);
+
+  const paginateRef = React.useRef;
+
+  const handleDateChange = (event, selectedDate) => {
+    if (event.type === "set") {
+      const currentDate = selectedDate || date;
+      if (currentDate instanceof Date && !isNaN(currentDate)) {
+        setDate(currentDate);
+        setShowDatePicker(false);
+        setIsDateSelected(true);
+      } else {
+        console.error("Invalid date selected");
+      }
+    } else {
+      setShowDatePicker(false);
+    }
+  };
 
   useEffect(() => {
     axios
@@ -107,6 +138,11 @@ const TambahPermohonan = ({ navigation }) => {
         is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
         pembayaran: "transfer",
         jasa_pengambilan_id: selectedJasaPengambilan,
+        // tanggal_surat: getValues("tanggal_surat"),
+        // no_surat: getValues("no_surat"),
+        // bulan: getValues("bulan"),
+        // perihal: getValues("perihal"),
+        // dokumen_permohonan: getValues("dokumen_permohonan"),
       };
 
       return axios.post("/permohonan/store", requestData).then(res => res.data);
@@ -114,17 +150,11 @@ const TambahPermohonan = ({ navigation }) => {
     {
       onSuccess: data => {
         setPercuy(data);
+        // setTimeout(() => {
+        //   navigation.navigate("Permohonan");
+        // }, 2000);
         setModalPercuy(true);
         queryClient.invalidateQueries(["/permohonan"]);
-        // setTimeout(() => {
-        //   navigation.navigate("FormTitikUji", {
-        //     uuid: data.uuid,
-        //     tipePengambilan: {
-        //       is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
-        //     },
-        //   });
-        //   console.log(data);
-        // }, 4000);
       },
       onError: error => {
         setErrorMessage(
@@ -171,10 +201,127 @@ const TambahPermohonan = ({ navigation }) => {
     send(data);
   };
 
+  const bulan = [
+    {
+      id: "1",
+      name: "Januari",
+    },
+    { id: "2", name: "Februari" },
+    { id: "3", name: "Maret" },
+    { id: "4", name: "April" },
+    { id: "5", name: "Mei" },
+    { id: "6", name: "Juni" },
+    { id: "7", name: "Juli" },
+    { id: "8", name: "Agustus" },
+    { id: "9", name: "September" },
+    { id: "10", name: "Oktober" },
+    { id: "11", name: "November" },
+    { id: "12", name: "Desember" },
+  ];
+  const getCurrentMonth = () => {
+    const date = new Date();
+    const currentMonth = date.getMonth() + 1; // Bulan dimulai dari 0, jadi tambahkan 1
+    return bulan.filter(item => parseInt(item.id) === currentMonth); // Filter sesuai bulan
+  };
+
+  const handleChoosePhoto = () => {
+    launchImageLibrary({ mediaType: "photo" }, response => {
+      if (response.errorMessage) {
+        console.log("Image Error : ", response.errorMessage);
+      } else if (response.assets && response.assets.length > 0) {
+        const file = response.assets[0];
+        const fileSizeInBytes = file.fileSize;
+        const fileSizeInKB = fileSizeInBytes / 1024;
+
+        if (fileSizeInKB > 2048) {
+          Toast.show({
+            type: "error",
+            text1: "Ukuran file terlalu besar",
+            text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
+          });
+        } else {
+          console.log("Chosen file:", file);
+          setFile(file);
+        }
+      }
+    });
+  };
+
+  const handleDeletePhoto = () => {
+    setFile(null);
+    setCurrentPhotoUrl(null);
+  };
+  const [filteredMonths] = useState(getCurrentMonth());
+
+  const handleFilePicker = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.pdf],
+      });
+      setSelectedFile(res[0]);
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker
+      } else {
+        console.error("Error picking document:", err);
+        Alert.alert("Error", "Failed to pick document");
+      }
+    }
+  };
+
+  const handleUploadPDF = async () => {
+    try {
+      if (!selectedFile) {
+        Toast.show({
+          type: "error",
+          text1: "Error",
+          text2: "Please select a PDF file first",
+        });
+        return;
+      }
+      const formData = new FormData();
+      formData.append("file", {
+        uri: selectedFile.uri,
+        type: selectedFile.type,
+        name: selectedFile.name,
+      });
+      const response = await axios.post("/permohonan/store", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+        },
+      });
+
+      setSelectedFile(null);
+      setUploadModalVisible(false);
+
+      Toast.show({
+        type: "success",
+        text1: "Success",
+        text2: "File berhasil diupload",
+      });
+
+      paginateRef.current?.refetch();
+    } catch (error) {
+      console.error(error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: error.response?.data?.message || "Failed to upload file",
+      });
+    }
+  };
   return (
     <>
-      <View className="bg-[#ececec] w-full h-full  p-3">
-        <View className="bg-[#fff] w-full h-full rounded-3xl"  style={{elevation: 5, shadowColor: 'rgba(0,0,0,0.1)', shadowOffset: { width: 0, height: 0 }, shadowOpacity: 0.5, shadowRadius: 2 }}>
+      <ScrollView className="bg-[#ececec] w-full h-full  p-3">
+        <View
+          className="bg-[#fff] w-full h-full rounded-3xl"
+          style={{
+            elevation: 5,
+            shadowColor: "rgba(0,0,0,0.1)",
+            shadowOffset: { width: 0, height: 0 },
+            shadowOpacity: 0.5,
+            shadowRadius: 2,
+          }}>
           <View className="flex-row  p-3 ">
             <Back
               size={30}
@@ -323,21 +470,136 @@ const TambahPermohonan = ({ navigation }) => {
                   <MaterialIcons name="truck" size={40} color="black" />
                 </TouchableOpacity>
               </View>
+              {selectedCara === "ambilPetugas" && (
+                <View className=" mb-4">
+                  <Select2
+                    onSelect={value => {
+                      setSelectedJasaPengambilan(value);
+                    }}
+                    data={jasaPengambilan}
+                    placeholder="Pilih Jasa Pengambilan"
+                  />
+                </View>
+              )}
             </View>
-            {selectedCara === "ambilPetugas" && (
-              <View className=" mb-4">
-                <Select2
-                  onSelect={value => {
-                    setSelectedJasaPengambilan(value);
-                  }}
-                  data={jasaPengambilan}
-                  placeholder="Pilih Jasa Pengambilan"
-                />
+
+            {/* <View>
+              <Text className="font-poppins-semibold text-black mt-2 mb-6  text-center text-base">
+                Detail Kontrak
+              </Text>
+
+              <Controller
+                control={control}
+                name="nomor_surat"
+                rules={{ required: "Nomor surat tidak boleh kosong" }}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-poppins-semibold mb-1 text-black ">
+                      Nomor Surat
+                    </Text>
+                    <TextField
+                      enableErrors
+                      placeholderTextColor="grey"
+                      placeholder="Masukkan nomor surat"
+                      className="p-3 bg-[#fff] rounded-2xl  border-stone-300 border font-poppins-regular"
+                      onChangeText={onChange}
+                      value={value}
+                    />
+                  </View>
+                )}
+              />
+
+              <View>
+                <Text className="font-poppins-semibold text-black mb-1">
+                  Tanggal
+                </Text>
+                <TouchableOpacity onPress={() => setShowDatePicker(true)}>
+                  <View className="flex-row items-center p-4 bg-[#fff] rounded-2xl border-stone-300 border ">
+                    <Text className="text-sm flex-1 text-gray-500 font-poppins-regular">
+                      {date
+                        ? `${moment(date).format("YYYY-MM-DD HH:mm:ss")} `
+                        : "Pilih Tanggal"}
+                    </Text>
+                    <FontAwesome5Icon
+                      name="calendar-alt"
+                      size={20}
+                      color="black"
+                      marginHorizontal={10}
+                    />
+                  </View>
+                </TouchableOpacity>
               </View>
-            )}
+
+              <Controller
+                name="bulan"
+                control={control}
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-poppins-semibold text-black mt-4">
+                      Bulan
+                    </Text>
+
+                    <Select2
+                      data={filteredMonths}
+                      onSelect={value => {
+                        onChange(value);
+                      }}
+                      defaultValue={bulan}
+                    />
+                  </View>
+                )}
+              />
+
+              <Controller
+                name="perihal"
+                control={control}
+                defaultValue=""
+                render={({ field: { onChange, value } }) => (
+                  <View>
+                    <Text className="font-poppins-semibold mt-4 text-black">
+                      Perihal
+                    </Text>
+                    <View className="border rounded-2xl  border-stone-300 bg-[#fff]">
+                      <TextArea
+                        className="p-3 bg-[#fff] rounded-2xl  border-stone-300 font-poppins-regular"
+                        value={value}
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  </View>
+                )}
+              />
+
+              <Text className="font-poppins-semibold mt-4 text-black">
+                Dokumen Permohonan
+              </Text>
+              <View className="rounded-lg">
+                <TouchableOpacity
+                  onPress={() => {
+                    setUploadModalVisible(true);
+                  }}
+                  className="flex-row items-center p-4  bg-indigo-100 rounded-xl mr-2">
+                  <FontIcon name="file-upload" size={25} color="#4f46e5" />
+                  <Text className="ml-2 text-indigo-600  font-poppins-semibold">
+                    Upload
+                  </Text>
+                </TouchableOpacity>
+              </View>
+
+              {showDatePicker && (
+                <DateTimePicker
+                  value={date || new Date()}
+                  mode="date"
+                  timeZoneName="Asia/Jakarta"
+                  display={Platform.OS === "ios" ? "spinner" : "default"}
+                  onChange={handleDateChange}
+                />
+              )}
+            </View> */}
+
             <Button
               backgroundColor={Colors.brand}
-              className="p-3 mt-2 rounded-3xl "
+              className="p-3 my-5 rounded-3xl "
               onPress={handleSubmit(send)}
               disabled={isLoading || isSuccess}>
               <Text className="text-white text-center text-base font-bold font-sans">
@@ -346,29 +608,32 @@ const TambahPermohonan = ({ navigation }) => {
             </Button>
           </View>
         </View>
-      </View>
+      </ScrollView>
       <Modal animationType="fade" transparent={true} visible={modalPercuy}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
-            />
-            <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
-            <Text style={styles.successText}>
-              Silahkan untuk melanjutkan dengan mengisi titik pengujian
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Berhasil Di Tambahkan !
+            </Text>
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              Silahkan untuk melanjutkan menambahkan titik pengujian
             </Text>
             <View className="flex flex-row justify-center items-center space-x-3 w-full mt-3 ">
               <TouchableOpacity
+                className="w-28 h-10 justify-center items-center"
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
                   backgroundColor: "#ffcbd1",
                   borderRadius: 5,
                   marginTop: 10,
                 }}>
                 <Text
-                  className="text-[#de0a26]  font-semibold mb-1"
+                  className="text-[#de0a26] font-poppins-semibold "
                   onPress={() => {
                     setModalPercuy(false);
                     navigation.goBack();
@@ -377,15 +642,14 @@ const TambahPermohonan = ({ navigation }) => {
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                className="w-28 h-10 justify-center items-center"
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
                   backgroundColor: "#ddead1",
                   borderRadius: 5,
                   marginTop: 10,
                 }}>
                 <Text
-                  className="text-[#4b6043] text-sm font-semibold mb-1"
+                  className="text-[#4b6043] text-sm font-poppins-semibold "
                   onPress={() => {
                     setModalPercuy(false);
                     if (percuy) {
@@ -405,49 +669,94 @@ const TambahPermohonan = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Modal animationType="fade" transparent={true} visible={modalVisible}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
-            />
-            {/* <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-            /> */}
-            <Text style={styles.successTextTitle}>Data berhasil di kirim</Text>
-            <Text style={styles.successText}>
-              Silahkan untuk melanjutkan dengan mengisi titik pengujian lalu
-              parameter !
+      <Modal
+        animationType="fade"
+        transparent={true}
+        visible={errorModalVisible}>
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#f43f5e" name="close-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Data Gagal Di Tambahkan !
+            </Text>
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              {errorMessage}
             </Text>
           </View>
         </View>
       </Modal>
 
       <Modal
-        animationType="fade"
         transparent={true}
-        visible={errorModalVisible}>
-        <View style={styles.overlayView}>
-          <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image
-              source={require("@/assets/images/error.png")}
-              style={styles.lottie}
-            />
-            <Text style={[styles.successTextTitle, styles.errortitle]}>
-              Gagal memperbarui data
-            </Text>
-            <Text style={[styles.successText, styles.errorText]}>
-              {errorMessage}
-            </Text>
-            {/* <TouchableOpacity 
-                style={styles.errorButton}
-                onPress={() => setErrorModalVisible(false)}>
-                  <Text style={styles.errorButtonText}>Tutup</Text>
-              </TouchableOpacity> */}
+        animationType="slide"
+        visible={uploadModalVisible}
+        onRequestClose={() => {
+          setUploadModalVisible(false);
+          setSelectedFile(null);
+        }}>
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+            <View className="flex-row justify-between items-center mb-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Upload File
+              </Text>
+              <TouchableOpacity
+                onPress={() => {
+                  setUploadModalVisible(false);
+                  setSelectedFile(null);
+                }}>
+                <AntDesign name="close" size={20} color="#666" />
+              </TouchableOpacity>
+            </View>
+
+            {selectedFile ? (
+              <View className="mb-4  ">
+                <View className="bg-[#f8f8f8] rounded-lg shadow">
+                  <View className="flex-row items-center justify-between">
+                    <View className="flex-1 mr-2">
+                      {/* <Text className="text-sm mb-1">Selected File:</Text> */}
+                      <Text className="text-sm font-poppins-semibold">
+                        {selectedFile.name}
+                      </Text>
+                    </View>
+                    <TouchableOpacity
+                      onPress={() => setSelectedFile(null)}
+                      className="bg-gray-200 p-2 rounded-full">
+                      <AntDesign name="close" size={16} color="black" />
+                    </TouchableOpacity>
+                  </View>
+                </View>
+                <View className="flex-row justify-end mt-4">
+                  <TouchableOpacity
+                    onPress={handleUploadPDF}
+                    className="bg-indigo-600 p-4 rounded-lg ">
+                    <Text className="text-white font-poppins-semibold">
+                      Upload
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            ) : (
+              <View>
+                <Text className="text-sm mb-4 font-poppins-regular">
+                  Silahkan pilih file PDF yang akan diupload
+                </Text>
+                <View className="flex-row justify-end">
+                  <TouchableOpacity
+                    onPress={handleFilePicker}
+                    className="bg-indigo-600 px-4 py-2 rounded">
+                    <Text className="text-white font-poppins-semibold">
+                      Pilih File
+                    </Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            )}
           </View>
         </View>
       </Modal>
@@ -531,19 +840,18 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
-    width: 170,
-    height: 170,
+    width: 200,
+    height: 200,
   },
 
   successTextTitle: {
@@ -552,19 +860,20 @@ const styles = StyleSheet.create({
     fontSize: rem(1.5),
     marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
   errortitle: {
     color: "#FF4B4B",
   },
   errorText: {
-    color: "#666",
+    color: "#fff",
   },
 });
 

@@ -45,6 +45,7 @@ const PengujianDetail = ({ route, navigation }) => {
       .then(res => {
         setFormData(res.data.data);
         setLoading(false);
+        console.log("data pemabyaran ", res.data.data);
       })
       .catch(err => {
         Alert.alert("Error", err.response?.data?.message || "Gagal Memuat");
@@ -280,7 +281,7 @@ const PengujianDetail = ({ route, navigation }) => {
                 Denda
               </Text>
               <Text className="text-base font-poppins-regular text-black">
-                {rupiah(formData?.harga || 0)}
+                {rupiah(formData?.denda || 0)}
               </Text>
             </View>
           </View>
@@ -292,6 +293,8 @@ const PengujianDetail = ({ route, navigation }) => {
   };
 
   const renderNoPaymentAlert = () => {
+    console.log("Payment Type:", formData?.payment_type);
+    console.log("Payment Data:", formData?.payment);
     if (!formData?.payment) {
       return (
         <>
@@ -372,6 +375,32 @@ const PengujianDetail = ({ route, navigation }) => {
 
             {formData.payment?.is_expired && (
               <>
+                <View className="flex-col mb-4">
+                  <View className="flex-row justify-between ">
+                    <Text className="form-label font-poppins-bold text-black  mb-1">
+                      Harga
+                    </Text>
+                    <Text className="text-base font-poppins-regular text-black">
+                      {rupiah(formData?.harga || 0)}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between">
+                    <Text className="form-label font-poppins-bold text-black  mb-1">
+                      Atas Nama
+                    </Text>
+                    <Text className="text-base font-poppins-regular text-black">
+                      {formData?.permohonan?.user?.nama || "-"}
+                    </Text>
+                  </View>
+                  <View className="flex-row justify-between ">
+                    <Text className="form-label font-poppins-bold text-black  mb-1">
+                      Denda
+                    </Text>
+                    <Text className="text-base font-poppins-regular text-black">
+                      {rupiah(formData?.denda || 0)}
+                    </Text>
+                  </View>
+                </View>
                 <View className="flex-row  justify-between items-center  pb-4 border-b border-gray-100">
                   <AntDesign
                     name="exclamationcircle"
@@ -478,7 +507,10 @@ const PengujianDetail = ({ route, navigation }) => {
               </View>
               {formData.payment?.type === "va" && (
                 <TouchableOpacity
-                  disabled={formData.payment.is_expired || formData.payment.status === "success"}
+                  disabled={
+                    formData.payment.is_expired ||
+                    formData.payment.status === "success"
+                  }
                   onPress={() => copyToClipboard(formData.payment.va_number)}
                   className="bottom-4"
                   style={{
@@ -487,12 +519,11 @@ const PengujianDetail = ({ route, navigation }) => {
                       formData.payment.status === "success"
                         ? 0.5
                         : 1,
-                  }}
-                >
+                  }}>
                   <Text
                     className={`font-poppins-semibold ${
                       formData.payment.is_expired ||
-                      formData.payment.status === "success" 
+                      formData.payment.status === "success"
                         ? "text-gray-400"
                         : "text-green-600"
                     }`}>
@@ -544,7 +575,7 @@ const PengujianDetail = ({ route, navigation }) => {
             )}
 
             <View className="">
-              <Text className="text-lg text-black font-poppins-bold mb-1">
+              <Text className="text-lg text-gray-800 font-poppins-semibold mb-1">
                 Nominal Pembayaran
               </Text>
               <View

@@ -37,7 +37,7 @@ const Permohonan = ({ navigation }) => {
     FailedOverlayModal,
   } = useDelete({
     onSuccess: () => {
-      queryClient.invalidateQueries(["permohonan"]);
+      queryClient.invalidateQueries(["/permohonan"]);
       navigation.navigate("Permohonan");
     },
     onError: error => {
@@ -205,9 +205,6 @@ const Permohonan = ({ navigation }) => {
             </View>
             <View className=" ">
               <View className="flex-col items-center justify-center">
-                {/* <Text className="text-black font-poppins-semibold text-base">
-                  Tahun
-                </Text> */}
                 <ScrollView className="max-h-64">
                   {years.map(year => (
                     <TouchableOpacity

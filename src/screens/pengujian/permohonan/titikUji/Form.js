@@ -10,7 +10,6 @@ import { memo, useEffect, useState } from "react";
 import { Controller, useForm } from "react-hook-form";
 import {
   ActivityIndicator,
-  Alert,
   FlatList,
   PermissionsAndroid,
   Platform,
@@ -22,17 +21,14 @@ import {
   Image,
 } from "react-native";
 import Geolocation from "react-native-geolocation-service";
-import MultiSelect from "react-native-multiple-select";
 import Toast from "react-native-toast-message";
 import { Button, Colors, TextArea, TextField } from "react-native-ui-lib";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import MaterialIconss from "react-native-vector-icons/MaterialIcons";
-import LottieView from "lottie-react-native";
 import SectionedMultiSelect from "react-native-sectioned-multi-select";
 import Icon from "react-native-vector-icons/MaterialIcons";
-import { color } from "@rneui/base";
-import TitikUji from "./TitikUji";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 moment.locale("id");
 const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
@@ -44,16 +40,12 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
 
   const [sampelData, setSampelData] = useState([]);
   const [selectedSampel, setSelectedSampel] = useState(null);
-  const [openSampel, setOpenSampel] = useState(false);
 
   const [jenisWadah, setJenisWadah] = useState([]);
   const [selectedJenisWadah, setSelectedJenisWadah] = useState(null);
-  const [openJenisWadah, setOpenJenisWadah] = useState(false);
   const [titikUji, setTitikUji] = useState(null);
   const [metode, setMetode] = useState([]);
   const [selectedMetode, setSelectedMetode] = useState(null);
-  const [openMetode, setOpenMetode] = useState(false);
-  const [selectedCard, setSelectedCard] = useState(null);
   const [loading, setLoading] = useState(false);
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
@@ -107,6 +99,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   };
 
   const { uuid } = route.params || {};
+  console.log(uuid)
   const { permohonan } = route.params || {};
   const queryClient = useQueryClient();
 
@@ -150,7 +143,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
             south: data.south,
             acuan_metode_id: data.acuan_metode_id,
             east: data.east,
-            
+
             kecepatan_angin: data.kecepatan_angin,
             suhu_air: data.suhu_air,
             ph: data.ph,
@@ -223,7 +216,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         kelembapan: data.kelembapan,
         kecepatan_angin: data.kecepatan_angin,
       };
-      
+
       const requestData = {
         ...data,
         payment_type: selectedPayment,
@@ -248,8 +241,8 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
         requestData,
       );
 
-      console.log(response.data);
-      return response.data; // Pastikan API mengembalikan data yang relevan
+      console.log(response.data.data);
+      return response.data.data; // Pastikan API mengembalikan data yang relevan
     },
     {
       onSuccess: data => {
@@ -418,10 +411,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   <Text className="text-base font-poppins-bold text-center  text-black mb-4">
                     Detail Pengiriman
                   </Text>
-                  <View className="flex-1 flex-row justify-between  ">
+                  <View className=" flex-row justify-between  ">
                     <TouchableOpacity
-                      className="w-1/2 bg-[#fff] rounded-2xl py-7 px-2 m-0.5 items-center"
-                      style={[selectedPayment === "va" && styles.selectedCard]}
+                      className="rounded-2xl"
+                      style={[
+                        styles.card,
+                        selectedPayment === "va" && styles.selectedCard,
+                      ]}
                       onPress={() => handleSelectedPayment("va")}>
                       <MaterialIcons
                         name="cellphone-text"
@@ -431,8 +427,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                       />
                     </TouchableOpacity>
                     <TouchableOpacity
-                      className="w-1/2 bg-[#fff] rounded-2xl py-7 px-2 m-0.5 items-center"
+                      className="rounded-2xl"
                       style={[
+                        styles.card,
                         selectedPayment === "qris" && styles.selectedCard,
                       ]}
                       onPress={() => handleSelectedPayment("qris")}>
@@ -560,7 +557,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                                 color: "#FFF",
                               },
                               button: {
-                                backgroundColor: "#311B74",
+                                backgroundColor: "#3a6238",
                                 borderRadius: 16,
                                 paddingHorizontal: 12,
                                 paddingVertical: 12,
@@ -1092,19 +1089,20 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         />
                       </View>
                     </View>
-                    <Button
-                      onPress={handleSubmit(createOrUpdate)}
-                      loading={isLoading}
-                      className="p-3 rounded-3xl mt-4 mb-3"
-                      style={{ backgroundColor: Colors.brand }}>
-                      <Text className="text-white text-center text-base font-poppins-semibold">
-                        SUBMIT
-                      </Text>
-                    </Button>
                   </>
                 ) : (
                   <View></View>
                 )}
+
+                <Button
+                  onPress={handleSubmit(createOrUpdate)}
+                  loading={isLoading}
+                  className="p-3 rounded-3xl mt-4 "
+                  style={{ backgroundColor: Colors.brand }}>
+                  <Text className="text-white text-center text-base font-poppins-semibold">
+                    SUBMIT
+                  </Text>
+                </Button>
               </View>
             </View>
           </View>
@@ -1112,52 +1110,47 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       />
 
       <Modal animationType="fade" transparent={true} visible={modalParam}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <View>
-              <Image
-                source={require("@/assets/images/cek.png")}
-                style={styles.lottie}
-              />
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
             </View>
-            <View
-              style={{
-                justifyContent: "center",
-                alignItems: "center",
-                marginBottom: 20,
-              }}>
-              <Text
-                className="font-poppins-bold"
-                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
-                Titik Uji sukses dibuat
-              </Text>
-              <Text
-                className="font-poppins-regular"
-                style={{ color: "black", fontSize: 16, textAlign: "center" }}>
-                Lanjutkan Untuk mengisi Parameter
-              </Text>
-            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              {uuid ? "Data berhasil di perbarui" : "Data berhasil ditambahkan"}
+            </Text>
 
-            <View
-              style={{ flexDirection: "row", justifyContent: "space-between" }}>
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              {uuid
+                ? " Silahkan untuk melanjutkan dengan mengisi parameter"
+                : "Pastikan data kamu sudah benar"}
+            </Text>
+            {/* {!uuid && ( */}
+            <View className="flex flex-row justify-center items-center space-x-3 w-full mt-3 ">
               <TouchableOpacity
+                className="w-28 h-10 justify-center items-center"
                 onPress={() => {
                   setModalParam(false);
-                  navigation.navigate("TitikUji", { uuid: permohonan.uuid });
+                  navigation.navigate("TitikUji", {
+                    uuid: permohonan.uuid,
+                  });
                 }}
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
                   backgroundColor: "#ffcbd1",
                   borderRadius: 5,
                   marginRight: 10,
                 }}>
                 <Text
-                  style={{ color: "#de0a26", fontFamily: "Poppins-SemiBold" }}>
+                  style={{
+                    color: "#de0a26",
+                    fontFamily: "Poppins-SemiBold",
+                  }}>
                   Tutup
                 </Text>
               </TouchableOpacity>
               <TouchableOpacity
+                className="w-28 h-10 justify-center items-center"
                 onPress={() => {
                   setModalParam(false);
                   if (titikUji) {
@@ -1167,40 +1160,38 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   }
                 }}
                 style={{
-                  paddingVertical: 10,
-                  paddingHorizontal: 20,
                   backgroundColor: "#ddead1",
                   borderRadius: 5,
                   marginRight: 10,
                 }}>
                 <Text
-                  style={{ color: "#4b6043", fontFamily: "Poppins-SemiBold" }}>
-                  Lanjut
+                  style={{
+                    color: "#4b6043",
+                    fontFamily: "Poppins-SemiBold",
+                  }}>
+                  Lanjutkan
                 </Text>
               </TouchableOpacity>
             </View>
+            {/* )} */}
           </View>
         </View>
       </Modal>
 
       <Modal animationType="fade" transparent={true} visible={modalKintud}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
-            />
-            {/* <LottieView
-              source={require("../../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-            /> */}
-            <Text style={styles.successTextTitle}>
-              {uuid ? "Data berhasil di perbarui" : "Data berhasil ditambahkan"}
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Berhasil Di Perbarui !
             </Text>
-            <Text style={styles.successText}>
-              Silahkan memastikan bahwa data yang anda kirim telah benar !
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              Pastikan data kamu sudah benar
             </Text>
           </View>
         </View>
@@ -1261,6 +1252,18 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
   },
+  card: {
+    borderWidth: 0.5,
+    borderColor: "#D6D3D1",
+    flex: 1,
+    paddingVertical: 30,
+    paddingHorizontal: 10,
+    alignItems: "center",
+    marginHorizontal: 5,
+    backgroundColor: "#fff",
+    borderWidth: 0.5,
+    borderColor: "#D6D3D1",
+  },
   selectedCard: {
     backgroundColor: "#C5CAE9",
     borderWidth: 1,
@@ -1285,41 +1288,42 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
-    width: 170,
-    height: 170,
+    width: 200,
+    height: 200,
   },
-
   successTextTitle: {
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontFamily: "Poppins-Bold",
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
   errortitle: {
     color: "#FF4B4B",
   },
   errorText: {
-    color: "#666",
+    fontSize: 14,
+    textAlign: "center",
+    fontFamily: "Poppins-Regular",
+    color: "#fff",
   },
 });
 

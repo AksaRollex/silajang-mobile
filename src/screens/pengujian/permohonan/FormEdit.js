@@ -101,14 +101,6 @@ const EditPermohonan = ({ route, navigation }) => {
         setModalVisible(true); // Tampilkan modal dulu
         queryClient.invalidateQueries(["/permohonan"]);
 
-        Toast.show({
-          type: "success",
-          position: "top",
-          visibilityTime: 3000,
-          autoHide: true,
-          topOffset: 40,
-        });
-        // Tunggu sebentar sebelum navigasi
         setTimeout(() => {
           navigation.navigate("Permohonan");
         }, 2000);
@@ -251,121 +243,20 @@ const EditPermohonan = ({ route, navigation }) => {
         </View>
       </View>
       <Modal animationType="fade" transparent={true} visible={modalVisible}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
-            />
-            {/* <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-            /> */}
-            <Text style={styles.successTextTitle}>
-              Data berhasil diperbarui
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Data Berhasil Diperbarui !
             </Text>
-            <Text style={styles.successText}>
-              Silahkan memastikan bahwa data yang anda kirim telah benar !
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              Pastikan data sudah benar 
             </Text>
-          </View>
-          <View className="py-4 px-3 ">
-            <Controller
-              name="industri"
-              control={control}
-              rules={{ required: "Industri tidak boleh kosong" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1 text-black ">
-                    Nama industri
-                  </Text>
-                  <TextField
-                    className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                    placeholder="Masukkan Nama Industri"
-                    placeholderTextColor={"grey"}
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.industri?.message}
-                  />
-                </View>
-              )}
-            />
-            {errors.industri && (
-              <Text
-                style={{ color: "red" }}
-                className=" mb-2 lowercase font-poppins-regular">
-                {errors.industri.message}
-              </Text>
-            )}
-
-            <Controller
-              name="alamat"
-              control={control}
-              rules={{ required: "Alamat tidak boleh kosong" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1  text-black">
-                    Alamat industri
-                  </Text>
-                  <TextField
-                    className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                    placeholder="Masukkan Alamat Industri"
-                    placeholderTextColor={"grey"}
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.alamat?.message}
-                  />
-                </View>
-              )}
-            />
-            {errors.alamat && (
-              <Text
-                style={{ color: "red" }}
-                className="lowercase font-poppins-regular">
-                {errors.alamat.message}
-              </Text>
-            )}
-
-            <Controller
-              name="kegiatan"
-              control={control}
-              rules={{ required: "Kegiatan tidak boleh kosong" }}
-              render={({ field: { onChange, onBlur, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1  text-black">
-                    Kegiatan Industri
-                  </Text>
-                  <TextField
-                    className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                    placeholder="Masukkan Kegiatan Industri"
-                    placeholderTextColor={"grey"}
-                    onChangeText={onChange}
-                    value={value}
-                    error={errors.kegiatan?.message}
-                  />
-                </View>
-              )}
-            />
-            {errors.kegiatan && (
-              <Text
-                style={{ color: "red" }}
-                className=" lowercase font-poppins-regular">
-                {errors.kegiatan.message}
-              </Text>
-            )}
-
-            <Button
-              onPress={handleSubmit(onSubmit)}
-              isLoading={isUpdating}
-              className="p-3 rounded-2xl mt-4"
-              style={{ backgroundColor: Colors.brand }}>
-              <TouchableOpacity>
-                <Text className="text-white text-center text-base font-poppins-semibold">
-                  SIMPAN
-                </Text>
-              </TouchableOpacity>
-            </Button>
           </View>
         </View>
       </Modal>
@@ -373,23 +264,20 @@ const EditPermohonan = ({ route, navigation }) => {
         animationType="fade"
         transparent={true}
         visible={errorModalVisible}>
-        <View style={styles.overlayView}>
-          <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image
-              source={require("@/assets/images/error.png")}
-              style={styles.lottie}
-            />
-            <Text style={[styles.successTextTitle, styles.errortitle]}>
-              Gagal memperbarui data
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#f43f5e" name="close-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Gagal Memperbarui Data !
             </Text>
-            <Text style={[styles.successText, styles.errorText]}>
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
               {errorMessage}
             </Text>
-            {/* <TouchableOpacity 
-                style={styles.errorButton}
-                onPress={() => setErrorModalVisible(false)}>
-                  <Text style={styles.errorButtonText}>Tutup</Text>
-              </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -447,35 +335,34 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     paddingVertical: 30,
     borderRadius: 10,
   },
   lottie: {
-    width: 170,
-    height: 170,
+    width: 200,
+    height: 200,
   },
 
   successTextTitle: {
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontFamily: "Poppins-Bold",
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
   errorContainer: {},
   errortitle: {

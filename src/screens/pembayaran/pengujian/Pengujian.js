@@ -6,17 +6,23 @@ import {
   TouchableOpacity,
   Modal,
   ScrollView,
+  Platform,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
 import Paginate from "../../components/Paginate";
-import { useDownloadPDF } from "@/src/hooks/useDownloadPDF";
-import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
-
+import { MenuView } from "@react-native-menu/menu";
+import Entypo from "react-native-vector-icons/Entypo";
+import Feather from "react-native-vector-icons/Feather";
+import FileViewer from "react-native-file-viewer";
+import Pdf from "react-native-pdf";
+import RNFS from "react-native-fs";
+import { API_URL } from "@env";
+import Toast from "react-native-toast-message";
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Pengujian = ({ navigation }) => {
@@ -24,10 +30,15 @@ const Pengujian = ({ navigation }) => {
   const [tahun, setTahun] = useState(new Date().getFullYear().toString());
   const [refreshKey, setRefreshKey] = useState(0);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
-  const [isTypePickerVisible, setIsTypePickerVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [SKRDUrl, setSKRDUrl] = useState("");
+  console.log(SKRDUrl);
+  const [kwitansiUrl, setKwitansiUrl] = useState("");
+  console.log(kwitansiUrl, 111);
+  const [modalKwitansi, setModalKwitansi] = useState(false);
 
   const handleDateSelect = selectedYear => {
-    setTahun(selectedYear.toString()); // Pastikan string
+    setTahun(selectedYear.toString());
     setRefreshKey(prevKey => prevKey + 1);
     setIsDatePickerVisible(false);
   };
@@ -36,79 +47,23 @@ const Pengujian = ({ navigation }) => {
     setIsDatePickerVisible(true);
   };
 
-  const { download, PDFConfirmationModal } = useDownloadPDF({
-    onSuccess: filePath => console.log("Download success:", filePath),
-    onError: error => console.error("Download error:", error),
-  });
-
   const CardPembayaran = ({ item }) => {
     const isExpired = item.payment?.is_expired;
-    const status = item.payment?.status;
-
+    const skrd = item.status_tte_skrd === 1;
+    const kwitansi = item.payment?.is_lunas === 1;
+    console.log(kwitansi);
     const dropdownOptions = [
-      // Opsi Pembayaran
-      (isExpired || status === "pending" || status === "failed") && {
-        id: "Pembayaran",
-        title: "Pembayaran",
-        action: () =>
-          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
+      skrd && {
+        id: "SKRD",
+        title: "SKRD",
+        action: () => handlePreviewSKRD({ uuid: item.uuid }),
       },
-
-      // Opsi Tagihan
-      (status === "pending" || status === "failed") && {
-        id: "Tagihan",
-        title: "Tagihan",
-        action: async () => {
-          try {
-            const token = await AsyncStorage.getItem("@auth-token");
-            if (token) {
-              const reportUrl = `${API_URL}/report/${item.uuid}/tagihan-pembayaran?token=${token}`;
-              download(reportUrl); // Menampilkan modal preview
-            } else {
-              console.error("Token not found");
-            }
-          } catch (error) {
-            console.error("Error mendapatkan token:", error);
-          }
-        },
-      },
-
-      // Opsi Detail
-      status === "success" && {
-        id: "Detail",
-        title: "Detail",
-        action: () =>
-          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
-      },
-
-      // Opsi Cetak
-      status === "success" && {
-        id: "Cetak",
-        title: "Cetak",
-        action: async () => {
-          try {
-            const token = await AsyncStorage.getItem("@auth-token");
-            if (token) {
-              const reportUrl = `${API_URL}/report/${item.uuid}/bukti-pembayaran?token=${token}`;
-              download(reportUrl); // Menampilkan modal preview
-            } else {
-              console.error("Token not found");
-            }
-          } catch (error) {
-            console.error("Error fetching token:", error);
-          }
-        },
+      kwitansi && {
+        id: "Kwitansi",
+        title: "Kwitansi",
+        action: () => handlePreviewKwitansi({ uuid: item.uuid }),
       },
     ].filter(Boolean);
-
-    if (dropdownOptions.length === 0) {
-      dropdownOptions.push({
-        id: "Pembayaran",
-        title: "Pembayaran",
-        action: () =>
-          navigation.navigate("PengujianDetail", { uuid: item.uuid }),
-      });
-    }
 
     const getStatusText = item => {
       if (item.payment?.is_expired) {
@@ -142,8 +97,6 @@ const Pengujian = ({ navigation }) => {
 
     const statusText = getStatusText(item);
     const statusStyle = getStatusStyle(item);
-
-    // console.log("item: ", item);
 
     return (
       <View style={styles.card}>
@@ -201,29 +154,27 @@ const Pengujian = ({ navigation }) => {
               {rupiah(item.harga)}
             </Text>
           </View>
-
-          {/* Right section (dots menu)
-          <View style={styles.cardActions} className="mb-4 ">
-            <MenuView
-              title="Menu Title"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}>
-              <View>
-                <Entypo name="dots-three-vertical" size={16} color="#312e81" />
-              </View>
-            </MenuView>
-          </View> */}
         </TouchableOpacity>
+        <View style={styles.cardActions} className="mb-4 mr-2 ">
+          <MenuView
+            title="Menu Title"
+            actions={dropdownOptions.map(option => ({
+              ...option,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = dropdownOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                selectedOption.action(item);
+              }
+            }}
+            shouldOpenOnLongPress={false}>
+            <View>
+              <Entypo name="dots-three-vertical" size={16} color="#312e81" />
+            </View>
+          </MenuView>
+        </View>
       </View>
     );
   };
@@ -271,94 +222,262 @@ const Pengujian = ({ navigation }) => {
 
     return (
       <Modal
-      animationType="slide"
-      transparent={true}
-      visible={visible}
-      onRequestClose={onClose}>
-      <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-        <View style={styles.modalContent}>
-          <View style={styles.modalHeader}>
-            <Text style={styles.modalTitle}>Pilih Tahun</Text>
-            <TouchableOpacity onPress={onClose}>
-              <MaterialIcons name="close" size={24} color="#000" />
-            </TouchableOpacity>
-          </View>
-          <View className=" ">
-            <View className="flex-col items-center justify-center">
-              {/* <Text className="text-black font-poppins-semibold text-base">
-                Tahun
-              </Text> */}
-              <ScrollView className="max-h-64">
-                {years.map(year => (
-                  <TouchableOpacity
-                    key={year}
-                    className={`mt-2 justify-center items-center ${
-                      tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
-                    }`}
-                    onPress={() => setTempYear(year)}>
-                    <Text className="text-black font-poppins-semibold my-1">
-                      {year}
-                    </Text>
-                  </TouchableOpacity>
-                ))}
-              </ScrollView>
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Tahun</Text>
+              <TouchableOpacity onPress={onClose}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <View className=" ">
+              <View className="flex-col items-center justify-center">
+                <ScrollView className="max-h-64">
+                  {years.map(year => (
+                    <TouchableOpacity
+                      key={year}
+                      className={`mt-2 justify-center items-center ${
+                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                      }`}
+                      onPress={() => setTempYear(year)}>
+                      <Text className="text-black font-poppins-semibold my-1">
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-
-          <View className="mt-4 px-4">
-            <TouchableOpacity
-              className={`py-3 rounded-md ${
-                canConfirm ? "bg-blue-500" : "bg-gray-300"
-              }`}
-              disabled={!canConfirm}
-              onPress={handleConfirm}>
-              <Text className="text-white text-center font-poppins-semibold">
-                Terapkan Filter
-              </Text>
-            </TouchableOpacity>
-          </View>
         </View>
-      </View>
-    </Modal>
+      </Modal>
     );
   };
 
-  //  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
-  //    return (
-  //      <Modal
-  //        animationType="slide"
-  //        transparent={true}
-  //        visible={visible}
-  //        onRequestClose={onClose}>
-  //        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
-  //          <View style={styles.modalContent}>
-  //            <View style={styles.modalHeader}>
-  //              <Text style={styles.modalTitle}>Pilih Tipe Pembayaran</Text>
-  //              <TouchableOpacity onPress={onClose}>
-  //                <MaterialIcons name="close" size={24} color="#000" />
-  //              </TouchableOpacity>
-  //            </View>
-  //            <View style={styles.yearList} className="">
-  //              {types.map(item => (
-  //                <TouchableOpacity
-  //                  className={`mt-2 items-center ${
-  //                    selectedType === item.id
-  //                      ? "bg-[#ececec] p-3 rounded-md"
-  //                      : ""
-  //                  }`}
-  //                  key={item.id}
-  //                  onPress={() => onSelect(item.id)}>
-  //                  <Text className="text-black font-poppins-regular">
-  //                    {item.text}
-  //                  </Text>
-  //                </TouchableOpacity>
-  //              ))}
-  //            </View>
-  //          </View>
-  //        </View>
-  //      </Modal>
-  //    );
-  //  };
+  const handlePreviewSKRD = async ({ uuid }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      setSKRDUrl(`${API_URL}/report/${uuid}/skrd?token=${authToken}`);
+      setModalVisible(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal membuka SKRD",
+      });
+    }
+  };
+
+  const handlePreviewKwitansi = async ({ uuid }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      setKwitansiUrl(`${API_URL}/report/${uuid}/kwitansi?token=${authToken}`);
+      setModalKwitansi(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal membuka kwitansi",
+      });
+    }
+  };
+
+  const handleDownloadSKRD = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `SKRD_${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: SKRDUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: "application/pdf",
+          });
+        } catch (openError) {
+          console.log("Error opening file with FileViewer:", openError);
+
+          if (Platform.OS === "android") {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                "application/pdf",
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                  android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log("Intent fallback failed:", intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
+  const handleDownloadKwitansi = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `Kwitansi_${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: kwitansiUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: "application/pdf",
+          });
+        } catch (openError) {
+          console.log("Error opening file with FileViewer:", openError);
+
+          if (Platform.OS === "android") {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                "application/pdf",
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                  android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log("Intent fallback failed:", intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
 
   return (
     <>
@@ -394,13 +513,94 @@ const Pengujian = ({ navigation }) => {
           onSelect={handleDateSelect}
           selectedYear={tahun}
         />
-        {/* <TypePicker
-          visible={isTypePickerVisible}
-          onClose={() => setIsTypePickerVisible(false)}
-          onSelect={handleTypeSelect}
-          selectedType={type}
-        /> */}
-        <PDFConfirmationModal />
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black bg-black/50">
+            <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+              <View className="flex-row justify-between items-center p-4">
+                <Text className="text-lg font-poppins-semibold text-black">
+                  Preview PDF SKRD
+                </Text>
+                <TouchableOpacity
+                  onPress={handleDownloadSKRD}
+                  className="p-2 rounded flex-row items-center">
+                  <Feather name="download" size={21} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              {SKRDUrl ? (
+                <Pdf
+                  source={{ uri: SKRDUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                />
+              ) : (
+                <View className="flex-1 justify-center items-center">
+                  <Text className="text-xl font-poppins-semibold text-red-500">
+                    404 | File not found
+                  </Text>
+                </View>
+              )}
+
+              <View className="flex-row justify-between m-4">
+                <TouchableOpacity
+                  onPress={() => setModalVisible(false)}
+                  className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                  <Text className="text-white font-poppins-semibold text-center">
+                    Tutup
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={modalKwitansi}
+          onRequestClose={() => setModalKwitansi(false)}>
+          <View className="flex-1 justify-center items-center bg-black bg-black/50">
+            <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+              <View className="flex-row justify-between items-center p-4">
+                <Text className="text-lg font-poppins-semibold text-black">
+                  Preview PDF Kwitansi
+                </Text>
+                <TouchableOpacity
+                  onPress={handleDownloadKwitansi}
+                  className="p-2 rounded flex-row items-center">
+                  <Feather name="download" size={21} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              {kwitansiUrl ? (
+                <Pdf
+                  source={{ uri: kwitansiUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                />
+              ) : (
+                <View className="flex-1 justify-center items-center">
+                  <Text className="text-xl font-poppins-semibold text-red-500">
+                    404 | File not found
+                  </Text>
+                </View>
+              )}
+
+              <View className="flex-row justify-between m-4">
+                <TouchableOpacity
+                  onPress={() => setModalKwitansi(false)}
+                  className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                  <Text className="text-white font-poppins-semibold text-center">
+                    Tutup
+                  </Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </View>
+        </Modal>
       </View>
     </>
   );
@@ -444,8 +644,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   cardActions: {
-    width: "10%",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "flex-end",
   },
   badge: {

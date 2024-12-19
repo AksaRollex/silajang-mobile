@@ -18,6 +18,7 @@ import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FooterText from "../components/FooterText";
 const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -26,6 +27,22 @@ const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
   const [refreshing, setRefreshing] = useState(false);
   const [tahun, setTahun] = useState(new Date().getFullYear());
+  const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  const handleFilterPress = () => {
+    setIsYearPickerVisible(true);
+  };
+
+  const handleYearChange = useCallback(
+    selectedYear => {
+      if (selectedYear !== tahun) {
+        setTahun(selectedYear);
+        setShouldRefresh(true);
+      }
+      setIsYearPickerVisible(false);
+    },
+    [tahun],
+  );
   const { data: user } = useUser();
   const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
   const navigation = useNavigation();
@@ -48,9 +65,6 @@ const Dashboard = () => {
     fetchDashboardData();
   }, [fetchDashboardData]);
 
-  const handleYearChange = selectedYear => {
-    setTahun(selectedYear);
-  };
   const fetchUserData = useCallback(() => {
     setRefreshing(true);
     axios
@@ -74,83 +88,58 @@ const Dashboard = () => {
     fetchUserData();
   }, [fetchUserData]);
 
-  const Filtah = ({ tahun, onYearChange }) => {
-    const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
-
-    const handleFilterPress = () => {
-      setIsYearPickerVisible(true);
-    };
-
-    const handleYearSelect = selectedYear => {
-      onYearChange(selectedYear);
-      setIsYearPickerVisible(false);
-    };
-
-    const [refreshing, setRefreshing] = useState(false);
-    const onRefresh = React.useCallback(() => {
-      setRefreshing(true);
-      setTimeout(() => {
-        setRefreshing(false);
-      }, 2000);
-    }, []);
-
+  const Filtah = () => {
     return (
-      <>
-        <View className="px-4 py-2 w-full mt-2">
-          <View
-            className="bg-[#fff] rounded-lg border border-gray-200"
-            style={{ elevation: 8 }}>
-            <ScrollView
-              contentContainerStyle={{
-                padding: 16,
-                flexDirection: "row",
-                justifyContent: "space-between",
-              }}
-              refreshControl={
-                <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-              }>
-              <View className="flex-row gap-2 items-center">
-                <IonIcons name="calendar" size={27} color={"#4d5b7a"} />
-                <Text
-                  className="text-lg text-gray-600 font-poppins-bold"
-                  style={{ top: 3 }}>
-                  Tahun
-                </Text>
-              </View>
+      <View className="mt-2">
+        <View className="flex-row justify-end">
+          <TouchableOpacity
+            onPress={handleFilterPress}
+            style={{
+              flexDirection: "row",
+              alignItems: "center",
+              borderRadius: 4,
+              backgroundColor: "#ececec",
+            }}
+            className="px-2 py-3">
+            <IonIcons name="calendar" size={24} color="black" />
+            <Text className="text-black font-poppins-regular mx-2">
+              {tahun}
+            </Text>
 
-              <TouchableOpacity
-                onPress={handleFilterPress}
-                className="flex-row items-center justify-between border border-gray-300 bg-gray-50 p-3 rounded-lg">
-                <View className="flex-row items-center">
-                  <Text className="text-gray-700 font-poppins-semibold text-base ">
-                    {tahun}
-                  </Text>
-                  <MaterialIcons
-                    name="keyboard-arrow-down"
-                    size={24}
-                    color={"#4d5b7a"}
-                  />
-                </View>
-              </TouchableOpacity>
-            </ScrollView>
-          </View>
-
-          <YearPicker
-            visible={isYearPickerVisible}
-            onClose={() => setIsYearPickerVisible(false)}
-            onSelect={handleYearSelect}
-            selectedYear={tahun}
-          />
+            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
+          </TouchableOpacity>
         </View>
-      </>
+
+        <YearPicker
+          visible={isYearPickerVisible}
+          onClose={() => setIsYearPickerVisible(false)}
+          onSelect={handleYearChange}
+          selectedYear={tahun}
+        />
+      </View>
     );
   };
+
   const YearPicker = ({ visible, onClose, onSelect, selectedYear }) => {
     const currentYear = new Date().getFullYear();
     const years = Array.from(
       { length: currentYear - 2021 },
       (_, i) => 2022 + i,
     );
+    const [tempYear, setTempYear] = useState(selectedYear);
+
+    useEffect(() => {
+      if (visible) {
+        setTempYear(selectedYear);
+      }
+    }, [visible]);
+
+    const handleConfirm = () => {
+      if (tempYear) {
+        onSelect(tempYear);
+      }
+    };
+    const canConfirm = tempYear;
 
     return (
       <Modal
@@ -158,41 +147,47 @@ const Dashboard = () => {
         transparent={true}
         visible={visible}
         onRequestClose={onClose}>
-        <TouchableOpacity
-          style={styles.modalOverlay}
-          activeOpacity={1}
-          onPress={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
           <View style={styles.modalContent}>
             <View style={styles.modalHeader}>
-              <Text style={styles.modalTitle}>Pilih Tahun</Text>
+              <Text style={styles.modalTitle}>Pilih Tahun </Text>
               <TouchableOpacity onPress={onClose}>
                 <MaterialIcons name="close" size={24} color="#000" />
               </TouchableOpacity>
             </View>
-            <View style={styles.yearList}>
-              {years.map(year => (
-                <TouchableOpacity
-                  key={year}
-                  style={[
-                    styles.yearItem,
-                    selectedYear === year && styles.selectedYear,
-                  ]}
-                  onPress={() => {
-                    onSelect(year);
-                    onClose();
-                  }}>
-                  <Text
-                    style={[
-                      styles.yearText,
-                      selectedYear === year && styles.selectedYearText,
-                    ]}>
-                    {year}
-                  </Text>
-                </TouchableOpacity>
-              ))}
+            <View className=" ">
+              <View className="flex-col items-center justify-center">
+                <ScrollView className="max-h-64">
+                  {years.map(year => (
+                    <TouchableOpacity
+                      key={year}
+                      className={`mt-2 justify-center items-center ${
+                        tempYear === year ? "bg-[#ececec] p-3 rounded-md" : ""
+                      }`}
+                      onPress={() => setTempYear(year)}>
+                      <Text className="text-black font-poppins-semibold my-1">
+                        {year}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
             </View>
           </View>
-        </TouchableOpacity>
+        </View>
       </Modal>
     );
   };
@@ -207,18 +202,36 @@ const Dashboard = () => {
           source={require("../../../assets/images/background.png")}
           style={{
             flex: 1,
-            height: "34%", // Pastikan gambar menutupi area yang diinginkan
-            // borderBottomLeftRadius: 20,
-            // borderBottomRightRadius: 20,
+            height: "70%",
           }}>
           <Header
             navigate={() => {
               navigation.navigate("Profile");
             }}
           />
-          <Filtah tahun={tahun} onYearChange={handleYearChange} />
+
+          <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
+            <View style={styles.welcomeCard}>
+              <View style={styles.headerSection}>
+                <Text className="text-center" style={styles.headerTitle}>
+                  Dashboard
+                </Text>
+                <Text className="text-center" style={styles.headerSubtitle}>
+                  {new Date().toLocaleDateString("id-ID", {
+                    weekday: "long",
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                  })}
+                </Text>
+              </View>
+              <Filtah tahun={tahun} onYearChange={handleYearChange} />
+            </View>
+          </View>
+        </ImageBackground>
+        <View className="mt-5">
           {user.has_tagihan && (
-            <View style={styles.warningContainer}>
+            <View style={styles.warningContainer} >
               <View style={styles.warningContent}>
                 <FontAwesome6Icon
                   name="triangle-exclamation"
@@ -236,10 +249,11 @@ const Dashboard = () => {
               </View>
             </View>
           )}
-        </ImageBackground>
+        </View>
 
         <ScrollView
           contentContainerStyle={styles.scrollViewContainer}
+          className="mt-10"
           showsVerticalScrollIndicator={false}>
           <View style={styles.dashboardContainer}>
             {dashboard ? (
@@ -280,7 +294,7 @@ const Dashboard = () => {
               </View>
             )}
           </View>
-          {/* <FooterText /> */}
+          <FooterText />
         </ScrollView>
       </ScrollView>
     </View>
@@ -319,6 +333,37 @@ const DashboardCard = ({
 );
 
 const styles = StyleSheet.create({
+  welcomeCard: {
+    backgroundColor: "#FFFFFF",
+    zIndex: 10,
+    borderRadius: 12,
+    width: "85%",
+    top: 55,
+    alignItems: "center",
+    marginHorizontal: 31,
+    position: "absolute",
+    padding: 12,
+    marginBottom: 16,
+    elevation: 2,
+    shadowColor: "#000",
+    elevation: 10,
+    shadowOffset: {
+      width: 0,
+      height: 1,
+    },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
+  headerTitle: {
+    fontSize: 21,
+    color: "#333",
+    fontFamily: "Poppins-Bold",
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: "#666",
+    fontFamily: "Poppins-Regular",
+  },
   container: {
     flex: 1,
     backgroundColor: "#F9FAFB",
@@ -332,12 +377,6 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: "#E5E7EB",
   },
-  // yearLabel: {
-  //   fontSize: 16,
-  //   fontWeight: "600",
-  //   color: "#374151",
-  //   marginRight: 15,
-  // },
   pickerWrapper: {
     flex: 1,
     maxWidth: 150,
@@ -358,6 +397,7 @@ const styles = StyleSheet.create({
   },
   warningContainer: {
     padding: 16,
+    marginTop: 16,
   },
   warningContent: {
     flexDirection: "row",
@@ -385,12 +425,12 @@ const styles = StyleSheet.create({
   dashboardContainer: {
     flexDirection: "row",
     flexWrap: "wrap",
-    padding: 12,
+    justifyContent: "center",
     gap: 20,
   },
   card: {
-    width: (windowWidth - 26) / 1,
-    height: 150,
+    width: (windowWidth - 26) / 2.1,
+    height: 180,
     borderRadius: 16,
     overflow: "hidden",
     backgroundColor: "#FFFFFF",
@@ -410,7 +450,7 @@ const styles = StyleSheet.create({
   cardAccent: {
     position: "absolute",
     top: -100,
-    right: -100,
+    right: -115,
     width: 220,
     height: 220,
     borderRadius: 200,
@@ -453,6 +493,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     color: "#4B5563",
     fontWeight: "500",
+    top: 15,
   },
   loadingContainer: {
     flex: 1,

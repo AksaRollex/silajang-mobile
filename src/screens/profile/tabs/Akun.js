@@ -20,6 +20,7 @@ import { APP_URL } from "@env";
 import Back from "../../components/Back";
 import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 const Akun = () => {
   const [file, setFile] = React.useState(null);
@@ -129,7 +130,7 @@ const Akun = () => {
       setModalVisible(true);
       queryClient.invalidateQueries("/auth");
       setTimeout(() => {
-        setModalVisible(false);
+        // setModalVisible(false);
         fetchUserData();
 
         navigation.navigate("IndexProfile");
@@ -361,50 +362,50 @@ const Akun = () => {
           )}
         </View>
         <Modal animationType="fade" transparent={true} visible={modalVisible}>
-          <View style={styles.overlayView}>
-            <View style={styles.successContainer}>
-              <Image
-                source={require("@/assets/images/cek.png")}
-                style={styles.lottie}
-              />
-              {/* <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-            /> */}
-              <Text style={styles.successTextTitle}>
-                Informasi personal kamu berhasil di rubah
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+              <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+                <IonIcons
+                  size={40}
+                  color="#95bb72"
+                  name="checkmark-done-sharp"
+                />
+              </View>
+              <Text className="text-xl font-poppins-semibold text-black mb-3">
+                Data Berhasil Dirubah !
               </Text>
-              <Text style={styles.successText}>
-                Pastikan informasi personal yang kamu gunakan saat ini sudah
-                benar !
+
+              <View className="w-full h-px bg-gray-200 mb-4" />
+
+              <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+                Pastikan Data personal kamu sudah benar / sesuai !
               </Text>
             </View>
           </View>
         </Modal>
-
         <Modal
           animationType="fade"
           transparent={true}
           visible={errorModalVisible}>
-          <View style={styles.overlayView}>
-            <View style={[styles.successContainer, styles.errorContainer]}>
-              <Image
-                source={require("@/assets/images/error.png")}
-                style={styles.lottie}
-              />
-              <Text style={[styles.successTextTitle, styles.errortitle]}>
-                Gagal memperbarui data
+          <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+              <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+                <IonIcons
+                  size={40}
+                  color="#95bb72"
+                  name="checkmark-done-sharp"
+                />
+              </View>
+              <Text className="text-xl font-poppins-semibold text-black mb-3">
+                Data Gagal Dirubah !
               </Text>
-              <Text style={[styles.successText, styles.errorText]}>
-                {errorMessage}
+
+              <View className="w-full h-px bg-gray-200 mb-4" />
+
+              <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+                {errorMessage ||
+                  "Pastikan Data personal kamu sudah benar / sesuai !"}
               </Text>
-              {/* <TouchableOpacity 
-                style={styles.errorButton}
-                onPress={() => setErrorModalVisible(false)}>
-                  <Text style={styles.errorButtonText}>Tutup</Text>
-              </TouchableOpacity> */}
             </View>
           </View>
         </Modal>
@@ -418,6 +419,13 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
     backgroundColor: "#ececec",
+  },
+  successContainer: {
+    alignItems: "center",
+    padding: 20,
+    width: "90%",
+    paddingVertical: 30,
+    borderRadius: 10,
   },
   card: {
     padding: 20,
@@ -467,23 +475,6 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 10,
   },
-  // deleteButton: {
-  //   position: "absolute",
-  //   right: 10,
-  //   top: 10,
-  //   backgroundColor: "red",
-  //   borderRadius: 50,
-  //   padding: 5,
-  //   width: 30,
-  //   height: 30,
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  // },
-  // deleteButtonText: {
-  //   color: "white",
-  //   fontSize: 14,
-  //   fontWeight: "bold",
-  // },
   selectPhotoText: {
     color: "black",
   },
@@ -562,40 +553,33 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-  },
-  successContainer: {
-    alignItems: "center",
-    backgroundColor: "white",
-    padding: 20,
-    width: "90%",
-    paddingVertical: 30,
-    borderRadius: 10,
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
   lottie: {
-    width: 170,
-    height: 170,
+    width: 200,
+    height: 200,
   },
-
   successTextTitle: {
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
+
   errortitle: {
     color: "#FF4B4B",
   },
   errorText: {
-    color: "#666",
+    color: "#fff",
   },
 });
 

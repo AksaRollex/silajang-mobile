@@ -8,6 +8,7 @@ import {
   Dimensions,
   ImageBackground,
   RefreshControl,
+  Image,
 } from "react-native";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -22,7 +23,7 @@ export default function Pengujian() {
   const [loading, setLoading] = useState(true);
   const { data: user } = useUser();
   const [data, setData] = useState([]);
-  
+
   const [refreshing, setRefreshing] = useState(false);
   const onRefresh = React.useCallback(() => {
     setRefreshing(true);
@@ -129,13 +130,14 @@ export default function Pengujian() {
                 navigation.navigate("Profile");
               }}
             />
+
             <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
               <View style={styles.welcomeCard}>
-                <View style={styles.welcomeSection}>
-                  <Text className="text-center" style={styles.welcomeText}>
+                <View style={styles.headerSection}>
+                  <Text className="text-center" style={styles.headerTitle}>
                     Pengujian
                   </Text>
-                  <Text className="text-center" style={styles.dateText}>
+                  <Text className="text-center" style={styles.headerSubtitle}>
                     {new Date().toLocaleDateString("id-ID", {
                       weekday: "long",
                       year: "numeric",
@@ -187,46 +189,60 @@ export default function Pengujian() {
 
             <Text style={styles.sectionTitle}>Aktivitas Terakhir</Text>
             <View style={styles.activityContainer}>
-              {data?.map((activity, index) => (
-                <View key={index} style={styles.activityCard}>
-                  <View style={styles.activityBadge}>
-                    <MaterialIcons name="assignment" size={20} color="#FFF" />
-                  </View>
-
-                  <View style={styles.activityContent}>
-                    <View style={styles.activityHeader}>
-                      <View style={styles.locationContainer}>
-                        <MaterialIcons
-                          name="location-on"
-                          size={16}
-                          color="#4CAF50"
-                        />
-                        <Text style={styles.locationText} numberOfLines={1}>
-                          {activity.lokasi}
-                        </Text>
-                      </View>
+              {data && data.length > 0 ? (
+                data?.map((activity, index) => (
+                  <View key={index} style={styles.activityCard}>
+                    <View style={styles.activityBadge}>
+                      <MaterialIcons name="assignment" size={20} color="#FFF" />
                     </View>
 
-                    <View style={styles.divider} />
+                    <View style={styles.activityContent}>
+                      <View style={styles.infoSection}>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons
+                            name="location-pin"
+                            size={16}
+                            color="#666"
+                          />
+                          <Text style={styles.infoLabel}>Lokasi </Text>
+                          <Text style={styles.infoValue} numberOfLines={1}>
+                            {activity.lokasi}
+                          </Text>
+                        </View>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons
+                            name="archive"
+                            size={16}
+                            color="#666"
+                          />
+                          <Text style={styles.infoLabel}>Permohonan </Text>
+                          <Text style={styles.infoValue} numberOfLines={1}>
+                            {activity.permohonan?.industri}
+                          </Text>
+                        </View>
 
-                    <View style={styles.infoSection}>
-                      <View style={styles.infoRow}>
-                        <MaterialIcons name="business" size={16} color="#666" />
-                        <Text style={styles.infoLabel}>Permohonan:</Text>
-                        <Text style={styles.infoValue} numberOfLines={1}>
-                          {activity.permohonan?.industri}
-                        </Text>
-                      </View>
-
-                      <View style={styles.infoRow}>
-                        <MaterialIcons name="event" size={16} color="#666" />
-                        <Text style={styles.infoLabel}>Tanggal:</Text>
-                        <Text style={styles.infoValue}>{activity.tanggal}</Text>
+                        <View style={styles.infoRow}>
+                          <MaterialIcons name="event" size={16} color="#666" />
+                          <Text style={styles.infoLabel}>Tanggal </Text>
+                          <Text style={styles.infoValue}>
+                            {activity.tanggal}
+                          </Text>
+                        </View>
                       </View>
                     </View>
                   </View>
+                ))
+              ) : (
+                <View style={styles.noActivityContainer}>
+                  <Image
+                    source={require("@/assets/images/pulu.png")}
+                    className="w-60 h-60 opacity-60"
+                  />
+                  <Text className="text-gray-500 font-poppins-regular ">
+                    Tidak ada aktivitas terakhir
+                  </Text>
                 </View>
-              ))}
+              )}
             </View>
           </ScrollView>
         </ScrollView>
@@ -238,13 +254,34 @@ export default function Pengujian() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#f1f1f1",
+    backgroundColor: "#F9FAFB",
   },
   scrollContent: {
     padding: 16,
   },
   welcomeSection: {
     marginBottom: 20,
+  },
+  noActivityContainer: {
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 20,
+    backgroundColor: "white",
+    borderRadius: 10,
+    elevation: 4,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.22,
+    shadowRadius: 2.22,
+  },
+  noActivityIcon: {
+    marginBottom: 10,
+  },
+  noActivityText: {
+    color: "#666",
+    fontSize: 16,
+    fontWeight: "500",
+    fontFamily: "Poppins-SemiBold",
   },
   statsContainer: {
     flexDirection: "row",
@@ -284,11 +321,20 @@ const styles = StyleSheet.create({
     fontFamily: "Poppins-Regular",
   },
   sectionTitle: {
-    fontSize: 18,
+    fontSize: 20,
     color: "#333",
     fontFamily: "Poppins-SemiBold",
     marginBottom: 16,
-    paddingHorizontal: 16,
+  },
+  headerTitle: {
+    fontSize: 21,
+    color: "#333",
+    fontFamily: "Poppins-Bold",
+  },
+  headerSubtitle: {
+    fontSize: 14,
+    color: "#666",
+    fontFamily: "Poppins-Regular",
   },
   menuGrid: {
     flexDirection: "row",
@@ -400,6 +446,7 @@ const styles = StyleSheet.create({
   },
   infoLabel: {
     fontSize: 14,
+    width: 120,
     color: "#666",
     fontFamily: "Poppins-Regular",
   },

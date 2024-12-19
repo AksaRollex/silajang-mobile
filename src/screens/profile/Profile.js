@@ -16,7 +16,7 @@ import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/Feather";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FooterText from "../components/FooterText";
-
+import DefaultAvatar from "../../../assets/images/avatar.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
 
@@ -69,26 +69,21 @@ export default function Profile({ navigation }) {
   return (
     <ImageBackground
       source={require("../../../assets/images/background.png")}
-      style={{ flex: 1, height: "30%" }} 
-      imageStyle={{
-        borderBottomLeftRadius: 20,
-        borderBottomRightRadius: 20,
-      }}>
+      style={{ flex: 1, resizeMode: "cover" }}>
       <>
         {userData ? (
-          <View className="z-10 bottom-20">
+          <View className="z-20 bottom-20">
             <View className="w-full py-5 rounded-b-2xl">
               <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
                 Profil Saya
               </Text>
-              <View className="w-full items-center mt-40 justify-center">
+              <View className=" ">
                 {userData ? (
                   <TouchableOpacity
                     onPress={() => openImageViewer(userData.photo)}
                     style={{
-                      position: "absolute",
                       zIndex: 10,
-                      top: "50%",
+                      top: "150%",
                       alignSelf: "center",
                     }}>
                     <FastImage
@@ -96,13 +91,9 @@ export default function Profile({ navigation }) {
                       source={{
                         uri: userData?.photo
                           ? `${process.env.APP_URL}${userData.photo}`
-                          : "https://img.freepik.com/premium-vector/default-avatar-profile-icon-social-media-user-image-gray-avatar-icon-blank-profile-silhouette-vector-illustration_561158-3467.jpg",
-                        priority: FastImage.priority.high,
+                          : undefined,
                       }}
-                      style={{
-                        borderWidth: 3,
-                        borderColor: "#f9fafb",
-                      }}
+                      defaultSource={DefaultAvatar} // Gambar lokal sebagai fallback
                       resizeMode={FastImage.resizeMode.cover}
                     />
                   </TouchableOpacity>
@@ -117,11 +108,11 @@ export default function Profile({ navigation }) {
             <ActivityIndicator size={"large"} color={"#312e81"} />
           </View>
         )}
-        <View className="h-full bottom-11">
+        <View className="h-full bottom-14">
           <View className="rounded-3xl h-full bg-[#F9FAFB]">
             {userData ? (
               <>
-                <View className="flex-col align-center justify-center mx-2 mt-16">
+                <View className="flex-col align-center justify-center mx-2 mt-32">
                   <Text className="text-base text-black font-poppins-bold my-1 text-center ">
                     {userData?.nama}
                   </Text>

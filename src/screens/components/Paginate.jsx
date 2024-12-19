@@ -17,6 +17,7 @@ import {
   UIManager,
   Platform,
   Image,
+  Dimensions,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -25,7 +26,7 @@ import { Skeleton } from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
 import Icons from "react-native-vector-icons/Feather";
-
+const windowWidth = Dimensions.get("window").width;
 // Aktivasi LayoutAnimation di Android
 if (
   Platform.OS === "android" &&
@@ -45,7 +46,7 @@ const Paginate = forwardRef(
     const [dataList, setDataList] = useState([]);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
     const { control, handleSubmit } = useForm();
-    const cardData = [1, 2, 3, 4];
+    const cardData = [1, 2, 3];
 
     const { data, isFetching, refetch, isLoading } = useQuery({
       queryKey: [url, page, search, payload],
@@ -198,18 +199,29 @@ const Paginate = forwardRef(
             style={{
               width: "90%",
             }}>
-            <Skeleton
-              animation="wave"
-              width={210}
-              LinearGradientComponent={LinearGradient}
-              height={53}
-            />
-            <Skeleton
-              animation="wave"
-              width={130}
-              LinearGradientComponent={LinearGradient}
-              height={53}
-            />
+            {!Plugin ? (
+              <Skeleton
+                animation="wave"
+                width={350}
+                LinearGradientComponent={LinearGradient}
+                height={53}
+              />
+            ) : (
+              <Skeleton
+                animation="wave"
+                width={210}
+                LinearGradientComponent={LinearGradient}
+                height={53}
+              />
+            )}
+            {Plugin ? (
+              <Skeleton
+                animation="wave"
+                width={130}
+                LinearGradientComponent={LinearGradient}
+                height={53}
+              />
+            ) : null}
           </View>
           {/* card */}
           {cardData.map((item, index) => (
@@ -225,7 +237,7 @@ const Paginate = forwardRef(
                 <View LinearGradientComponent={LinearGradient}>
                   <Skeleton
                     animation="wave"
-                    width={370}
+                    width={windowWidth - 60}
                     LinearGradientComponent={LinearGradient}
                     height={180}
                   />

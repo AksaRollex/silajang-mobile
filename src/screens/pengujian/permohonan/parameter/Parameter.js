@@ -14,7 +14,9 @@ import {
   TextInput,
   StyleSheet,
   Image,
+  Touchable,
 } from "react-native";
+import Checkbox from "@react-native-community/checkbox";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import RNPickerSelect from "react-native-picker-select";
 import { useQuery, useMutation } from "@tanstack/react-query";
@@ -143,7 +145,8 @@ const Paginates = forwardRef(
         {page > 1 && (
           <>
             <TouchableOpacity
-              className="px-3  py-2 rounded-md border border-indigo-900"
+              className="px-3  py-2 rounded-lg border "
+              style={{ borderColor: "#252a61" }}
               onPress={() => setPage(1)}>
               <Icons name="chevrons-left" size={18} color="#312e81" />
             </TouchableOpacity>
@@ -261,7 +264,11 @@ const Paginates = forwardRef(
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           ListEmptyComponent={() => (
-            <View className="flex-1 justify-center items-center mx-2">
+            <View className="flex-1 justify-center items-center m-4">
+              <Image
+                source={require("@/assets/images/pulu.png")}
+                className="w-60 h-60 opacity-60 "
+              />
               <Text className="text-gray-500 font-poppins-regular">
                 Data Tidak Tersedia
               </Text>
@@ -665,53 +672,36 @@ const Parameter = ({ route, navigation }) => {
 
   const renderPeraturan = ({ item }) => (
     <View
-      className="rounded-sm flex-row px-2 py-4   mt-1"
-      style={{
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 2 },
-        shadowOpacity: 0.25,
-        flexDirection: "row",
-        shadowRadius: 3.84,
-        backgroundColor: item.selected ? "#fbcfe8" : "#c7d2fe",
-      }}>
-      <View
-        style={[
-          item.selected
-            ? styles.roundedBackgroundSelected
-            : styles.roundedBackgrounds,
-        ]}
-      />
-
-      <View className="justify-center items-center">
-        <Image
-          source={require("../../../../../assets/images/peraturan.png")}
-          className=" h-24 w-24 rounded-md "
-        />
-      </View>
-      <View className="w-52 mx-2 flex justify-start items-start">
-        <Text className="text-black text-left text-sm font-poppins-regular">
-          {item.nama}
-        </Text>
-      </View>
-      {(!titik?.save_parameter || titik.status <= 1) && (
-        <TouchableOpacity
-          className="text-white px-1 rounded-md absolute bottom-4 right-1"
-          onPress={() =>
-            item.selected
-              ? throttledRemovePeraturan(item.uuid)
-              : throttledAddPeraturan(item.uuid)
-          }>
-          <Text
-            style={{
-              color: item.selected ? "white" : "white",
-              backgroundColor: Colors.brand,
-            }}
-            className="px-2 py-1 rounded-md font-poppins-semibold  ">
-            {item.selected ? "-" : "+"}
+      className="rounded-lg  flex-row p-3 my-1  border "
+      style={{ borderColor: item.selected ? "#252a61" : "#9e9e9e" }}>
+      <View className="w-full h-full   flex-row  justify-between  ">
+        <View className="justify-center   items-center  ">
+          {(!titik?.save_parameter || titik.status <= 1) && (
+            <Checkbox
+              value={item.selected}
+              onValueChange={() => {
+                if (item.selected) {
+                  throttledRemovePeraturan(item.uuid);
+                } else {
+                  throttledAddPeraturan(item.uuid);
+                }
+              }}
+              tintColors={{ true: "#252a61", false: "#9e9e9e" }}
+              style={{
+                width: 24,
+                height: 24,
+                borderRadius: 12,
+                marginRight: 10,
+              }}
+            />
+          )}
+        </View>
+        <View className="w-64">
+          <Text className="text-black text-sm font-poppins-regular ">
+            {item.nama}
           </Text>
-        </TouchableOpacity>
-      )}
+        </View>
+      </View>
     </View>
   );
 
@@ -719,15 +709,16 @@ const Parameter = ({ route, navigation }) => {
     <View
       style={{
         flexDirection: "row",
+        borderColor: "#9e9e9e",
       }}
-      className="bg-[#c7d2fe] px-2 py-4 w-full rounded-md mt-1 ">
-      <View style={styles.roundedBackgrounds}></View>
-      <View className="justify-center items-center">
+      className="px-2 py-4 w-full rounded-lg mt-1  border-[1px]  ">
+      {/* <View className="justify-center items-center">
         <Image
           source={require("../../../../../assets/images/zat.png")}
           className=" h-24 w-24 rounded-md "
         />
-      </View>
+      </View> */}
+
       <View className="flex-col gap-y-2 mx-2">
         <Text className="text-black justify-center items-start font-poppins-regular">
           {item.nama}
@@ -750,48 +741,46 @@ const Parameter = ({ route, navigation }) => {
     </View>
   );
 
-  const renderSelectedParameter = ({ item }) => (
-    <View
-      style={{
-        flexDirection: "row",
-        elevation: 5,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 1 },
-        shadowOpacity: 0.8,
-        shadowRadius: 2,
-      }}
-      className="bg-[#fbcfe8]  px-2 py-4 rounded-lg mt-1 flex ">
-      <View style={styles.roundedBackgroundSelected} />
+  const renderSelectedParameter = ({ item }) => {
+    const isSelected = item.selected !== false;
 
-      <View className="justify-center items-center">
-        <Image
-          source={require("../../../../../assets/images/zat.png")}
-          className=" h-24 w-24 rounded-md "
-        />
+    return (
+      <View
+        className="p-3 rounded-lg my-1 flex-row border"
+        style={{
+          borderColor: isSelected ? "#252a61" : "#9e9e9e",
+       
+        }}>
+        <View className="w-full h-full flex-row justify-between">
+          <View className="justify-center items-center">
+            {(!titik?.save_parameter || titik.status <= 1) && (
+              <Checkbox
+                value={isSelected}
+                onValueChange={() => {
+                  throttledRemoveParameter(item.uuid);
+                }}
+                tintColors={{ true: "#252a61", false: "#9e9e9e" }}
+                style={{
+                  width: 24,
+                  height: 24,
+                  borderRadius: 12,
+                  marginRight: 10,
+                }}
+              />
+            )}
+          </View>
+          <View className="flex-col w-64 justify-start items-start">
+            <Text className="text-black text-left font-poppins-regular">
+              {item.nama}
+            </Text>
+            <Text className="text-black text-center">
+              {rupiah(item.titik_permohonans[0].pivot.harga)}
+            </Text>
+          </View>
+        </View>
       </View>
-      <View className="flex-col gap-y-2  justify-start items-start mx-2">
-        <Text className="text-black text-left font-poppins-regular ">
-          {item.nama}
-        </Text>
-        <Text className="text-black text-center">
-          {rupiah(item.titik_permohonans[0].pivot.harga)}
-        </Text>
-      </View>
-
-      {(!titik?.save_parameter || titik.status <= 1) && (
-        <TouchableOpacity
-          onPress={() => throttledRemoveParameter(item.uuid)}
-          className=" px-2  rounded-md absolute bottom-5 right-2"
-          style={{ backgroundColor: Colors.brand }}>
-          <Text
-            style={{ color: "white" }}
-            className="text-lg font-poppins-regular">
-            -
-          </Text>
-        </TouchableOpacity>
-      )}
-    </View>
-  );
+    );
+  };
 
   const renderSectionHeader = (title, viewType, showFilter = true) => (
     <View className="flex-row justify-between items-center px-4 py-2 mt-4">
@@ -813,16 +802,17 @@ const Parameter = ({ route, navigation }) => {
                 color: "black",
               },
               inputAndroid: {
-                fontSize: 16,
-                color: "#e2e8f0",
-                height: 70,
+                fontSize: 20,
+                fontWeight: "bold",
+                color: "#f8f8f8",
+                height: 80,
                 width: 70,
-                marginTop: -15,
+                marginTop: -25,
               },
             }}
             Icon={() => (
               <IonIcons
-                name="filter"
+                name="apps-sharp"
                 size={30}
                 color="black"
                 // style={{ marginTop: 12, marginRight: 12 }}
@@ -839,7 +829,6 @@ const Parameter = ({ route, navigation }) => {
       return renderLoadingPackages();
     }
 
-    // Pastikan pakets selalu array
     const paketsArray = Array.isArray(pakets) ? pakets : [];
 
     if (paketsArray.length === 0) {
@@ -857,57 +846,43 @@ const Parameter = ({ route, navigation }) => {
       return (
         <View
           key={paket.id}
-          className="rounded-md w-full px-2 flex-row py-4 mt-1"
+          className="rounded-lg w-full p-3 flex-row  my-1 border "
           style={{
-            elevation: 5,
-            shadowColor: "#000",
-            shadowOffset: { width: 0, height: 1 },
-            shadowOpacity: 0.8,
-            shadowRadius: 2,
-            backgroundColor: isSelected ? "#fbcfe8" : "#c7d2fe",
+            borderColor: isSelected ? "#252a61" : "#9e9e9e",
           }}>
-          <View
-            style={
-              isSelected
-                ? styles.roundedBackgroundSelected
-                : styles.roundedBackgrounds
-            }
-          />
-          <View className="justify-center items-center">
-            <Image
-              source={require("../../../../../assets/images/bundle.png")}
-              className="h-24 w-24 rounded-md"
-            />
-          </View>
-          <View className="flex-col gap-y-2 mx-2 w-3/5">
-            <Text className="text-black font-poppins-regular">
-              {paket.nama}
-            </Text>
-            <Text className="text-black font-poppins-regular">
-              {rupiah(paket.harga)}
-            </Text>
-            <Text className="text-black font-poppins-regular">
-              {paket.parameters?.map(param => param.nama)?.join(", ") || ""}
-            </Text>
-          </View>
+          <View className="justify-between w-full h-full flex-row">
+            <View className="justify-center items-center">
+              <Checkbox
+                value={isSelected}
+                onValueChange={() => {
+                  if (isSelected) {
+                    throttledRemoveFromPaket(paket.id);
+                  } else {
+                    throttledStoreFromPaket(paket.id);
+                  }
+                }}
+                tintColors={{ true: "#252a61", false: "#9e9e9e" }}
+                style={{
+                  width: 24, // atur ukuran
+                  height: 24, // atur ukuran
+                  borderRadius: 12, // ini yang membuat rounded/lingkaran
+                  marginRight: 10,
+                }}
+              />
+            </View>
 
-          <TouchableOpacity
-            style={[
-              { backgroundColor: Colors.brand },
-              { position: "absolute", bottom: 20, right: 8 },
-            ]}
-            className="px-2 rounded-md"
-            onPress={() => {
-              if (isSelected) {
-                throttledRemoveFromPaket(paket.id);
-              } else {
-                throttledStoreFromPaket(paket.id);
-              }
-            }}>
-            <Text className="text-lg text-white font-poppins-semibold">
-              {isSelected ? "-" : "+"}
-            </Text>
-          </TouchableOpacity>
+            <View className="flex-col gap-y-2 mx-2 w-64">
+              <Text className="text-black font-poppins-regular">
+                {paket.nama}
+              </Text>
+              <Text className="text-black font-poppins-regular">
+                {rupiah(paket.harga)}
+              </Text>
+              <Text className="text-black font-poppins-regular">
+                {paket.parameters?.map(param => param.nama)?.join(", ") || ""}
+              </Text>
+            </View>
+          </View>
         </View>
       );
     });
@@ -919,15 +894,7 @@ const Parameter = ({ route, navigation }) => {
         {/* Render Peraturan Section */}
         {shouldRenderView("peraturan") && (
           <>
-            <View
-              className="rounded-3xl m-4 bg-[#ececec]"
-              style={{
-                elevation: 5,
-                shadowColor: "#000",
-                shadowOffset: { width: 0, height: 1 },
-                shadowOpacity: 0.8,
-                shadowRadius: 2,
-              }}>
+            <View className="rounded-3xl m-4 ">
               <View className="">
                 {renderSectionHeader(
                   "Pilih Berdasarkan Peraturan",
@@ -944,15 +911,7 @@ const Parameter = ({ route, navigation }) => {
 
         {/* Render Paket Section */}
         {shouldRenderView("paket") && (
-          <View
-            className="rounded-3xl m-4 bg-[#ececec]"
-            style={{
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.8,
-              shadowRadius: 2,
-            }}>
+          <View className="rounded-3xl m-4 ">
             <View>
               {renderSectionHeader(
                 "Paket Tersedia",
@@ -966,15 +925,7 @@ const Parameter = ({ route, navigation }) => {
 
         {/* Render Available Parameters Section */}
         {shouldRenderView("available") && (
-          <View
-            className="rounded-3xl m-4 bg-[#ececec]"
-            style={{
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 1 },
-              shadowOpacity: 0.8,
-              shadowRadius: 2,
-            }}>
+          <View className="rounded-3xl m-4 ">
             <View className="">
               {renderSectionHeader(
                 "Parameter Tersedia",
@@ -994,15 +945,7 @@ const Parameter = ({ route, navigation }) => {
 
         {/* Render Selected Parameters Section */}
         {shouldRenderView("selected") && (
-          <View
-            className=" bg-[#ececec] m-4 rounded-3xl"
-            style={{
-              elevation: 5,
-              shadowColor: "#000",
-              shadowOffset: { width: 0, height: 2 },
-              shadowOpacity: 0.25,
-              shadowRadius: 3.84,
-            }}>
+          <View className=" m-4 rounded-3xl">
             <View>
               {renderSectionHeader("Parameter Yang Dipilih", "selected")}
               <Paginates
@@ -1069,6 +1012,19 @@ const Parameter = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  roundedWrapper: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    borderWidth: 2,
+    borderColor: "#4946eb",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  checkbox: {
+    width: 18,
+    height: 18,
+  },
   roundedBackground: {
     position: "absolute",
     top: 0,

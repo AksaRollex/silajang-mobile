@@ -20,19 +20,14 @@ import { Colors, TextField, Button } from "react-native-ui-lib";
 import Geolocation from "react-native-geolocation-service";
 import Toast from "react-native-toast-message";
 import { useNavigation } from "@react-navigation/native";
-import Icon from "react-native-vector-icons/Ionicons";
 import { APP_URL } from "@env";
 import Back from "../../components/Back";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Icons from "react-native-vector-icons/AntDesign";
 import Select2 from "@/src/screens/components/Select2";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import {
-  Camera,
-  useCameraDevice,
-  useCameraPermission,
-} from "react-native-vision-camera";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
+import IonIcons from "react-native-vector-icons/Ionicons";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -309,7 +304,6 @@ const Perusahaan = () => {
       QueryClient.invalidateQueries("/auth");
 
       setTimeout(() => {
-        setModalKintud(false);
         navigation.navigate("IndexProfile");
         setFile(null);
         fetchUserData();
@@ -460,7 +454,9 @@ const Perusahaan = () => {
     setImageUri(null);
     setCurrentPhotoUrl(null);
     setTypePhoto("");
+    setImageUrl(null);
   };
+
   return (
     <>
       <ScrollView className="flex-1">
@@ -1027,23 +1023,19 @@ const Perusahaan = () => {
       </ScrollView>
 
       <Modal animationType="fade" transparent={true} visible={modalKintud}>
-        <View style={styles.overlayView}>
-          <View style={styles.successContainer}>
-            <Image
-              source={require("@/assets/images/cek.png")}
-              style={styles.lottie}
-            />
-            {/* <LottieView
-              source={require("../../../../assets/lottiefiles/success-animation.json")}
-              autoPlay
-              loop={false}
-              style={styles.lottie}
-              /> */}
-            <Text style={styles.successTextTitle}>
-              Data berhasil diperbarui
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Data Berhasil Dirubah !
             </Text>
-            <Text style={styles.successText}>
-              Silahkan memastikan bahwa data yang anda kirim telah benar !
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              Pastikan Data perusahaan kamu sudah benar / sesuai !
             </Text>
           </View>
         </View>
@@ -1053,23 +1045,21 @@ const Perusahaan = () => {
         animationType="fade"
         transparent={true}
         visible={errorModalVisible}>
-        <View style={styles.overlayView}>
-          <View style={[styles.successContainer, styles.errorContainer]}>
-            <Image
-              source={require("@/assets/images/error.png")}
-              style={styles.lottie}
-            />
-            <Text style={[styles.successTextTitle, styles.errortitle]}>
-              Gagal memperbarui data
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+              <IonIcons size={40} color="#95bb72" name="checkmark-done-sharp" />
+            </View>
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Data Gagal Dirubah !
             </Text>
-            <Text style={[styles.successText, styles.errorText]}>
-              {errorMessage}
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
+              {errorMessage ||
+                "Terjadi kesalahan saat memperbarui data. Silahkan coba lagi !"}
             </Text>
-            {/* <TouchableOpacity 
-                style={styles.errorButton}
-                onPress={() => setErrorModalVisible(false)}>
-                <Text style={styles.errorButtonText}>Tutup</Text>
-                </TouchableOpacity> */}
           </View>
         </View>
       </Modal>
@@ -1270,67 +1260,45 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#ccc",
   },
-  overlayView: {
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-    backgroundColor: "rgba(0, 0, 0, 0.7)",
-  },
+
   successContainer: {
     alignItems: "center",
-    backgroundColor: "white",
     padding: 20,
     width: "90%",
     paddingVertical: 30,
     borderRadius: 10,
   },
-  lottie: {
-    width: 170,
-    height: 170,
+  overlayView: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.88)",
   },
-
+  lottie: {
+    width: 200,
+    height: 200,
+  },
   successTextTitle: {
     textAlign: "center",
     color: "black",
     fontSize: rem(1.5),
-    fontFamily: "Poppins-Bold",
-    marginBottom: rem(1.5),
+    marginBottom: rem(0.5),
     marginTop: rem(1),
+    color: "#77DD77",
     fontFamily: "Poppins-SemiBold",
   },
   successText: {
     fontSize: 14,
     textAlign: "center",
     fontFamily: "Poppins-Regular",
-    color: "black",
+    color: "#fff",
   },
   errorContainer: {},
   errortitle: {
     color: "#FF4B4B",
   },
   errorText: {
-    color: "#666",
-  },
-});
-const pickerSelectStyles = StyleSheet.create({
-  inputIOS: {
-    fontSize: 16,
-    paddingVertical: 12,
-    paddingHorizontal: 10,
-    borderWidth: 1,
-    borderColor: "gray",
-    borderRadius: 4,
-    color: "black",
-    paddingRight: 30,
-  },
-  inputAndroid: {
-    fontSize: 16,
-    paddingHorizontal: 10,
-    paddingVertical: 8,
-    borderColor: "gray",
-    borderRadius: 8,
-    color: "black",
-    fontFamily: "Poppins-Regular",
+    color: "#fff",
   },
 });
 
