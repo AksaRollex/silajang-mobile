@@ -70,7 +70,8 @@ const TrackingList = ({ route, onClose }) => {
             action={() => navigation.goBack()}
           />
           <Text style={styles.headerTitle}>
-            {selected?.kode} {selected?.lokasi}
+            {selected?.kode} 
+            {/* {selected?.lokasi} */}
           </Text>
         </View>
 

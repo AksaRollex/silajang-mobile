@@ -499,7 +499,8 @@ const TitikUji = ({ navigation, route, callback }) => {
               />
               {permohonan ? (
                 <Text className="font-poppins-semibold text-black">
-                  {permohonan?.industri} : Titik Pengujian
+                  {/* {permohonan?.industri} : */}
+                  Titik Pengujian
                 </Text>
               ) : (
                 <Text></Text>

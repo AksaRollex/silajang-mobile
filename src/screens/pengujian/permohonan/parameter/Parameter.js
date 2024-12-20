@@ -992,7 +992,8 @@ const Parameter = ({ route, navigation }) => {
           />
 
           <Text className="font-poppins-semibold text-black text-base ">
-            {titik?.lokasi} : Pilih Peraturan / Parameter
+            {/* {titik?.lokasi} :  */}
+            Pilih Peraturan / Parameter
           </Text>
         </View>
         <View className="pb-8 rounded-3xl">
