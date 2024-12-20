@@ -217,7 +217,7 @@ const Paginate = forwardRef((props, ref) => {
           for (let i = 0; i < prevData.length; i++) {
             newData[i] = prevData[i];
           }
-          for (let i = 0; i < res.data.length; i++) {
+          for (let i = 0; i < res.data?.length; i++) {
             newData[prevData.length + i] = res.data[i];
           }
           return newData;

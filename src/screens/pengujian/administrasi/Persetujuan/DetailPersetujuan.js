@@ -85,8 +85,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     selectedParameter: null,
   });
 
-  const {control, setValue} = useForm();
-
   const handleParameter = (parameter, uuid) => {
     setModalState({
       visible: true,
@@ -167,19 +165,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     title: item.nama,
   }));
 
-  useQuery(
-    ["acuan-metode", uuid],
-    () => axios.get("/master/acuan-metode").then(res => res.data.data),
-    {
-      onSuccess: data => setMetode(data),
-    },
-  );
-
-  const formattedMetode = metode?.map(item => ({
-    value: item.id,
-    title: item.nama,
-  }))
-
   useEffect(() => {
     const fetchPengambilSample = async () => {
       try {
@@ -232,13 +217,9 @@ export default function DetailPersetujuan({ route, navigation }) {
       );
       console.log("Response data:", response.data.data.acuan_metode, 99888);
       setData(response.data.data);
-<<<<<<< HEAD
-      setValue("acuanMetode",acuan_metode)
-=======
       setValue('radius_pengambilan', response.data.data.permohonan.radius_pengambilan_id)
       setValue('acuan_metode', response.data.data.acuan_metode.id)
 
->>>>>>> refs/remotes/origin/main
 
       if (response.data.data.permohonan.radius_pengambilan) {
         setSelectedRadius(response.data.data.permohonan.radius_pengambilan_id);

@@ -1,4 +1,4 @@
-import { View, Text, Button } from "react-native-ui-lib";
+import { View, Text, Button, Colors } from "react-native-ui-lib";
 import React, { memo, useEffect, useState } from "react";
 import { useForm, Controller, set } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -33,10 +33,12 @@ export default memo(function Form({ route, navigation }) {
   const [profileImage, setProfileImage] = useState(null);
   const [selectedJabatan, setSelectedJabatan] = useState(null);
   const [showPassword, setShowPassword] = useState(false);
+  const [showPassword2, setShowPassword2] = useState(false);
   const [formData, setFormData] = useState({ tanda_tangan_id: "", });
   const [tandaTanganUrl, setTandaTanganUrl] = useState(null);
   const [tandaTanganFile, setTandaTanganFile] = useState(null);
   const togglePasswordVisibility = () => { setShowPassword(!showPassword);};
+  const togglePasswordVisibility2 = () => { setShowPassword2(!showPassword2);};
 
   const { handleSubmit, control, formState: { errors }, setValue, watch} = useForm({
     values: { ...userData },
@@ -775,7 +777,6 @@ export default memo(function Form({ route, navigation }) {
             rules={{ required: "Tipe harus diisi" }}
             render={({ field: { onChange, value } }) => (
               <Select2
-              style={styles.input}
                 onSelect={onChange}
                 defaultValue={value}
                 data={golongan}
@@ -1091,7 +1092,7 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>Password</Text>
             <View className="relative">
               <TextInput
-                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12 text-black"
                 secureTextEntry={!showPassword}
                 value={formData.passphrase}
                 onChangeText={text =>
@@ -1113,17 +1114,17 @@ export default memo(function Form({ route, navigation }) {
             <Text style={styles.label}>Konfirmasi Password</Text>
             <View className="relative">
               <TextInput
-                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
-                secureTextEntry={!showPassword}
-                value={formData.passphrase}
+                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12 text-black"
+                secureTextEntry={!showPassword2}
+                value={formData.passphrase2}
                 onChangeText={text =>
-                  setFormData(prev => ({ ...prev, passphrase: text }))
+                  setFormData(prev => ({ ...prev, passphrase2: text }))
                 }
               />
               <TouchableOpacity
-                onPress={togglePasswordVisibility}
+                onPress={togglePasswordVisibility2}
                 className="absolute right-4 top-4">
-                {showPassword ? (
+                {showPassword2 ? (
                   <Ionicons name="eye-outline" size={20} color="grey" />
                 ) : (
                   <Ionicons name="eye-off-outline" size={20} color="grey" />
@@ -1183,13 +1184,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   input: {
-    borderWidth: 1,
-    borderColor: "#e5e7eb",
-    borderRadius: 8,
-    padding: 12,
-    fontSize: 14,
-    fontFamily: "Poppins-Regular",
-    backgroundColor: "#f9fafb",
+  flexDirection: "row",
+  alignItems: "center",
+  paddingHorizontal: 12,
+  paddingVertical: 12,
+  borderRadius : 4,
+  borderWidth: 1,  
+  borderColor: "#374151", 
+  backgroundColor: "#FFFFFF",
+  color: Colors.black
   },
   textArea: {
     height: 100,
