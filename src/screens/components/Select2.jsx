@@ -86,7 +86,7 @@ dropdownButtonStyle: {
   alignItems: "center",
   paddingHorizontal: 12,
   paddingVertical: 12,
-  borderRadius : 4,
+  borderRadius : 10,
   borderWidth: 1, // Tambahkan border jika diinginkan
   borderColor: "#374151", // Warna border
   backgroundColor: "#FFFFFF",

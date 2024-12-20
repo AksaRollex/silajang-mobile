@@ -79,7 +79,8 @@ export default memo(function WithPhone() {
               <TextField
                 style={{ fontFamily: "Poppins-Regular" }}
                 keyboardType="phone-pad"
-                placeholder={"No. Telepon"}
+                placeholderTextColor={Colors.grey40}
+                placeholder={"Masukan No. Telepon"}
                 enableErrors
                 fieldStyle={{
                   paddingVertical: 8,
@@ -97,7 +98,7 @@ export default memo(function WithPhone() {
             )}
           />
           {errors.identifier && (
-            <Text color={Colors.red30} body>
+            <Text color={Colors.red30} className="font-poppins-medium text-xs" body>
               {errors.identifier.message}
             </Text>
           )}

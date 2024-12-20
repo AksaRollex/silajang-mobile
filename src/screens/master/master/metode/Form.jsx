@@ -95,7 +95,7 @@ export default memo(function Form({ route, navigation }) {
           <IonIcon
             name="arrow-back-outline"
             onPress={() => navigation.goBack()}
-            size={30}
+            size={25}
             color="#312e81"
           />
           <Text className="text-lg font-poppins-semibold ml-3">

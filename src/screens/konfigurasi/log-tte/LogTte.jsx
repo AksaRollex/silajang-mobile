@@ -94,7 +94,7 @@ const LogTte = ({ navigation }) => {
   
           <View className="mb-3">
             <Text className="text-xs font-poppins-regular text-gray-500">IP Address</Text>
-            <Text className="text-md font-poppins-medium text-black">{item.ip_address}</Text>
+            <Text className="text-base font-poppins-medium text-black">{item.ip_address}</Text>
           </View>
   
           <View className="mb-3">

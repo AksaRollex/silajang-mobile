@@ -85,8 +85,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     selectedParameter: null,
   });
 
-  
-
   const handleParameter = (parameter, uuid) => {
     setModalState({
       visible: true,
@@ -166,8 +164,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     value: item.id,
     title: item.nama,
   }));
-
- 
 
   useEffect(() => {
     const fetchPengambilSample = async () => {
