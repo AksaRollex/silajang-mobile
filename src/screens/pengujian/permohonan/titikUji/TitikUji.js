@@ -14,6 +14,9 @@ import { API_URL } from "@env";
 import RNFS from "react-native-fs";
 import Feather from "react-native-vector-icons/Feather";
 import Pdf from "react-native-pdf";
+import Toast from "react-native-toast-message";
+import IonIcons from "react-native-vector-icons/Ionicons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
@@ -77,39 +80,9 @@ const TitikUji = ({ navigation, route, callback }) => {
   const CardTitikUji = ({ item }) => {
     console.log(item, "item");
     const permohonanPengujian = item?.status >= 2;
-    const mandiri = item?.is_mandiri === 1;
+    const mandiri = item?.is_mandiri === 1 && item?.is_lunas === 1;
     console.log(mandiri, "mandiri");
     const dropdownOptions = [
-      {
-        id: "Report",
-        title: "Report",
-        subactions: [
-          ...(permohonanPengujian
-            ? [
-                {
-                  id: "Permohonan Pengujian",
-                  title: "Permohonan Pengujian",
-                  action: () => handlePreviewPermohonan({ uuid: item.uuid }),
-                },
-              ]
-            : []),
-          ...(mandiri
-            ? [
-                {
-                  id: "Berita Acara",
-                  title: "Berita Acara",
-                  action: () => handlePreviewBeritaAcara({ uuid: item.uuid }),
-                },
-              ]
-            : []),
-        ],
-      },
-      {
-        id: "Berita Acara",
-        title: "Berita Acara",
-        action: () => handlePreviewBeritaAcara({ uuid: item.uuid }),
-      },
-
       {
         id: "Edit",
         title: "Edit",
@@ -126,6 +99,38 @@ const TitikUji = ({ navigation, route, callback }) => {
       },
     ].filter(Boolean);
 
+    // Fungsi untuk menangani aksi dropdown
+    const handleDropdownAction = (option, item) => {
+      if (option.subactions) {
+        // Return subactions jika ada
+        return option.subactions;
+      }
+
+      if (option.action) {
+        // Jalankan action langsung
+        option.action(item);
+      }
+    };
+
+    // Contoh penggunaan dalam komponen
+    const renderDropdownItem = (option, item) => {
+      return (
+        <TouchableOpacity
+          key={option.id}
+          onPress={() => handleDropdownAction(option, item)}>
+          <Text>{option.title}</Text>
+          {option.subactions &&
+            option.subactions.map(subaction => (
+              <TouchableOpacity
+                key={subaction.id}
+                onPress={() => subaction.action(item)}>
+                <Text>{subaction.title}</Text>
+              </TouchableOpacity>
+            ))}
+        </TouchableOpacity>
+      );
+    };
+
     return (
       <View style={styles.card}>
         <View style={styles.roundedBackground} className="rounded-br-full" />
@@ -134,14 +139,14 @@ const TitikUji = ({ navigation, route, callback }) => {
           onPress={() => navigation.navigate("Parameter", { uuid: item.uuid })}>
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className="font-bold text-slate-600 text-xs uppercase font-poppins-semibold">
+              {/* <Text className="font-bold text-slate-600 text-xs uppercase font-poppins-semibold">
                 Lokasi
               </Text>
               <Text className="text-black font-poppins-regular text-base">
                 {item.lokasi}
-              </Text>
+              </Text> */}
 
-              <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
                 status PENGAMBILAN
               </Text>
               <Text
@@ -151,10 +156,10 @@ const TitikUji = ({ navigation, route, callback }) => {
                     : item.kesimpulan_permohonan == 2
                     ? "text-red-600  text-xs"
                     : "text-yellow-600 text-xs"
-                } font-poppins-regular`}>
+                } font-poppins-semibold`}>
                 {getKesimpulanText(item.kesimpulan_permohonan)}
               </Text>
-              <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
                 status Penerimaan
               </Text>
               <Text
@@ -164,49 +169,87 @@ const TitikUji = ({ navigation, route, callback }) => {
                     : item.kesimpulan_sampel == 2
                     ? "text-red-600 text-xs"
                     : "text-yellow-600  text-xs"
-                } font-poppins-regular `}>
+                } font-poppins-semibold `}>
                 {getPenerimaanText(item.kesimpulan_sampel)}
               </Text>
-              <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
                 status Pengujian
               </Text>
-              <Text className="text-xs text-indigo-600 font-poppins-regular ">
+              <Text className="text-xs text-indigo-600 font-poppins-semibold ">
                 {item.text_status || "-"}
               </Text>
             </View>
           </View>
 
           <View style={styles.cardContents} className="flex flex-end mb-3">
-            <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+            {/* <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
               Kode
             </Text>
             <Text className="text-black font-poppins-regular text-base">
               {item.kode}
-            </Text>
-            <Text className="text-slate-600 text-xs uppercase mt-3 font-poppins-semibold">
+            </Text> */}
+            {/* <Text className="text-slate-600 text-xs uppercase  font-poppins-regular">
               Diambil
             </Text>
-            <Text className="text-black font-poppins-regular">
+            <Text className="text-black font-poppins-semibold">
               {item.tanggal_pengambilan || "-"}
             </Text>
-            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-regular">
               Diterima :
             </Text>
-            <Text className="text-black font-poppins-regular">
+            <Text className="text-black font-poppins-semibold">
               {item.tanggal_diterima || "-"}
             </Text>
-            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-regular">
               Selesai :
             </Text>
-            <Text className="text-black font-poppins-regular">
+            <Text className="text-black font-poppins-semibold">
               {item.tanggal_selesai_uji || "-"}
-            </Text>
+            </Text> */}
           </View>
         </TouchableOpacity>
 
         <View
           style={styles.cardActions}
-          className="mb-4 flex-end justify-end items-end mr-2">
+          className="mb-4 flex-end justify-end items-end mr-2 ">
+          <MenuView
+            title="Berita Acara"
+            actions={[
+              ...(permohonanPengujian
+                ? [
+                    {
+                      id: "Permohonan Pengujian",
+                      title: "Permohonan Pengujian",
+                      action: () =>
+                        handlePreviewPermohonan({ uuid: item.uuid }),
+                    },
+                  ]
+                : []),
+
+              ...(mandiri
+                ? [
+                    {
+                      id: "Berita Acara",
+                      title: "Berita Acara",
+
+                      action: () =>
+                        handlePreviewBeritaAcara({ uuid: item.uuid }),
+                    },
+                  ]
+                : []),
+            ]}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = nativeEvent.event;
+              if (selectedOption === "Permohonan Pengujian") {
+                handlePreviewPermohonan({ uuid: item.uuid });
+              } else if (selectedOption === "Berita Acara") {
+                handlePreviewBeritaAcara({ uuid: item.uuid });
+              }
+            }}>
+            <View className="mr-2">
+              <FontAwesome5 name="file-pdf" size={20} color="#ef4444" />
+            </View>
+          </MenuView>
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
@@ -570,7 +613,7 @@ const TitikUji = ({ navigation, route, callback }) => {
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
               <Text className="text-lg font-poppins-semibold text-black">
-                Preview PDF Berita Acara 
+                Preview PDF Berita Acara
               </Text>
               <TouchableOpacity
                 onPress={handleDownloadBeritaAcara}
@@ -644,7 +687,9 @@ const styles = StyleSheet.create({
     marginHorizontal: 4,
   },
   card: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#e2e8f0",
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
@@ -661,7 +706,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%", // Adjust this value to control how much of the card is covered
-    backgroundColor: "#e2e8f0", // slate-200 equivalent
+    backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
     flexDirection: "row",
@@ -679,7 +724,7 @@ const styles = StyleSheet.create({
     width: "45%",
     paddingTop: 12,
   },
-  cardActions: { flexDirection: "row" },
+  cardActions: { flexDirection: "row", alignItems: "flex-end" },
   cardTexts: {
     fontSize: 13,
     color: "black",

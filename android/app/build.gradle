@@ -85,9 +85,9 @@ android {
     signingConfigs {
         release {
             // storeFile file('D:/Silajang/silajang-user-mobile/silajang-mobile/android/app/silajang-release.keystore')
-            storeFile file('users.keystore')
+            storeFile file('usersilajang.keystore')
             storePassword '12345678'
-            keyAlias 'users'
+            keyAlias 'usersilajang'
             keyPassword '12345678'
         }   
         debug {

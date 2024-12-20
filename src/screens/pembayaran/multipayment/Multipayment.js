@@ -18,6 +18,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -29,6 +30,10 @@ const Pengujian = ({ navigation }) => {
   const [refreshKey, setRefreshKey] = useState(0);
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [isTypePickerVisible, setIsTypePickerVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
+  const [SKRDUrl, setSKRDUrl] = useState("");
+  const [kwitansiUrl, setKwitansiUrl] = useState("");
+  const [modalKwitansi, setModalKwitansi] = useState(false);
 
   const bulans = [
     { id: 1, text: "Januari" },
@@ -77,78 +82,20 @@ const Pengujian = ({ navigation }) => {
   });
 
   const CardPembayaran = ({ item }) => {
-    console.log("item:", item);
-    const isExpired = item?.is_expired;
-    const status = item?.status;
-
+    const skrd = item.status_tte_skrd === 1;
+    const kwitansi = item.payment?.is_lunas === 1;
     const dropdownOptions = [
-      // Opsi Pembayaran
-      (isExpired || status === "pending" || status === "failed") && {
-        id: "Pembayaran",
-        title: "Pembayaran",
-        action: () =>
-          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
+      skrd && {
+        id: "SKRD",
+        title: "SKRD",
+        action: () => handlePreviewSKRD({ uuid: item.uuid }),
       },
-
-      // Opsi Tagihan
-      (status === "pending" || status === "failed") && {
-        id: "Tagihan",
-        title: "Tagihan",
-        action: async () => {
-          try {
-            const token = await AsyncStorage.getItem("@auth-token");
-            if (token) {
-              const reportUrl = `${API_URL}/report/${item.uuid}/tagihan-pembayaran?token=${token}`;
-              download(reportUrl); // Menampilkan modal preview
-            } else {
-              console.error("Token not found");
-              const reportUrl = `/report/${item.uuid}/tagihan-pembayaran`;
-              download(reportUrl);
-            }
-          } catch (error) {
-            console.error("Error mendapatkan token:", error);
-          }
-        },
-      },
-
-      // Opsi Detail
-      status === "success" && {
-        id: "Detail",
-        title: "Detail",
-        action: () =>
-          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
-      },
-
-      // Opsi Cetak
-      status === "success" && {
-        id: "Cetak",
-        title: "Cetak",
-        action: async () => {
-          try {
-            const token = await AsyncStorage.getItem("@auth-token");
-            if (token) {
-              const reportUrl = `${API_URL}/report/${item.uuid}/bukti-pembayaran?token=${token}`;
-              download(reportUrl); // Menampilkan modal preview
-            } else {
-              console.error("Token not found");
-              const reportUrl = `/report/${item.uuid}/bukti-pembayaran`;
-              download(reportUrl);
-            }
-          } catch (error) {
-            console.error("Error fetching token:", error);
-          }
-        },
+      kwitansi && {
+        id: "Kwitansi",
+        title: "Kwitansi",
+        action: () => handlePreviewKwitansi({ uuid: item.uuid }),
       },
     ].filter(Boolean);
-
-    if (dropdownOptions.length === 0) {
-      dropdownOptions.push({
-        id: "Pembayaran",
-        title: "Pembayaran",
-        action: () =>
-          navigation.navigate("MultipaymentDetail", { uuid: item.uuid }),
-      });
-    }
 
     const getStatusText = item => {
       if (item?.is_expired) {
@@ -268,6 +215,26 @@ const Pengujian = ({ navigation }) => {
               </View>
             </MenuView>
           </View> */}
+          <View style={styles.cardActions} className="mb-4  ">
+            {(skrd || kwitansi) && dropdownOptions.length > 0 && (
+              <MenuView
+                title="Menu Title"
+                actions={dropdownOptions}
+                onPressAction={({ nativeEvent }) => {
+                  const selectedOption = dropdownOptions.find(
+                    option => option.title === nativeEvent.event,
+                  );
+                  if (selectedOption) {
+                    selectedOption.action(item);
+                  }
+                }}
+                shouldOpenOnLongPress={false}>
+                <View className="bg-red-100 rounded-lg p-1 mr-2">
+                  <FontAwesome5 name="file-pdf" size={22} color="#ef4444" />
+                </View>
+              </MenuView>
+            )}
+          </View>
         </TouchableOpacity>
       </View>
     );
@@ -410,6 +377,214 @@ const Pengujian = ({ navigation }) => {
     );
   };
 
+  const handlePreviewSKRD = async ({ uuid }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      setSKRDUrl(`${API_URL}/report/${uuid}/skrd?token=${authToken}`);
+      setModalVisible(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal membuka SKRD",
+      });
+    }
+  };
+
+  const handlePreviewKwitansi = async ({ uuid }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      setKwitansiUrl(`${API_URL}/report/${uuid}/kwitansi?token=${authToken}`);
+      setModalKwitansi(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal membuka kwitansi",
+      });
+    }
+  };
+
+  const handleDownloadSKRD = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `SKRD_${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: SKRDUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: "application/pdf",
+          });
+        } catch (openError) {
+          console.log("Error opening file with FileViewer:", openError);
+
+          if (Platform.OS === "android") {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                "application/pdf",
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                  android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log("Intent fallback failed:", intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
+  const handleDownloadKwitansi = async () => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `Kwitansi_${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: kwitansiUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: "application/pdf",
+          });
+        } catch (openError) {
+          console.log("Error opening file with FileViewer:", openError);
+
+          if (Platform.OS === "android") {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                "application/pdf",
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                  android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log("Intent fallback failed:", intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
   // const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
   //   return (
   //     <Modal
@@ -489,6 +664,94 @@ const Pengujian = ({ navigation }) => {
         /> */}
         <PDFConfirmationModal />
       </View>
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}>
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Preview PDF SKRD
+              </Text>
+              <TouchableOpacity
+                onPress={handleDownloadSKRD}
+                className="p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            {SKRDUrl ? (
+              <Pdf
+                source={{ uri: SKRDUrl, cache: true }}
+                style={{ flex: 1 }}
+                trustAllCerts={false}
+              />
+            ) : (
+              <View className="flex-1 justify-center items-center">
+                <Text className="text-xl font-poppins-semibold text-red-500">
+                  404 | File not found
+                </Text>
+              </View>
+            )}
+
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-poppins-semibold text-center">
+                  Tutup
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalKwitansi}
+        onRequestClose={() => setModalKwitansi(false)}>
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Preview PDF Kwitansi
+              </Text>
+              <TouchableOpacity
+                onPress={handleDownloadKwitansi}
+                className="p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            {kwitansiUrl ? (
+              <Pdf
+                source={{ uri: kwitansiUrl, cache: true }}
+                style={{ flex: 1 }}
+                trustAllCerts={false}
+              />
+            ) : (
+              <View className="flex-1 justify-center items-center">
+                <Text className="text-xl font-poppins-semibold text-red-500">
+                  404 | File not found
+                </Text>
+              </View>
+            )}
+
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity
+                onPress={() => setModalKwitansi(false)}
+                className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-poppins-semibold text-center">
+                  Tutup
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
     </>
   );
 };
@@ -531,8 +794,7 @@ const styles = StyleSheet.create({
     paddingTop: 12,
   },
   cardActions: {
-    width: "10%",
-    alignItems: "center",
+    alignItems: "flex-end",
     justifyContent: "flex-end",
   },
   badge: {

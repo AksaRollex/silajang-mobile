@@ -250,7 +250,9 @@ const styles = StyleSheet.create({
     color: "black",
   },
   card: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#e2e8f0",
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
@@ -267,7 +269,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%", // Adjust this value to control how much of the card is covered
-    backgroundColor: "#e2e8f0", // slate-200 equivalent
+    backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
     flexDirection: "row",

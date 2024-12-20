@@ -73,15 +73,15 @@ const Permohonan = ({ navigation }) => {
             <View style={styles.cardContent}>
               <View className="flex-row justify-between">
                 <View className="w-1/2 ">
-                  <Text className=" text-slate-600 text-xs uppercase font-poppins-semibold">
+                  <Text className=" text-slate-600 text-xs uppercase font-poppins-regular">
                     Industri
                   </Text>
-                  <Text className="text-black  text-base font-poppins-regular">
+                  <Text className="text-black  text-xs font-poppins-semibold">
                     {item.industri}
                   </Text>
                 </View>
                 <View className="w-1/2 ">
-                  <Text className=" uppercase text-base text-right text-slate-600  font-poppins-semibold">
+                  <Text className=" uppercase text-xs text-right text-slate-600  font-poppins-regular">
                     {item.tanggal}
                   </Text>
                 </View>
@@ -92,16 +92,16 @@ const Permohonan = ({ navigation }) => {
           {/* Middle section */}
           <View style={styles.rightSection}>
             <View style={styles.cardContents} className="flex">
-              <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
+              <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-regular">
                 Alamat
               </Text>
-              <Text className="text-black  text-base  font-poppins-regular">
+              <Text className="text-black  text-xs font-poppins-semibold">
                 {item.alamat}
               </Text>
-              <Text className="text-slate-600 text-xs mt-3 uppercase  font-poppins-semibold">
+              <Text className="text-slate-600 text-xs mt-3 uppercase  font-poppins-regular">
                 Cara Pengambilan
               </Text>
-              <Text className="text-black  font-poppins-regular">
+              <Text className="text-black text-xs  font-poppins-semibold">
                 {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
               </Text>
             </View>
@@ -311,10 +311,12 @@ const Permohonan = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#e2e8f0",
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     shadowColor: "#000",
     shadowOffset: { width: 0, height: 0.5 },
     shadowOpacity: 0.5,
@@ -329,7 +331,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%", // Adjust this value to control how much of the card is covered
-    backgroundColor: "#e2e8f0", // slate-200 equivalent
+    backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
     flexDirection: "column",

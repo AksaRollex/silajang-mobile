@@ -23,6 +23,7 @@ import Pdf from "react-native-pdf";
 import RNFS from "react-native-fs";
 import { API_URL } from "@env";
 import Toast from "react-native-toast-message";
+import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
 const Pengujian = ({ navigation }) => {
@@ -32,9 +33,7 @@ const Pengujian = ({ navigation }) => {
   const [isDatePickerVisible, setIsDatePickerVisible] = useState(false);
   const [modalVisible, setModalVisible] = useState(false);
   const [SKRDUrl, setSKRDUrl] = useState("");
-  console.log(SKRDUrl);
   const [kwitansiUrl, setKwitansiUrl] = useState("");
-  console.log(kwitansiUrl, 111);
   const [modalKwitansi, setModalKwitansi] = useState(false);
 
   const handleDateSelect = selectedYear => {
@@ -51,7 +50,6 @@ const Pengujian = ({ navigation }) => {
     const isExpired = item.payment?.is_expired;
     const skrd = item.status_tte_skrd === 1;
     const kwitansi = item.payment?.is_lunas === 1;
-    console.log(kwitansi);
     const dropdownOptions = [
       skrd && {
         id: "SKRD",
@@ -126,7 +124,8 @@ const Pengujian = ({ navigation }) => {
           </View>
 
           {/* Middle section */}
-          <View style={styles.cardContents} className="flex flex-end ">
+
+          <View style={styles.cardContents} className="flex flex-end">
             <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
               Status
             </Text>
@@ -155,25 +154,25 @@ const Pengujian = ({ navigation }) => {
             </Text>
           </View>
         </TouchableOpacity>
-        <View style={styles.cardActions} className="mb-4 mr-2 ">
-          <MenuView
-            title="Menu Title"
-            actions={dropdownOptions.map(option => ({
-              ...option,
-            }))}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = dropdownOptions.find(
-                option => option.title === nativeEvent.event,
-              );
-              if (selectedOption) {
-                selectedOption.action(item);
-              }
-            }}
-            shouldOpenOnLongPress={false}>
-            <View>
-              <Entypo name="dots-three-vertical" size={16} color="#312e81" />
-            </View>
-          </MenuView>
+        <View style={styles.cardActions} className="mb-4  ">
+          {(skrd || kwitansi) && dropdownOptions.length > 0 && (
+            <MenuView
+              title="Menu Title"
+              actions={dropdownOptions}
+              onPressAction={({ nativeEvent }) => {
+                const selectedOption = dropdownOptions.find(
+                  option => option.title === nativeEvent.event,
+                );
+                if (selectedOption) {
+                  selectedOption.action(item);
+                }
+              }}
+              shouldOpenOnLongPress={false}>
+              <View className=" rounded-lg  mr-2">
+                <FontAwesome5 name="file-pdf" size={22} color="#ef4444" />
+              </View>
+            </MenuView>
+          )}
         </View>
       </View>
     );
@@ -608,7 +607,7 @@ const Pengujian = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#e2e8f0",
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
@@ -616,6 +615,8 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     overflow: "hidden",
     position: "relative", // Added to position the background
   },
@@ -625,7 +626,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%", // Adjust this value to control how much of the card is covered
-    backgroundColor: "#e2e8f0", // slate-200 equivalent
+    backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
     flexDirection: "row",
