@@ -2,6 +2,7 @@ import { StyleSheet, Text, TextInput, View, ScrollView, TouchableOpacity } from 
 import React, { useEffect, useState, useRef } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
+import Ionicons from 'react-native-vector-icons/Ionicons';
 import * as Yup from "yup";
 import axios from "@/src/libs/axios";
 import DatePicker from "react-native-date-picker";
@@ -10,6 +11,7 @@ import AntDesign from 'react-native-vector-icons/AntDesign';
 import BackButton from '../components/BackButton';
 import { useNavigation } from '@react-navigation/native';
 import { useKodeRetribusi } from "@/src/services/useKodeRetribusi";
+import { useHeaderStore } from '@/src/screens/main/Index';
 import Paginate from "../components/Paginate";
 
 export default function FormMulti() {
@@ -18,6 +20,12 @@ export default function FormMulti() {
   const [selectedTitik, setSelectedTitik] = useState([]);
   const [paymentType, setPaymentType] = useState('va');
   const [datePickerOpen, setDatePickerOpen] = useState(false);
+  const { setHeader } = useHeaderStore();
+  
+  React.useLayoutEffect(() => {
+    setHeader(false)
+    return () => setHeader(true)
+  }, [])
 
   const formSchema = Yup.object().shape({
     type: Yup.string().oneOf(['va', 'qris']).required('Metode Pembayaran harus diisi'),
@@ -29,9 +37,6 @@ export default function FormMulti() {
       type: 'va'
     }
   });
-
-  const [titikList, setTitikList] = useState([]);
-  const [isLoading, setIsLoading] = useState(false);
 
   const toggleTitikSelection = (titik) => {
     setSelectedTitik(prev => {
@@ -46,6 +51,13 @@ export default function FormMulti() {
 
   const calculateTotalHarga = () => {
     return selectedTitik.reduce((acc, item) => acc + item.harga, 0);
+  };
+
+  const formatCurrency = (value) => {
+    return new Intl.NumberFormat('id-ID', {
+      style: 'currency',
+      currency: 'IDR'
+    }).format(value).replace(/\s/g, '');
   };
 
   const onSubmit = async (data) => {
@@ -65,19 +77,57 @@ export default function FormMulti() {
     }
   };
 
-  const formatCurrency = (value) => {
-    return new Intl.NumberFormat('id-ID', {
-      style: 'currency',
-      currency: 'IDR'
-    }).format(value).replace(/\s/g, '');
-  };
-
   const renderItem = ({ item }) => {
+    const isSelected = selectedTitik.find(selected => selected.uuid === item.uuid);
 
     return (
-        <View></View>
+      <View className="my-2 bg-[#f8f8f8] rounded-md border-t-[6px] border-indigo-900 p-4 shadow-md">
+        <View className="flex-row justify-between items-center">
+          {/* Left side - Information */}
+          <View className="flex-1 mr-3">
+            <View className="mb-3">
+              <Text className="text-xs text-gray-500 font-poppins-regular">Kode</Text>
+              <Text className="text-md font-poppins-semibold text-black">{item.kode}</Text>
+            </View>
+            
+            <View className="mb-3">
+              <Text className="text-xs text-gray-500 font-poppins-regular">Pelanggan</Text>
+              <Text className="text-md font-poppins-semibold text-black">{item.permohonan?.user.nama}</Text>
+            </View>
+            
+            <View className="mb-3">
+              <Text className="text-xs text-gray-500 font-poppins-regular">Titik Uji/Lokasi</Text>
+              <Text className="text-md font-poppins-semibold text-black">{item.lokasi}</Text>
+            </View>
+            
+            <View className="mb-3">
+              <Text className="text-xs text-gray-500 font-poppins-regular">Harga</Text>
+              <Text className="text-md font-poppins-semibold text-black">{formatCurrency(item.harga)}</Text>
+            </View>
+          </View>
+
+          {/* Right side - Selection Button */}
+          <View className="w-[100px] justify-center items-center">
+            <TouchableOpacity
+              className={`flex-row items-center justify-center py-2 px-3 rounded-lg w-full
+                ${isSelected ? 'bg-indigo-900' : 'bg-gray-100 border border-indigo-900'}`}
+              onPress={() => toggleTitikSelection(item)}>
+              <Ionicons
+                name={isSelected ? "checkmark-circle" : "add-circle-outline"}
+                size={24}
+                color={isSelected ? "#ffffff" : "#312e81"}
+              />
+              <Text 
+                className={`ml-1 text-sm font-poppins-medium
+                  ${isSelected ? 'text-white' : 'text-indigo-900'}`}>
+                {isSelected ? 'Dipilih' : 'Pilih'}
+              </Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </View>
     );
-};
+  };
 
   return (
     <ScrollView className="h-full w-full bg-[#ececec] p-3 py-2">
@@ -130,17 +180,17 @@ export default function FormMulti() {
           <View className="mt-6">
             <Text className="text-base text-black mb-2 ml-2 font-poppins-semibold">Titik Permohonan Dipilih</Text>
             <View className="flex-row flex-wrap gap-2 p-4 ml-2 bg-gray-100 rounded-md">
-                {selectedTitik && selectedTitik.length > 0 ? (
-                    selectedTitik.map(item => (
-                        <View key={item.uuid} className="bg-blue-100 px-3 py-1 rounded-full">
-                        <Text className="text-blue-800">{item.kode}</Text>
-                        </View>
-                    ))
-                ) : (
-                    <View>
-                        <Text></Text>
-                    </View>
-                )}
+              {selectedTitik && selectedTitik.length > 0 ? (
+                selectedTitik.map(item => (
+                  <View key={item.uuid} className="bg-blue-100 px-3 py-1 rounded-full">
+                    <Text className="text-blue-800">{item.kode}</Text>
+                  </View>
+                ))
+              ) : (
+                <View>
+                  <Text></Text>
+                </View>
+              )}
             </View>
             
             <View className="mt-4 ml-2">
@@ -150,14 +200,13 @@ export default function FormMulti() {
           </View>
         )}
 
-       {/* <Paginate
-            ref={paginateRef}
-            url="/pembayaran/multi-payment/titiks"
-            renderItem={renderItem}
-            className=" mt-5">
-       </Paginate> */}
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/multi-payment/titiks"
+          renderItem={renderItem}
+          className="mt-5"
+        />
 
-        {/* Submit Button */}
         <TouchableOpacity
           className="bg-[#312e81] p-3 rounded mt-6"
           onPress={handleSubmit(onSubmit)}
