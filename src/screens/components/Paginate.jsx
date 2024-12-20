@@ -112,16 +112,15 @@ const Paginate = forwardRef(
       }
     };
 
-    const handleSearch = (query) => {
+    const handleSearch = query => {
       setSearch(query);
 
       // Reset halaman ke 1 agar data baru dimuat dari awal
       setPage(1);
-    
+
       // Refetch data dengan query baru
       refetch();
     };
-    
 
     const ListHeader = () => (
       <>
@@ -138,7 +137,7 @@ const Paginate = forwardRef(
                 }`}>
                 <View className={props.plugan ? "" : "flex-1 relative"}>
                   <TextInput
-                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px-3 "
+                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px- "
                     value={value}
                     placeholderTextColor={"grey"}
                     placeholder="Cari..."
@@ -146,9 +145,9 @@ const Paginate = forwardRef(
                       onChange(text);
                     }}
                     onSubmitEditing={() => {
-              // Panggil fungsi pencarian ketika Enter ditekan
-              handleSearch(value);
-            }}
+                      // Panggil fungsi pencarian ketika Enter ditekan
+                      handleSearch(value);
+                    }}
                   />
                   {/* Button Search */}
                   <TouchableOpacity
@@ -158,7 +157,6 @@ const Paginate = forwardRef(
                     <Icons name="search" size={18} color={"black"} />
                   </TouchableOpacity>
                 </View>
-
                 {/* Plugin Section */}
                 <View style={Plugin ? { marginLeft: 10 } : {}}>
                   {Plugin && <Plugin />}

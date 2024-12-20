@@ -234,10 +234,10 @@ export default function Pengujian() {
                 ))
               ) : (
                 <View style={styles.noActivityContainer}>
-                  <Image
+                  {/* <Image
                     source={require("@/assets/images/pulu.png")}
                     className="w-60 h-60 opacity-60"
-                  />
+                  /> */}
                   <Text className="text-gray-500 font-poppins-regular ">
                     Tidak ada aktivitas terakhir
                   </Text>
@@ -264,6 +264,7 @@ const styles = StyleSheet.create({
   },
   noActivityContainer: {
     alignItems: "center",
+    minHeight : 150, 
     justifyContent: "center",
     paddingVertical: 20,
     backgroundColor: "white",
