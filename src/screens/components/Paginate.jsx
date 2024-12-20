@@ -85,7 +85,7 @@ const ListItemSkeleton = () => (
 
 
 // Search form comkelponent
-const SearchForm = ({ control, onSubmit, isLoading }) => (
+const SearchForm = ({ control, onSubmit, isLoading, handleSearch }) => (
   <View className="flex-row mb-4 items-center">
     <Controller
       control={control}
