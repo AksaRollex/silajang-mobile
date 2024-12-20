@@ -523,7 +523,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
         };
 
         return (
-            <View className="my-3 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4 mx-2" style={{
+            <View className="my-2 bg-white rounded-lg border-t-[6px] border-indigo-900 p-4" style={{
                 elevation: 3,
                 shadowColor: '#000',
                 shadowOffset: { width: 0, height: 2 },
@@ -637,7 +637,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 </View>
             </View>
 
-            <View className="p-4">
+            <View className="p-6">
                 <View className="flex-row justify-end space-x-2">
                     <MenuView
                         title="Pilih Tahun"
@@ -717,7 +717,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
                     tahun: selectedYear,
                 }}
                 renderItem={renderItem}
-                className="bottom-2"
+                className="bottom-4"
             />
              <View className="mt-12 mb-8">
           <TextFooter />

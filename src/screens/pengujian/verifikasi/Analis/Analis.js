@@ -291,6 +291,18 @@ const Analis = ({ navigation }) => {
             />
           </View>
 
+      <Paginate
+        ref={paginateRef}
+        url="/verifikasi/analis"
+        payload={{
+          status: selectedAnalis,
+          tahun: selectedYear,
+          page: 1,
+          per: 10,
+        }}
+        renderItem={renderItem}
+        className="bottom-3"
+      />
           <MenuView
             title="filterOptions"
             actions={filterOptions.map(option => ({

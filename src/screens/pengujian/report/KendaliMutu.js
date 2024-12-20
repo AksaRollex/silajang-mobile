@@ -552,7 +552,7 @@ const KendaliMutu = ({ navigation }) => {
           onError={(error) => console.error('Paginate error:', error)}
           className="bottom-2"
         />
-        <View className="mt-12 mb-8">
+        <View className="bottom-2">
           <TextFooter />
         </View>
       </ScrollView>

@@ -229,18 +229,19 @@ export default function Profile({ navigation }) {
 
               <View className="flex-row w-full justify-between">
                 <TouchableOpacity
+                  onPress={confirmLogout}
+                  className="flex-1 mr-2 bg-red-500 py-3 rounded-xl items-center"
+                >
+                  <Text className="text-white font-poppins-medium">Ya, Logout</Text>
+                </TouchableOpacity>
+                
+                <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  className="flex-1 mr-3 bg-gray-100 py-3 rounded-xl items-center"
+                  className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
                 >
                   <Text className="text-gray-700 font-poppins-medium">Batal</Text>
                 </TouchableOpacity>
 
-                <TouchableOpacity
-                  onPress={confirmLogout}
-                  className="flex-1 ml-3 bg-red-500 py-3 rounded-xl items-center"
-                >
-                  <Text className="text-white font-poppins-medium">Ya, Logout</Text>
-                </TouchableOpacity>
               </View>
             </View>
           </View>

@@ -77,11 +77,12 @@ const ListItemSkeleton = () => (
           right: 0,
           top: "40%",
         }}
-      >     
+      >
       </View>
     </View>
   </View>
 );
+
 
 // Search form comkelponent
 const SearchForm = ({ control, onSubmit, isLoading }) => (
@@ -92,11 +93,15 @@ const SearchForm = ({ control, onSubmit, isLoading }) => (
       defaultValue=""
       render={({ field: { onChange, value } }) => (
         <TextInput
-          className="flex-1 text-base border bg-white px-3 border-gray-300 rounded-md mr-3 font-poppins-regular"
+          className="flex-1 text-base border text-black bg-white px-3 border-gray-300 rounded-md mr-3 font-poppins-regular"
           value={value}
           onChangeText={onChange}
           placeholder="Cari..."
           editable={!isLoading}
+          onSubmitEditing={() => {
+            // Panggil fungsi pencarian ketika Enter ditekan
+            handleSearch(value); // Pastikan handleSearch digunakan
+          }}
         />
       )}
     />
@@ -158,8 +163,8 @@ const ListContent = ({
       removeClippedSubviews={false}
       ListEmptyComponent={() => (
         <View className="flex-1 items-center justify-center mt-4">
-          <Image source={require ("@/assets/images/notfnd.png") }
-          className="w-60 h-60 opacity-40"
+          <Image source={require("@/assets/images/notfnd.png")}
+            className="w-60 h-60 opacity-40"
           />
           <Text className="text-gray-500 font-poppins-regular">
             Data Tidak Tersedia
@@ -180,12 +185,24 @@ const Paginate = forwardRef((props, ref) => {
   const { control, handleSubmit } = useForm();
   const cardData = [1, 2, 3, 4, 5];
 
+
+  const handleSearch = (searchValue) => {
+    if (!searchValue.trim()) {
+      console.log("Kolom pencarian kosong. Harap masukkan kata kunci.");
+      return;
+    }
+    setSearch(searchValue);
+    setPage(1);
+    refetch();
+    console.log(`Pencarian dimulai dengan kata kunci: ${searchValue}`);
+  };
+
   // Query setup
   const { data, isFetching, refetch } = useQuery({
     queryKey: [props.url, page, search],
     queryFn: () =>
-      axios.post(props.url, { 
-        page, 
+      axios.post(props.url, {
+        page,
         search,
         ...(props.payload || {})
       }).then((res) => res.data),
@@ -251,12 +268,15 @@ const Paginate = forwardRef((props, ref) => {
     setPage(1);
   });
 
+
+
   return (
     <View className="flex-1 p-4" style={props.style}>
       <SearchForm
         control={control}
         onSubmit={onSearchSubmit}
         isLoading={isFetching}
+        handleSearch={handleSearch} // Pastikan handleSearch diteruskan
       />
       <ListContent
         isFetching={isFetching}
