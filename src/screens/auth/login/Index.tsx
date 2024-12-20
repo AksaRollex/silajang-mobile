@@ -19,7 +19,7 @@ export default memo(function Login({ navigation }): React.JSX.Element {
   const [activeTab, setActiveTab] = useState(1);
 
   return (
-    <ScrollView>
+    <ScrollView contentContainerStyle={{ flexGrow: 1 }}>
       <ParallaxScroll
         renderParallaxBackground={({ animatedValue }) => (
           <Image
@@ -103,26 +103,13 @@ export default memo(function Login({ navigation }): React.JSX.Element {
           <If isTrue={activeTab === 2}>
             <WithPhone />
           </If>
+        </View>
 
-          {/* <Button
-            labelStyle={{ fontFamily: "Poppins-Regular" }}
-            size="small"
-            label="Daftar Akun Baru"
-            paddingV-12
-            iconOnRight
-            iconSource={Assets.getAssetByPath("icons.chevronRight")}
-            iconStyle={{ width: 20, height: 28 }}
-            color={'#312e81'}
-            hyperlink
-            onPress={() => navigation.navigate("register")}
-          ></Button> */}
-          <View 
-          style={{ alignItems: 'center', position: 'absolute', bottom: 30,}} className="self-center">
-            <Image
-              source={require("@/assets/images/bse.png")}
-              style={{ width: 150, height: 80 }}
-            />
-          </View>
+        <View style={{ flex: 1, justifyContent: "flex-end", alignItems: "center", paddingVertical: 20, backgroundColor: Colors.white }}>
+          <Image
+            source={require("@/assets/images/bse.png")}
+            style={{ width: "60%", height: undefined, aspectRatio: 3 / 1, resizeMode: "contain" }}
+          />
         </View>
       </ParallaxScroll>
     </ScrollView>

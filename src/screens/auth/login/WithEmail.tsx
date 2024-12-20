@@ -63,7 +63,8 @@ export default memo(function WithEmail() {
           render={({ field: { onChange, value } }) => (
             <TextField
             style={{ fontFamily: "Poppins-Regular" }}
-              placeholder={"Email"}
+              placeholderTextColor={Colors.grey40}
+              placeholder={"Masukan Email"}
               enableErrors
               fieldStyle={{
                 paddingVertical: 8,
@@ -81,7 +82,7 @@ export default memo(function WithEmail() {
           )}
         />
         {errors.identifier && (
-          <Text color={Colors.red30} body>
+          <Text color={Colors.red30} className="font-poppins-medium text-xs" body>
             {errors.identifier.message}
           </Text>
         )}
@@ -97,7 +98,8 @@ export default memo(function WithEmail() {
             <View> 
               <TextField
                 style={{ fontFamily: "Poppins-Regular" }}
-                placeholder={"Password"}
+                placeholderTextColor={Colors.grey40}
+                placeholder={"Masukan Password"}
                 secureTextEntry={!isPasswordVisible}
                 enableErrors
                 fieldStyle={{
@@ -132,7 +134,7 @@ export default memo(function WithEmail() {
           )}
         />
         {errors.password && (
-          <Text color={Colors.red30} body>
+          <Text color={Colors.red30} className="font-poppins-medium text-xs" body>
             {errors.password.message}
           </Text>
         )}
