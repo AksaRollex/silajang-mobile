@@ -291,10 +291,10 @@ export default function Pembayaran() {
                 ))
               ) : (
                 <View style={styles.noActivityContainer}>
-                  <Image
+                  {/* <Image
                     source={require("@/assets/images/pulu.png")}
                     className="w-60 h-60 opacity-60"
-                  />
+                  /> */}
                   <Text className="text-gray-500 font-poppins-regular ">
                     Tidak ada aktivitas terakhir
                   </Text>
@@ -317,6 +317,7 @@ const styles = StyleSheet.create({
     padding: 16,
   },
   noActivityContainer: {
+    minHeight : 150, 
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 20,

@@ -98,9 +98,14 @@ const Dashboard = () => {
               flexDirection: "row",
               alignItems: "center",
               borderRadius: 4,
-              backgroundColor: "#ececec",
+              backgroundColor: "white",
+              shadowColor: "#000", // Warna bayangan
+              shadowOffset: { width: 0, height: 2 }, // Posisi bayangan
+              shadowOpacity: 0.25, // Opasitas bayangan
+              shadowRadius: 3.84, // Radius bayangan
+              elevation: 5, // Untuk Android
             }}
-            className="px-2 py-3">
+            className="px-4 mt-2 py-3">
             <IonIcons name="calendar" size={24} color="black" />
             <Text className="text-black font-poppins-regular mx-2">
               {tahun}
@@ -231,7 +236,7 @@ const Dashboard = () => {
         </ImageBackground>
         <View className="mt-5">
           {user.has_tagihan && (
-            <View style={styles.warningContainer} >
+            <View style={styles.warningContainer}>
               <View style={styles.warningContent}>
                 <FontAwesome6Icon
                   name="triangle-exclamation"
@@ -255,7 +260,7 @@ const Dashboard = () => {
           contentContainerStyle={styles.scrollViewContainer}
           className="mt-10"
           showsVerticalScrollIndicator={false}>
-          <View style={styles.dashboardContainer}>
+          <View style={styles.dashboardContainer} className="mb-8">
             {dashboard ? (
               <>
                 <DashboardCard
@@ -449,8 +454,8 @@ const styles = StyleSheet.create({
   },
   cardAccent: {
     position: "absolute",
-    top: -100,
-    right: -115,
+    top: -130,
+    right: -150,
     width: 220,
     height: 220,
     borderRadius: 200,
@@ -486,6 +491,8 @@ const styles = StyleSheet.create({
     alignItems: "flex-end",
   },
   cardNumber: {
+    bottom: 20,
+    left: 10,
     fontSize: 33,
     fontFamily: "Poppins-SemiBold",
   },
