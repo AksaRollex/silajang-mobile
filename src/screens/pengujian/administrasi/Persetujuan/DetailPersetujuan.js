@@ -85,7 +85,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     selectedParameter: null,
   });
 
-
   const handleParameter = (parameter, uuid) => {
     setModalState({
       visible: true,
@@ -165,7 +164,6 @@ export default function DetailPersetujuan({ route, navigation }) {
     value: item.id,
     title: item.nama,
   }));
-
 
   useEffect(() => {
     const fetchPengambilSample = async () => {
@@ -1355,6 +1353,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     marginHorizontal: 5, // Reduce this for closer spacing
+    color: Colors.black,
   },
 
   normalRow: {

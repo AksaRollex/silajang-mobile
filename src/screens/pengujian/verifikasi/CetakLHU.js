@@ -885,9 +885,9 @@ const HasilUjis = ({ navigation, route }) => {
             </View>
 
             {!pdfLoaded && !pdfError && (
-              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-                <ActivityIndicator size="large" color="#0000ff" />
-                <Text className="mt-2">Memuat PDF...</Text>
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor : "#ececec"  }}>
+                <ActivityIndicator size="large" color="#312e81" style={{ top:180 }} />
+                <Text className="mt-2 text-black font-poppins-medium" style={{ top:175 }}>Memuat PDF...</Text>
               </View>
             )}
 
@@ -897,34 +897,34 @@ const HasilUjis = ({ navigation, route }) => {
                 source={{ uri: reportUrl, cache: true }}
                 style={{
                   flex: 1,
-                  display: pdfLoaded ? 'flex' : 'none'
                 }}
                 trustAllCerts={false}
                 onLoadComplete={(numberOfPages) => {
-                  console.log(`Number Of Page: ${numberOfPages}`);
                   setPdfLoaded(true);
+                  console.log(`Number Of Page: ${numberOfPages}`);
                 }}
                 onPageChanged={(page, numberOfPages) => {
                   console.log(`Current page ${page}`);
                 }}
                 onError={(error) => {
-                  console.log('PDF loading error:', error);
                   setPdfError(true);
                   setPdfLoaded(false);
+                  console.log('PDF loading error:', error);
                 }}
-              />
-            )}
+                />
+              )}
+
 
             {pdfError && (
-              <View className="flex-1 justify-center items-center p-4">
-                <Text className="text-lg text-red-500 mb-4">PDF Tidak Ditemukan</Text>
+              <View className="flex-1 justify-center items-center self-center p-4">
+                <Text className="text-md text-black font-poppins-medium">PDF Tidak Ditemukan</Text>
                 <TouchableOpacity
                   onPress={() => {
                     setModalVisible(false);
                     setPdfError(false);
                   }}
-                  className="bg-[#dc3546] p-2 rounded">
-                  <Text className="text-white font-poppins-semibold">Tutup</Text>
+                  className="bg-red-100 py-2 px-5 rounded mt-1 self-center">
+                  <Text className="text-red-500 font-poppins-medium">Tutup</Text>
                 </TouchableOpacity>
               </View>
             )}
