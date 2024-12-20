@@ -656,7 +656,7 @@ const UmpanBalik = ({ navigation }) => {
       onPress={() => setDownloadModalVisible(true)}
       style={{
         position: 'absolute',
-        bottom: 1,
+        bottom: 25,
         right: 20,
         backgroundColor: '#177a44',
         borderRadius: 50,
@@ -733,7 +733,7 @@ const UmpanBalik = ({ navigation }) => {
               editable={false}
             />
             <TextInput
-              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular text-black"
+              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular"
               value={formData.keterangan}
               onChangeText={(text) => setFormData((prev) => ({ ...prev, keterangan: text }))}
               multiline
@@ -836,7 +836,7 @@ const UmpanBalik = ({ navigation }) => {
             )}
           </View>
         </View>
-        <View className="mt-6 mb-8">
+        <View className="mt-12 mb-8">
           <TextFooter />
         </View>
       </ScrollView>
