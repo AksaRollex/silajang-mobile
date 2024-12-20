@@ -182,7 +182,7 @@ const Users = ({ navigation, route }) => {
           <IonIcon name="person" size={18} color={'white'} style={{ padding: 5 }} />
         </View>
       </View>
-      <View className="flex-row justify-center mt-4">
+      <View className="flex-row justify-center mt-4 mb-4">
         <HorizontalFilterMenu
           items={OptionsMenu}
           selected={selectedMenu}

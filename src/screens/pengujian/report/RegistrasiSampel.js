@@ -317,8 +317,8 @@ const RegistrasiSampel = ({ navigation }) => {
         disabled={isDownloading}
         style={{
           position: 'absolute',
-          bottom: 75,
-          right: 20,
+          bottom: 25,
+          right: 15,
           backgroundColor: '#177a44',
           borderRadius: 50,
           width: 55,

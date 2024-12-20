@@ -186,7 +186,7 @@ const HasilUjis = ({ route, navigation }) => {
                       }));
                       handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
                     }}>
-                    <Text style={styles.radioText}>Memenuhi Persyaratan</Text>
+                    <Text style={styles.radioText} className="text-black">Memenuhi Persyaratan</Text>
                   </TouchableOpacity>
                   <TouchableOpacity
                     style={[
@@ -201,7 +201,7 @@ const HasilUjis = ({ route, navigation }) => {
                       }));
                       handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
                     }}>
-                    <Text style={styles.radioText}>
+                    <Text style={styles.radioText} className="text-black">
                       Tidak Memenuhi Persyaratan
                     </Text>
                   </TouchableOpacity>

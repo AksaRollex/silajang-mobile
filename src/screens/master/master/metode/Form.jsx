@@ -100,7 +100,7 @@ export default memo(function Form({ route, navigation }) {
           />
           <Text className="text-lg font-poppins-semibold ml-3">
             {data ? "Edit Metode" : "Tambah Metode"}
-          </Text>
+          </Text> 
       </View>
       <View className="bg-white rounded-md m-3">
         <View className="p-5">
