@@ -100,48 +100,45 @@ const Global = ({ navigation }) => {
     try {
       const response = await axios.get(`pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`, {
         headers: {
-          Authorization: `Bearer ${authToken}`, // Menambahkan Authorization header
+          Authorization: `Bearer ${authToken}`,
         },
-        responseType: 'arraybuffer', // Konfigurasi respons biner
+        responseType: 'arraybuffer',
       });
-
-      const contentDisposition = response.headers['content-disposition'];
-      let fileName = `Laporan Pembayaran Global ${selectedYear} - ${selectedStatus}.xlsx`; // Nama default jika tidak ada header
-
-      if (contentDisposition && contentDisposition.includes('filename=')) {
-        const matches = contentDisposition.match(/filename="(.+?)"/);
-        if (matches && matches[1]) {
-          fileName = matches[1];
-        }
-      }
-
-      // Tentukan path untuk menyimpan file
-      const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
-      // Konversi buffer ke string ASCII untuk menyimpan file
+  
+      // Generate a unique filename based on status and year
+      const statusText = selectedStatus === "-" ? "Semua" : selectedStatus;
+      const timestamp = new Date().getTime(); // Add timestamp to make filename unique
+      const fileName = `Laporan_Pembayaran_Global_${selectedYear}_${statusText}_${timestamp}.xlsx`;
+  
+      // Determine path based on platform
+      const path = Platform.OS === "ios" 
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}` 
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+  
+      // Convert buffer to ASCII string
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
-
-      // Menyimpan file ke perangkat lokal
+  
+      // Save file
       await RNFS.writeFile(path, fileContent, 'ascii');
-
+  
       console.log('File berhasil diunduh dan disimpan di:', path);
-
+  
       Toast.show({
         type: 'success',
         text1: 'Berhasil!',
-        text2: 'Laporan berhasil diunduh',
-      })
+        text2: `Laporan ${statusText} berhasil diunduh`,
+      });
     } catch (error) {
       console.error('Error saat mengunduh file:', error);
-
+  
       Toast.show({
         type: 'error',
         text1: 'Gagal!',
         text2: 'Tidak dapat mengunduh laporan',
-      })
+      });
     }
-  }
+  };
 
   const getStatusStyle = status => {
     switch (status) {
@@ -364,7 +361,10 @@ const Global = ({ navigation }) => {
 
             <View className="flex-row w-full justify-between">
               <TouchableOpacity
-                onPress={downloadReport}
+               onPress={() => {
+                downloadReport();
+                setModalVisible(false);
+              }}
                 className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
               >
                 <Text className="text-white font-poppins-medium">Ya, Download</Text>
