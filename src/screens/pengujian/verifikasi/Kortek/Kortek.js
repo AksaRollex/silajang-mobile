@@ -4,7 +4,7 @@ import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, ScrollView } from "react-native";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Ionicons from "react-native-vector-icons/Ionicons";
@@ -20,6 +20,7 @@ import Toast from "react-native-toast-message";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "@/src/screens/main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -43,12 +44,12 @@ const Kortek = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState("");
   const isConfirmed = Kortek === 9; // Telah Diambil
   const { setHeader } = useHeaderStore();
-      
-    React.useLayoutEffect(() => {
-      setHeader(false)
-  
-      return () => setHeader(true)
-    }, [])
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
   const { delete: showConfirmationModal, DeleteConfirmationModal } = useDelete({
     onSuccess: () => {
@@ -188,8 +189,8 @@ const Kortek = ({ navigation }) => {
           type: "success",
           text1: "Success",
           text2: `PDF Berhasil Diunduh. ${Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Saved as ${fileName} in your Downloads folder.`
+            ? "You can find it in the Files app."
+            : `Saved as ${fileName} in your Downloads folder.`
             }`,
         });
       } else {
@@ -293,83 +294,88 @@ const Kortek = ({ navigation }) => {
   };
   return (
     <View className="bg-[#ececec] w-full h-full">
-         <View
-           className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-           style={{ backgroundColor: '#fff' }}
-         >
-           <View className="flex-row items-center">
-             <Ionicons
-               name="arrow-back-outline"
-               onPress={() => navigation.goBack()}
-               size={25}
-               color="#312e81"
-             />
-             <Text className="text-[20px] font-poppins-medium text-black ml-4">Koordinator Teknis</Text>
-           </View>
-           <View className="bg-red-600 rounded-full">
-             <Ionicons
-               name="settings"
-               size={18}
-               color={'white'}
-               style={{ padding: 5 }}
-             />
-           </View>
-         </View>
-    
-        <View className="p-4">
-            <View className="flex-row justify-center">
-              <View style={{ flex: 1, marginVertical: 8 }}>
-                <HorizontalFilterMenu
-                  items={kortekOptions}
-                  selected={selectedKortek}
-                  onPress={(item) => setSelectedKortek(item.id)}
-                />
-              </View>
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Koordinator Teknis</Text>
+        </View>
+        <View className="bg-red-600 rounded-full">
+          <Ionicons
+            name="settings"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
 
-              <MenuView
-                title="filterOptions"
-                actions={filterOptions.map(option => ({
-                  id: option.id.toString(),
-                  title: option.title,
-                }))}
-                onPressAction={({ nativeEvent }) => {
-                  const selectedOption = filterOptions.find(
-                    option => option.title === nativeEvent.event,
-                  );
-                  if (selectedOption) {
-                    setSelectedYear(selectedOption.title);
-                    // console.log(selectedOption.title)
-                  }
-                }}
-                shouldOpenOnLongPress={false}>
-                <View style={{ marginEnd: 5 }}>
-                  <MaterialCommunityIcons
-                    name="filter-menu-outline"
-                    size={24}
-                    color="white"
-                    style={{
-                      backgroundColor: "#312e81",
-                      padding: 12,
-                      borderRadius: 8,
-                    }}
-                  />
-                </View>
-              </MenuView>
-            </View>
+      <View className="p-4">
+        <View className="flex-row justify-center">
+          <View style={{ flex: 1, marginVertical: 8 }}>
+            <HorizontalFilterMenu
+              items={kortekOptions}
+              selected={selectedKortek}
+              onPress={(item) => setSelectedKortek(item.id)}
+            />
           </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/verifikasi/koordinator-teknis"
-        payload={{
-          status: selectedKortek,
-          tahun: selectedYear,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="bottom-2"
-      />
+          <MenuView
+            title="filterOptions"
+            actions={filterOptions.map(option => ({
+              id: option.id.toString(),
+              title: option.title,
+            }))}
+            onPressAction={({ nativeEvent }) => {
+              const selectedOption = filterOptions.find(
+                option => option.title === nativeEvent.event,
+              );
+              if (selectedOption) {
+                setSelectedYear(selectedOption.title);
+                // console.log(selectedOption.title)
+              }
+            }}
+            shouldOpenOnLongPress={false}>
+            <View style={{ marginEnd: 5 }}>
+              <MaterialCommunityIcons
+                name="filter-menu-outline"
+                size={24}
+                color="white"
+                style={{
+                  backgroundColor: "#312e81",
+                  padding: 12,
+                  borderRadius: 8,
+                }}
+              />
+            </View>
+          </MenuView>
+        </View>
+      </View>
+
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/verifikasi/koordinator-teknis"
+          payload={{
+            status: selectedKortek,
+            tahun: selectedYear,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="bottom-2"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <DeleteConfirmationModal />
       <Modal

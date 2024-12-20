@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform } from "react-native";
+import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform, ScrollView } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -9,10 +9,12 @@ import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Ionicons from "react-native-vector-icons/Ionicons"
 import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
-import {APP_URL} from "@env";
+import { APP_URL } from "@env";
 import RNFetchBlob from 'rn-fetch-blob';
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "../../main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
+
 
 const RegistrasiSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
@@ -24,14 +26,14 @@ const RegistrasiSampel = ({ navigation }) => {
 
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const [selectedMonth, setSelectedMonth] = useState(currentMonth.toString());
-   const { setHeader } = useHeaderStore();
-      
-    React.useLayoutEffect(() => {
-      setHeader(false)
-  
-      return () => setHeader(true)
-    }, [])
-  
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
+
 
   const generateYears = () => {
     let years = [];
@@ -99,15 +101,15 @@ const RegistrasiSampel = ({ navigation }) => {
           throw new Error('Storage permission denied');
         }
       }
-  
+
       // Convert params to query string
       const queryString = Object.keys(params)
         .map(key => `${key}=${params[key]}`)
         .join('&');
-  
+
       // Get the full URL
       const fullUrl = `${APP_URL}${url}?${queryString}`;
-  
+
       // Configure headers
       const headers = {
         'Content-Type': 'application/json',
@@ -115,16 +117,16 @@ const RegistrasiSampel = ({ navigation }) => {
         // Add your authorization header if needed
         // 'Authorization': `Bearer ${your_token_here}`
       };
-  
+
       // Generate filename with timestamp
       const timestamp = new Date().getTime();
       const filename = `report_${timestamp}.xlsx`;
-  
+
       // Configure download path
       const { dirs } = RNFetchBlob.fs;
       const dirToSave = Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
       const filePath = `${dirToSave}/${filename}`;
-  
+
       // Download file
       const response = await RNFetchBlob.config({
         fileCache: true,
@@ -137,12 +139,12 @@ const RegistrasiSampel = ({ navigation }) => {
         },
         path: filePath
       }).fetch('GET', fullUrl, headers);
-  
+
       if (Platform.OS === 'ios') {
         // For iOS, we need to share the file
         RNFetchBlob.ios.openDocument(response.path());
       }
-  
+
       return response.path();
     } catch (error) {
       console.error('Download error:', error);
@@ -157,19 +159,19 @@ const RegistrasiSampel = ({ navigation }) => {
       <View className="flex-row items-center">
         <View className="" style={{ width: "90%" }}>
           <View className="flex-col space-y-2">
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Masuk</Text>
-                <Text className="text-md font-poppins-semibold text-black">
-                  {item.tanggal_diterima || '-'}
-                </Text>
-              </View>
+            <View>
+              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Masuk</Text>
+              <Text className="text-md font-poppins-semibold text-black">
+                {item.tanggal_diterima || '-'}
+              </Text>
+            </View>
 
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
-                <Text className="text-md font-poppins-semibold text-black">
-                  {item.tanggal_selesai || '-'}
-                </Text>
-              </View>
+            <View>
+              <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+              <Text className="text-md font-poppins-semibold text-black">
+                {item.tanggal_selesai || '-'}
+              </Text>
+            </View>
 
             <View>
               <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
@@ -210,31 +212,31 @@ const RegistrasiSampel = ({ navigation }) => {
   );
 
   return (
-     <View className="bg-[#ececec] w-full h-full">
-          <View
-            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-            style={{ backgroundColor: '#fff' }}
-          >
-            <View className="flex-row items-center">
-              <Ionicons
-                name="arrow-back-outline"
-                onPress={() => navigation.goBack()}
-                size={25}
-                color="#312e81"
-              />
-              <Text className="text-[20px] font-poppins-medium text-black ml-4">Registrasi Sampel</Text>
-            </View>
-            <View className="bg-teal-600 rounded-full">
-              <Ionicons
-                name="list"
-                size={18}
-                color={'white'}
-                style={{ padding: 5 }}
-              />
-            </View>
-          </View>
+    <View className="bg-[#ececec] w-full h-full">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">Registrasi Sampel</Text>
+        </View>
+        <View className="bg-teal-600 rounded-full">
+          <Ionicons
+            name="list"
+            size={18}
+            color={'white'}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
 
-        <View className= "p-4">
+      <View className="p-4">
         <View className="flex-row justify-center">
           <MenuView
             title="Pilih Tahun"
@@ -292,18 +294,23 @@ const RegistrasiSampel = ({ navigation }) => {
         </View>
       </View>
 
-      <Paginate
-        ref={paginateRef}
-        url="/report/registrasi-sampel"
-        payload={{
-          tahun: selectedYear,
-          bulan: selectedMonth,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={CardRegistrasiSampel}
-        className="bottom-2"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/report/registrasi-sampel"
+          payload={{
+            tahun: selectedYear,
+            bulan: selectedMonth,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={CardRegistrasiSampel}
+          className="bottom-2"
+        />
+        <View className="mt-12 mb-8">
+          <TextFooter />
+        </View>
+      </ScrollView>
 
       <TouchableOpacity
         onPress={handleDownloadExcel}
@@ -328,7 +335,7 @@ const RegistrasiSampel = ({ navigation }) => {
         {isDownloading ? (
           <ActivityIndicator size="small" color="white" />
         ) : (
-          <FontAwesome5 name="file-excel" size={20} color="white" /> 
+          <FontAwesome5 name="file-excel" size={20} color="white" />
         )}
       </TouchableOpacity>
     </View>

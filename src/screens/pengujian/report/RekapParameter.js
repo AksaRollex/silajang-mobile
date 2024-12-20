@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef, useMemo } from "react";
-import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity, ScrollView } from "react-native";
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import { MenuView } from "@react-native-menu/menu";
@@ -24,6 +24,7 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "../../main/Index";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const RekapParameter = ({ navigation }) => {
     const queryClient = useQueryClient();
@@ -39,14 +40,14 @@ const RekapParameter = ({ navigation }) => {
     const [shouldRefresh, setShouldRefresh] = useState(false);
     const [modalVisible, setModalVisible] = useState(false);
     const [reportUrl, setReportUrl] = useState('');
-     const { setHeader } = useHeaderStore();
-        
-      React.useLayoutEffect(() => {
+    const { setHeader } = useHeaderStore();
+
+    React.useLayoutEffect(() => {
         setHeader(false)
-    
+
         return () => setHeader(true)
-      }, [])
-    
+    }, [])
+
 
     // Memoize the payload to prevent unnecessary re-renders
     const paginatePayload = useMemo(() => ({
@@ -338,30 +339,30 @@ const RekapParameter = ({ navigation }) => {
 
     return (
         <View className="bg-[#ececec] w-full h-full">
-             <View
-               className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-               style={{ backgroundColor: '#fff' }}
-             >
-               <View className="flex-row items-center">
-                 <Ionicons
-                   name="arrow-back-outline"
-                   onPress={() => navigation.goBack()}
-                   size={25}
-                   color="#312e81"
-                 />
-                 <Text className="text-[20px] font-poppins-medium text-black ml-4">Rekap Parameter</Text>
-               </View>
-               <View className="bg-emerald-500 rounded-full">
-                 <Ionicons
-                   name="filter"
-                   size={18}
-                   color={'white'}
-                   style={{ padding: 5 }}
-                 />
-               </View>
-             </View>
+            <View
+                className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+                style={{ backgroundColor: '#fff' }}
+            >
+                <View className="flex-row items-center">
+                    <Ionicons
+                        name="arrow-back-outline"
+                        onPress={() => navigation.goBack()}
+                        size={25}
+                        color="#312e81"
+                    />
+                    <Text className="text-[20px] font-poppins-medium text-black ml-4">Rekap Parameter</Text>
+                </View>
+                <View className="bg-emerald-500 rounded-full">
+                    <Ionicons
+                        name="filter"
+                        size={18}
+                        color={'white'}
+                        style={{ padding: 5 }}
+                    />
+                </View>
+            </View>
 
-            
+
             <TouchableOpacity
                 onPress={() => handleDateSelection('start')}
                 className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg border border-gray-300 ">
@@ -378,13 +379,18 @@ const RekapParameter = ({ navigation }) => {
                 date={new Date(dateType === 'start' ? dateRange.start : dateRange.end)}
             />
 
-            <Paginate
-                ref={paginateRef}
-                url="/report/parameter"
-                payload={paginatePayload}
-                renderItem={CardRekapParameter}
-                className="bottom-2"
-            />
+            <ScrollView>
+                <Paginate
+                    ref={paginateRef}
+                    url="/report/parameter"
+                    payload={paginatePayload}
+                    renderItem={CardRekapParameter}
+                    className="bottom-2"
+                />
+                <View className="mt-12 mb-8">
+                    <TextFooter />
+                </View>
+            </ScrollView>
 
             <TouchableOpacity
                 onPress={handlePreviewPDF}
