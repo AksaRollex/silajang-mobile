@@ -550,8 +550,9 @@ const PenerimaSampel = ({ navigation }) => {
                 multiline
                 numberOfLines={4}
                 value={revisionNote}
+                
                 onChangeText={setRevisionNote}
-                className="border border-gray-300 rounded-lg p-3 text-sm font-poppins-regular"
+                className="border border-gray-300 rounded-lg p-3 text-sm font-poppins-regular text-black"
                 placeholder="Masukkan keterangan revisi..."
                 textAlignVertical="top"
               />

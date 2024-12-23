@@ -32,7 +32,7 @@ const generateYears = () => {
 };
 
 const pengambilOptions = [
-  { id: 0, name: "Menunggu Konfirmasi" },
+  { id: 0, name: "Menunggu Konfirmasi" }, 
   { id: 1, name: "Telah Diambil" },
 ];
 

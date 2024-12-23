@@ -499,7 +499,7 @@ export default function Detail({ route, navigation }) {
                           autosaveSouth(data);
                         }}
                         editable={true}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                       />
                     )}
                   />
@@ -523,7 +523,7 @@ export default function Detail({ route, navigation }) {
                           autosaveEast(data);
                         }}
                         editable={true}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                       />
                     )}
                   />
@@ -556,7 +556,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveSuhuAir(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -578,7 +578,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosavePh(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -600,7 +600,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveDhl(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -622,7 +622,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveSalinitas(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -644,7 +644,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveDo(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -666,7 +666,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveKekeruhan(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -688,7 +688,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveKlorin(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -713,7 +713,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveSuhuUdara(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -735,7 +735,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveCuaca(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -757,7 +757,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveArahAngin(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -779,7 +779,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveKelembapan(data);
                         }}
-                        className="h-10 bg-slate-50  font-poppins-semibold"
+                        className="h-10 bg-slate-50  font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -801,7 +801,7 @@ export default function Detail({ route, navigation }) {
                           onChange(text);
                           autosaveKecepatanAngin(data);
                         }}
-                        className="h-10 bg-slate-50 font-poppins-semibold"
+                        className="h-10 bg-slate-50 font-poppins-semibold text-black"
                         enableErrors
                       />
                     )}
@@ -850,7 +850,7 @@ export default function Detail({ route, navigation }) {
 
               <View className="w-full mt-5" >
                 <TouchableOpacity onPress={handleSubmitData}>
-                  <Text className="bg-blue-500 text-center text-white text-base font-poppins-semibold py-3" style={{ borderRadius: 8 }}>Simpan & Upload</Text>
+                  <Text className="bg-indigo-900 text-center text-white text-base font-poppins-semibold py-3" style={{ borderRadius: 8 }}>Simpan & Upload</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity onPress={status == 0 ? handleKonfirmasi : handleBatalkanKonfirmasi}>
@@ -858,7 +858,7 @@ export default function Detail({ route, navigation }) {
                     className={`text-center text-white text-base font-poppins-semibold py-3 mt-1 ${status == 0 ? 'bg-indigo-600' : 'bg-red-600'}`}
                     style={{ borderRadius: 8 }}
                   >
-                    {status == 0 ? 'KONFIRMASI' : 'BATALKAN KONFIRMASI'} {""}
+                    {status == 0 ? 'Konfirmasi' : 'Batalkan'} {""}
 
                   </Text>
                 </TouchableOpacity>

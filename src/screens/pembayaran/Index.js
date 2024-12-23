@@ -10,6 +10,7 @@ import NonPengujian from './NonPengujian'
 import DetailNonPengujian from './DetailNonPengujian'
 import FormNonPengujian from './Form'
 import Global from './Global'
+import DetailMulti from './DetailMulti'
 
 const Stack = createNativeStackNavigator();
 
@@ -26,6 +27,7 @@ export default function PembayaranStackScreen() {
             <Stack.Screen name="FormNonPengujian" component={FormNonPengujian} />
             <Stack.Screen name="FormMulti" component={FormMulti} />
             <Stack.Screen name="Global" component={Global} />
+            <Stack.Screen name="DetailMulti" component={DetailMulti} />
         </Stack.Navigator>
     )
 }

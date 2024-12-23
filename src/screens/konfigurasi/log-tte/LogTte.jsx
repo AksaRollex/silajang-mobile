@@ -57,39 +57,52 @@ const LogTte = ({ navigation }) => {
           };
       }
     };
-
+  
     // Get status styling
     const statusStyles = getStatusStyle(item.status);
-
+  
     return (
       <View
         className="my-2 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
-        <View className="flex-row justify-between items-center">
-          <View className="flex-col">
-
-            <Text className="text-xs font-poppins-regular text-gray-500">Kode Sampel</Text>
-            <Text className="text-md font-poppins-bold text-black mb-3">{item.titik_permohonan?.kode}</Text>
-
-            <Text className="text-xs font-poppins-regular text-gray-500">NIK</Text>
-            <Text className="text-md font-poppins-semibold text-black mb-3">{item.nik}</Text>
-
-            <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
-            <View className={`${statusStyles.bgColor} rounded-md px-2 py-1 max-w-[60px] mb-3`}>
-              <Text className={`text-[10px] ${statusStyles.textColor} font-poppins-semibold text-center`}>
-                {item.status}
-              </Text>
+        <View>
+          <View className="flex-row justify-between mb-3">
+            <View className="flex-1">
+              <Text className="text-xs font-poppins-regular text-gray-500">Kode Sampel</Text>
+              <Text className="text-md font-poppins-bold text-black">{item.titik_permohonan?.kode}</Text>
             </View>
-
-            <Text className="text-xs font-poppins-regular text-gray-500">Message</Text>
-            <Text className="text-md font-poppins-medium text-black mb-3">{item.message}</Text>
-
+            <View className="flex-1">
+              <Text className="text-xs font-poppins-regular text-gray-500">NIK</Text>
+              <Text className="text-md font-poppins-semibold text-black">{item.nik}</Text>
+            </View>
+          </View>
+  
+          <View className="flex-row justify-between mb-3">
+            <View className="flex-1">
+              <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
+              <View className={`${statusStyles.bgColor} rounded-md px-2 py-1 max-w-[60px]`}>
+                <Text className={`text-[10px] ${statusStyles.textColor} font-poppins-semibold text-center`}>
+                  {item.status}
+                </Text>
+              </View>
+            </View>
+            <View className="flex-1">
+              <Text className="text-xs font-poppins-regular text-gray-500">Message</Text>
+              <Text className="text-md font-poppins-medium text-black">{item.message}</Text>
+            </View>
+          </View>
+  
+          <View className="mb-3">
             <Text className="text-xs font-poppins-regular text-gray-500">IP Address</Text>
-            <Text className="text-md font-poppins-medium text-black mb-3">{item.ip_address}</Text>
-
+            <Text className="text-base font-poppins-medium text-black">{item.ip_address}</Text>
+          </View>
+  
+          <View className="mb-3">
             <Text className="text-xs font-poppins-regular text-gray-500">User Agent</Text>
-            <Text className="text-md font-poppins-medium text-black mb-3">{item.user_agent}</Text>
-
+            <Text className="text-md font-poppins-medium text-black">{item.user_agent}</Text>
+          </View>
+  
+          <View>
             <Text className="text-xs font-poppins-regular text-gray-500">Waktu</Text>
             <Text className="text-md font-poppins-medium text-black">{item.tanggal_indo}</Text>
           </View>

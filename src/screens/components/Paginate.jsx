@@ -15,6 +15,7 @@ import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import Icon from "react-native-vector-icons/Feather";
+import Ionicons from "react-native-vector-icons/Ionicons";
 import { Skeleton } from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
@@ -92,17 +93,29 @@ const SearchForm = ({ control, onSubmit, isLoading, handleSearch }) => (
       name="search"
       defaultValue=""
       render={({ field: { onChange, value } }) => (
-        <TextInput
-          className="flex-1 text-base border text-black bg-white px-3 border-gray-300 rounded-md mr-3 font-poppins-regular"
-          value={value}
-          onChangeText={onChange}
-          placeholder="Cari..."
-          editable={!isLoading}
-          onSubmitEditing={() => {
-            // Panggil fungsi pencarian ketika Enter ditekan
-            handleSearch(value); // Pastikan handleSearch digunakan
-          }}
-        />
+        <View className="flex-1 relative">
+          <TextInput
+            className="flex-1 text-base border text-black bg-white px-3 pr-8 border-gray-300 rounded-md mr-3 font-poppins-regular"
+            value={value}
+            onChangeText={onChange}
+            placeholder="Cari..."
+            editable={!isLoading}
+            onSubmitEditing={() => {
+              handleSearch(value);
+            }}
+          />
+          {value.length > 0 && (
+            <TouchableOpacity
+              className="absolute right-5 top-0 bottom-0 justify-center"
+              onPress={() => {
+                onChange('');
+                handleSearch(''); 
+              }}
+            >
+              <Ionicons name="close-circle-outline" size={16} color="#666666" />
+            </TouchableOpacity>
+          )}
+        </View>
       )}
     />
     <TouchableOpacity
@@ -111,7 +124,7 @@ const SearchForm = ({ control, onSubmit, isLoading, handleSearch }) => (
       disabled={isLoading}
       style={{ opacity: isLoading ? 0.7 : 1 }}
     >
-      <Icon name="search" size={18} color="white" />
+      <Icon name="search" size={20} color="white" />
     </TouchableOpacity>
   </View>
 );

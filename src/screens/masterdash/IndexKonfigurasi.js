@@ -128,7 +128,7 @@ export default function IndexKonfigurasi() {
                     </View>
                   )}
                   right={props => (
-                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
                   )}
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("Denda")}
@@ -149,7 +149,7 @@ export default function IndexKonfigurasi() {
                     </View>
                   )}
                   right={props => (
-                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
                   )}
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("LogTte")}
@@ -162,7 +162,7 @@ export default function IndexKonfigurasi() {
               <View>
                 <List.Item
                   title={<Text className="font-poppins-medium text-[15px]">Tanda Tangan</Text>}
-                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
                     <View className="bg-orange-600 rounded-full">
                       <Ionicons name="create" size={17} color={'white'} style={{ padding: 5 }} />
@@ -178,7 +178,7 @@ export default function IndexKonfigurasi() {
               <View>
                 <List.Item
                   title={<Text className="font-poppins-medium text-[15px]">Umpan Balik</Text>}
-                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
                     <View className="bg-green-600 rounded-full">
                       <Ionicons name="chatbubble-ellipses" size={17} color={'white'} style={{ padding: 5 }} />
@@ -196,7 +196,7 @@ export default function IndexKonfigurasi() {
                 <List.Item
                   title={<Text className="font-poppins-medium text-[15px]">Tracking Pengujian</Text>}
                   style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                  right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
                     <View className="bg-purple-600 rounded-full">
                       <Ionicons name="analytics" size={17} color={'white'} style={{ padding: 5 }} />

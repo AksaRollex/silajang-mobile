@@ -1353,6 +1353,7 @@ const styles = StyleSheet.create({
   optionText: {
     fontSize: 16,
     marginHorizontal: 5, // Reduce this for closer spacing
+    color: Colors.black,
   },
 
   normalRow: {

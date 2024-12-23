@@ -146,7 +146,7 @@ export default function IndexMaster() {
                   </View>
                 )}
                 right={props => (
-                  <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                  <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
                 )}
                 className="px-5 bg-[#ffffff] ml-3 mr-3"
                 onPress={() => navigation.navigate("Metode")}
@@ -159,7 +159,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Peraturan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-emerald-500 rounded-full">
                     <Ionicons name="document-text" size={17} color={'white'} style={{padding: 5}}/>
@@ -175,7 +175,7 @@ export default function IndexMaster() {
             <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Parameter</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-purple-500 rounded-full">
                     <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
@@ -191,7 +191,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Paket</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-orange-500 rounded-full">
                     <Ionicons name="cube" size={17} color={'white'} style={{padding: 5}}/>
@@ -207,7 +207,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Pengawetan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-pink-500 rounded-full">
                     <Ionicons name="water" size={17} color={'white'} style={{padding: 5}}/>
@@ -224,7 +224,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Sampel</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-teal-500 rounded-full">
                     <Ionicons name="beaker" size={17} color={'white'} style={{padding: 5}}/>
@@ -241,7 +241,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jenis Wadah</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-indigo-500 rounded-full">
                     <Ionicons name="bag-handle" size={17} color={'white'} style={{padding: 5}}/>
@@ -258,7 +258,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Jasa Pengambilan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-rose-500 rounded-full">
                     <Ionicons name="car" size={17} color={'white'} style={{padding: 5}}/>
@@ -275,7 +275,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Radius Pengambilan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-cyan-600 rounded-full">
                     <Ionicons name="location" size={17} color={'white'} style={{padding: 5}}/>
@@ -292,7 +292,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Libur Cuti</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-violet-500 rounded-full">
                     <Ionicons name="calendar" size={17} color={'white'} style={{padding: 5}}/>
@@ -310,7 +310,7 @@ export default function IndexMaster() {
               <List.Item
                 style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kode Retribusi</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-amber-500 rounded-full">
                     <Ionicons name="barcode" size={17} color={'white'} style={{padding: 5}}/>
@@ -337,7 +337,7 @@ export default function IndexMaster() {
               <List.Item
               style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Jabatan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-sky-500 rounded-full">
                     <Ionicons name="briefcase" size={17} color={'white'} style={{padding: 5}}/>
@@ -354,7 +354,7 @@ export default function IndexMaster() {
               <List.Item
                 style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">User</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-blue-600 rounded-full">
                     <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
@@ -381,7 +381,7 @@ export default function IndexMaster() {
               <List.Item
               style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kota dan kabupaten</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-red-500 rounded-full">
                     <Ionicons name="business" size={17} color={'white'} style={{padding: 5}}/>
@@ -397,7 +397,7 @@ export default function IndexMaster() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Kecamatan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-lime-400 rounded-full">
                     <Ionicons name="map" size={17} color={'white'} style={{padding: 5}}/>
@@ -415,7 +415,7 @@ export default function IndexMaster() {
               <List.Item
                 style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Kelurahan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                    <View className="bg-yellow-400 rounded-full">
                     <Ionicons name="home" size={17} color={'white'} style={{padding: 5}}/>
