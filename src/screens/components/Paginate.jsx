@@ -311,7 +311,7 @@ const Paginate = forwardRef((props, ref) => {
         isFetchingMore={isFetchingMore}
       />
       <View className="mt-2 ">
-        <Text className="text-gray-600 text-center">
+        <Text className="text-gray-600 text-center font-poppins-regular">
           Menampilkan {data?.from} sampai {data?.to} dari {data?.total} hasil
         </Text>
       </View>

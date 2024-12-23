@@ -734,7 +734,7 @@ const UmpanBalik = ({ navigation }) => {
               editable={false}
             />
             <TextInput
-              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular"
+              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular text-black"
               value={formData.keterangan}
               onChangeText={(text) => setFormData((prev) => ({ ...prev, keterangan: text }))}
               multiline
