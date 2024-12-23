@@ -110,7 +110,7 @@ const MultiPayment = ({ navigation }) => {
         backgroundColor: "white",
         padding: 12,
         borderRadius: 8,
-        width: 185,
+        width: 180,
         borderColor: "#d1d5db",
         borderWidth: 1
       }, style]}>
@@ -160,7 +160,6 @@ const MultiPayment = ({ navigation }) => {
 
     return (
       <View
-        onPress={() => navigation.navigate('MultiPaymentDetail', { uuid: item.uuid })}
         className="my-2 bg-white rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
         <View className="flex-row justify-between">
