@@ -77,6 +77,26 @@ const TitikUji = ({ navigation, route, callback }) => {
       return "Menunggu";
     }
   }
+
+  const getBackgroundStyle = kesimpulan_sampel => {
+    if (kesimpulan_sampel === 1) {
+      return "bg-green-50";
+    } else if (kesimpulan_sampel === 2) {
+      return "bg-red-50";
+    } else {
+      return "bg-blue-50";
+    }
+  };
+  const getPermohonanText = kesimpulan_permohonan => {
+    if (kesimpulan_permohonan === 1) {
+      return "bg-green-50";
+    } else if (kesimpulan_permohonan === 2) {
+      return "bg-red-50";
+    } else {
+      return "bg-blue-50";
+    }
+  };
+
   const CardTitikUji = ({ item }) => {
     console.log(item, "item");
     const permohonanPengujian = item?.status >= 2;
@@ -139,62 +159,76 @@ const TitikUji = ({ navigation, route, callback }) => {
           onPress={() => navigation.navigate("Parameter", { uuid: item.uuid })}>
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              {/* <Text className="font-bold text-slate-600 text-xs uppercase font-poppins-semibold">
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase ">
+                Kode
+              </Text>
+              <Text className="text-black font-poppins-semibold ">
+                {item.kode}
+              </Text>
+              <Text className=" text-slate-600 text-xs uppercase font-poppins-regular mt-3 ">
                 Lokasi
               </Text>
-              <Text className="text-black font-poppins-regular text-base">
+              <Text className="text-black font-poppins-semibold ">
                 {item.lokasi}
-              </Text> */}
+              </Text>
 
-              <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
-                status PENGAMBILAN
-              </Text>
-              <Text
-                className={`${
-                  item.kesimpulan_permohonan == 1
-                    ? "text-green-600 text-xs"
-                    : item.kesimpulan_permohonan == 2
-                    ? "text-red-600  text-xs"
-                    : "text-yellow-600 text-xs"
-                } font-poppins-semibold`}>
-                {getKesimpulanText(item.kesimpulan_permohonan)}
-              </Text>
+              <View className="flex-col">
+                <Text className="font-poppins-regular text-slate-600 text-xs uppercase mt-3">
+                  Status pengambilan
+                </Text>
+              </View>
+              <View className="flex-shrink-0 items-start">
+                <View
+                  className={`${getPermohonanText(
+                    item.kesimpulan_permohonan,
+                  )} rounded-md px-2 py-1 max-w-[120px]`}>
+                  <Text
+                    className={`${
+                      item.kesimpulan_permohonan == 1
+                        ? "text-green-500 text-[10px]"
+                        : item.kesimpulan_permohonan == 2
+                        ? "text-red-500  text-[10px]"
+                        : "text-blue-500 text-[10px]"
+                    } font-poppins-semibold `}>
+                    {getKesimpulanText(item.kesimpulan_permohonan)}
+                  </Text>
+                </View>
+              </View>
               <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
-                status Penerimaan
+                Status Penerimaan
               </Text>
-              <Text
-                className={`${
-                  item.kesimpulan_sampel == 1
-                    ? "text-green-600 text-xs"
-                    : item.kesimpulan_sampel == 2
-                    ? "text-red-600 text-xs"
-                    : "text-yellow-600  text-xs"
-                } font-poppins-semibold `}>
-                {getPenerimaanText(item.kesimpulan_sampel)}
-              </Text>
+              <View className="flex-shrink-0 items-start">
+                <View
+                  className={`${getBackgroundStyle(
+                    item.kesimpulan_sampel,
+                  )} rounded-md px-2 py-1 max-w-[120px]`}>
+                  <Text
+                    className={`${
+                      item.kesimpulan_sampel === 1
+                        ? "text-green-500 text-[10px]"
+                        : item.kesimpulan_sampel === 2
+                        ? "text-red-500 text-[10px]"
+                        : "text-blue-500 text-[10px]"
+                    } font-poppins-semibold`}>
+                    {getPenerimaanText(item.kesimpulan_sampel)}
+                  </Text>
+                </View>
+              </View>
               <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
-                status Pengujian
+                Status Pengujian
               </Text>
-              <Text className="text-xs text-indigo-600 font-poppins-semibold ">
-                {item.text_status || "-"}
-              </Text>
+              <View className="bg-indigo-50 rounded-md px-2 py-1 max-w-[150px] ">
+                <Text className=" text-[10px] font-poppins-semibold text-indigo-600">
+                  {item.text_status || "-"}
+                </Text>
+              </View>
             </View>
+
+            <Text className="text-xs text-indigo-500 font-poppins-semibold "></Text>
           </View>
 
           <View style={styles.cardContents} className="flex flex-end mb-3">
-            {/* <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
-              Kode
-            </Text>
-            <Text className="text-black font-poppins-regular text-base">
-              {item.kode}
-            </Text> */}
-            {/* <Text className="text-slate-600 text-xs uppercase  font-poppins-regular">
-              Diambil
-            </Text>
-            <Text className="text-black font-poppins-semibold">
-              {item.tanggal_pengambilan || "-"}
-            </Text>
-            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-regular">
+            <Text className="text-slate-600 text-xs  uppercase font-poppins-regular">
               Diterima :
             </Text>
             <Text className="text-black font-poppins-semibold">
@@ -205,7 +239,13 @@ const TitikUji = ({ navigation, route, callback }) => {
             </Text>
             <Text className="text-black font-poppins-semibold">
               {item.tanggal_selesai_uji || "-"}
-            </Text> */}
+            </Text>
+            <Text className="text-slate-600 text-xs uppercase mt-3 font-poppins-regular">
+              Diambil
+            </Text>
+            <Text className="text-black font-poppins-semibold">
+              {item.tanggal_pengambilan || "-"}
+            </Text>
           </View>
         </TouchableOpacity>
 
@@ -705,8 +745,8 @@ const styles = StyleSheet.create({
     position: "absolute",
     top: 0,
     left: 0,
-    right: 0,
-    height: "100%", // Adjust this value to control how much of the card is covered
+    right: -20,
+    height: "120%", // Adjust this value to control how much of the card is covered
     backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
@@ -715,14 +755,14 @@ const styles = StyleSheet.create({
     zIndex: 1,
   },
   leftSection: {
-    width: "45%",
+    width: "70%",
     position: "relative",
   },
   cardContent: {
     padding: 12,
   },
   cardContents: {
-    width: "45%",
+    width: "30%",
     paddingTop: 12,
   },
   cardActions: { flexDirection: "row", alignItems: "flex-end" },

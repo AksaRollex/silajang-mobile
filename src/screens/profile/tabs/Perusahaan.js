@@ -11,6 +11,8 @@ import {
   ActivityIndicator,
   ScrollView,
   Modal,
+  Alert,
+  Linking,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
@@ -93,6 +95,61 @@ const Perusahaan = () => {
       console.warn(err);
     }
   };
+
+  const requestCameraPermission = async () => {
+    if (Platform.OS === "android") {
+      try {
+        // Cek status izin terlebih dahulu
+        const checkPermission = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+        );
+
+        if (checkPermission) {
+          return true;
+        }
+
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.CAMERA,
+          {
+            title: "Izin Kamera Diperlukan",
+            message:
+              "Aplikasi membutuhkan akses kamera untuk mengambil foto tanda tangan",
+            buttonNeutral: "Tanya Nanti",
+            buttonNegative: "Batal",
+            buttonPositive: "OK",
+          },
+        );
+
+        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+          return true;
+        } else {
+          // Jika izin ditolak, tampilkan dialog dengan opsi untuk membuka pengaturan
+          Alert.alert(
+            "Izin Diperlukan",
+            "Aplikasi memerlukan akses kamera. Apakah Anda ingin membuka pengaturan sekarang?",
+            [
+              {
+                text: "Tidak",
+                style: "cancel",
+              },
+              {
+                text: "Buka Pengaturan",
+                onPress: () => {
+                  Linking.openSettings();
+                },
+              },
+            ],
+          );
+          return false;
+        }
+      } catch (err) {
+        console.warn(err);
+        return false;
+      }
+    }
+    return true; // Untuk iOS
+  };
+
   const getLocation = () => {
     setLoading(true);
     setModalVisible(true);
@@ -417,6 +474,12 @@ const Perusahaan = () => {
   };
 
   const openCameraLib = async () => {
+    const hasPermission = await requestCameraPermission();
+
+    if (!hasPermission) {
+      return;
+    }
+
     try {
       const options = {
         mediaType: "photo",
@@ -446,6 +509,7 @@ const Perusahaan = () => {
       });
     } catch (error) {
       console.error("Camera Launch Error:", error);
+      Alert.alert("Error", "Terjadi kesalahan saat membuka kamera");
     }
   };
 
@@ -470,9 +534,9 @@ const Perusahaan = () => {
               shadowOpacity: 0.5,
               shadowRadius: 2,
             }}>
-            <View className="flex-row py-5">
+            <View className="flex-row justify-between items-center py-5">
               <Back
-                size={30}
+                size={25}
                 color={"black"}
                 action={() => navigation.goBack()}
                 className="mr-5 "
@@ -523,18 +587,25 @@ const Perusahaan = () => {
                     </View>
                   ) : (
                     <View className="items-center justify-center">
-                      <TouchableOpacity onPress={openCameraLib}>
-                        <Text className="font-poppins-semibold text-lg mb-3 text-black">
-                          Open Camera
-                        </Text>
+                      <TouchableOpacity
+                        onPress={openCameraLib}
+                        className="border-2 border-dashed w-full  border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8  ">
+                        <View className="items-center ">
+                          <Text className="font-poppins-semibold text-lg  text-indigo-600">
+                            Foto Tanda Tangan Anda
+                          </Text>
+                          {/* <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                            Klik atau sentuh area ini untuk memilih foto
+                          </Text> */}
+                        </View>
                       </TouchableOpacity>
 
-                      <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
-                        Or
+                      <Text className="font-poppins-semibold text-base  my-4 flex text-center text-black ">
+                        Atau
                       </Text>
 
                       <TouchableOpacity
-                        className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8 mb-4"
+                        className="border-2 w-full border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8  mb-4"
                         onPress={handleChoosePhoto}>
                         <View className="items-center space-y-4">
                           <View className="bg-indigo-100 rounded-full p-5">
