@@ -4,10 +4,14 @@ import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { rupiah } from "@/src/libs/utils";
+import { useHeaderStore } from "../main/Index";
+import Ionicons from "react-native-vector-icons/Ionicons";
+
 
 const MultiPayment = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
@@ -15,6 +19,14 @@ const MultiPayment = ({ navigation }) => {
   const [selectedType, setSelectedType] = useState("va");
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
+  const { setHeader } = useHeaderStore();
+
+  React.useLayoutEffect(() => {
+    setHeader(false);
+
+    return () => setHeader(true);
+  }, []);
+
   const [authToken, setAuthToken] = useState('');
 
   useEffect(() => {
@@ -147,7 +159,7 @@ const MultiPayment = ({ navigation }) => {
     const statusStyle = getStatusStyle(item.status);
 
     return (
-      <TouchableOpacity
+      <View
         onPress={() => navigation.navigate('MultiPaymentDetail', { uuid: item.uuid })}
         className="my-2 bg-white rounded-md border-t-[6px] border-indigo-900 p-5"
         style={{ elevation: 4 }}>
@@ -200,7 +212,68 @@ const MultiPayment = ({ navigation }) => {
             </View>
           </View>
         </View>
-      </TouchableOpacity>
+
+
+        <View className="h-[1px] bg-gray-300 my-3" />
+
+        <View className="flex-row justify-end mt-1 space-x-2">
+          <View className="flex-row space-x-2">
+            <TouchableOpacity
+              onPress={() => navigation.navigate('DetailMulti', { selected: item.uuid })}
+              className="bg-indigo-500 px-3 py-2 rounded-md flex-row items-center">
+              <MaterialIcons name="credit-card" size={13} color="white" />
+              <Text className="text-white text-xs ml-1 font-poppins-medium">
+                Detail
+              </Text>
+            </TouchableOpacity>
+
+            <MenuView
+              title="TTE SKRD"
+              actions={[
+                { id: 'apply', title: 'Ajukan TTE' }
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                if (nativeEvent.event === 'apply') {
+                  setSelectedItem(item);
+                  setTTEModalVisible(true); x
+                }
+              }}
+            >
+              <TouchableOpacity
+                className="bg-indigo-700 px-3 py-2 rounded-md flex-row items-center"
+              >
+                <FontAwesome5 name="file-signature" size={13} color="white" />
+                <Text className="text-white text-xs ml-1 font-poppins-medium">
+                  TTE SKRD
+                </Text>
+                <MaterialIcons name="arrow-drop-down" size={16} color="white" />
+              </TouchableOpacity>
+            </MenuView>
+          </View>
+          <View className="flex-row justify-end">
+            <MenuView
+              title="PDF"
+              actions={[
+                { id: 'skrd', title: 'SKRD' },
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                if (nativeEvent.event === 'skrd') {
+                  handlePreviewSKRDPDF(item.uuid);
+                } 
+              }}
+            >
+              <TouchableOpacity className="bg-red-100 px-3 py-2 rounded-md flex-row items-center">
+                <FontAwesome5 name="file-pdf" size={13} color="#ef4444" />
+                <Text className="text-red-500 text-xs ml-1 font-poppins-medium">
+                  PDF
+                </Text>
+                <MaterialIcons name="arrow-drop-down" size={16} color="#ef4444" />
+              </TouchableOpacity>
+            </MenuView>
+          </View>
+        </View>
+
+      </View>
     );
   };
 
@@ -212,7 +285,7 @@ const MultiPayment = ({ navigation }) => {
         },
         responseType: 'arraybuffer',
       });
-      
+
       // Handle download success
       setModalVisible(false);
       Toast.show({
@@ -232,16 +305,31 @@ const MultiPayment = ({ navigation }) => {
 
   return (
     <View className="bg-[#ececec] w-full h-full">
-      <View className="p-4">
-        <View className="flex-row items-center justify-between mb-4">
-          <View className="flex-row items-center flex-1">
-            <BackButton action={() => navigation.goBack()} size={26} />
-            <Text className="text-[20px] font-poppins-semibold text-black mx-auto self-center">
-              Multi Payment
-            </Text>
-          </View>
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: "#fff" }}>
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">
+            Multi Payment
+          </Text>
         </View>
+        <View className="bg-green-600 rounded-full">
+          <MaterialCommunityIcons
+            name="credit-card-multiple"
+            size={18}
+            color={"white"}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
 
+      <View className="p-4">
         <View className="flex-row space-x-5 mb-3 ">
           <MenuView
             title="Pilih Tahun"
@@ -284,16 +372,16 @@ const MultiPayment = ({ navigation }) => {
           />
         </MenuView>
 
-          <TouchableOpacity
-            onPress={() => navigation.navigate("FormMulti")}
-            className="bg-[#312e81] px-14 py-1.5 rounded-md flex-row items-center mt-3 mb-3 justify-center"
-            style={{ height: 49 }}
-          >
-            <MaterialIcons name="add" size={20} color="white" style={{ marginRight: 7 }} />
-            <Text className="text-white font-poppins-medium text-base">
-              Buat
-            </Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("FormMulti")}
+          className="bg-[#312e81] px-14 py-1.5 rounded-md flex-row items-center mt-3 mb-3 justify-center"
+          style={{ height: 49 }}
+        >
+          <MaterialIcons name="add" size={20} color="white" style={{ marginRight: 7 }} />
+          <Text className="text-white font-poppins-medium text-base">
+            Buat
+          </Text>
+        </TouchableOpacity>
       </View>
 
       <Modal
@@ -348,31 +436,31 @@ const MultiPayment = ({ navigation }) => {
           per: 10,
         }}
         renderItem={renderItem}
-        className="px-4 mb-20"
+        className="px-4 mb-4"
       />
-      {/* <TouchableOpacity
-              onPress={handlePreviewReport}
-              className="absolute bottom-20 right-4 bg-red-500 px-4 py-3 rounded-full flex-row items-center"
-              style={{
-                position: 'absolute',
-                bottom: 75,
-                right: 20,
-                backgroundColor: '#dc2626',
-                borderRadius: 50,
-                width: 55,
-                height: 55,
-                justifyContent: 'center',
-                alignItems: 'center',
-                elevation: 5,
-                shadowColor: '#000',
-                shadowOffset: { width: 0, height: 2 },
-                shadowOpacity: 0.25,
-                shadowRadius: 3.84,
-                zIndex: 1000
-              }}>
-              <FontAwesome5 name="file-pdf" size={19} color="white" />
-      
-            </TouchableOpacity> */}
+      <TouchableOpacity
+        onPress={handlePreviewReport}
+        className="absolute right-4 bg-red-400 px-4 py-3 rounded-full flex-row items-center"
+        style={{
+          position: 'absolute',
+          bottom: 35,
+          right: 20,
+          backgroundColor: '#dc2626',
+          borderRadius: 50,
+          width: 55,
+          height: 55,
+          justifyContent: 'center',
+          alignItems: 'center',
+          elevation: 5,
+          shadowColor: '#000',
+          shadowOffset: { width: 0, height: 2 },
+          shadowOpacity: 0.25,
+          shadowRadius: 3.84,
+          zIndex: 1000
+        }}>
+        <FontAwesome5 name="file-pdf" size={19} color="white" />
+
+      </TouchableOpacity>
     </View>
   );
 };
