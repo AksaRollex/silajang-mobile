@@ -20,7 +20,7 @@ import Toast from "react-native-toast-message";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
-    const scrollViewRef = useRef(null);
+  const scrollViewRef = useRef(null);
 
   const requestTypes = [
     { label: "Permohonan Baru", value: "new" },
@@ -260,21 +260,30 @@ const Dashboard = () => {
           <View className={`p-4 ${!isSimplifiedView ? 'border-b border-gray-100' : ''}`}>
             <View className="flex flex-row justify-between items-center">
               <View className="flex flex-row items-center space-x-3">
-                <IonIcons name="person-circle" size={30} color="black" />
+                <IonIcons
+                  name="person-circle"
+                  size={Platform.select({ ios: 30, android: 26 })}
+                  color="black"
+                />
                 <View>
                   <Text
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
                     className="font-poppins-semibold text-black"
                     style={{
-                      fontSize: getFontSize(user.nama, 18),
-                      maxWidth: 200,
+                      fontSize: getFontSize(displayName, 18, 14),
+                      maxWidth: Platform.select({ ios: 200, android: 180 }),
                     }}
                   >
                     Hi, {displayName}
                   </Text>
                   <Text
+                    adjustsFontSizeToFit
+                    numberOfLines={1}
                     className="font-poppins-semibold text-gray-500"
                     style={{
-                      fontSize: getFontSize(user.email, 14, 12),
+                      fontSize: getFontSize(user.email, 14, 10),
+                      maxWidth: Platform.select({ ios: 200, android: 180 }),
                     }}
                   >
                     {user.email}
@@ -283,16 +292,28 @@ const Dashboard = () => {
               </View>
               {isAdmin && (
                 <TouchableOpacity
-                  className="bg-red-100 px-3 py-2 rounded-full flex flex-row items-center space-x-1"
+                  className="bg-red-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full flex flex-row items-center space-x-1"
                   onPress={handleLogout}
                   activeOpacity={0.7}
                 >
-                  <IonIcons name="log-out-outline" size={16} color="#f2416e" />
-                  <Text className="text-red-500 text-xs font-poppins-semibold">Logout</Text>
+                  <IonIcons
+                    name="log-out-outline"
+                    size={Platform.select({ ios: 16, android: 14 })}
+                    color="#f2416e"
+                  />
+                  <Text
+                    className="text-red-500 font-poppins-semibold"
+                    style={{
+                      fontSize: Platform.select({ ios: 12, android: 10 })
+                    }}
+                  >
+                    Logout
+                  </Text>
                 </TouchableOpacity>
               )}
             </View>
           </View>
+
 
           {!isSimplifiedView && (
             <View className="p-5">
@@ -403,30 +424,32 @@ const Dashboard = () => {
         </View>
 
 
-        <View className="items-center mt-[85px]">
-          {/* card picker tahun */}
-          <View className="bg-white rounded-xl w-[91%] h-16 overflow-hidden"
+        <View className="items-center mt-16 sm:mt-[85px]">
+          <View
+            className="bg-white rounded-xl w-[95%] sm:w-[91%] overflow-hidden p-3"
             style={{
               shadowColor: '#000',
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.3,
               shadowRadius: 6,
               elevation: 3,
-            }}>
-            <View className="flex-row h-full">
-              <View className="bg-gradient-to-r from-indigo-900 to-indigo-700 w-1/ justify-center ml-6 ">
-                <Text className="text-black text-sm font-poppins-medium">
-                  Pilih Tahun Data Dashboard :
+            }}
+          >
+            <View className="flex-row items-center justify-between">
+              <View className="flex-row items-center space-x-2">
+                <Text
+                  className="text-black font-poppins-medium text-xs sm:text-sm"
+                >
+                  Pilih Tahun Data Dashboard:
                 </Text>
-              </View>
-
-              <View className="bg-indigo-50 px-4 py-1.5 rounded-lg self-center ml-2">
-                <Text className="text-indigo-900 font-poppins-medium">
-                  {selectedYear}
-                </Text>
-              </View>
-
-              <MenuView
+                <View className="bg-indigo-50 px-2 py-1 rounded-lg">
+                  <Text
+                    className="text-indigo-900 font-poppins-medium text-xs sm:text-sm"
+                  >
+                    {selectedYear}
+                  </Text>
+                </View>
+                <MenuView
                 title="Pilih Tahun"
                 onPressAction={handleYearChange}
                 actions={generateYears().map(option => ({
@@ -434,23 +457,16 @@ const Dashboard = () => {
                   title: option.title,
                 }))}
               >
-                <View className="flex-1 flex-row items-center justify-end px-4">
-                  <View className="bg-indigo-100 rounded-full p-1.5">
-                    <View className="w-4 h-4 items-center justify-center">
-                      <View className="w-0 h-0 border-l-[4px] border-l-transparent border-t-[6px] border-t-indigo-900 border-r-[4px] border-r-transparent" />
-                    </View>
+                <View className="bg-indigo-100 rounded-full p-1.5">
+                  <View className="w-3 h-3 items-center justify-center">
+                    <View className="w-0 h-0 border-l-[3px] border-l-transparent border-t-[5px] border-t-indigo-900 border-r-[3px] border-r-transparent" />
                   </View>
                 </View>
               </MenuView>
-            </View>
-
-            {/* decor */}
-            {/* <View className="absolute top-0 left-0 w-13 h-16">
-              <View className="relative w-full h-full">
-                <View className="absolute -top-8 -left-8 w-16 h-16 bg-indigo-500 opacity-10 rounded-full" />
-                <View className="absolute -top-4 -left-4 w-12 h-12 bg-indigo-400 opacity-10 rounded-full" />
               </View>
-            </View> */}
+
+              
+            </View>
           </View>
         </View>
 
