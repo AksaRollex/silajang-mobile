@@ -19,6 +19,7 @@ import BackButton from "../../components/Back";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
+import Feather from "react-native-vector-icons/Feather";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -113,16 +114,31 @@ const Pengujian = ({ navigation }) => {
     };
 
     const getStatusStyle = item => {
-      if (item?.is_expired) {
-        return " text-red-500";
+      if (item.payment?.is_expired) {
+        return "  text-red-500";
       } else {
-        const status = item?.status;
+        const status = item.payment?.status;
         if (status === "pending") {
-          return " text-blue-400";
+          return " text-blue-500";
         } else if (status === "success") {
           return "text-green-500";
         } else {
           return " text-red-500";
+        }
+      }
+    };
+
+    const getBackgroundStyle = item => {
+      if (item.payment?.is_expired) {
+        return "  bg-red-50";
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return " bg-blue-50";
+        } else if (status === "success") {
+          return "bg-green-50";
+        } else {
+          return " bg-red-50";
         }
       }
     };
@@ -142,7 +158,7 @@ const Pengujian = ({ navigation }) => {
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
                 Kode
               </Text>
               <Text className="text-base text-black font-poppins-regular">
@@ -151,70 +167,54 @@ const Pengujian = ({ navigation }) => {
                   .join(", ") || ""}
               </Text>
 
-              <Text className="font-poppins-semibold  text-slate-600 mt-3 text-xs uppercase">
+              <Text className="font-poppins-regular  text-slate-600 mt-3 text-xs uppercase">
                 Lokasi
               </Text>
               <Text
                 style={[{ fontSize: 15, color: "black" }]}
-                className="text-black font-poppins-regular">
+                className="text-black font-poppins-semibold">
                 {item.multi_payments
                   ?.map(payment => payment.titik_permohonan.lokasi)
                   .join(", ") || "Lokasi Kosong"}
               </Text>
+              <Text className="font-poppins-regular text-slate-600 text-xs  mt-3 uppercase">
+                Status
+              </Text>
+              <View className="flex-shrink-0 items-start">
+                <View
+                  className={`${getBackgroundStyle(
+                    item,
+                  )} rounded-md px-2 py-1 max-w-[120px] `}>
+                  <Text
+                    style={[styles[statusStyle]]}
+                    className={` ${getStatusStyle(
+                      item,
+                    )} font-poppins-semibold text-xs`}>
+                    {statusText}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
 
           {/* Middle section */}
           <View style={styles.cardContents} className="flex flex-end ">
-            <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
-              Status
-            </Text>
-            <Text
-              style={[styles[statusStyle]]}
-              className={`  ${getStatusStyle(
-                item,
-              )} font-poppins-regular text-base`}>
-              {statusText}
-            </Text>
-
-            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+            <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
               Tipe
             </Text>
             <Text
               style={[styles[statusStyle]]}
-              className={`  text-black uppercase font-poppins-regular text-base`}>
+              className={`  text-black uppercase font-poppins-semibold text-base`}>
               {item.type}
             </Text>
 
-            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-regular">
               Total Harga
             </Text>
-            <Text className="text-black mb-4 font-poppins-regular">
+            <Text className="text-black mb-4 font-poppins-semibold">
               {rupiah(item.jumlah)}
             </Text>
           </View>
-
-          {/* Right section (dots menu) */}
-          {/* <View style={styles.cardActions} className="mb-4 ">
-            <MenuView
-              title="Menu Title"
-              actions={dropdownOptions.map(option => ({
-                ...option,
-              }))}
-              onPressAction={({ nativeEvent }) => {
-                const selectedOption = dropdownOptions.find(
-                  option => option.title === nativeEvent.event,
-                );
-                if (selectedOption) {
-                  selectedOption.action(item);
-                }
-              }}
-              shouldOpenOnLongPress={false}>
-              <View>
-                <Entypo name="dots-three-vertical" size={16} color="#312e81" />
-              </View>
-            </MenuView>
-          </View> */}
           <View style={styles.cardActions} className="mb-4  ">
             {(skrd || kwitansi) && dropdownOptions.length > 0 && (
               <MenuView
@@ -758,7 +758,9 @@ const Pengujian = ({ navigation }) => {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "#f8f8f8",
+    backgroundColor: "#e2e8f0",
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
@@ -775,7 +777,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     height: "100%", // Adjust this value to control how much of the card is covered
-    backgroundColor: "#e2e8f0", // slate-200 equivalent
+    backgroundColor: "#f8f8f8", // slate-200 equivalent
   },
   cardWrapper: {
     flexDirection: "row",

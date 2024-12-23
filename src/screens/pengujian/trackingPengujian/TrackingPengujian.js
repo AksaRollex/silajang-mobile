@@ -49,39 +49,42 @@ const TrackingPengujian = ({ navigation }) => {
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
                 Kode
               </Text>
-              <Text className=" font-poppins-regular text-black  text-base">
+              <Text className=" font-poppins-semibold text-black  text-xs">
                 {item.kode}
               </Text>
-              <Text className=" font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+              <Text className=" font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
                 Lokasi
               </Text>
-              <Text className="text-black font-poppins-regular text-base">
+              <Text className="text-black font-poppins-semibold text-xs">
                 {item.lokasi}
               </Text>
-              <Text className="text-slate-600 text-xs font-poppins-semibold mt-3 uppercase ">
+              <Text className="text-slate-600 text-xs font-poppins-regular mt-3 uppercase ">
                 Status
               </Text>
-              <Text className="text-indigo-600 font-poppins-regular ">
-                {item.text_status}
-              </Text>
+
+              <View className="bg-indigo-50 rounded-md px-2 py-1  mb-2">
+                <Text className="text-indigo-500 font-poppins-semibold text-xs  ">
+                  {item.text_status}
+                </Text>
+              </View>
             </View>
           </View>
 
           {/* Middle section */}
           <View style={styles.cardContents}>
-            <Text className=" uppercase text-xs text-slate-600 font-poppins-semibold">
+            <Text className=" uppercase text-xs text-slate-600 font-poppins-regular">
               Tanggal Diterima
             </Text>
-            <Text className=" text-base text-black font-poppins-regular">
+            <Text className=" text-black font-poppins-semibold text-xs">
               {item.tanggal_diterima || "Tanggal Belum Tersedia"}
             </Text>
-            <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-semibold">
+            <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-regular">
               Tanggal Selesai
             </Text>
-            <Text className=" text-base text-black font-poppins-regular">
+            <Text className=" text-black font-poppins-semibold text-xs">
               {item.tanggal_selesai || "Tanggal Belum Tersedia"}
             </Text>
           </View>

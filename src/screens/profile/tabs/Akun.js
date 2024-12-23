@@ -7,6 +7,7 @@ import {
   Image,
   ActivityIndicator,
   Modal,
+  ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useEffect, useState } from "react";
@@ -193,7 +194,7 @@ const Akun = () => {
     <>
       <View className="bg-[#ececec] p-3 w-full h-full ">
         <View
-          className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+          className="bg-[#fff] rounded-3xl px-4 h-full"
           style={{
             elevation: 5,
             shadowColor: "rgba(0, 0, 0, 0.1)",
@@ -201,9 +202,9 @@ const Akun = () => {
             shadowOpacity: 0.5,
             shadowRadius: 2,
           }}>
-          <View className="flex-row">
+          <View className="flex-row items-center justify-between py-5  ">
             <Back
-              size={30}
+              size={25}
               color={"black"}
               action={() => navigation.goBack()}
               className="mr-5 "
@@ -211,169 +212,181 @@ const Akun = () => {
                 padding: 4,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-lg text-end items-start  mt-1 ">
               Informasi Personal
             </Text>
           </View>
 
-          {userData ? (
-            <View className="flex">
-              <Controller
-                control={control}
-                name="photo"
-                render={({ field: { value } }) => (
-                  <View className="mt-3">
-                    <Text
-                      className="font-poppins-semibold mb-2 text-md text-black"
-                      style={{ fontSize: 15 }}>
-                      Foto Profil
-                    </Text>
-                    <View className="rounded-2xl">
-                      {currentPhotoUrl || file ? (
-                        // State setelah upload foto
-                        <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
-                          <View className="items-center">
-                            <View className="relative">
-                              <Image
-                                source={{
-                                  uri: file ? file.uri : currentPhotoUrl,
-                                }}
-                                className="w-48 h-48 rounded-lg"
-                                onError={e =>
-                                  console.log(
-                                    "Error loading image:",
-                                    e.nativeEvent.error,
-                                  )
-                                }
-                              />
-
-                              <View className="absolute inset-0 rounded-full bg-black/5" />
-                              <TouchableOpacity
-                                className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
-                                onPress={handleDeletePhoto}>
-                                <Icons name="close" size={18} color="#dc2626" />
-                              </TouchableOpacity>
-                              <TouchableOpacity
-                                className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
-                                onPress={handleChoosePhoto}>
-                                <Icons name="camera" size={20} color="white" />
-                              </TouchableOpacity>
-                            </View>
-
-                            <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
-                              Ketuk ikon kamera untuk mengubah foto
-                            </Text>
-                          </View>
-                        </View>
-                      ) : (
-                        <TouchableOpacity
-                          className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
-                          onPress={handleChoosePhoto}>
-                          <View className="items-center space-y-4">
-                            <View className="bg-indigo-100 rounded-full p-5">
-                              <SimpleLineIcons
-                                name="cloud-upload"
-                                size={40}
-                                color="#4f46e5"
-                              />
-                            </View>
-
+          <ScrollView className="w-full h-full ">
+            {userData ? (
+              <View  className="w-full h-full ">
+                <Controller
+                  control={control}
+                  name="photo"
+                  render={({ field: { value } }) => (
+                    <View className="mt-3">
+                      <Text
+                        className="font-poppins-semibold mb-2 text-md text-black"
+                        style={{ fontSize: 15 }}>
+                        Foto Profil
+                      </Text>
+                      <View className="rounded-2xl">
+                        {currentPhotoUrl || file ? (
+                          // State setelah upload foto
+                          <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
                             <View className="items-center">
-                              <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
-                                Unggah Foto Profil
-                              </Text>
-                              <Text className="font-poppins-regular text-sm text-gray-500 text-center">
-                                Klik atau sentuh area ini untuk memilih foto
+                              <View className="relative">
+                                <Image
+                                  source={{
+                                    uri: file ? file.uri : currentPhotoUrl,
+                                  }}
+                                  className="w-48 h-48 rounded-lg"
+                                  onError={e =>
+                                    console.log(
+                                      "Error loading image:",
+                                      e.nativeEvent.error,
+                                    )
+                                  }
+                                />
+
+                                <View className="absolute inset-0 rounded-full bg-black/5" />
+                                <TouchableOpacity
+                                  className="absolute -top-2 -right-2 bg-white rounded-full w-8 h-8 items-center justify-center shadow-lg border border-red-100"
+                                  onPress={handleDeletePhoto}>
+                                  <Icons
+                                    name="close"
+                                    size={18}
+                                    color="#dc2626"
+                                  />
+                                </TouchableOpacity>
+                                <TouchableOpacity
+                                  className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
+                                  onPress={handleChoosePhoto}>
+                                  <Icons
+                                    name="camera"
+                                    size={20}
+                                    color="white"
+                                  />
+                                </TouchableOpacity>
+                              </View>
+
+                              <Text className="font-poppins-medium text-sm text-gray-600 mt-3">
+                                Ketuk ikon kamera untuk mengubah foto
                               </Text>
                             </View>
                           </View>
-                        </TouchableOpacity>
-                      )}
+                        ) : (
+                          <TouchableOpacity
+                            className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
+                            onPress={handleChoosePhoto}>
+                            <View className="items-center space-y-4">
+                              <View className="bg-indigo-100 rounded-full p-5">
+                                <SimpleLineIcons
+                                  name="cloud-upload"
+                                  size={40}
+                                  color="#4f46e5"
+                                />
+                              </View>
+
+                              <View className="items-center">
+                                <Text className="font-poppins-semibold text-lg text-indigo-600 mb-1">
+                                  Unggah Foto Profil
+                                </Text>
+                                <Text className="font-poppins-regular text-sm text-gray-500 text-center">
+                                  Klik atau sentuh area ini untuk memilih foto
+                                </Text>
+                              </View>
+                            </View>
+                          </TouchableOpacity>
+                        )}
+                      </View>
                     </View>
-                  </View>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="nama"
+                  defaultValue={userData.user.nama}
+                  rules={{ required: "Nama Tidak Boleh Kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View className="mt-4">
+                      <Text className="font-poppins-semibold mb-1 text-black ">
+                        Nama
+                      </Text>
+                      <TextField
+                        value={value}
+                        placeholderTextColor="black"
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        enableErrors
+                        onChangeText={onChange}
+                      />
+                    </View>
+                  )}
+                />
+                {errors.nama && (
+                  <Text style={{ color: "red" }} className="mb-4 -mt-5">
+                    {errors.nama.message}
+                  </Text>
                 )}
-              />
-              <Controller
-                control={control}
-                name="nama"
-                defaultValue={userData.user.nama}
-                rules={{ required: "Nama Tidak Boleh Kosong" }}
-                render={({ field: { onChange, value } }) => (
-                  <View className="mt-4">
-                    <Text className="font-poppins-semibold mb-1 text-black ">
-                      Nama
+                <Controller
+                  control={control}
+                  name="email"
+                  render={({ field: { onChange, value } }) => (
+                    <View className="bottom-2">
+                      <Text className="font-poppins-semibold mb-1 text-black">
+                        Email
+                      </Text>
+                      <TextField
+                        placeholder={userData.user.email}
+                        editable={false}
+                        enableErrors
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        placeholderTextColor="grey"
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    </View>
+                  )}
+                />
+                <Controller
+                  control={control}
+                  name="phone"
+                  render={({ field: { onChange, value } }) => (
+                    <View className="bottom-4">
+                      <Text className="font-poppins-semibold mb-1 text-black">
+                        Nomor Telepon
+                      </Text>
+                      <TextField
+                        placeholder={userData.user.phone}
+                        enableErrors
+                        editable={false}
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        placeholderTextColor="grey"
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    </View>
+                  )}
+                />
+                <View className="justify-end ">
+                  <Button
+                    className="p-3 rounded-3xl mb-4 items-end"
+                    backgroundColor={Colors.brand}
+                    borderRadius={5}
+                    onPress={handleSubmit(update)}
+                    disabled={isLoading}>
+                    <Text className="text-white text-center text-base font-poppins-semibold">
+                      PERBARUI
                     </Text>
-                    <TextField
-                      value={value}
-                      placeholderTextColor="black"
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      enableErrors
-                      onChangeText={onChange}
-                    />
-                  </View>
-                )}
-              />
-              {errors.nama && (
-                <Text style={{ color: "red" }} className="mb-4 -mt-5">
-                  {errors.nama.message}
-                </Text>
-              )}
-              <Controller
-                control={control}
-                name="email"
-                render={({ field: { onChange, value } }) => (
-                  <View className="bottom-2">
-                    <Text className="font-poppins-semibold mb-1 text-black">
-                      Email
-                    </Text>
-                    <TextField
-                      placeholder={userData.user.email}
-                      editable={false}
-                      enableErrors
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      placeholderTextColor="grey"
-                      onChangeText={onChange}
-                      value={value}
-                    />
-                  </View>
-                )}
-              />
-              <Controller
-                control={control}
-                name="phone"
-                render={({ field: { onChange, value } }) => (
-                  <View className="bottom-4">
-                    <Text className="font-poppins-semibold mb-1 text-black">
-                      Nomor Telepon
-                    </Text>
-                    <TextField
-                      placeholder={userData.user.phone}
-                      enableErrors
-                      editable={false}
-                      className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                      placeholderTextColor="grey"
-                      onChangeText={onChange}
-                      value={value}
-                    />
-                  </View>
-                )}
-              />
-              <Button
-                className="p-3 rounded-3xl mt-1"
-                backgroundColor={Colors.brand}
-                borderRadius={5}
-                onPress={handleSubmit(update)}
-                disabled={isLoading}>
-                <Text className="text-white text-center text-base font-poppins-semibold">
-                  PERBARUI
-                </Text>
-              </Button>
-            </View>
-          ) : (
-            <View className="flex-1 justify-center items-center my-4">
-              <ActivityIndicator size="large" color="#312e81" />
-            </View>
-          )}
+                  </Button>
+                </View>
+              </View>
+            ) : (
+              <View className="flex-1 justify-center items-center my-4">
+                <ActivityIndicator size="large" color="#312e81" />
+              </View>
+            )}
+          </ScrollView>
         </View>
         <Modal animationType="fade" transparent={true} visible={modalVisible}>
           <View className="flex-1 justify-center items-center bg-black/50">

@@ -80,11 +80,11 @@ const Pengujian = ({ navigation }) => {
 
     const getStatusStyle = item => {
       if (item.payment?.is_expired) {
-        return " text-red-500";
+        return "  text-red-500";
       } else {
         const status = item.payment?.status;
         if (status === "pending") {
-          return " text-blue-400";
+          return " text-blue-500";
         } else if (status === "success") {
           return "text-green-500";
         } else {
@@ -93,6 +93,20 @@ const Pengujian = ({ navigation }) => {
       }
     };
 
+    const getBackgroundStyle = item => {
+      if (item.payment?.is_expired) {
+        return "  bg-red-50";
+      } else {
+        const status = item.payment?.status;
+        if (status === "pending") {
+          return " bg-blue-50";
+        } else if (status === "success") {
+          return "bg-green-50";
+        } else {
+          return " bg-red-50";
+        }
+      }
+    };
     const statusText = getStatusText(item);
     const statusStyle = getStatusStyle(item);
 
@@ -108,48 +122,53 @@ const Pengujian = ({ navigation }) => {
           {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
-              <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase">
                 Kode
               </Text>
-              <Text className="text-black font-poppins-regular text-base">
+              <Text className="text-black font-poppins-semibold text-xs">
                 {item.kode}
               </Text>
-              <Text className="font-poppins-semibold  text-slate-600 mt-3 text-xs uppercase">
+              <Text className="font-poppins-regular  text-slate-600 mt-3 text-xs uppercase">
                 Lokasi
               </Text>
-              <Text className="text-black font-poppins-regular text-base">
+              <Text className="text-black font-poppins-semibold text-xs">
                 {item.lokasi}
               </Text>
+              <Text className="font-poppins-regular text-slate-600 text-xs uppercase mt-3">
+                Status
+              </Text>
+              <View className="flex-shrink-0 items-start">
+                <View
+                  className={`${getBackgroundStyle(
+                    item,
+                  )} rounded-md px-2 py-1 max-w-[120px] `}>
+                  <Text
+                    style={[styles[statusStyle]]}
+                    className={` ${getStatusStyle(
+                      item,
+                    )} font-poppins-semibold text-xs`}>
+                    {statusText}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
 
           {/* Middle section */}
 
           <View style={styles.cardContents} className="flex flex-end">
-            <Text className="font-poppins-semibold text-slate-600 text-xs uppercase">
-              Status
-            </Text>
-            <Text
-              style={[styles[statusStyle]]}
-              className={` ${getStatusStyle(
-                item,
-              )} font-poppins-regular text-base`}>
-              {statusText}
-            </Text>
-
-            <Text className="font-poppins-semibold text-slate-600 mt-3 text-xs uppercase">
+            <Text className="font-poppins-regular text-slate-600  text-xs uppercase">
               Tipe
             </Text>
             <Text
-              style={[styles[statusStyle]]}
-              className={`  text-black uppercase font-poppins-regular text-base`}>
+              className={`  text-black uppercase font-poppins-semibold text-xs`}>
               {item.payment_type}
             </Text>
 
-            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-semibold">
+            <Text className="text-slate-600 text-xs mt-3 uppercase font-poppins-regular">
               Harga
             </Text>
-            <Text className="text-black mb-4 font-poppins-regular">
+            <Text className="text-black  font-poppins-semibold text-xs">
               {rupiah(item.harga)}
             </Text>
           </View>
@@ -608,6 +627,8 @@ const Pengujian = ({ navigation }) => {
 const styles = StyleSheet.create({
   card: {
     backgroundColor: "#e2e8f0",
+    borderColor: "#e2e8f0",
+    borderWidth: 2,
     borderRadius: 15,
     marginVertical: 10,
     elevation: 5,
@@ -615,8 +636,6 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.5,
     shadowRadius: 2,
-    borderColor: "#e2e8f0",
-    borderWidth: 2,
     overflow: "hidden",
     position: "relative", // Added to position the background
   },
