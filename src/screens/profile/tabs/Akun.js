@@ -72,45 +72,59 @@ const Akun = () => {
   const updateUser = async () => {
     const formData = new FormData();
     formData.append("nama", getValues("nama"));
-
+    console.log("Value of nama:", getValues("nama"));
+  
     if (file) {
-      const fileSizeInKB = file.fileSize / 1024;
+      const fileSizeInKB = file.size / 1024; // Gunakan `size` untuk mendapatkan ukuran file
       if (fileSizeInKB > 2048) {
         Toast.show({
           type: "error",
           text1: "File terlalu besar",
           text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
         });
-        return; // Exit the function early if the file is too large
+        return; // Hentikan fungsi jika file terlalu besar
       }
-    }
-    if (file) {
+  
       formData.append("photo", {
         uri: file.uri,
         type: file.type || "image/jpeg",
-        name: file.fileName || "profile_photo.jpg",
+        name: file.name || "profile_photo.jpg",
       });
     }
-
+  
     try {
-      const response = await axios.post("/user/accountSecure", formData, {
+      const response = await axios.post("/user/account", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-
-      // Set photo langsung dari file yang di-upload jika tidak ada di respons
-      const updatedImageUrl = file
-        ? file.uri
-        : `${APP_URL}${response.data.photo}`;
-      setCurrentPhotoUrl(updatedImageUrl);
-      setUserData(prevData => ({ ...prevData, nama: getValues("nama") }));
-
-      console.log("Update successful:", response.data); // Log response
+  
+      if (response.status === 200) {
+        // Toast.show({
+        //   type: "success",
+        //   text1: "Berhasil",
+        //   text2: response.data.message,
+        // });
+  
+        // Set photo URL yang diperbarui
+        const updatedPhotoUrl = response.data.data.photo 
+          ? `${APP_URL}${response.data.data.photo}` 
+          : null;
+  
+        setCurrentPhotoUrl(updatedPhotoUrl);
+        setUserData(prevData => ({ ...prevData, nama: getValues("nama") }));
+        console.log("Update successful:", response.data); // Log respons
+      }
     } catch (error) {
-      console.error("Update failed:", error.message);
+      console.error("Update failed:", error.response?.data?.message || error.message);
+      // Toast.show({
+      //   type: "error",
+      //   text1: "Gagal memperbarui",
+      //   text2: error.response?.data?.message || "Terjadi kesalahan, coba lagi.",
+      // });
     }
   };
+  
 
   const fetchUserData = async () => {
     try {

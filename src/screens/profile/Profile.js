@@ -88,11 +88,11 @@ export default function Profile({ navigation }) {
                     }}>
                     <FastImage
                       className="rounded-full w-28 h-28"
-                      source={{
-                        uri: userData?.photo
-                          ? `${process.env.APP_URL}${userData.photo}`
-                          : undefined,
-                      }}
+                      source={
+                        userData?.photo
+                          ? { uri: `${process.env.APP_URL}${userData.photo}` }
+                          : DefaultAvatar // Default avatar digunakan langsung
+                      }
                       defaultSource={DefaultAvatar} // Gambar lokal sebagai fallback
                       resizeMode={FastImage.resizeMode.cover}
                     />

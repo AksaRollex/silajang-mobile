@@ -15,9 +15,12 @@ import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
 import Header from "../components/Header";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import DefaultAvatar from "../../../assets/images/avatar.png";
 import { useNavigation } from "@react-navigation/native";
 import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FastImage from "react-native-fast-image";
+import AntDesign from "react-native-vector-icons/AntDesign";
 import FooterText from "../components/FooterText";
 const windowWidth = Dimensions.get("window").width;
 const rem = multiplier => baseRem * multiplier;
@@ -28,6 +31,14 @@ const Dashboard = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [tahun, setTahun] = useState(new Date().getFullYear());
   const [shouldRefresh, setShouldRefresh] = useState(false);
+
+  const { data: userData } = useUser();
+  // console.log('userData: ', userData);
+
+  const openImageViewer = imageUrl => {
+    setSelectedImage(`${process.env.APP_URL}${imageUrl}`);
+    setImageViewerVisible(true);
+  };
 
   const handleFilterPress = () => {
     setIsYearPickerVisible(true);
@@ -90,14 +101,14 @@ const Dashboard = () => {
 
   const Filtah = () => {
     return (
-      <View className="mt-2">
+      <View className="">
         <View className="flex-row justify-end">
           <TouchableOpacity
             onPress={handleFilterPress}
             style={{
               flexDirection: "row",
               alignItems: "center",
-              borderRadius: 4,
+              borderRadius: 10,
               backgroundColor: "white",
               shadowColor: "#000", // Warna bayangan
               shadowOffset: { width: 0, height: 2 }, // Posisi bayangan
@@ -105,12 +116,11 @@ const Dashboard = () => {
               shadowRadius: 3.84, // Radius bayangan
               elevation: 5, // Untuk Android
             }}
-            className="px-4 mt-2 py-3">
+            className="px-3 py-2">
             <IonIcons name="calendar" size={24} color="black" />
             <Text className="text-black font-poppins-regular mx-2">
               {tahun}
             </Text>
-
             <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
           </TouchableOpacity>
         </View>
@@ -215,26 +225,74 @@ const Dashboard = () => {
             }}
           />
 
-          <View className="min-h-[100px] relative shadow-lg bottom-4 z-10 mb-11">
+          {/* <View className="mr-8">
+            <Filtah tahun={tahun} onYearChange={handleYearChange} />
+          </View> */}
+
+          <View className="items-center justify-center top-5">
+            <Text className="text-white text-2xl items-center justify-center font-poppins-bold">
+              Selamat Datang
+            </Text>
+          </View>
+
+          <View className="min-h-[100px] relative shadow-lg bottom-1 z-10 mb-11">
             <View style={styles.welcomeCard}>
-              <View style={styles.headerSection}>
-                <Text className="text-center" style={styles.headerTitle}>
-                  Dashboard
+              {userData ? (
+                <View className="flex-row items-center">
+                  <FastImage
+                    className="rounded-full"
+                    style={{ width: 60, height: 60 }}
+                    source={
+                      userData?.photo
+                        ? { uri: `${process.env.APP_URL}${userData.photo}` }
+                        : DefaultAvatar
+                    }
+                    defaultSource={DefaultAvatar}
+                    resizeMode={FastImage.resizeMode.cover}
+                  />
+                  <View className="ml-3">
+                    <Text className="font-poppins-semibold text-lg text-black">
+                      {userData.nama}
+                    </Text>
+                    <Text className="font-poppins-regular text-sm text-gray-600">
+                      {userData.email}
+                    </Text>
+                  </View>
+                </View>
+              ) : (
+                <Text className="font-poppins-regular text-sm text-gray-600 text-center">
+                  Silakan login untuk mengakses data Anda.
                 </Text>
-                <Text className="text-center" style={styles.headerSubtitle}>
-                  {new Date().toLocaleDateString("id-ID", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
-                </Text>
-              </View>
-              <Filtah tahun={tahun} onYearChange={handleYearChange} />
+              )}
             </View>
           </View>
         </ImageBackground>
-        <View className="mt-5">
+
+        <View style={styles.welcomeCard} className="mt-44">
+          <View className="flex-row items-center justify-center">
+            <Text className="text-black text-sm font-poppins-regular">
+              Pilih Tahun Data Dashboard :{" "}
+            </Text>
+            <TouchableOpacity
+              className="flex-row bg-red-200 px-2 py-1 rounded-lg"
+              onPress={handleFilterPress}>
+              <Text className="text-black font-poppins-regular">{tahun}</Text>
+              <AntDesign
+                name="caretdown"
+                size={10}
+                style={{ color: "black", marginLeft: 3, marginTop: 4 }}
+              />
+            </TouchableOpacity>
+          </View>
+          <YearPicker
+            visible={isYearPickerVisible}
+            onClose={() => setIsYearPickerVisible(false)}
+            onSelect={handleYearChange}
+            selectedYear={tahun}
+          />
+        </View>
+
+        <View className="mt-14">
           {user.has_tagihan && (
             <View style={styles.warningContainer}>
               <View style={styles.warningContent}>
@@ -258,7 +316,7 @@ const Dashboard = () => {
 
         <ScrollView
           contentContainerStyle={styles.scrollViewContainer}
-          className="mt-10"
+          // className="mt-2"
           showsVerticalScrollIndicator={false}>
           <View style={styles.dashboardContainer} className="mb-8">
             {dashboard ? (
@@ -343,7 +401,7 @@ const styles = StyleSheet.create({
     zIndex: 10,
     borderRadius: 12,
     width: "85%",
-    top: 55,
+    top: 35,
     alignItems: "center",
     marginHorizontal: 31,
     position: "absolute",
@@ -455,7 +513,7 @@ const styles = StyleSheet.create({
   cardAccent: {
     position: "absolute",
     top: -130,
-    right: -150,
+    right: -140,
     width: 220,
     height: 220,
     borderRadius: 200,
