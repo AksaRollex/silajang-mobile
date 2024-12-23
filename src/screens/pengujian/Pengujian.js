@@ -131,7 +131,7 @@ export default function Pengujian() {
                     </View>
                   )}
                   right={props => (
-                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
                   )}
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("Kontrak")}
@@ -144,7 +144,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-green-600 rounded-full">
                   <Ionicons name="checkmark-done" size={17} color={'white'} style={{padding: 5}}/>
@@ -160,7 +160,7 @@ export default function Pengujian() {
             <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-indigo-600 rounded-full">
                   <Ionicons name="people" size={17} color={'white'} style={{padding: 5}}/>
@@ -176,7 +176,7 @@ export default function Pengujian() {
               <List.Item
                 style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-cyan-600 rounded-full">
                   <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
@@ -201,7 +201,7 @@ export default function Pengujian() {
               <List.Item
               style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-yellow-400 rounded-full">
                   <Ionicons name="analytics" size={17} color={'white'} style={{padding: 5}}/>
@@ -217,7 +217,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-red-600 rounded-full">
                   <Ionicons name="settings" size={17} color={'white'} style={{padding: 5}}/>
@@ -233,7 +233,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-sky-600 rounded-full">
                   <Ionicons name="print" size={17} color={'white'} style={{padding: 5}}/>
@@ -249,7 +249,7 @@ export default function Pengujian() {
               <List.Item
               style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-amber-600 rounded-full">
                   <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
@@ -274,7 +274,7 @@ export default function Pengujian() {
               <List.Item
               style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-rose-600 rounded-full">
                   <Ionicons name="newspaper" size={17} color={'white'} style={{padding: 5}}/>
@@ -290,7 +290,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-lime-600 rounded-full">
                   <Ionicons name="create" size={17} color={'white'} style={{padding: 5}}/>
@@ -306,7 +306,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-teal-600 rounded-full">
                   <Ionicons name="list" size={17} color={'white'} style={{padding: 5}}/>
@@ -322,7 +322,7 @@ export default function Pengujian() {
               <View>
               <List.Item
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-fuchsia-500 rounded-full">
                   <Ionicons name="reader" size={17} color={'white'} style={{padding: 5}}/>
@@ -338,7 +338,7 @@ export default function Pengujian() {
               <List.Item
               style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.grey} />}
+                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
                   <View className="bg-emerald-500 rounded-full">
                   <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>

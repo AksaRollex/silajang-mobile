@@ -1,5 +1,6 @@
-import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal, ScrollView } from "react-native";
+import React, { useState, useCallback, useRef, useEffect,  } from "react";
+import { View, Text, TouchableOpacity, Modal, ScrollView, Platform, } from "react-native";
+import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
@@ -96,9 +97,60 @@ const Global = ({ navigation }) => {
     })()
   })
 
+  useEffect(() => {
+    console.log(`/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`)
+  })
+  
+
+  const requestStoragePermission = async () => {
+    try {
+      const permission = Platform.select({
+        android: Platform.Version >= 33 
+          ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES  // For Android 13 and above
+          : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
+        ios: PERMISSIONS.IOS.MEDIA_LIBRARY,
+      });
+  
+      const result = await request(permission);
+      
+      switch (result) {
+        case RESULTS.GRANTED:
+          console.log('Storage permission granted');
+          return true;
+        case RESULTS.DENIED:
+          console.log('Storage permission denied');
+          Toast.show({
+            type: 'error',
+            text1: 'Izin Ditolak',
+            text2: 'Izin penyimpanan diperlukan untuk mengunduh file',
+          });
+          return false;
+        case RESULTS.BLOCKED:
+          console.log('Storage permission blocked');
+          Toast.show({
+            type: 'error',
+            text1: 'Izin Diblokir',
+            text2: 'Mohon aktifkan izin penyimpanan di pengaturan aplikasi',
+          });
+          return false;
+        default:
+          return false;
+      }
+    } catch (error) {
+      console.log('Error requesting storage permission:', error);
+      return false;
+    }
+  };
+  
   const downloadReport = async () => {
     try {
-      const response = await axios.get(`pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`, {
+      const hasPermission = await requestStoragePermission();
+      
+      if (!hasPermission) {
+        return;
+      }
+  
+      const response = await axios.get(`/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },

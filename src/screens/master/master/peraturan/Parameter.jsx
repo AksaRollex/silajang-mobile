@@ -11,7 +11,7 @@ import axios from '@/src/libs/axios';
 import Icon from 'react-native-vector-icons/FontAwesome6';
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
-import IonIcons from "react-native-vector-icons/Ionicons";
+import IonIcon from "react-native-vector-icons/Ionicons";
 
 
 const ParameterPeraturan = ({ navigation, route }) => {
@@ -82,7 +82,7 @@ const ParameterPeraturan = ({ navigation, route }) => {
           onPress={() => !isAdding && addParameter(item.uuid)}
           disabled={isAdding}
         >
-          <IonIcons name="add" size={18} color="#fff" />
+          <IonIcon name="add" size={18} color="#fff" />
         </TouchableOpacity>
       </View>
     </View>
@@ -111,7 +111,7 @@ const ParameterPeraturan = ({ navigation, route }) => {
               onPress={() => !isRemoving && removeParameter(item.uuid)}
               disabled={isRemoving}
             >
-              <IonIcons name="trash" size={18} color="#fff" />
+              <IonIcon name="trash" size={18} color="#fff" />
             </TouchableOpacity>
           </View>
           
@@ -138,14 +138,19 @@ const ParameterPeraturan = ({ navigation, route }) => {
 
   return (
     <ScrollView className="flex-1">
-      <View className="items-center justify-center mt-4 mb-2">
-        <View className="absolute left-4">
-          <BackButton action={() => navigation.goBack()} size={26} />
-        </View>
-        <Text className="text-[20px] font-poppins-semibold text-black">
-          Parameter Peraturan
-        </Text>
-      </View>
+       <View
+             className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+             style={{ backgroundColor: "#fff" }}>
+               <IonIcon
+                 name="arrow-back-outline"
+                 onPress={() => navigation.goBack()}
+                 size={25}
+                 color="#312e81"
+               />
+               <Text className="text-lg font-poppins-semibold ml-3 text-black">
+                 Parameter
+               </Text>
+           </View>
 
       <View className="flex-1 p-3">
         <View className="bg-white rounded-md shadow-md">

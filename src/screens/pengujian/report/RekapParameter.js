@@ -250,10 +250,10 @@ const RekapParameter = ({ navigation }) => {
                     />
 
                     <TouchableOpacity
-                        className="bg-gray-200 py-2 px-4 rounded-lg mt-4"
+                        className="bg-red-500 py-2 px-4 rounded-lg mt-4"
                         onPress={() => setShowDetailModal(false)}
                     >
-                        <Text className="text-center font-poppins-semibold">Tutup</Text>
+                        <Text className="text-center font-poppins-semibold text-white">Tutup</Text>
                     </TouchableOpacity>
                 </View>
             </View>
@@ -396,8 +396,8 @@ const RekapParameter = ({ navigation }) => {
                 onPress={handlePreviewPDF}
                 style={{
                     position: 'absolute',
-                    bottom: 75,
-                    right: 20,
+                    bottom: 25,
+                    right: 15 ,
                     backgroundColor: '#dc2626',
                     borderRadius: 50,
                     width: 55,

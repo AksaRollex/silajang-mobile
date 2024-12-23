@@ -101,7 +101,7 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
       <View className="flex-1 justify-center items-center bg-black/50">
         <View className="bg-white rounded-lg w-[90%] p-4">
           <View className="flex-row justify-between items-center mb-4">
-            <Text className="text-lg font-poppins-semibold">Ajukan TTE Kendali Mutu</Text>
+            <Text className="text-lg font-poppins-semibold text-black">Ajukan TTE Kendali Mutu</Text>
             <TouchableOpacity onPress={onClose}>
               <MaterialIcons name="close" size={24} color="black" />
             </TouchableOpacity>
@@ -130,7 +130,7 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
               >
                 <View className="border border-gray-300 rounded-md p-3">
                   <View className="flex-row justify-between items-center">
-                    <Text className="font-poppins-semibold">
+                    <Text className="font-poppins-semibold text-black">
                       {ttds.find(t => t.id.toString() === formData.tanda_tangan_id)?.text || 'Pilih TTD'}
                     </Text>
                     <MaterialIcons name="arrow-drop-down" size={24} color="black" />
@@ -146,7 +146,7 @@ const TTEModal = ({ visible, onClose, onSubmit }) => {
             </Text>
             <View className="relative">
               <TextInput
-                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12 text-black"
                 secureTextEntry={!showPassword}
                 value={formData.passphrase}
                 onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}

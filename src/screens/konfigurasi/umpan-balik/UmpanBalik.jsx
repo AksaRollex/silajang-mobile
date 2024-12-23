@@ -657,7 +657,7 @@ const UmpanBalik = ({ navigation }) => {
       onPress={() => setDownloadModalVisible(true)}
       style={{
         position: 'absolute',
-        bottom: 1,
+        bottom: 25,
         right: 20,
         backgroundColor: '#177a44',
         borderRadius: 50,

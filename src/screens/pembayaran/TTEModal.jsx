@@ -77,7 +77,7 @@ const TTEModal = ({ visible, onClose, onSubmit,}) => {
             <View className="flex-1 justify-center items-center bg-black/50">
                 <View className="bg-white rounded-lg w-[90%] p-4">
                     <View className="flex-row justify-between items-center mb-4">
-                        <Text className="text-lg font-poppins-semibold">Ajukan TTE</Text>
+                        <Text className="text-lg font-poppins-semibold text-black">Ajukan TTE</Text>
                         <TouchableOpacity onPress={onClose}>
                             <AntDesign name="close" size={24} color="black" />
                         </TouchableOpacity>
