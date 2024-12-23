@@ -85,8 +85,8 @@ const RekapData = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState('');
   const { setHeader } = useHeaderStore();
 
-  const [selectedStartDate, setSelectedStartDate] = useState(null);
-  const [selectedEndDate, setSelectedEndDate] = useState(null);
+const [selectedStartDate, setSelectedStartDate] = useState(moment().startOf('month').format('YYYY-MM-DD'));
+    const [selectedEndDate, setSelectedEndDate] = useState(moment().format('YYYY-MM-DD'));
 
   const [pdfError, setPdfError] = useState(false);
     const [pdfLoaded, setPdfLoaded] = useState(false);
@@ -279,7 +279,7 @@ const RekapData = ({ navigation }) => {
       backgroundColor: '#e0e7ff', // Lighter indigo background
     },
     selectedDayTextStyle: {
-      color: '#312e81',
+      color: 'white',
       fontWeight: '600',
     },
     dateNameStyle: {
@@ -428,8 +428,8 @@ const RekapData = ({ navigation }) => {
         onPress={handlePreviewPDF}
         style={{
           position: 'absolute',
-          bottom: 75,
-          right: 20,
+          bottom: 25,
+          right: 15,
           backgroundColor: '#dc2626',
           borderRadius: 50,
           width: 55,
@@ -458,7 +458,7 @@ const RekapData = ({ navigation }) => {
           <CalendarPicker
               allowRangeSelection={true}
               onDateChange={onDateChange}
-              selectedDayColor="#312e81"
+              selectedDayColor="#3730a3"
               selectedDayTextColor="#ffffff"
               todayBackgroundColor="#e0e7ff"
               todayTextStyle={{ color: '#312e81'}} 
