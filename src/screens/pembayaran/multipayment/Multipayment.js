@@ -637,10 +637,9 @@ const Pengujian = ({ navigation }) => {
               Multipayment
             </Text>
           </View>
-          <View className=" w-full h-full  ">
+          <View className=" w-full h-full pb-12  ">
             <Paginate
               key={refreshKey}
-              className="mb-20"
               url="/pembayaran/multi-payment"
               Plugin={filtah}
               payload={{ tahun, bulan }}

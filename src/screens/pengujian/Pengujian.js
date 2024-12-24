@@ -16,6 +16,7 @@ import { useNavigation } from "@react-navigation/native";
 import { useUser } from "@/src/services";
 import axios from "@/src/libs/axios";
 import { useQuery } from "@tanstack/react-query";
+import FooterText from "../components/FooterText";
 const { width } = Dimensions.get("window");
 
 export default function Pengujian() {
@@ -244,6 +245,7 @@ export default function Pengujian() {
                 </View>
               )}
             </View>
+            <FooterText />
           </ScrollView>
         </ScrollView>
       </View>

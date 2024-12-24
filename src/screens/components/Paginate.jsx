@@ -18,6 +18,7 @@ import {
   Platform,
   Image,
   Dimensions,
+  StyleSheet,
 } from "react-native";
 import { useForm, Controller } from "react-hook-form";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
@@ -26,6 +27,7 @@ import { Skeleton } from "@rneui/themed";
 import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
 import Icons from "react-native-vector-icons/Feather";
+import FooterText from "./FooterText";
 const windowWidth = Dimensions.get("window").width;
 // Aktivasi LayoutAnimation di Android
 if (
@@ -137,7 +139,7 @@ const Paginate = forwardRef(
                 }`}>
                 <View className={props.plugan ? "" : "flex-1 relative"}>
                   <TextInput
-                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px- "
+                    className="w-full text-base border bg-white pr-12 text-black border-gray-300 rounded-md px-4 "
                     value={value}
                     placeholderTextColor={"grey"}
                     placeholder="Cari..."
@@ -181,6 +183,25 @@ const Paginate = forwardRef(
             }}
           />
         )}
+      </View>
+    );
+
+    const Footer = () => (
+      <View style={styles.footer}>
+        <View
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}>
+          <Text style={styles.footerText}>
+            {new Date().getFullYear()} © SI-LAJANG v.3
+          </Text>
+          <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
+        </View>
+        <Text style={styles.footerText}>
+          DINAS LINGKUNGAN HIDUP KAB.JOMBANG
+        </Text>
       </View>
     );
 
@@ -374,9 +395,44 @@ const Paginate = forwardRef(
             </View>
           )}
         />
+        <View style={styles.footer}>
+          <View
+            style={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+            }}>
+            <Text style={styles.footerText}>
+              {new Date().getFullYear()} © SI-LAJANG v.3
+            </Text>
+            <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
+          </View>
+          <Text style={styles.footerText}>
+            DINAS LINGKUNGAN HIDUP KAB.JOMBANG
+          </Text>
+        </View>
       </View>
     );
   },
 );
 
 export default memo(Paginate);
+const styles = StyleSheet.create({
+  footer: {
+    paddingVertical: 10,
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  footerText: {
+    alignSelf: "center",
+    color: "grey",
+    fontSize: 10,
+    fontFamily: "Poppins-Regular",
+  },
+  footerTexts: {
+    alignSelf: "center",
+    color: "grey",
+    fontSize: 10,
+    fontFamily: "Poppins-Bold",
+  },
+});

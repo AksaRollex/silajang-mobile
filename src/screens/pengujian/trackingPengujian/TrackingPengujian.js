@@ -216,11 +216,10 @@ const TrackingPengujian = ({ navigation }) => {
               Tracking Pengujian
             </Text>
           </View>
-          <View className="w-full h-full">
+          <View className="w-full h-full pb-12">
             <Paginate
               key={refreshKey}
               url="/tracking"
-              className="mb-20"
               Plugin={filtah}
               ref={paginateRef}
               payload={{ tahun: tahun }}
