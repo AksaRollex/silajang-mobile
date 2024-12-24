@@ -73,6 +73,15 @@ const PenerimaSampel = ({ navigation }) => {
   const [revisionModalVisible, setRevisionModalVisible] = useState(false);
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
+  const [pdfError, setPdfError] = useState(false);
+    const [pdfLoaded, setPdfLoaded] = useState(false);
+  
+    useEffect(() => {
+      if (openModal) {
+        setPdfLoaded(false);
+        setPdfError(false);
+      }
+    }, [openModal]);
 
   const { setHeader } = useHeaderStore();
 
@@ -409,13 +418,13 @@ const PenerimaSampel = ({ navigation }) => {
     );
   };
 
-  if (isLoadingData) {
-    return (
-      <View className="h-full flex justify-center">
-        <ActivityIndicator size={"large"} color={"#312e81"} />
-      </View>
-    );
-  }
+  // if (isLoadingData) {
+  //   return (
+  //     <View className="h-full flex justify-center">
+  //       <ActivityIndicator size={"large"} color={"#312e81"} />
+  //     </View>
+  //   );
+  // }
 
   return (
  <View className="bg-[#ececec] w-full h-full">
@@ -579,32 +588,78 @@ const PenerimaSampel = ({ navigation }) => {
       </Modal>
 
       <Modal
-        animationType="slide"
         transparent={true}
+        animationType="slide"
         visible={openModal}
-        onRequestClose={() => setOpenModal(false)}
-      >
+        onRequestClose={() => setOpenModal(false)}>
         <View className="flex-1 justify-center items-center bg-black bg-black/50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
             <View className="flex-row justify-between items-center p-4">
-              <Text className="text-lg font-poppins-semibold text-black">Preview PDF</Text>
-              <TouchableOpacity onPress={() => {
-                handleDownloadPDF();
-                setModalVisible(false);
-              }} className=" p-2 rounded flex-row items-center">
+              <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+              <TouchableOpacity
+                onPress={() => {
+                  handleDownloadPDF();
+                  setModalVisible(false);
+                }}
+                className="p-2 rounded flex-row items-center">
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
-            <Pdf
-              source={{ uri: reportUrl, cache: true }}
-              style={{ flex: 1 }}
-              trustAllCerts={false}
-            />
-            <View className="flex-row justify-between m-4">
-              <TouchableOpacity onPress={() => setOpenModal(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
-              </TouchableOpacity>
-            </View>
+
+            {!pdfLoaded && !pdfError && (
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor : "#ececec"  }}>
+                <ActivityIndicator size="large" color="#312e81" style={{ top:180 }} />
+                <Text className="mt-2 text-black font-poppins-medium" style={{ top:175 }}>Memuat PDF...</Text>
+              </View>
+            )}
+
+            {!pdfError && (
+              <Pdf
+                key={reportUrl}
+                source={{ uri: reportUrl, cache: true }}
+                style={{
+                  flex: 1,
+                }}
+                trustAllCerts={false}
+                onLoadComplete={(numberOfPages) => {
+                  setPdfLoaded(true);
+                  console.log(`Number Of Page: ${numberOfPages}`);
+                }}
+                onPageChanged={(page, numberOfPages) => {
+                  console.log(`Current page ${page}`);
+                }}
+                onError={(error) => {
+                  setPdfError(true);
+                  setPdfLoaded(false);
+                  console.log('PDF loading error:', error);
+                }}
+                />
+              )}
+
+
+            {pdfError && (
+              <View className="flex-1 justify-center items-center self-center p-4">
+                <Text className="text-md text-black font-poppins-medium">PDF Tidak Ditemukan</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    setModalVisible(false);
+                    setPdfError(false);
+                  }}
+                  className="bg-red-100 py-2 px-5 rounded mt-1 self-center">
+                  <Text className="text-red-500 font-poppins-medium">Tutup</Text>
+                </TouchableOpacity>
+              </View>
+            )}
+
+            {pdfLoaded && (
+              <View className="flex-row justify-between m-4">
+                <TouchableOpacity
+                  onPress={() => setOpenModal(false)}
+                  className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                  <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                </TouchableOpacity>
+              </View>
+            )}
           </View>
         </View>
       </Modal>

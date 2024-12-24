@@ -329,43 +329,44 @@ const UmpanBalik = ({ navigation }) => {
     try {
       const response = await axios.get('konfigurasi/umpan-balik/template', {
         headers: {
-          Authorization: `Bearer ${authToken}`, // Menambahkan Authorization header
+          Authorization: `Bearer ${authToken}`,
         },
-        responseType: 'arraybuffer', // Konfigurasi respons biner
+        responseType: 'arraybuffer',
       });
-
-      const contentDisposition = response.headers['content-disposition'];
-      let fileName = 'Template Import Umpan Balik.xlsx'; // Nama default jika tidak ada header
-
-      if (contentDisposition && contentDisposition.includes('filename=')) {
-        const matches = contentDisposition.match(/filename="(.+?)"/);
-        if (matches && matches[1]) {
-          fileName = matches[1];
-        }
-      }
-
-      // Tentukan path untuk menyimpan file
-      const path = Platform.OS === "ios" ? `${RNFS.DocumentDirectoryPath}/${fileName}` : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-
-      // Konversi buffer ke string ASCII untuk menyimpan file
+  
+      // Generate unique filename with timestamp
+      const timestamp = new Date().getTime();
+      const fileName = `Template_Import_Umpan_Balik_${timestamp}.xlsx`;
+  
+      // Determine path based on platform
+      const path = Platform.OS === "ios" 
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}` 
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+  
+      // Convert buffer to ASCII string
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
-
-      // Menyimpan file ke perangkat lokal
+  
+      // Save file
       await RNFS.writeFile(path, fileContent, 'ascii');
-
+  
       console.log('File berhasil diunduh dan disimpan di:', path);
-
+  
       Toast.show({
         type: 'success',
         text1: 'Berhasil!',
-        text2: 'File berhasil diunduh',
-      })
+        text2: 'Template berhasil diunduh',
+      });
     } catch (error) {
       console.error('Error saat mengunduh file:', error);
+  
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal!',
+        text2: 'Tidak dapat mengunduh template',
+      });
     }
-  }
-
+  };
   const renderDownloadConfirmationModal = () => (
     <Modal
       animationType="fade"
@@ -733,7 +734,7 @@ const UmpanBalik = ({ navigation }) => {
               editable={false}
             />
             <TextInput
-              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular"
+              className="border border-gray-300 rounded-lg p-3 mb-6 font-poppins-regular text-black"
               value={formData.keterangan}
               onChangeText={(text) => setFormData((prev) => ({ ...prev, keterangan: text }))}
               multiline
@@ -836,7 +837,7 @@ const UmpanBalik = ({ navigation }) => {
             )}
           </View>
         </View>
-        <View className="mt-12 mb-8">
+        <View className="mt-6 mb-8">
           <TextFooter />
         </View>
       </ScrollView>

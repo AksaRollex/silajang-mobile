@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform } from "react-native";
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
@@ -32,31 +32,31 @@ const bulans = [
 ];
 
 export default function DetailKontrak({ route, navigation }) {
-    const { uuid } = route.params
-    const [data, setData] = useState(null)
-    const [checked, setChecked] = useState()
-    const [loading, setLoading] = useState(true)
-    const [reportUrl, setreportUrl] = useState("");
+    const { uuid } = route.params;
+    const [data, setData] = useState(null);
+    const [checked, setChecked] = useState();
+    const [loading, setLoading] = useState(true);
+    const [downloading, setDownloading] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`/administrasi/kontrak/${uuid}`)
-                setData(response.data.data)
-                if (
-                    response.data.data &&
-                    response.data.data.kesimpulan_kontrak !== undefined
-                ) {
-                    setChecked(response.data.data.kesimpulan_kontrak)
-                }
-                setLoading(false)
-            } catch (error) {
-                console.error("Error fetching data:", error)
-                setLoading(false)
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`/administrasi/kontrak/${uuid}`)
+            setData(response.data.data)
+            if (
+                response.data.data &&
+                response.data.data.kesimpulan_kontrak !== undefined
+            ) {
+                setChecked(response.data.data.kesimpulan_kontrak)
             }
+            setLoading(false)
+        } catch (error) {
+            console.error("Error fetching data:", error)
+            setLoading(false)
         }
+    }
 
+    useEffect(() => {
         fetchData()
     }, [uuid])
 
@@ -66,6 +66,11 @@ export default function DetailKontrak({ route, navigation }) {
             await saveStatus(value);
         } catch (error) {
             console.error("Error saving status:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Gagal mengupdate status kontrak',
+            });
         }
     };
 
@@ -76,11 +81,43 @@ export default function DetailKontrak({ route, navigation }) {
             });
 
             setIsUpdateModalVisible(true);
-
             await fetchData();
+
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Status kontrak berhasil diperbarui',
+            });
         } catch (error) {
             console.error("Error saving status:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Gagal menyimpan status',
+            });
         }
+    };
+
+    const requestStoragePermission = async () => {
+        if (Platform.OS === 'android') {
+            try {
+                const granted = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: "Storage Permission",
+                        message: "Application needs access to your storage to download files",
+                        buttonNeutral: "Ask Me Later",
+                        buttonNegative: "Cancel",
+                        buttonPositive: "OK"
+                    }
+                );
+                return granted === PermissionsAndroid.RESULTS.GRANTED;
+            } catch (err) {
+                console.error(err);
+                return false;
+            }
+        }
+        return true;
     };
 
     const formattedBulan = useMemo(() => {
@@ -95,18 +132,36 @@ export default function DetailKontrak({ route, navigation }) {
 
     const HandleDownloadFile = async () => {
         if (data?.kontrak?.dokumen_permohonan) {
+            const hasPermission = await requestStoragePermission();
+            if (!hasPermission) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Storage permission denied',
+                });
+                return;
+            }
+
+            setDownloading(true);
             const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
-            const fileName = 'Dokumen Permohonan';
-            const fileExtension = fileUrl.split('.').pop();
-            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`;
+            const fileName = 'Dokumen_Permohonan';
+            const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop();
+
+            // Use the proper directory path based on platform
+            const downloadPath = Platform.OS === 'ios'
+                ? `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`
+                : `${RNFS.DownloadDirectoryPath}/${fileName}.${fileExtension}`;
 
             try {
                 const options = {
                     fromUrl: fileUrl,
-                    toFile: localFilePath,
+                    toFile: downloadPath,
+                    background: true,
+                    progressDivider: 1,
                 };
 
-                const result = await RNFS.downloadFile(options).promise;
+                const download = RNFS.downloadFile(options);
+                const result = await download.promise;
 
                 if (result.statusCode === 200) {
                     Toast.show({
@@ -124,6 +179,8 @@ export default function DetailKontrak({ route, navigation }) {
                     text1: 'Error',
                     text2: 'Failed to download the file',
                 });
+            } finally {
+                setDownloading(false);
             }
         } else {
             Toast.show({
@@ -133,7 +190,6 @@ export default function DetailKontrak({ route, navigation }) {
             });
         }
     };
-
 
     if (loading) {
         return (
@@ -271,9 +327,14 @@ export default function DetailKontrak({ route, navigation }) {
                             <View className="flex-row items-center mb-[15px]">
                                 <TouchableOpacity
                                     className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]"
-                                    onPress={() => HandleDownloadFile()}
+                                    onPress={HandleDownloadFile}
+                                    disabled={downloading}
                                 >
-                                    <Octicons name="download" size={32} color="black" />
+                                    {downloading ? (
+                                        <ActivityIndicator size="small" color="#000" />
+                                    ) : (
+                                        <Octicons name="download" size={32} color="black" />
+                                    )}
                                 </TouchableOpacity>
                                 <View className="flex-1">
                                     <Text className="text-[14px] text-[#666666] font-poppins-regular">Dokumen Permohonan</Text>

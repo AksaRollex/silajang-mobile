@@ -195,12 +195,12 @@ const DetailMulti = ({ route, navigation }) => {
             {/* <Text className="ml-2 font-poppins-semibold text-black mt-2 text-[20px]">{formData.kode}</Text> */}
             {/* Selected Points */}
             <View className="mb-4">
-              <Text className="text-base font-semibold ml-2 text-black  mt-2">Titik Permohonan Dipilih :</Text>
+              <Text className="text-base font-poppins-semibold ml-2 text-black  mt-2">Titik Permohonan Dipilih :</Text>
               <View className="flex-row flex-wrap gap-2 p-3 ml-0.5 mt-3 bg-gray-50 rounded-lg">
                 {formData.multi_payments?.map(item => (
 
                   <View key={item.titik_permohonan.uuid} className="bg-blue-100 px-3 py-1.5 mb-2 rounded-full">
-                    <Text className="text-blue-700 text-sm">{item.titik_permohonan.kode}</Text>
+                    <Text className="text-blue-700 text-sm font-poppins-regular">{item.titik_permohonan.kode}</Text>
                   </View>
                 ))}
               </View>
@@ -289,11 +289,13 @@ const DetailMulti = ({ route, navigation }) => {
                 <Text className="text-lg font-semibold text-black">Nominal Pembayaran : </Text>
               </View> */}
               <View className="p-3 bg-gray-50 rounded-lg">
-                <Text className="text-sm font-semibold text-black">
+                <Text className="text-black font-poppins-medium mb-1 text-sm">Atas Nama : </Text>
+                <Text className="text-base font-poppins-semibold text-black">
                   {formData.multi_payments?.[0]?.titik_permohonan?.permohonan?.user?.nama}
                 </Text>
-                <View className="flex-row justify-between items-center mt-2">
-                  <Text className="text-xl font-bold text-blue-600">
+                <Text className="text-black font-poppins-medium mt-5 mb-1 text-sm">Total Harga : </Text>
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-xl font-poppins-semibold text-blue-600">
                     {currency(formData.jumlah)}
                   </Text>
                 </View>
@@ -362,7 +364,7 @@ const DetailMulti = ({ route, navigation }) => {
 
         </View>
       </View>
-      <View className="mt-[64%]">
+      <View className="mt-[50%]">
         <TextFooter />
       </View>
     </ScrollView>

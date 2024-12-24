@@ -85,47 +85,55 @@ const ListItemSkeleton = () => (
 );
 
 
-// Search form comkelponent
-const SearchForm = ({ control, onSubmit, isLoading, handleSearch }) => (
-  <View className="flex-row mb-4 items-center">
+
+// Search form component
+const SearchForm = ({ control, onSubmit, handleSearch }) => (
+  <View className="mb-4">
     <Controller
       control={control}
       name="search"
       defaultValue=""
       render={({ field: { onChange, value } }) => (
-        <View className="flex-1 relative">
-          <TextInput
-            className="flex-1 text-base border text-black bg-white px-3 pr-8 border-gray-300 rounded-md mr-3 font-poppins-regular"
-            value={value}
-            onChangeText={onChange}
-            placeholder="Cari..."
-            editable={!isLoading}
-            onSubmitEditing={() => {
-              handleSearch(value);
-            }}
-          />
-          {value.length > 0 && (
-            <TouchableOpacity
-              className="absolute right-5 top-0 bottom-0 justify-center"
-              onPress={() => {
-                onChange('');
-                handleSearch(''); 
+        <View className="relative">
+          <View className="flex-row items-center bg-white rounded-lg border border-gray-200 px-3 shadow-sm">
+            <TextInput
+              className="flex-1 text-base py-3 text-black font-poppins-regular"
+              value={value}
+              onChangeText={(text) => {
+                onChange(text);
+                // Jika input dikosongkan, langsung refetch
+                if (text.length === 0) {
+                  handleSearch('');
+                }
               }}
+              placeholderTextColor={"#777"}
+              placeholder="Cari..."
+              onSubmitEditing={() => {
+                handleSearch(value);
+              }}
+            />
+            {value.length > 0 && (
+              <TouchableOpacity
+                onPress={() => {
+                  onChange('');
+                  handleSearch(''); 
+                }}
+                className="mr-0.5"
+              >
+                <Ionicons name="close-circle-outline" size={19} color="#9ca3af" />
+              </TouchableOpacity>
+            )}
+            <View className="h-12 w-[1px] bg-gray-200 mx-2 left-0.5" />
+            <TouchableOpacity
+              onPress={() => handleSearch(value)}
+              className="pl-2"
             >
-              <Ionicons name="close-circle-outline" size={16} color="#666666" />
+              <Icon name="search" size={20} color="#312e81" />
             </TouchableOpacity>
-          )}
+          </View>
         </View>
       )}
     />
-    <TouchableOpacity
-      className="bg-[#312e81] p-4 rounded-md justify-center"
-      onPress={onSubmit}
-      disabled={isLoading}
-      style={{ opacity: isLoading ? 0.7 : 1 }}
-    >
-      <Icon name="search" size={20} color="white" />
-    </TouchableOpacity>
   </View>
 );
 
@@ -200,14 +208,15 @@ const Paginate = forwardRef((props, ref) => {
 
 
   const handleSearch = (searchValue) => {
-    if (!searchValue.trim()) {
-      console.log("Kolom pencarian kosong. Harap masukkan kata kunci.");
-      return;
-    }
     setSearch(searchValue);
     setPage(1);
     refetch();
-    console.log(`Pencarian dimulai dengan kata kunci: ${searchValue}`);
+    
+    if (!searchValue.trim()) {
+      console.log("Melakukan refresh data karena pencarian kosong");
+    } else {
+      console.log(`Pencarian dimulai dengan kata kunci: ${searchValue}`);
+    }
   };
 
   // Query setup
@@ -302,7 +311,7 @@ const Paginate = forwardRef((props, ref) => {
         isFetchingMore={isFetchingMore}
       />
       <View className="mt-2 ">
-        <Text className="text-gray-600 text-center">
+        <Text className="text-gray-600 text-center font-poppins-regular">
           Menampilkan {data?.from} sampai {data?.to} dari {data?.total} hasil
         </Text>
       </View>

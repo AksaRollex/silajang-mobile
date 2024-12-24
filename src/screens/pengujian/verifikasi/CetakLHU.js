@@ -27,8 +27,6 @@ import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHeaderStore } from "@/src/screens/main/Index";
-
-// import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
 import RNFS, { downloadFile } from "react-native-fs";
@@ -71,13 +69,12 @@ const HasilUjis = ({ navigation, route }) => {
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
   const [tteModalVisible, setTteModalVisible] = useState(false);
-  // const [loadingProgress, setLoadingProgress] = useState(0);
   const [pdfError, setPdfError] = useState(false);
   const [pdfLoaded, setPdfLoaded] = useState(false);
   const [formTte, setFormTte] = useState({
     tanda_tangan_id: "",
     passphrase: "",
-    tipe: "1", // default value, adjust as needed
+    tipe: "1", 
   });
   const [previewReport, setPreviewReport] = useState(true);
   const [showPrintOptions, setShowPrintOptions] = useState(false);

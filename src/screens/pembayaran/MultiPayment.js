@@ -1,5 +1,5 @@
 import React, { useState, useCallback, useRef, useEffect } from "react";
-import { View, Text, TouchableOpacity, Modal, TextInput } from "react-native";
+import { View, Text, TouchableOpacity, Modal, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
 import BackButton from "@/src/screens/components/BackButton";
@@ -12,6 +12,10 @@ import { rupiah } from "@/src/libs/utils";
 import { useHeaderStore } from "../main/Index";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import { TextFooter } from "../components/TextFooter";
+import Feather from "react-native-vector-icons/Feather";
+import Pdf from "react-native-pdf";
+import { APP_URL } from "@env";
 
 
 const MultiPayment = ({ navigation }) => {
@@ -24,7 +28,9 @@ const MultiPayment = ({ navigation }) => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [tteType, setTteType] = useState('system');
   const [tteModalVisible, setTteModalVisible] = useState(false);
-
+  const [pdfError, setPdfError] = useState(false);
+  const [reportUrl, setReportUrl] = useState('');
+  const [pdfLoaded, setPdfLoaded] = useState(false);
 
   React.useLayoutEffect(() => {
     setHeader(false);
@@ -51,6 +57,21 @@ const MultiPayment = ({ navigation }) => {
       });
     }
     return years;
+  };
+  const handlePreviewSKRDPDF = async (item) => {
+    try {
+      const authToken = await AsyncStorage.getItem('@auth-token');
+      
+      setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/skrd?multi_payment=1&token=${authToken}`);
+      setModalVisible(true);
+    } catch (error) {
+      console.error('Preview SKRD PDF error:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Error',
+        text2: 'Gagal memuat PDF SKRD',
+      });
+    }
   };
 
   const handlePreviewReport = async () => {
@@ -545,7 +566,7 @@ const MultiPayment = ({ navigation }) => {
               ]}
               onPressAction={({ nativeEvent }) => {
                 if (nativeEvent.event === 'skrd') {
-                  handlePreviewSKRDPDF(item.uuid);
+                  handlePreviewSKRDPDF({uuid : item.uuid});
                 }
               }}
             >
@@ -712,19 +733,24 @@ const MultiPayment = ({ navigation }) => {
         </View>
       </Modal>
 
-      <Paginate
-        ref={paginateRef}
-        url="/pembayaran/multi-payment"
-        payload={{
-          type: selectedType,
-          tahun: selectedYear,
-          bulan: selectedMonth,
-          page: 1,
-          per: 10,
-        }}
-        renderItem={renderItem}
-        className="px-4 mb-4"
-      />
+      <ScrollView>
+        <Paginate
+          ref={paginateRef}
+          url="/pembayaran/multi-payment"
+          payload={{
+            type: selectedType,
+            tahun: selectedYear,
+            bulan: selectedMonth,
+            page: 1,
+            per: 10,
+          }}
+          renderItem={renderItem}
+          className="px-4 mb-4"
+        />
+        <View className="mb-5 mt-12">
+          <TextFooter ></TextFooter>
+        </View>
+      </ScrollView>
       <TouchableOpacity
         onPress={handlePreviewReport}
         className="absolute right-4 bg-red-400 px-4 py-3 rounded-full flex-row items-center"
@@ -753,6 +779,83 @@ const MultiPayment = ({ navigation }) => {
           onSubmit={handleTTESubmit}
           type={tteType}
         />
+
+        <Modal
+          transparent={true}
+          animationType="slide"
+          visible={modalVisible}
+          onRequestClose={() => setModalVisible(false)}>
+          <View className="flex-1 justify-center items-center bg-black bg-black/50">
+            <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+              <View className="flex-row justify-between items-center p-4">
+                <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+                <TouchableOpacity
+                  onPress={() => {
+                    handleDownloadPDF();
+                    setModalVisible(false);
+                  }}
+                  className="p-2 rounded flex-row items-center">
+                  <Feather name="download" size={21} color="black" />
+                </TouchableOpacity>
+              </View>
+
+              {!pdfLoaded && !pdfError && (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#ececec" }}>
+                  <ActivityIndicator size="large" color="#312e81" style={{ top: 180 }} />
+                  <Text className="mt-2 text-black font-poppins-medium" style={{ top: 175 }}>Memuat PDF...</Text>
+                </View>
+              )}
+
+              {!pdfError && (
+                <Pdf
+                  key={reportUrl}
+                  source={{ uri: reportUrl, cache: true }}
+                  style={{
+                    flex: 1,
+                  }}
+                  trustAllCerts={false}
+                  onLoadComplete={(numberOfPages) => {
+                    setPdfLoaded(true);
+                    console.log(`Number Of Page: ${numberOfPages}`);
+                  }}
+                  onPageChanged={(page, numberOfPages) => {
+                    console.log(`Current page ${page}`);
+                  }}
+                  onError={(error) => {
+                    setPdfError(true);
+                    setPdfLoaded(false);
+                    console.log('PDF loading error:', error);
+                  }}
+                />
+              )}
+
+
+              {pdfError && (
+                <View className="flex-1 justify-center items-center self-center p-4">
+                  <Text className="text-md text-black font-poppins-medium">PDF Tidak Ditemukan</Text>
+                  <TouchableOpacity
+                    onPress={() => {
+                      setModalVisible(false);
+                      setPdfError(false);
+                    }}
+                    className="bg-red-100 py-2 px-5 rounded mt-1 self-center">
+                    <Text className="text-red-500 font-poppins-medium">Tutup</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+
+              {pdfLoaded && (
+                <View className="flex-row justify-between m-4">
+                  <TouchableOpacity
+                    onPress={() => setModalVisible(false)}
+                    className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                    <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                  </TouchableOpacity>
+                </View>
+              )}
+            </View>
+          </View>
+        </Modal>
 
       </TouchableOpacity>
     </View>

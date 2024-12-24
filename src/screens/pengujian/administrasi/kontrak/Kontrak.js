@@ -72,7 +72,7 @@ const Kontrak = ({ navigation }) => {
         <View className="flex-row flex-wrap justify-end gap-2">
           <TouchableOpacity
             onPress={() => navigation.navigate("DetailKontrak", { uuid: item.uuid })}
-            className="bg-indigo-900 px-3 py-2 rounded-md"
+            className="bg-indigo-500 px-3 py-2 rounded-md"
           >
             <View className="flex-row">
               <Ionicons name="eye-outline" size={17} color="white" style={{ marginRight: 5 }} />
