@@ -40,6 +40,7 @@ const UmpanBalik = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [downloadModalVisible, setDownloadModalVisible] = useState(false);
   const [resetModalVisible, setResetModalVisible] = useState(false);
+  const [isDownloading, setIsDownloading] = useState(false);
   const [isResetting, setIsResetting] = useState(false);
   const [importModalVisible, setImportModalVisible] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
@@ -326,6 +327,7 @@ const UmpanBalik = ({ navigation }) => {
   })
 
   const downloadTemplate = async () => {
+    setIsDownloading(true);
     try {
       const response = await axios.get('konfigurasi/umpan-balik/template', {
         headers: {
@@ -365,6 +367,9 @@ const UmpanBalik = ({ navigation }) => {
         text1: 'Gagal!',
         text2: 'Tidak dapat mengunduh template',
       });
+    } finally {
+      setIsDownloading(false);
+      setDownloadModalVisible(false);
     }
   };
   const renderDownloadConfirmationModal = () => (
@@ -379,35 +384,38 @@ const UmpanBalik = ({ navigation }) => {
           <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
             <FontAwesome5 size={40} color="#177a44" name="file-excel" />
           </View>
-
+  
           <Text className="text-xl font-poppins-semibold text-black mb-3">
             Konfirmasi Download
           </Text>
-
+  
           <View className="w-full h-px bg-gray-200 mb-4" />
-
+  
           <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
             Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
           </Text>
-
+  
           <View className="flex-row w-full justify-between">
             <TouchableOpacity
               onPress={() => {
                 downloadTemplate();
-                setDownloadModalVisible(false);
               }}
+              disabled={isDownloading}
               className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
             >
-              <Text className="text-white font-poppins-medium">Ya, Download</Text>
+              {isDownloading ? (
+                <ActivityIndicator size="small" color="white" />
+              ) : (
+                <Text className="text-white font-poppins-medium">Ya, Download</Text>
+              )}
             </TouchableOpacity>
-
+  
             <TouchableOpacity
               onPress={() => setDownloadModalVisible(false)}
               className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
             >
               <Text className="text-gray-700 font-poppins-medium">Batal</Text>
             </TouchableOpacity>
-
           </View>
         </View>
       </View>
@@ -431,41 +439,40 @@ const UmpanBalik = ({ navigation }) => {
       visible={resetModalVisible}
       onRequestClose={() => setResetModalVisible(false)}
     >
-      <View
-        style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
-        className="flex-1 justify-center items-center"
-      >
-        <View className="bg-white rounded-lg w-[90%] p-6">
-          <View className="flex-row justify-between items-center mb-6">
-            <Text className="text-lg font-poppins-medium text-black">Konfirmasi Reset</Text>
-            <TouchableOpacity onPress={() => setResetModalVisible(false)}>
-              <MaterialIcons name="close" size={24} color="black" />
-            </TouchableOpacity>
+      <View className="flex-1 justify-center items-center bg-black/50">
+        <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+          <View className="w-20 h-20 rounded-full bg-yellow-100 justify-center items-center mb-4">
+            <AntDesign name="sync" size={40} color="#facc15" />
           </View>
 
-          <View className="mb-6">
-            <Text className="text-base font-poppins-regular text-black text-center">
-              Apakah Anda yakin ingin mereset data tersebut?
-            </Text>
-          </View>
+          <Text className="text-xl font-poppins-semibold text-black mb-3">
+            Konfirmasi Reset
+          </Text>
 
-          <View className="flex-row justify-center gap-3">
+          <View className="w-full h-px bg-gray-200 mb-4" />
+
+          <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+            Apakah Anda yakin ingin mereset data tersebut?
+          </Text>
+
+          <View className="flex-row w-full justify-between">
             <TouchableOpacity
-              onPress={() => setResetModalVisible(false)}
-              className="px-6 py-2 bg-gray-400 rounded-lg"
-            >
-              <Text className="text-white font-poppins-medium">Batal</Text>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={handleResetData}
+              onPress={() => handleResetData()}
               disabled={isResetting}
-              className="px-6 py-2 bg-red-500 rounded-lg"
+              className="flex-1 mr-2 bg-yellow-400 py-3 rounded-xl items-center"
             >
               {isResetting ? (
                 <ActivityIndicator size="small" color="white" />
               ) : (
                 <Text className="text-white font-poppins-medium">Ya, Reset</Text>
               )}
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => setResetModalVisible(false)}
+              className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
+            >
+              <Text className="text-gray-700 font-poppins-medium">Batal</Text>
             </TouchableOpacity>
           </View>
         </View>

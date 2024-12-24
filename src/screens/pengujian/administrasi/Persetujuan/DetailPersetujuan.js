@@ -42,6 +42,7 @@ import { API_URL } from "@env";
 import Select2 from "@/src/screens/components/Select2";
 import { Controller, useForm } from "react-hook-form";
 import { useQuery } from "@tanstack/react-query";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const currency = number => {
   return number.toLocaleString("id-ID", {
@@ -1153,6 +1154,7 @@ export default function DetailPersetujuan({ route, navigation }) {
                 </View>
               </View>
             </View>
+            <TextFooter className="my-4"/>
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>

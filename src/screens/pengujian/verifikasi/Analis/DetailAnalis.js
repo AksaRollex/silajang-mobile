@@ -9,9 +9,11 @@ import {
   ActivityIndicator
 } from "react-native";
 import { Colors } from "react-native-ui-lib";
+import Toast from "react-native-toast-message";
 import Icon from "react-native-vector-icons/Feather";
 import axios from "@/src/libs/axios";
 import { API_URL } from "@env";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 const TopCard = ({ kode, onGoBack }) => {
   return (
@@ -75,6 +77,7 @@ const ParameterCard = ({ parameter, onSubmit }) => {
           <TextInput
             style={styles.input}
             value={parameter.pivot.hasil_uji}
+            keyboardType="numeric"
             onChangeText={value => {
               onSubmit(parameter.uuid, {
                 hasil_uji: value,
@@ -145,6 +148,13 @@ export default function HasilUji({ route, navigation }) {
       }));
     } catch (error) {
       console.error("Error updating parameter:", error);
+    }finally{
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil',
+        text2: 'Data berhasil disimpan',
+        visibilityTime: 1000,
+      })
     }
   };
 
@@ -182,8 +192,9 @@ export default function HasilUji({ route, navigation }) {
               />
             ))}
         </View>
-      </View>
-    </ScrollView>
+       </View>
+      <TextFooter/>
+  </ScrollView>
   );
 }
 
@@ -258,7 +269,7 @@ const styles = StyleSheet.create({
     fontSize: 12,
     color: Colors.grey40,
     marginTop: 2,
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Medium",
   },
   parameterContent: {
     paddingTop: 12,
@@ -277,13 +288,13 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: Colors.grey40,
     marginBottom: 4,
-    fontFamily: "Poppins-SemiBold",
+    fontFamily: "Poppins-Medium",
   },
   value: {
     fontSize: 16,
-    fontWeight: "500",
+    // fontWeight: "500",
     color: Colors.black,
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-SemiBold",
   },
   input: {
     backgroundColor: "#f0f0f0",
@@ -291,6 +302,6 @@ const styles = StyleSheet.create({
     padding: 12,
     fontSize: 16,
     color: Colors.black,
-    fontFamily: "Poppins-Regular",
+    fontFamily: "Poppins-Medium",
   },
 });

@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { Controller, useForm } from "react-hook-form";
 import { ArrowLeft, CheckCircle, XCircle } from "lucide-react-native";
+import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
 import { API_URL } from "@env";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
@@ -100,7 +101,19 @@ const HasilUjis = ({ route, navigation }) => {
 
   const handleUpdate = (index, updatedFields) => {
     const param = formData.parameters[index];
-    updateParam({ ...param, ...updatedFields });
+    updateParam({ 
+      ...param, 
+      ...updatedFields 
+    }, {
+      onSuccess: () => {
+        Toast.show({
+          type: "success",
+          text1: "Berhasil",
+          text2: "Parameter Berhasil Diperbarui",
+          visibilityTime: 1000
+        });
+      }
+    });
   };
 
   if (loading) {
@@ -133,6 +146,13 @@ const HasilUjis = ({ route, navigation }) => {
     } catch (error) {
       console.error("Error updating data:", error);
       // Handle error as needed
+    }finally {
+      Toast.show({
+        type: "success",
+        text1: "Berhasil",
+        text2: "Data Berhasil Diperbarui",
+        visibilityTime : 1000
+      })
     }
   };
 
@@ -169,25 +189,10 @@ const HasilUjis = ({ route, navigation }) => {
             {/* Test Results Interpretation */}
             <View>
               <View style={styles.parameterCard}>
-                <Text style={styles.sectionTitle} className="mx-5">
+                <Text style={styles.sectionTitle} className="mx-5 text-black">
                   Interpretasi Hasil Pengujian
                 </Text>
                 <View style={styles.radioGroup}>
-                  <TouchableOpacity
-                    style={[
-                      styles.radioButton,
-                      formData.memenuhi_hasil_pengujian === 0 &&
-                      styles.radioButtonSelected,
-                    ]}
-                    onPress={() => {
-                      setFormData(prev => ({
-                        ...prev,
-                        memenuhi_hasil_pengujian: 0,
-                      }));
-                      handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
-                    }}>
-                    <Text style={styles.radioText} className="text-black">Memenuhi Persyaratan</Text>
-                  </TouchableOpacity>
                   <TouchableOpacity
                     style={[
                       styles.radioButton,
@@ -198,6 +203,21 @@ const HasilUjis = ({ route, navigation }) => {
                       setFormData(prev => ({
                         ...prev,
                         memenuhi_hasil_pengujian: 1,
+                      }));
+                      handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
+                    }}>
+                    <Text style={styles.radioText} className="text-black">Memenuhi Persyaratan</Text>
+                  </TouchableOpacity>
+                  <TouchableOpacity
+                    style={[
+                      styles.radioButton,
+                      formData.memenuhi_hasil_pengujian === 0 &&
+                      styles.radioButtonSelected,
+                    ]}
+                    onPress={() => {
+                      setFormData(prev => ({
+                        ...prev,
+                        memenuhi_hasil_pengujian: 0,
                       }));
                       handleInterpretasi(); // Panggil fungsi setelah mengupdate formData
                     }}>
@@ -246,9 +266,12 @@ const HasilUjis = ({ route, navigation }) => {
                           render={({ field: { onChange, value } }) => (
                             <TextInput
                               style={styles.input}
+                              
                               value={value}
                               onChangeText={value => onChange(value)}
                               placeholder="Satuan"
+                               placeholderTextColor={'#9ca3af'}
+
                             />
                           )}
                         />
@@ -260,10 +283,15 @@ const HasilUjis = ({ route, navigation }) => {
                           name={`baku_mutu.${index}`}
                           render={({ field: { onChange, value } }) => (
                             <TextInput
-                              style={styles.input}
+                            style={[
+                              styles.input,
+                              { backgroundColor: '#e9ecef' } 
+                            ]}
+                              editable={false}
                               value={value}
                               onChangeText={value => onChange(value)}
-                              placeholder="Baku Mutu"
+                              placeholder="-"
+                              placeholderTextColor={'black'}
                             />
                           )}
                         />
@@ -280,6 +308,7 @@ const HasilUjis = ({ route, navigation }) => {
                             value={value}
                             onChangeText={value => onChange(value)}
                             placeholder="MDL"
+                            placeholderTextColor={'#9ca3af'}
                           />
                         )}
                       />
@@ -297,7 +326,9 @@ const HasilUjis = ({ route, navigation }) => {
                               style={styles.input}
                               value={value}
                               onChangeText={value => onChange(value)}
-                              placeholder="MDL"
+                              placeholder="Hasil Uji"
+                              placeholderTextColor={'#9ca3af'}
+
                             />
                           )}
                         />
@@ -315,6 +346,8 @@ const HasilUjis = ({ route, navigation }) => {
                               value={value}
                               onChangeText={value => onChange(value)}
                               placeholder="Hasil Uji"
+                             placeholderTextColor={'#9ca3af'}
+
                             />
                           )}
                         />
@@ -334,6 +367,8 @@ const HasilUjis = ({ route, navigation }) => {
                             value={value}
                             onChangeText={value => onChange(value)}
                             placeholder="Keterangan"
+                            placeholderTextColor={'#9ca3af'}
+
                           />
                         )}
                       />
@@ -487,6 +522,7 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontFamily: "Poppins-SemiBold",
+    color: "black",
     marginBottom: 12,
     marginTop: 12,
   },
@@ -509,6 +545,7 @@ const styles = StyleSheet.create({
   radioText: {
     fontSize: 12,
     fontFamily: "Poppins-Regular",
+    color: "black"
   },
   parameterCard: {
     backgroundColor: "white",
@@ -566,6 +603,7 @@ const styles = StyleSheet.create({
     color: "#B5B5C3",
     marginBottom: 4,
     fontFamily: "Poppins-Medium",
+
   },
   inputMdl: {
     borderWidth: 1,
@@ -575,6 +613,7 @@ const styles = StyleSheet.create({
     width: "48%",
     backgroundColor: "#F5F8FA",
     fontFamily: "Poppins-Medium",
+    color: "black"
   },
   input: {
     borderWidth: 1,
@@ -583,6 +622,7 @@ const styles = StyleSheet.create({
     padding: 12,
     backgroundColor: "#F5F8FA",
     fontFamily: "Poppins-Medium",
+    color: "black",
   },
   buttonGroup: {
     flexDirection: "row",
