@@ -30,6 +30,7 @@ import Select2 from "@/src/screens/components/Select2";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import { launchCamera, launchImageLibrary } from "react-native-image-picker";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FooterText from "../../components/FooterText";
 
 rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -1083,6 +1084,7 @@ const Perusahaan = () => {
                     SIMPAN
                   </Text>
                 </Button>
+                <FooterText />
               </View>
             ) : (
               <View className="flex-1 justify-center items-center my-4">

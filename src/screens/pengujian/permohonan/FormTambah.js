@@ -202,21 +202,18 @@ const TambahPermohonan = ({ navigation }) => {
   };
 
   const bulan = [
-    {
-      id: "1",
-      name: "Januari",
-    },
-    { id: "2", name: "Februari" },
-    { id: "3", name: "Maret" },
-    { id: "4", name: "April" },
-    { id: "5", name: "Mei" },
-    { id: "6", name: "Juni" },
-    { id: "7", name: "Juli" },
-    { id: "8", name: "Agustus" },
-    { id: "9", name: "September" },
-    { id: "10", name: "Oktober" },
-    { id: "11", name: "November" },
-    { id: "12", name: "Desember" },
+    { value: 1, title: "Januari" },
+    { value: 2, title: "Februari" },
+    { value: 3, title: "Maret" },
+    { value: 4, title: "April" },
+    { value: 5, title: "Mei" },
+    { value: 6, title: "Juni" },
+    { value: 7, title: "Juli" },
+    { value: 8, title: "Agustus" },
+    { value: 9, title: "September" },
+    { value: 10, title: "Oktober" },
+    { value: 11, title: "November" },
+    { value: 12, title: "Desember" },
   ];
   const getCurrentMonth = () => {
     const date = new Date();
@@ -312,8 +309,8 @@ const TambahPermohonan = ({ navigation }) => {
   };
   return (
     <>
-      <ScrollView className="bg-[#ececec] w-full h-full  p-3">
-        <View
+      <View className="bg-[#ececec] w-full h-full  p-3">
+        <ScrollView
           className="bg-[#fff] w-full h-full rounded-3xl"
           style={{
             elevation: 5,
@@ -322,20 +319,14 @@ const TambahPermohonan = ({ navigation }) => {
             shadowOpacity: 0.5,
             shadowRadius: 2,
           }}>
-          <View className="flex-row  p-3 ">
+          <View className="flex-row pt-5 px-4 pb-1 justify-between items-center">
             <Back
               size={30}
               color={"black"}
               action={() => navigation.goBack()}
               className="mr-5 "
-              style={{
-                borderWidth: 0.5,
-                padding: 4,
-                borderColor: "#f8f8f8",
-                borderRadius: 8,
-              }}
             />
-            <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-lg text-end  ">
               Tambah Permohonan
             </Text>
           </View>
@@ -483,7 +474,7 @@ const TambahPermohonan = ({ navigation }) => {
               )}
             </View>
 
-            {/* <View>
+            <View>
               <Text className="font-poppins-semibold text-black mt-2 mb-6  text-center text-base">
                 Detail Kontrak
               </Text>
@@ -540,11 +531,12 @@ const TambahPermohonan = ({ navigation }) => {
                     </Text>
 
                     <Select2
-                      data={filteredMonths}
-                      onSelect={value => {
-                        onChange(value);
+                      data={bulan}
+                      onSelect={selectedValue => {
+                        onChange(selectedValue);
                       }}
-                      defaultValue={bulan}
+                      placeholder="Pilih Bulan"
+                      defaultValue={value}
                     />
                   </View>
                 )}
@@ -595,7 +587,7 @@ const TambahPermohonan = ({ navigation }) => {
                   onChange={handleDateChange}
                 />
               )}
-            </View> */}
+            </View>
 
             <Button
               backgroundColor={Colors.brand}
@@ -607,8 +599,8 @@ const TambahPermohonan = ({ navigation }) => {
               </Text>
             </Button>
           </View>
-        </View>
-      </ScrollView>
+        </ScrollView>
+      </View>
       <Modal animationType="fade" transparent={true} visible={modalPercuy}>
         <View className="flex-1 justify-center items-center bg-black/50">
           <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">

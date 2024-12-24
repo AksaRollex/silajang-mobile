@@ -17,6 +17,7 @@ import { Colors } from "react-native-ui-lib";
 import { useQuery } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
 import { rupiah } from "@/src/libs/utils";
+import FooterText from "../components/FooterText";
 
 const { width } = Dimensions.get("window");
 
@@ -301,6 +302,7 @@ export default function Pembayaran() {
                 </View>
               )}
             </View>
+          <FooterText />
           </View>
         </ScrollView>
       </View>

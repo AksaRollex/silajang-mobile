@@ -252,44 +252,46 @@ const TitikUji = ({ navigation, route, callback }) => {
         <View
           style={styles.cardActions}
           className="mb-4 flex-end justify-end items-end mr-2 ">
-          <MenuView
-            title="Berita Acara"
-            actions={[
-              ...(permohonanPengujian
-                ? [
-                    {
-                      id: "Permohonan Pengujian",
-                      title: "Permohonan Pengujian",
-                      action: () =>
-                        handlePreviewPermohonan({ uuid: item.uuid }),
-                    },
-                  ]
-                : []),
+          {(permohonanPengujian || mandiri) && (
+            <MenuView
+              title="Berita Acara"
+              actions={[
+                ...(permohonanPengujian
+                  ? [
+                      {
+                        id: "Permohonan Pengujian",
+                        title: "Permohonan Pengujian",
+                        action: () =>
+                          handlePreviewPermohonan({ uuid: item.uuid }),
+                      },
+                    ]
+                  : []),
 
-              ...(mandiri
-                ? [
-                    {
-                      id: "Berita Acara",
-                      title: "Berita Acara",
+                ...(mandiri
+                  ? [
+                      {
+                        id: "Berita Acara",
+                        title: "Berita Acara",
 
-                      action: () =>
-                        handlePreviewBeritaAcara({ uuid: item.uuid }),
-                    },
-                  ]
-                : []),
-            ]}
-            onPressAction={({ nativeEvent }) => {
-              const selectedOption = nativeEvent.event;
-              if (selectedOption === "Permohonan Pengujian") {
-                handlePreviewPermohonan({ uuid: item.uuid });
-              } else if (selectedOption === "Berita Acara") {
-                handlePreviewBeritaAcara({ uuid: item.uuid });
-              }
-            }}>
-            <View className="mr-2">
-              <FontAwesome5 name="file-pdf" size={20} color="#ef4444" />
-            </View>
-          </MenuView>
+                        action: () =>
+                          handlePreviewBeritaAcara({ uuid: item.uuid }),
+                      },
+                    ]
+                  : []),
+              ]}
+              onPressAction={({ nativeEvent }) => {
+                const selectedOption = nativeEvent.event;
+                if (selectedOption === "Permohonan Pengujian") {
+                  handlePreviewPermohonan({ uuid: item.uuid });
+                } else if (selectedOption === "Berita Acara") {
+                  handlePreviewBeritaAcara({ uuid: item.uuid });
+                }
+              }}>
+              <View className="mr-2">
+                <FontAwesome5 name="file-pdf" size={20} color="#ef4444" />
+              </View>
+            </MenuView>
+          )}
           <MenuView
             title="Menu Title"
             actions={dropdownOptions.map(option => ({
@@ -576,7 +578,7 @@ const TitikUji = ({ navigation, route, callback }) => {
                 </View>
               </View>
             )}
-          <View className="w-full h-full rounded-b-md">
+          <View className="w-full h-full pb-12 rounded-b-md">
             <Paginate
               ref={paginateRef}
               payload={{ permohonan_uuid: { uuid } }}

@@ -22,6 +22,7 @@ import Back from "../../components/Back";
 import Icons from "react-native-vector-icons/AntDesign";
 import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FooterText from "../../components/FooterText";
 
 const Akun = () => {
   const [file, setFile] = React.useState(null);
@@ -74,7 +75,7 @@ const Akun = () => {
     const formData = new FormData();
     formData.append("nama", getValues("nama"));
     console.log("Value of nama:", getValues("nama"));
-  
+
     if (file) {
       const fileSizeInKB = file.size / 1024; // Gunakan `size` untuk mendapatkan ukuran file
       if (fileSizeInKB > 2048) {
@@ -85,39 +86,42 @@ const Akun = () => {
         });
         return; // Hentikan fungsi jika file terlalu besar
       }
-  
+
       formData.append("photo", {
         uri: file.uri,
         type: file.type || "image/jpeg",
         name: file.name || "profile_photo.jpg",
       });
     }
-  
+
     try {
       const response = await axios.post("/user/account", formData, {
         headers: {
           "Content-Type": "multipart/form-data",
         },
       });
-  
+
       if (response.status === 200) {
         // Toast.show({
         //   type: "success",
         //   text1: "Berhasil",
         //   text2: response.data.message,
         // });
-  
+
         // Set photo URL yang diperbarui
-        const updatedPhotoUrl = response.data.data.photo 
-          ? `${APP_URL}${response.data.data.photo}` 
+        const updatedPhotoUrl = response.data.data.photo
+          ? `${APP_URL}${response.data.data.photo}`
           : null;
-  
+
         setCurrentPhotoUrl(updatedPhotoUrl);
         setUserData(prevData => ({ ...prevData, nama: getValues("nama") }));
         console.log("Update successful:", response.data); // Log respons
       }
     } catch (error) {
-      console.error("Update failed:", error.response?.data?.message || error.message);
+      console.error(
+        "Update failed:",
+        error.response?.data?.message || error.message,
+      );
       // Toast.show({
       //   type: "error",
       //   text1: "Gagal memperbarui",
@@ -125,7 +129,6 @@ const Akun = () => {
       // });
     }
   };
-  
 
   const fetchUserData = async () => {
     try {
@@ -219,7 +222,7 @@ const Akun = () => {
 
           <ScrollView className="w-full h-full ">
             {userData ? (
-              <View  className="w-full h-full ">
+              <View className="w-full h-full ">
                 <Controller
                   control={control}
                   name="photo"
@@ -230,7 +233,7 @@ const Akun = () => {
                         style={{ fontSize: 15 }}>
                         Foto Profil
                       </Text>
-                      <View className="rounded-2xl">
+                      <View className="rounded-2xl p-3 bottom-1">
                         {currentPhotoUrl || file ? (
                           // State setelah upload foto
                           <View className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/30 rounded-2xl p-4">
@@ -368,18 +371,17 @@ const Akun = () => {
                     </View>
                   )}
                 />
-                <View className="justify-end ">
-                  <Button
-                    className="p-3 rounded-3xl mb-4 items-end"
-                    backgroundColor={Colors.brand}
-                    borderRadius={5}
-                    onPress={handleSubmit(update)}
-                    disabled={isLoading}>
-                    <Text className="text-white text-center text-base font-poppins-semibold">
-                      PERBARUI
-                    </Text>
-                  </Button>
-                </View>
+                <Button
+                  className="p-3 rounded-3xl mb-4 items-end"
+                  backgroundColor={Colors.brand}
+                  borderRadius={5}
+                  onPress={handleSubmit(update)}
+                  disabled={isLoading}>
+                  <Text className="text-white text-center text-base font-poppins-semibold">
+                    PERBARUI
+                  </Text>
+                </Button>
+                <FooterText />
               </View>
             ) : (
               <View className="flex-1 justify-center items-center my-4">

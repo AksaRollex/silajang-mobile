@@ -15,6 +15,9 @@ import {
   StyleSheet,
   Image,
   Touchable,
+  Dimensions,
+  Modal,
+  ScrollView,
 } from "react-native";
 import Checkbox from "@react-native-community/checkbox";
 import IonIcons from "react-native-vector-icons/Ionicons";
@@ -33,6 +36,8 @@ import { useNavigation } from "@react-navigation/native";
 import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
 import { Skeleton } from "@rneui/themed";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
 // PAGINATE
 const Paginates = forwardRef(
@@ -75,10 +80,16 @@ const Paginates = forwardRef(
     //   console.log({url})
     // }, [url])
 
-    useEffect(() => {
-      refetch();
-    }, [search, page, payload]);
+    // useEffect(() => {
+    //   refetch();
+    // }, [search, page, payload]);
 
+    useEffect(() => {
+      // Hanya refetch jika payload berubah dan halaman adalah 1
+      if (page === 1) {
+        refetch();
+      }
+    }, [JSON.stringify(payload)]);
     useEffect(() => {
       if (!data.data?.length) queryClient.invalidateQueries([url]);
     }, [data]);
@@ -191,7 +202,7 @@ const Paginates = forwardRef(
               <View className="flex-row flex justify-center items-center">
                 <Skeleton
                   animation="wave"
-                  width={320}
+                  width={350}
                   LinearGradientComponent={LinearGradient}
                   height={50}
                 />
@@ -221,7 +232,7 @@ const Paginates = forwardRef(
                   <View LinearGradientComponent={LinearGradient}>
                     <Skeleton
                       animation="wave"
-                      width={320}
+                      width={350}
                       LinearGradientComponent={LinearGradient}
                       height={150}
                     />
@@ -375,14 +386,13 @@ const Parameter = ({ route, navigation }) => {
   const [selectedView, setSelectedView] = useState("selected");
   const [isLoadingPaket, setIsLoadingPaket] = useState([]);
   const [loadingPackages, setLoadingPackages] = useState([]);
+  const [typeModal, setTypeModal] = useState(false);
 
-  const menuOptions = [
-    { label: "Parameter Yang Terpilih", value: "selected" },
-    { label: "Daftar Peraturan", value: "peraturan" },
-    // { label: "Pilih Paket", value: "paket" },
-    // { label: "Parameter Tersedia", value: "available" },
-    { label: "Daftar Paket Dan Parameter", value: "paket_parameter" },
-  ];
+  // const menuOptions = [
+  //   { label: "Parameter Yang Terpilih", value: "selected" },
+  //   { label: "Daftar Peraturan", value: "peraturan" },
+  //   { label: "Daftar Paket Dan Parameter", value: "paket_parameter" },
+  // ];
   const shouldRenderView = viewType => {
     if (selectedView === "paket_parameter") {
       return viewType === "paket" || viewType === "available";
@@ -670,6 +680,94 @@ const Parameter = ({ route, navigation }) => {
     [removeFromPaket, isLoadingPaket],
   );
 
+  const handleFilterPress = () => {
+    setTypeModal(true);
+  };
+
+  const [type, setType] = useState("selected");
+  const TypePicker = ({ visible, onClose, onSelect, selectedType }) => {
+    const [tempType, setTempType] = useState(selectedType);
+
+    const menuOptions = [
+      { label: "Parameter Yang Terpilih", value: "selected" },
+      { label: "Daftar Peraturan", value: "peraturan" },
+      { label: "Daftar Paket Dan Parameter", value: "paket_parameter" },
+    ];
+
+    useEffect(() => {
+      if (visible) {
+        setTempType(selectedType);
+      }
+    }, [visible]);
+
+    const handleConfirm = () => {
+      if (tempType) {
+        onSelect(tempType);
+        onClose();
+      }
+    };
+
+    const canConfirm = tempType;
+
+    return (
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={visible}
+        onRequestClose={onClose}>
+        <View style={styles.modalOverlay} activeOpacity={1} onPress={onClose}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>Pilih Tipe</Text>
+              <TouchableOpacity onPress={onClose}>
+                <MaterialIcons name="close" size={24} color="#000" />
+              </TouchableOpacity>
+            </View>
+            <View className="">
+              <View className="flex-col items-center justify-center">
+                <ScrollView className="max-h-64">
+                  {menuOptions.map(option => (
+                    <TouchableOpacity
+                      key={option.value}
+                      value={selectedView}
+                      className={`mt-2 justify-center items-center ${
+                        tempType === option.value
+                          ? "bg-[#ececec] p-3 rounded-md"
+                          : ""
+                      }`}
+                      onPress={() => setTempType(option.value)}>
+                      <Text className="text-black font-poppins-semibold my-1">
+                        {option.label}
+                      </Text>
+                    </TouchableOpacity>
+                  ))}
+                </ScrollView>
+              </View>
+            </View>
+
+            <View className="mt-4 px-4">
+              <TouchableOpacity
+                className={`py-3 rounded-md ${
+                  canConfirm ? "bg-blue-500" : "bg-gray-300"
+                }`}
+                disabled={!canConfirm}
+                onPress={handleConfirm}>
+                <Text className="text-white text-center font-poppins-semibold">
+                  Terapkan Filter
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+    );
+  };
+
+  const handleTypeChange = newType => {
+    setType(newType); // Update type
+    setSelectedView(newType); // Update selectedView juga
+  };
+
   const renderPeraturan = ({ item }) => (
     <View
       className="rounded-lg  flex-row p-3 my-1  border "
@@ -749,7 +847,6 @@ const Parameter = ({ route, navigation }) => {
         className="p-3 rounded-lg my-1 flex-row border"
         style={{
           borderColor: isSelected ? "#252a61" : "#9e9e9e",
-       
         }}>
         <View className="w-full h-full flex-row justify-between">
           <View className="justify-center items-center">
@@ -782,43 +879,33 @@ const Parameter = ({ route, navigation }) => {
     );
   };
 
-  const renderSectionHeader = (title, viewType, showFilter = true) => (
+  const renderSectionHeader = (
+    title,
+    viewType,
+    showFilter = true,
+    hideFilter = false,
+  ) => (
     <View className="flex-row justify-between items-center px-4 py-2 mt-4">
       <Text className="text-black font-poppins-semibold text-3xl flex-1">
         {title}
       </Text>
-      {showFilter && (
+      {showFilter && !hideFilter && (
         <View style={{ width: 50, height: 50 }} className="ml-2">
-          <RNPickerSelect
-            items={menuOptions}
-            useNativeAndroidPickerStyle={false} // Menonaktifkan ikon default pada Android
-            value={selectedView}
-            onValueChange={value => setSelectedView(value)}
-            style={{
-              inputIOS: {
-                fontSize: 16,
-                height: 70,
-                width: 70,
-                color: "black",
-              },
-              inputAndroid: {
-                fontSize: 20,
-                fontWeight: "bold",
-                color: "#f8f8f8",
-                height: 80,
-                width: 70,
-                marginTop: -25,
-              },
-            }}
-            Icon={() => (
-              <IonIcons
-                name="apps-sharp"
-                size={30}
-                color="black"
-                // style={{ marginTop: 12, marginRight: 12 }}
-              />
-            )}
+          <TypePicker
+            visible={typeModal}
+            onClose={() => setTypeModal(false)}
+            onSelect={handleTypeChange}
+            selectedType={type}
           />
+          <TouchableOpacity
+            className="flex-row bg-[#f8f8f8] rounded-lg"
+            onPress={handleFilterPress}>
+            <FontAwesome5Icon
+              name="list"
+              size={26}
+              style={{ color: "black" , marginLeft : 15 }}
+            />
+          </TouchableOpacity>
         </View>
       )}
     </View>
@@ -916,7 +1003,7 @@ const Parameter = ({ route, navigation }) => {
               {renderSectionHeader(
                 "Paket Tersedia",
                 "paket",
-                selectedView !== "paket_parameter" || true,
+                selectedView === "paket_parameter" || true,
               )}
               <View className="px-3 py-4">{renderPaketSection()}</View>
             </View>
@@ -930,7 +1017,8 @@ const Parameter = ({ route, navigation }) => {
               {renderSectionHeader(
                 "Parameter Tersedia",
                 "available",
-                selectedView !== "paket_parameter",
+                selectedView === "paket_parameter",
+                true,
               )}
               <View className=" rounded-md">
                 <Paginates
@@ -1025,6 +1113,33 @@ const styles = StyleSheet.create({
   checkbox: {
     width: 18,
     height: 18,
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: "rgba(0, 0, 0, 0.5)",
+    justifyContent: "flex-end",
+  },
+  modalContent: {
+    backgroundColor: "#fff",
+    borderTopLeftRadius: 20,
+    borderTopRightRadius: 20,
+    padding: 16,
+    maxHeight: Dimensions.get("window").height * 0.7,
+  },
+  modalHeader: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: 16,
+    paddingBottom: 8,
+    borderBottomWidth: 1,
+    borderBottomColor: "#e5e5e5",
+  },
+  modalTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#000",
+    fontFamily: "Poppins-SemiBold",
   },
   roundedBackground: {
     position: "absolute",

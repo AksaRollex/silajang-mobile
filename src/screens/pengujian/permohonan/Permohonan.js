@@ -19,6 +19,7 @@ import { useQuery } from "@tanstack/react-query";
 import Back from "../../components/Back";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import FooterText from "../../components/FooterText";
 
 const rem = multiplier => baseRem * multiplier;
 const baseRem = 16;
@@ -243,7 +244,7 @@ const Permohonan = ({ navigation }) => {
     <>
       <View className="p-3 bg-[#ececec]">
         <View
-          className="rounded-3xl bg-[#fff] w-full h-full"
+          className="rounded-3xl bg-[#fff] w-full h-full pb-12"
           style={{
             elevation: 5,
             shadowColor: "rgba(0, 0, 0, 0.1)",
@@ -277,13 +278,12 @@ const Permohonan = ({ navigation }) => {
             ) : (
               <></>
             )}
-            <Paginate
-              className="mb-20"
-              ref={paginateRef}
-              url="/permohonan"
-              payload={{ tahun: tahun }}
-              Plugin={filtah}
-              renderItem={CardPermohonan}></Paginate>
+              <Paginate
+                ref={paginateRef}
+                url="/permohonan"
+                payload={{ tahun: tahun }}
+                Plugin={filtah}
+                renderItem={CardPermohonan}></Paginate>
           </View>
           <Icons
             name="plus"

@@ -274,13 +274,13 @@ const Dashboard = () => {
               Pilih Tahun Data Dashboard :{" "}
             </Text>
             <TouchableOpacity
-              className="flex-row bg-red-200 px-2 py-1 rounded-lg"
+              className="flex-row p-3 bg-[#f8f8f8] rounded-lg"
               onPress={handleFilterPress}>
               <Text className="text-black font-poppins-regular">{tahun}</Text>
               <AntDesign
                 name="caretdown"
-                size={10}
-                style={{ color: "black", marginLeft: 3, marginTop: 4 }}
+                size={12}
+                style={{ color: "black", marginLeft : 6, marginTop : 2}}
               />
             </TouchableOpacity>
           </View>
@@ -292,7 +292,7 @@ const Dashboard = () => {
           />
         </View>
 
-        <View className="mt-14">
+        <View className="mt-20">
           {user.has_tagihan && (
             <View style={styles.warningContainer}>
               <View style={styles.warningContent}>
