@@ -62,7 +62,7 @@ const TandaTangan = ({ navigation }) => {
       </View>
       <View className="h-[1px] bg-gray-300 my-3" />
 
-      <View className="flex-row justify-end gap-2">
+      <View className="flex-row justify-end gap-2">``
         <TouchableOpacity
           onPress={() => navigation.navigate("FormTandaTangan", { uuid: item.uuid })}
           className="flex-row items-center bg-indigo-500 px-2 py-2 rounded"
