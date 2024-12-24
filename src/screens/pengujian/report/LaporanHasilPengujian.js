@@ -210,51 +210,6 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
     );
 }
 
-const RollbackModal = ({ visible, onClose, onRollback, isLoading }) => {
-    return (
-        <Modal
-            animationType="fade"
-            transparent
-            visible={visible}
-            onRequestClose={onClose}
-        >
-            <View className="flex-1 justify-center items-center bg-black/50">
-                <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
-                    <View className="w-20 h-20 rounded-full bg-yellow-100 justify-center items-center mb-4">
-                        <AntDesign name="sync" size={40} color="#facc15" />
-                    </View>
-                    <Text className="text-xl font-poppins-semibold text-black mb-3">
-                        Konfirmasi Rollback
-                    </Text>
-                    <View className="w-full h-px bg-gray-200 mb-4" />
-                    <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
-                        Apakah Anda yakin ingin melakukan rollback data tersebut?
-                    </Text>
-                    <View className="flex-row w-full justify-between">
-                        <TouchableOpacity
-                            onPress={onRollback}
-                            disabled={isLoading}
-                            className="flex-1 mr-2 bg-yellow-400 py-3 rounded-xl items-center"
-                        >
-                            {isLoading ? (
-                                <ActivityIndicator size="small" color="white" />
-                            ) : (
-                                <Text className="text-white font-poppins-medium">Ya, Rollback</Text>
-                            )}
-                        </TouchableOpacity>
-                        <TouchableOpacity
-                            onPress={onClose}
-                            className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
-                        >
-                            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
-                        </TouchableOpacity>
-                    </View>
-                </View>
-            </View>
-        </Modal>
-    );
-};
-
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
     let years = [];
@@ -293,8 +248,6 @@ const LaporanHasilPengujian = ({ navigation }) => {
     const { setHeader } = useHeaderStore();
     const [pdfError, setPdfError] = useState(false);
     const [pdfLoaded, setPdfLoaded] = useState(false);
-    const [rollbackModalVisible, setRollbackModalVisible] = useState(false);
-    const [isRollbackLoading, setIsRollbackLoading] = useState(false);
 
     useEffect(() => {
         if (modalVisible) {
@@ -493,7 +446,6 @@ const LaporanHasilPengujian = ({ navigation }) => {
     };
 
     const renderItem = ({ item }) => {
-   
         const tteOptions = [
             Boolean(item.tte_lhu) && {
                 id: "DownloadTTE",
@@ -553,25 +505,30 @@ const LaporanHasilPengujian = ({ navigation }) => {
             }
         };
 
-        const handleRollbackConfirm = async () => {
-            setIsRollbackLoading(true);
-            try {
-                await Rollback(item.uuid);
-                Toast.show({
-                    type: 'success',
-                    text1: 'Success',
-                    text2: 'Rollback berhasil dilakukan',
-                });
-                setRollbackModalVisible(false);
-            } catch (error) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Gagal melakukan rollback',
-                });
-            } finally {
-                setIsRollbackLoading(false);
-            }
+        const handleRollback = () => {
+            Alert.alert(
+                "Konfirmasi Rollback",
+                "Apakah Anda yakin ingin melakukan rollback?",
+                [
+                    {
+                        text: "Batal",
+                        style: "cancel"
+                    },
+                    {
+                        text: "Ya",
+                        onPress: () => {
+                            Rollback(item.uuid);
+                            Toast.show({
+                                type: 'success',
+                                text1: 'Success',
+                                text2: 'Rollback berhasil dilakukan',
+                            });
+                        },
+                        style: "destructive"
+                    }
+                ],
+                { cancelable: false }
+            );
         };
 
         return (
@@ -649,22 +606,15 @@ const LaporanHasilPengujian = ({ navigation }) => {
                             <Text className="ml-2 text-indigo-600 text-[13px] font-poppins-semibold"> Preview LHU</Text>
                         </TouchableOpacity>
                     )}
-
                     
                         <TouchableOpacity
-                            onPress={() => setRollbackModalVisible(true)}
-                            className="ml-2 flex-row items-center p-2 bg-amber-100 rounded-md"
+                            onPress={handleRollback}
+                            className="ml-2 flex-row items-center p-2 bg-amber-100 rounded-md font-poppins-semibold"
                         >
                             <AntDesign name="sync" size={16} color="#fbbf24" />
                         </TouchableOpacity>
-                    
-                 </View>
-                     <RollbackModal
-                        visible={rollbackModalVisible}
-                        onClose={() => setRollbackModalVisible(false)}
-                        onRollback={handleRollbackConfirm}
-                        isLoading={isRollbackLoading}
-                    />
+                  
+                </View>
             </View>
         );
     };

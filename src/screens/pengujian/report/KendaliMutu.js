@@ -361,7 +361,7 @@ const KendaliMutu = ({ navigation }) => {
 
   const CardKendaliMutu = ({ item }) => {
     if (!item) return null;
-
+  
     return (
       <View
         className="my-4 bg-[#f8f8f8] flex rounded-md border-t-[6px] border-indigo-900 p-5"
@@ -369,62 +369,74 @@ const KendaliMutu = ({ navigation }) => {
         <View className="flex-row items-center">
           <View className="" style={{ width: "90%" }}>
             <View className="flex-col space-y-2">
-
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
-                <Text className="text-md font-poppins-semibold text-black mb-2">
-                  {item.kode || '-'}
-                </Text>
-
-                <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
-                <Text className="text-md font-poppins-semibold text-black"
-                  numberOfLines={2}
-                  style={{ flexWrap: 'wrap' }}>
-                  {item.permohonan?.user?.nama || '-'}
-                </Text>
-              </View>
-
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
-                <Text className="text-md font-poppins-semibold text-black">
-                  {item.lokasi || '-'}
-                </Text>
-              </View>
-
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
-                <View className="bg-indigo-100 self-start rounded-md px-2 py-1">
-                  <Text className="text-[11px] font-poppins-semibold text-indigo-600">
-                    {item.text_status || '-'}
+              {/* Kode and Pelanggan row */}
+              <View className="flex-row justify-between">
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
+                  <Text className="text-md font-poppins-semibold text-black mb-2">
+                    {item.kode || '-'}
+                  </Text>
+                </View>
+  
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Pelanggan</Text>
+                  <Text className="text-md font-poppins-semibold text-black"
+                    numberOfLines={2}
+                    style={{ flexWrap: 'wrap' }}>
+                    {item.permohonan?.user?.nama || '-'}
                   </Text>
                 </View>
               </View>
-
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
-                <Text className="text-md font-poppins-semibold text-black">
-                  {item.tanggal_selesai || '-'}
-                </Text>
+  
+              {/* Lokasi and Status row */}
+              <View className="flex-row justify-between">
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Lokasi</Text>
+                  <Text className="text-md font-poppins-semibold text-black">
+                    {item.lokasi || '-'}
+                  </Text>
+                </View>
+  
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500 mb-1">Status</Text>
+                  <View className="bg-indigo-100 self-start rounded-md px-2 py-1">
+                    <Text className="text-[11px] font-poppins-semibold text-indigo-600">
+                      {item.text_status || '-'}
+                    </Text>
+                  </View>
+                </View>
               </View>
-
-              <View>
-                <Text className="text-xs font-poppins-regular text-gray-500">Status TTE</Text>
-                {item.status_tte_kendali_mutu === 1 ? (
-                  <View className="bg-green-100 self-start rounded-full px-3 py-1">
-                    <Text className="text-[12px] font-poppins-semibold text-green-800">Berhasil</Text>
-                  </View>
-                ) : item.status_tte_kendali_mutu === 0 ? (
-                  <View className="bg-red-100 self-start rounded-full px-3 py-1">
-                    <Text className="text-[12px] font-poppins-semibold text-red-800">Gagal</Text>
-                  </View>
-                ) : null}
+  
+              {/* Tanggal Selesai and Status TTE row */}
+              <View className="flex-row justify-between">
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Tanggal Selesai</Text>
+                  <Text className="text-md font-poppins-semibold text-black">
+                    {item.tanggal_selesai || '-'}
+                  </Text>
+                </View>
+  
+                <View style={{ width: '48%' }}>
+                  <Text className="text-xs font-poppins-regular text-gray-500">Status TTE</Text>
+                  {item.status_tte_kendali_mutu === 1 ? (
+                    <View className="bg-green-100 self-start rounded-full px-3 py-1">
+                      <Text className="text-[12px] font-poppins-semibold text-green-800">Berhasil</Text>
+                    </View>
+                  ) : item.status_tte_kendali_mutu === 0 ? (
+                    <View className="bg-red-100 self-start rounded-full px-3 py-1">
+                      <Text className="text-[12px] font-poppins-semibold text-red-800">Gagal</Text>
+                    </View>
+                  ) : null}
+                </View>
               </View>
             </View>
           </View>
         </View>
-
-        <View className="flex-row justify-end mt-4 space-x-2">
-
+  
+        {/* Horizontal Separator */}
+        <View className="h-[1px] bg-gray-300 my-4" />
+  
+        <View className="flex-row justify-end space-x-2">
           {!item.status_tte_kendali_mutu && (
             <TouchableOpacity
               onPress={() => {
@@ -439,7 +451,7 @@ const KendaliMutu = ({ navigation }) => {
               </Text>
             </TouchableOpacity>
           )}
-
+  
           <TouchableOpacity
             onPress={() => handlePreviewPDF(item.uuid)}
             className="bg-red-100 p-2 rounded-md flex-row items-center"
@@ -449,7 +461,6 @@ const KendaliMutu = ({ navigation }) => {
               PDF
             </Text>
           </TouchableOpacity>
-
         </View>
       </View>
     );
