@@ -532,7 +532,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
            </View>
          </View>
 
-      <View className="p-4">
+      <View className="p-6">
         <View className="flex-row">
           <MenuView
             title="Pilih Tahun"
@@ -643,7 +643,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
             per: 10,
           }}
           renderItem={cardPengujian}
-          className="px-4 mb-12"
+          className="px-4 mb-12 bottom-2"
         />
         <View className="mt-12 mb-8">
           <TextFooter />
