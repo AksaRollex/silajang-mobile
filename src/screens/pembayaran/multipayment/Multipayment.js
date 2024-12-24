@@ -626,14 +626,14 @@ const Pengujian = ({ navigation }) => {
     <>
       <View className="w-full h-full p-3 bg-[#ececec]">
         <View className="rounded-3xl w-full h-full bg-[#fff]">
-          <View className="flex-row p-3 justify-between ">
+          <View className="flex-row pt-5 px-4 pb-1 justify-between ">
             <BackButton
               size={24}
               color={"black"}
               action={() => navigation.goBack()}
               className="mr-2 "
             />
-            <Text className="font-poppins-semibold text-black text-lg ">
+            <Text className="font-poppins-semibold text-black text-lg text-end  pb-1">
               Multipayment
             </Text>
           </View>

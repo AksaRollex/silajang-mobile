@@ -266,7 +266,7 @@ const Paginates = forwardRef(
           ListEmptyComponent={() => (
             <View className="flex-1 justify-center items-center m-4">
               <Image
-                source={require("@/assets/images/pulu.png")}
+                source={require("@/assets/images/datanotfound.png")}
                 className="w-60 h-60 opacity-60 "
               />
               <Text className="text-gray-500 font-poppins-regular">
@@ -368,8 +368,10 @@ const throttle = (func, limit) => {
 };
 
 const Parameter = ({ route, navigation }) => {
-  const { uuid } = route.params;
-  console.log("cihuy: ", uuid);
+  console.log(route);
+  const { uuid, uuidPermohonan } = route.params; // Tangkap kedua parameter
+  console.log("UUID Titik Uji:", uuid);
+  console.log("UUID Permohonan:", uuidPermohonan);
   const { data: titik, refetchTitik } = useTitikPermohonan(uuid);
   const queryClient = useQueryClient();
   const [selectedView, setSelectedView] = useState("selected");
@@ -401,10 +403,14 @@ const Parameter = ({ route, navigation }) => {
     FailedOverlayModal,
   } = useSendParameter({
     onSuccess: () => {
-      queryClient.invalidateQueries([
-        `/permohonan/titik/${uuid}/parameter`,
-        { uuid: uuid },
-      ]);
+      // queryClient.invalidateQueries([
+      //   `/permohonan/titik/${uuid}/parameter`,
+      //   { uuid: uuid },
+      // ]);
+      // queryClient.invalidateQueries([
+      //   `/permohonan/titik/${uuid}`
+      // ])
+      navigation.navigate("TitikUji", { uuidPermohonan: uuidPermohonan });
     },
     onError: error => {
       console.log("Save error : ", error);
@@ -749,7 +755,6 @@ const Parameter = ({ route, navigation }) => {
         className="p-3 rounded-lg my-1 flex-row border"
         style={{
           borderColor: isSelected ? "#252a61" : "#9e9e9e",
-       
         }}>
         <View className="w-full h-full flex-row justify-between">
           <View className="justify-center items-center">
@@ -952,7 +957,7 @@ const Parameter = ({ route, navigation }) => {
                 url={`/permohonan/titik/${uuid}/parameter`}
                 renderItem={renderSelectedParameter}
               />
-              <Text className="font-poppins-semibold text-black  text-center">
+              <Text className="font-poppins-semibold text-black text-base text-center">
                 Total Harga: {rupiah(titik?.harga)}
               </Text>
               <View className="m-4">
@@ -981,17 +986,16 @@ const Parameter = ({ route, navigation }) => {
     <View className="flex-1 bg-[#ececec] w-full h-full p-3">
       <View className="bg-[#f8f8f8] w-full h-full rounded-3xl">
         <View
-          className=" px-2 pt-4  flex-row flex items-center justify-between flex-wrap "
+          className="flex-row  justify-between pt-5 px-4 pb-1"
           // style={{ borderBottomWidth: 0.5 }}
         >
           <Back
             size={24}
             color="black"
             action={() => navigation.goBack()}
-            style={{ marginLeft: 12 }}
           />
 
-          <Text className="font-poppins-semibold text-black text-base ">
+          <Text className="font-poppins-semibold text-black text-lg text-end ">
             {/* {titik?.lokasi} :  */}
             Pilih Peraturan / Parameter
           </Text>

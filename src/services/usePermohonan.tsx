@@ -8,5 +8,6 @@ export function usePermohonan(uuid : string | string [], options = {}) {
     onError: async (error: any) => {
       console.error(error);
     },
+    ...options, // Tambahkan opsi tambahan jika ada
   });
 }

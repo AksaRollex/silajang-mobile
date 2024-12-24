@@ -198,7 +198,7 @@ const Akun = () => {
                 padding: 4,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-lg text-end items-start  mt-1 ">
+            <Text className="font-poppins-semibold text-black text-lg text-end  ">
               Informasi Personal
             </Text>
           </View>

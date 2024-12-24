@@ -84,7 +84,7 @@ const Keamanan = () => {
     <>
       <View className="bg-[#ececec] w-full h-full p-3">
         <View
-          className="bg-[#fff] rounded-3xl px-4 py-4 h-full"
+          className="bg-[#fff] rounded-3xl px-4  h-full"
           style={{
             elevation: 5,
             shadowColor: "rgba(0, 0, 0, 0.1)",
@@ -92,17 +92,17 @@ const Keamanan = () => {
             shadowOpacity: 0.5,
             shadowRadius: 2,
           }}>
-          <View className="flex-row mb-6">
+          <View className="flex-row py-6 justify-between items-center">
             <Back
               size={30}
               color={"black"}
               action={() => navigation.goBack()}
-              className="mr-5 "
+              className="mr-5   "
               style={{
                 padding: 4,
               }}
             />
-            <Text className="font-poppins-semibold text-black text-xl mt-1 ">
+            <Text className="font-poppins-semibold text-black text-lg text-end  ">
               Ganti Password
             </Text>
           </View>
@@ -239,7 +239,7 @@ const Keamanan = () => {
           )}
 
           <Button
-            className="p-3 rounded-3xl mt-8"
+            className="p-3 rounded-3xl  mt-4 mb-7"
             backgroundColor={Colors.brand}
             borderRadius={5}
             onPress={handleSubmit(onSubmit)}

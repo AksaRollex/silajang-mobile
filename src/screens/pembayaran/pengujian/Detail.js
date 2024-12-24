@@ -106,6 +106,20 @@ const PengujianDetail = ({ route, navigation }) => {
       });
   };
 
+  const handleGenerateQRIS = () => {
+    setLoading(true);
+    axios
+      .post(`${API_URL}/pembayaran/pengujian/${uuid}/qris`)
+      .then(() => {
+        Alert.alert("Success", "qris berhasil dibuat");
+        fetchData();
+      })
+      .catch(err => {
+        setLoading(false);
+        Alert.alert("ERROR", "qris gagal dibuat" || "Gagal Memuat");
+      });
+  };
+
   const isExpired = formData?.payment?.is_expired;
 
   /**
@@ -294,7 +308,7 @@ const PengujianDetail = ({ route, navigation }) => {
 
   const renderNoPaymentAlert = () => {
     console.log("Payment Type:", formData?.payment_type);
-    console.log("Payment Data:", formData?.payment);
+    // console.log("Payment Data:", formData?.payment);
     if (!formData?.payment) {
       return (
         <>
@@ -311,13 +325,24 @@ const PengujianDetail = ({ route, navigation }) => {
             </Text>
           </View>
           <View className="flex items-end my-2">
-            <TouchableOpacity
-              className="bg-indigo-500 p-3 rounded-lg"
-              onPress={handleGenerateVA}>
-              <Text className="font-poppins-semibold text-white">
-                Buat VA Pembayaran
-              </Text>
-            </TouchableOpacity>
+            {formData?.payment_type === "va" && (
+              <TouchableOpacity
+                className="bg-indigo-500 p-3 rounded-lg"
+                onPress={handleGenerateVA}>
+                <Text className="font-poppins-semibold text-white">
+                  Buat VA Pembayaran
+                </Text>
+              </TouchableOpacity>
+            )}
+            {formData?.payment_type === "qris" && (
+              <TouchableOpacity
+                className="bg-indigo-500 p-3 rounded-lg"
+                onPress={handleGenerateQRIS}>
+                <Text className="font-poppins-semibold text-white">
+                  Buat QRIS
+                </Text>
+              </TouchableOpacity>
+            )}
           </View>
         </>
       );
@@ -335,7 +360,7 @@ const PengujianDetail = ({ route, navigation }) => {
       <View className="space-y-4 ">
         <View className="rounded-xl shadow-lg overflow-hidden">
           {formData.payment?.status === "success" && (
-            <View className="bg-green-500 flex-row items-center  justify-between p-4">
+            <View className="bg-green-500 flex-row items-center  rounded-lg  justify-between p-4 mt-4">
               <MaterialCommunityIcons
                 name="check-decagram"
                 size={28}
@@ -641,14 +666,14 @@ const PengujianDetail = ({ route, navigation }) => {
           shadowOpacity: 0.5,
           shadowRadius: 2,
         }}>
-        <View className="flex-row p-3  justify-between ">
+        <View className="flex-row px-4 pt-5 mb-2 pb-1  justify-between ">
           <BackButton
             size={24}
             color={"black"}
             action={() => navigation.goBack()}
             className="mr-2 "
           />
-          <Text className=" text-black text-lg font-poppins-semibold">
+          <Text className=" font-poppins-semibold text-black text-lg text-end ">
             {formData?.kode || "Detail Pembayaran"}
           </Text>
         </View>
@@ -687,7 +712,7 @@ const PengujianDetail = ({ route, navigation }) => {
         </Modal>
 
         <ScrollView>
-          <View className="p-4">
+          <View className="px-4">
             {renderHargaDanAtasNama()}
             {renderNoPaymentAlert()}
             {renderPaymentDetails()}

@@ -1,5 +1,5 @@
 import axios from "@/src/libs/axios";
-import BackButton from "@/src/screens/components/Back";
+import Back from "@/src/screens/components/Back";
 import Select2 from "@/src/screens/components/Select2";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -98,8 +98,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     } catch (error) {}
   };
 
-  const { uuid } = route.params || {};
-  console.log(uuid)
+  console.log("route", route);
+  const { uuid, uuidPermohonan } = route.params.permohonan || {};
+  console.log("uuid", uuid);
+  console.log("uuidPermohonan", uuidPermohonan);
   const { permohonan } = route.params || {};
   const queryClient = useQueryClient();
 
@@ -120,6 +122,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     {
       enabled: !!uuid,
       onSuccess: data => {
+        console.log(data);
         if (data) {
           // console.log(data.keterangan, 999);
           setDate(
@@ -220,7 +223,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       const requestData = {
         ...data,
         payment_type: selectedPayment,
-        permohonan_uuid: permohonan.uuid,
+        permohonan_uuid: uuid,
         tanggal_pengambilan: date
           ? moment(date).format("YYYY-MM-DD HH:mm:ss")
           : null,
@@ -236,10 +239,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
       );
 
       // Kirim data ke API
-      const response = await axios.post(
-        uuid ? `/permohonan/titik/${uuid}/update` : "/permohonan/titik/store",
-        requestData,
-      );
+      const response = await axios.post("/permohonan/titik/store", requestData);
 
       console.log(response.data.data);
       return response.data.data; // Pastikan API mengembalikan data yang relevan
@@ -247,7 +247,10 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
     {
       onSuccess: data => {
         setTitikUji(data); // Simpan data titik uji di state
-        setModalParam(true); // Tampilkan modal
+        navigation.navigate("Parameter", {
+          uuid: data.uuid,
+          uuidPermohonan: uuid ? uuid : uuidPermohonan,
+        });
         queryClient.invalidateQueries(["/permohonan/titik"]); // Refresh data
       },
       onError: error => {
@@ -392,17 +395,13 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                 shadowOpacity: 0.5,
                 shadowRadius: 2,
               }}>
-              <View className="flex-row p-3 ">
-                <BackButton
+              <View className="flex-row pb-1 pt-5 px-4 justify-between items-center">
+                <Back
+                  size={24}
+                  color="black"
                   action={() => navigation.goBack()}
-                  size={30}
-                  style={{
-                    padding: 4,
-                  }}
-                  className="mr-2"
-                  color={"black"}
                 />
-                <Text className="font-poppins-semibold text-black text-2xl mt-1 ">
+                <Text className="font-poppins-semibold text-black text-lg text-end  ">
                   {uuid ? "Edit" : "Tambah"} Titik Pengujian
                 </Text>
               </View>

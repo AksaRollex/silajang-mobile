@@ -544,7 +544,7 @@ const Perusahaan = () => {
                   padding: 4,
                 }}
               />
-              <Text className="font-poppins-semibold text-black text-xl mt-1 ">
+              <Text className="font-poppins-semibold text-black text-lg text-end  ">
                 Informasi Perusahaan
               </Text>
             </View>

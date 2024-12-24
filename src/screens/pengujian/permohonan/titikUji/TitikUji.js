@@ -1,4 +1,5 @@
-import React, { useRef, useState } from "react";
+import React, { useRef, useState, useEffect, useCallback } from "react";
+import { useFocusEffect } from "@react-navigation/native";
 import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import Entypo from "react-native-vector-icons/Entypo";
@@ -22,18 +23,19 @@ const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
 const TitikUji = ({ navigation, route, callback }) => {
-  const { uuid } = route.params || {};
+  console.log("route", route);
+  const { uuid, uuidPermohonan } = route.params || {};
+  console.log("uuid permohonan", uuid);
+  console.log("uuid permohonan", uuidPermohonan);
   const { data: user } = useUser();
-  const data = permohonan || {};
+  // const data = permohonan || {};
+  // console.log("data", data);
 
-  const pivotData = data.titik_permohonans;
+  // const pivotData = data.titik_permohonans;
+  // console.log("pivotData", pivotData);
   const { onSuccess, onError, onSettled } = callback || {};
   const queryClient = useQueryClient();
-  const titikPermohonans = queryClient.getQueryData([
-    "permohonan",
-    uuid,
-    "titik",
-  ]);
+  // const titikPermohonans = pivotData;
   const paginateRef = useRef();
   const {
     delete: deleteTitikUji,
@@ -50,8 +52,17 @@ const TitikUji = ({ navigation, route, callback }) => {
     },
   });
 
-  const { data: permohonan } = usePermohonan(uuid);
-  // console.log(permohonan, 111);
+  const uuidToUse = uuid || uuidPermohonan;
+  const { data: permohonan } = usePermohonan(uuidToUse);
+  const titikPermohonans = permohonan?.titik_permohonans;
+  console.log(permohonan, 111);
+  console.log("titikPermohonans", titikPermohonans);
+
+  // useFocusEffect(
+  //   useCallback(() => {
+  //     refetch();
+  //   }, [refetch])
+  // );
 
   const [modalPermohonan, setModalPermohonan] = useState(false);
   const [permohonanUrl, setPermohonanUrl] = useState("");
@@ -98,10 +109,10 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const CardTitikUji = ({ item }) => {
-    console.log(item, "item");
+    // console.log("item: ", item.uuid);
     const permohonanPengujian = item?.status >= 2;
     const mandiri = item?.is_mandiri === 1 && item?.is_lunas === 1;
-    console.log(mandiri, "mandiri");
+    // console.log(mandiri, "mandiri");
     const dropdownOptions = [
       {
         id: "Edit",
@@ -156,7 +167,12 @@ const TitikUji = ({ navigation, route, callback }) => {
         <View style={styles.roundedBackground} className="rounded-br-full" />
         <TouchableOpacity
           style={styles.cardWrapper}
-          onPress={() => navigation.navigate("Parameter", { uuid: item.uuid })}>
+          onPress={() =>
+            navigation.navigate("Parameter", {
+              uuid: item.uuid,
+              uuidPermohonan: uuid ? uuid : uuidPermohonan,
+            })
+          }>
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
               <Text className="font-poppins-regular text-slate-600 text-xs uppercase ">
@@ -217,7 +233,7 @@ const TitikUji = ({ navigation, route, callback }) => {
               <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
                 Status Pengujian
               </Text>
-              <View className="bg-indigo-50 rounded-md px-2 py-1 max-w-[150px] ">
+              <View className="bg-indigo-50 rounded-md px-2 py-1 max-w-[90px] ">
                 <Text className=" text-[10px] font-poppins-semibold text-indigo-600">
                   {item.text_status || "-"}
                 </Text>
@@ -530,7 +546,7 @@ const TitikUji = ({ navigation, route, callback }) => {
       <View className="w-full h-full bg-[#ececec] p-3">
         <View className="w-full h-full rounded-3xl bg-[#fff]">
           <View className="w-full">
-            <View className="flex-row p-3 justify-between rounded-t-md">
+            <View className="flex-row  justify-between pt-5 px-4 pb-1 ">
               <BackButton
                 size={24}
                 color={"black"}
@@ -538,17 +554,18 @@ const TitikUji = ({ navigation, route, callback }) => {
                 className="mr-2 "
               />
               {permohonan ? (
-                <Text className="font-poppins-semibold text-black">
-                  {/* {permohonan?.industri} : */}
-                  Titik Pengujian
+                <Text className="font-poppins-semibold text-black text-lg text-end">
+                  {permohonan?.industri} : Titik Pengujian
                 </Text>
               ) : (
-                <Text></Text>
+                <Text className="font-poppins-semibold text-black text-lg text-end">
+                  Titik Pengujian
+                </Text>
               )}
             </View>
           </View>
           {!titikPermohonans?.data?.length &&
-            !pivotData?.length &&
+            // !pivotData?.length &&
             user.has_tagihan && (
               <View className="p-4">
                 <View className="flex p-2 items-center bg-yellow-100 border border-yellow-400 rounded-md">
@@ -562,24 +579,40 @@ const TitikUji = ({ navigation, route, callback }) => {
               </View>
             )}
 
-          {!titikPermohonans?.data?.length &&
-            !pivotData?.length &&
-            !user.has_tagihan && (
+          {titikPermohonans?.length === 0 && (
+            <View className="p-4">
+            <View className="flex p-2 top-3 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+              <Text className="text-black text-center mb-1 font-poppins-semibold">
+                Tambah Lokasi Sampel Pengujian
+              </Text>
+              <Text className="text-black text-[13px] font-poppins-medium text-center ">
+                Anda belum memiliki Titik Lokasi
+              </Text>
+            </View>
+          </View>
+          )}
+
+          {/* {
+            !titikPermohonans?.data?.length && (
+              // !pivotData?.length &&
+              // !user.has_tagihan && (
               <View className="p-4">
                 <View className="flex p-2 items-center bg-indigo-100 border border-indigo-400 rounded-md">
-                  <Text className="text-black text-xs mb-2 font-poppins-medium">
+                  <Text className="text-black text-center mb-2 font-poppins-semibold">
                     Silahkan Tambah Titik Lokasi Sampel Pengujian
                   </Text>
-                  <Text className="text-black text-xs font-poppins-regular">
+                  <Text className="text-black text-[13px] font-poppins-medium text-center ">
                     Anda belum memiliki Titik Lokasi Sampel satu pun.
                   </Text>
                 </View>
               </View>
-            )}
+            )
+            // )
+          } */}
           <View className="w-full h-full rounded-b-md">
             <Paginate
               ref={paginateRef}
-              payload={{ permohonan_uuid: { uuid } }}
+              payload={{ permohonan_uuid: uuid ? uuid : uuidPermohonan }}
               url="/permohonan/titik"
               className="mb-20"
               renderItem={CardTitikUji}

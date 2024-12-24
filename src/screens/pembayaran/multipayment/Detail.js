@@ -715,7 +715,7 @@ const MultipaymentDetail = ({ route, navigation }) => {
     <>
       <View className="p-3 w-full h-full bg-[#ececec]">
         <View className="h-full w-full bg-[#f8f8f8] rounded-3xl">
-          <View className="flex-row items-center p-3 justify-between ">
+          <View className="flex-row px-4 pt-5 pb-1  justify-between ">
             <Back
               size={24}
               color={"black"}
@@ -725,7 +725,7 @@ const MultipaymentDetail = ({ route, navigation }) => {
 
             {formData?.data?.kode ? (
               <View>
-                <Text className="text-xl font-poppins-semibold text-black text-center">
+                <Text className="font-poppins-semibold text-black text-lg text-end">
                   {formData?.data?.kode}
                 </Text>
               </View>

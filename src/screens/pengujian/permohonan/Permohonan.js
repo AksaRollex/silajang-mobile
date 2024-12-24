@@ -251,14 +251,14 @@ const Permohonan = ({ navigation }) => {
             shadowOpacity: 0.5,
             shadowRadius: 2,
           }}>
-          <View className="flex-row p-3  justify-between ">
+          <View className="flex-row px-4 pt-5 pb-1  justify-between ">
             <Back
               size={24}
               color={"black"}
               action={() => navigation.goBack()}
               className="mr-2 "
             />
-            <Text className=" text-black text-lg font-poppins-semibold">
+            <Text className="font-poppins-semibold text-black text-lg text-end ">
               Permohonan
             </Text>
           </View>

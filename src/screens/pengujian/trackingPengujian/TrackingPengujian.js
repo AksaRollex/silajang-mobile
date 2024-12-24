@@ -205,14 +205,14 @@ const TrackingPengujian = ({ navigation }) => {
     <>
       <View className="w-full h-full bg-[#ececec] p-3">
         <View className="rounded-3xl bg-[#fff] w-full h-full">
-          <View className="flex-row p-3 justify-between">
+          <View className="flex-row px-4 pt-5 pb-1 justify-between">
             <Back
               size={24}
               color={"black"}
               action={() => navigation.goBack()}
               className="mr-2 "
             />
-            <Text className="font-poppins-semibold text-black text-lg ">
+            <Text className="font-poppins-semibold text-black text-lg text-end  ">
               Tracking Pengujian
             </Text>
           </View>

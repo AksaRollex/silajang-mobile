@@ -63,13 +63,14 @@ const TrackingList = ({ route, onClose }) => {
       <ScrollView
         style={styles.scrollView}
         className="rounded-3xl w-full h-full ">
-        <View style={[styles.header]}>
+        <View className="flex-row px-4 pt-5 pb-1 justify-between">
           <BackButton
             size={24}
             color="black"
+            className="mr-2 "
             action={() => navigation.goBack()}
           />
-          <Text style={styles.headerTitle}>
+          <Text className="font-poppins-semibold text-black text-lg text-end">
             {selected?.kode} 
             {/* {selected?.lokasi} */}
           </Text>

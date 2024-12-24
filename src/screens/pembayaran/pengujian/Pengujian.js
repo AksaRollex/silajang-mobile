@@ -501,16 +501,18 @@ const Pengujian = ({ navigation }) => {
     <>
       <View className="p-3 bg-[#ececec] w-full h-full">
         <View className="rounded-3xl bg-[#fff] w-full h-full">
-          <View className="flex-row  p-3 justify-between">
-            <BackButton
-              size={24}
-              color={"black"}
-              action={() => navigation.goBack()}
-              className="mr-2 "
-            />
-            <Text className="font-poppins-semibold text-black text-lg ">
-              Pengujian Pembayaran
-            </Text>
+          <View className="px-4">
+            <View className="flex-row justify-between items-center pt-5 pb-1">
+              <BackButton
+                size={24}
+                color={"black"}
+                action={() => navigation.goBack()}
+                className="mr-5"
+              />
+              <Text className="font-poppins-semibold text-black text-lg text-end  pb-1">
+               Pembayaran Pengujian
+              </Text>
+            </View>
           </View>
           <View className=" w-full h-full  ">
             <Paginate
