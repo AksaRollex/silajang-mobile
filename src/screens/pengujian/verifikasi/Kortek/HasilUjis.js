@@ -16,6 +16,8 @@ import axios from "@/src/libs/axios";
 import { API_URL } from "@env";
 import Icon from "react-native-vector-icons/MaterialCommunityIcons";
 import { useMutation } from "@tanstack/react-query";
+import { TextFooter } from "@/src/screens/components/TextFooter";
+
 
 const HasilUjis = ({ route, navigation }) => {
   const { uuid } = route.params;
@@ -449,6 +451,9 @@ const HasilUjis = ({ route, navigation }) => {
         ) : (
           <Text style={styles.loading}>Loading...</Text>
         )}
+        <View className="my-8">
+        <TextFooter/>
+        </View>
       </ScrollView>
     </View>
   );
@@ -476,7 +481,6 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    marginBottom: 55,
   },
   loadingContainer: {
     flex: 1,

@@ -148,7 +148,7 @@ export default function HasilUji({ route, navigation }) {
       }));
     } catch (error) {
       console.error("Error updating parameter:", error);
-    }finally{
+    } finally {
       Toast.show({
         type: 'success',
         text1: 'Berhasil',
@@ -192,9 +192,11 @@ export default function HasilUji({ route, navigation }) {
               />
             ))}
         </View>
-       </View>
-      <TextFooter/>
-  </ScrollView>
+      </View>
+      <View className="my-8">
+        <TextFooter />
+      </View>
+    </ScrollView>
   );
 }
 
