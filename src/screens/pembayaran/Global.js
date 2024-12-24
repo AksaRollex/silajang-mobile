@@ -179,7 +179,7 @@ const Global = ({ navigation }) => {
       Toast.show({
         type: 'success',
         text1: 'Berhasil!',
-        text2: `Laporan ${statusText} berhasil diunduh`,
+        text2: `Laporan Global berhasil diunduh`,
       });
     } catch (error) {
       console.error('Error saat mengunduh file:', error);
@@ -355,7 +355,7 @@ const Global = ({ navigation }) => {
             </View>
           </View>
 
-        <View className= "p-4">
+        <View className= "p-6">
         <View className="flex-row">
           <MenuView
             title="Pilih Tahun"
