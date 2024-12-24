@@ -57,7 +57,7 @@ const HasilUjis = ({ navigation, route }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
-  const [selectedCetak, setSelectedCetak] = useState(1);
+  const [selectedCetak, setSelectedCetak] = useState(0);
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
@@ -540,7 +540,7 @@ const HasilUjis = ({ navigation, route }) => {
               }}
               className="flex-row items-center p-2 bg-amber-100 rounded-md mr-2"
             >
-              <FontIcon name="pencil-alt" size={16} color="#fbbf24" />
+              <Ionicons name="pencil" size={16} color="#fbbf24" />
               <Text className="ml-2 text-amber-400 text-[13px] font-poppins-semibold">
                 Revisi
               </Text>
@@ -723,7 +723,7 @@ const HasilUjis = ({ navigation, route }) => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm mb-2 text-gray-600">
+              <Text className="text-sm mb-2 text-gray-600 font-poppins-medium">
                 Keterangan Revisi
               </Text>
               <TextInput
@@ -731,8 +731,9 @@ const HasilUjis = ({ navigation, route }) => {
                 numberOfLines={4}
                 value={revisionNote}
                 onChangeText={setRevisionNote}
-                className="border border-gray-300 rounded-lg p-3 text-sm "
+                className="border border-gray-300 rounded-lg p-3 text-sm font-poppins-regular text-black"
                 placeholder="Masukkan keterangan revisi..."
+                placeholderTextColor="#666"
                 textAlignVertical="top"
               />
             </View>
@@ -749,7 +750,7 @@ const HasilUjis = ({ navigation, route }) => {
               </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={handleRevision}
-                className="bg-indigo-600 px-4 py-2 rounded">
+                className="bg-amber-400 px-4 py-2 rounded">
                 <Text className="text-white font-poppins-semibold">Revisi</Text>
               </TouchableOpacity>
             </View>
