@@ -36,6 +36,7 @@ const HasilUjis = ({ route, navigation }) => {
           satuan: param.satuan,
           baku_mutu: param.baku_mutu,
           mdl: param.mdl,
+          hasil_uji: param.hasil_uji,
           hasil_uji_pembulatan: param.hasil_uji_pembulatan,
           keterangan: param.keterangan,
           keterangan_hasil: param.keterangan_hasil,
@@ -89,6 +90,7 @@ const HasilUjis = ({ route, navigation }) => {
         setValue(`satuan.${index}`, item.pivot.satuan);
         setValue(`baku_mutu.${index}`, item.pivot.baku_mutu);
         setValue(`mdl.${index}`, item.pivot.mdl);
+        setValue(`hasil_uji.${index}`, item.pivot.hasil_uji);
         setValue(
           `hasil_uji_pembulatan.${index}`,
           item.pivot.hasil_uji_pembulatan,
