@@ -99,25 +99,153 @@ export default function DetailKontrak({ route, navigation }) {
     };
 
     const requestStoragePermission = async () => {
-        if (Platform.OS === 'android') {
-            try {
-                const granted = await PermissionsAndroid.request(
+        if (Platform.OS !== 'android') return true;
+    
+        try {
+            // For Android 13 and above (API level 33+)
+            if (Platform.Version >= 33) {
+                const mediaPermission = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+                );
+                return mediaPermission === PermissionsAndroid.RESULTS.GRANTED;
+            }
+            // For Android 10 and above (API level 29-32)
+            else if (Platform.Version >= 29) {
+                const storagePermission = await PermissionsAndroid.requestMultiple([
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                ]);
+                
+                return (
+                    storagePermission['android.permission.WRITE_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED &&
+                    storagePermission['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED
+                );
+            }
+            // For Android 9 and below (API level 28 and below)
+            else {
+                const storagePermission = await PermissionsAndroid.request(
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                     {
-                        title: "Storage Permission",
-                        message: "Application needs access to your storage to download files",
-                        buttonNeutral: "Ask Me Later",
-                        buttonNegative: "Cancel",
+                        title: "Izin Penyimpanan",
+                        message: "Aplikasi membutuhkan izin untuk mengunduh file",
+                        buttonNeutral: "Tanya Nanti",
+                        buttonNegative: "Batal",
                         buttonPositive: "OK"
                     }
                 );
-                return granted === PermissionsAndroid.RESULTS.GRANTED;
-            } catch (err) {
-                console.error(err);
-                return false;
+                return storagePermission === PermissionsAndroid.RESULTS.GRANTED;
             }
+        } catch (err) {
+            console.error('Error requesting permission:', err);
+            return false;
         }
-        return true;
+    };
+    
+    const HandleDownloadFile = async () => {
+        if (data?.kontrak?.dokumen_permohonan) {
+            try {
+                setDownloading(true);
+                
+                // Request permissions first
+                const hasPermission = await requestStoragePermission();
+                if (!hasPermission) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Izin penyimpanan ditolak. Mohon berikan izin melalui pengaturan aplikasi.',
+                        visibilityTime: 3000,
+                    });
+                    return;
+                }
+    
+                // Get the token for authentication
+                const token = await AsyncStorage.getItem('token');
+                
+                // Create the full URL with the correct path
+                const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
+                
+                // Get file extension and create proper filename
+                const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop() || 'pdf';
+                const fileName = `dokumen_permohonan_${Date.now()}.${fileExtension}`;
+                
+                // Set the correct download path based on platform
+                const downloadDir = Platform.OS === 'ios' 
+                    ? RNFS.DocumentDirectoryPath 
+                    : RNFS.DownloadDirectoryPath;
+                
+                const downloadPath = `${downloadDir}/${fileName}`;
+    
+                // Configure download options with authentication
+                const options = {
+                    fromUrl: fileUrl,
+                    toFile: downloadPath,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/pdf',
+                    },
+                    background: true,
+                    discretionary: true,
+                    begin: (res) => {
+                        console.log('Download started with status:', res.statusCode);
+                        console.log('Content-Length:', res.contentLength);
+                    },
+                    progress: (res) => {
+                        const progress = (res.bytesWritten / res.contentLength) * 100;
+                        console.log(`Download progress: ${progress.toFixed(2)}%`);
+                    }
+                };
+    
+                // Start the download
+                const response = await RNFS.downloadFile(options).promise;
+                
+                if (response.statusCode === 200) {
+                    // Verify the file exists
+                    const exists = await RNFS.exists(downloadPath);
+                    
+                    if (exists) {
+                        // For Android, make the file visible in Downloads
+                        if (Platform.OS === 'android') {
+                            try {
+                                await RNFS.scanFile(downloadPath);
+                            } catch (scanError) {
+                                console.error('Error scanning file:', scanError);
+                            }
+                        }
+    
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Berhasil',
+                            text2: `File berhasil diunduh ke folder ${Platform.OS === 'ios' ? 'Documents' : 'Downloads'}`,
+                            visibilityTime: 3000,
+                            autoHide: true,
+                            topOffset: 30,
+                            bottomOffset: 40,
+                        });
+                    } else {
+                        throw new Error('File tidak ditemukan setelah diunduh');
+                    }
+                } else {
+                    throw new Error(`Download gagal dengan status ${response.statusCode}`);
+                }
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Gagal mengunduh file. Silakan coba lagi.',
+                    visibilityTime: 3000,
+                });
+            } finally {
+                setDownloading(false);
+            }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Dokumen Permohonan tidak ditemukan',
+                visibilityTime: 3000,
+            });
+        }
     };
 
     const formattedBulan = useMemo(() => {
@@ -130,66 +258,97 @@ export default function DetailKontrak({ route, navigation }) {
         return '';
     }, [data])
 
-    const HandleDownloadFile = async () => {
-        if (data?.kontrak?.dokumen_permohonan) {
-            const hasPermission = await requestStoragePermission();
-            if (!hasPermission) {
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Storage permission denied',
-                });
-                return;
-            }
-
-            setDownloading(true);
-            const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
-            const fileName = 'Dokumen_Permohonan';
-            const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop();
-
-            // Use the proper directory path based on platform
-            const downloadPath = Platform.OS === 'ios'
-                ? `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`
-                : `${RNFS.DownloadDirectoryPath}/${fileName}.${fileExtension}`;
-
-            try {
-                const options = {
-                    fromUrl: fileUrl,
-                    toFile: downloadPath,
-                    background: true,
-                    progressDivider: 1,
-                };
-
-                const download = RNFS.downloadFile(options);
-                const result = await download.promise;
-
-                if (result.statusCode === 200) {
-                    Toast.show({
-                        type: 'success',
-                        text1: 'Success',
-                        text2: 'File downloaded successfully',
-                    });
-                } else {
-                    throw new Error('Download failed');
-                }
-            } catch (error) {
-                console.error('Error downloading file:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to download the file',
-                });
-            } finally {
-                setDownloading(false);
-            }
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Dokumen Permohonan tidak ditemukan',
-            });
-        }
-    };
+    // const HandleDownloadFile = async () => {
+    //     if (data?.kontrak?.dokumen_permohonan) {
+    //         const hasPermission = await requestStoragePermission();
+    //         if (!hasPermission) {
+    //             Toast.show({
+    //                 type: 'error',
+    //                 text1: 'Error',
+    //                 text2: 'Storage permission denied',
+    //             });
+    //             return;
+    //         }
+    
+    //         setDownloading(true);
+    //         const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
+    //         const fileName = data.kontrak.dokumen_permohonan.split('/').pop() || 'Dokumen_Permohonan';
+            
+    //         // Get the download directory path based on platform
+    //         const downloadDir = Platform.OS === 'ios' 
+    //             ? RNFS.DocumentDirectoryPath 
+    //             : RNFS.DownloadDirectoryPath;
+            
+    //         const downloadPath = `${downloadDir}/${fileName}`;
+    
+    //         try {
+    //             // Add headers for authentication if needed
+    //             const headers = {};
+    //             const token = await AsyncStorage.getItem('token');
+    //             if (token) {
+    //                 headers.Authorization = `Bearer ${token}`;
+    //             }
+    
+    //             const options = {
+    //                 fromUrl: fileUrl,
+    //                 toFile: downloadPath,
+    //                 headers,
+    //                 background: true,
+    //                 begin: (res) => {
+    //                     console.log('Download started:', res);
+    //                 },
+    //                 progress: (res) => {
+    //                     const progress = (res.bytesWritten / res.contentLength) * 100;
+    //                     console.log(`Download progress: ${progress.toFixed(2)}%`);
+    //                 }
+    //             };
+    
+    //             const response = await RNFS.downloadFile(options).promise;
+    
+    //             if (response.statusCode === 200) {
+    //                 // Check if file exists after download
+    //                 const exists = await RNFS.exists(downloadPath);
+    //                 if (exists) {
+    //                     Toast.show({
+    //                         type: 'success',
+    //                         text1: 'Success',
+    //                         text2: `File tersimpan di ${Platform.OS === 'ios' ? 'Documents' : 'Downloads'}`,
+    //                         visibilityTime: 3000,
+    //                         autoHide: true,
+    //                         topOffset: 30,
+    //                         bottomOffset: 40,
+    //                     });
+    
+    //                     // For Android, trigger media scanner to show file in gallery
+    //                     if (Platform.OS === 'android') {
+    //                         await RNFS.scanFile(downloadPath);
+    //                     }
+    //                 } else {
+    //                     throw new Error('File not found after download');
+    //                 }
+    //             } else {
+    //                 throw new Error(`Download failed with status ${response.statusCode}`);
+    //             }
+    //         } catch (error) {
+    //             console.error('Error downloading file:', error);
+    //             Toast.show({
+    //                 type: 'error',
+    //                 text1: 'Error',
+    //                 text2: 'Gagal mengunduh file. Silakan coba lagi.',
+    //                 visibilityTime: 3000,
+    //             });
+    //         } finally {
+    //             setDownloading(false);
+    //         }
+    //     } else {
+    //         Toast.show({
+    //             type: 'error',
+    //             text1: 'Error',
+    //             text2: 'Dokumen Permohonan tidak ditemukan',
+    //             visibilityTime: 3000,
+    //         });
+    //     }
+    // };
 
     if (loading) {
         return (
@@ -333,7 +492,7 @@ export default function DetailKontrak({ route, navigation }) {
                                     {downloading ? (
                                         <ActivityIndicator size="small" color="#000" />
                                     ) : (
-                                        <Octicons name="download" size={32} color="black" />
+                                        <Octicons name="download" size={31} color="black" />
                                     )}
                                 </TouchableOpacity>
                                 <View className="flex-1">
