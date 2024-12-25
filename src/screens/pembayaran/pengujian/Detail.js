@@ -33,6 +33,7 @@ const PengujianDetail = ({ route, navigation }) => {
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const { uuid } = route.params;
   const [qrisValue, setQrisValue] = useState(null);
+  const [qrCodeBase64, setQrCodeBase64] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalError, setModalError] = useState(false);
   const { data: setting } = useSetting();
@@ -40,7 +41,7 @@ const PengujianDetail = ({ route, navigation }) => {
     Clipboard.setString(text);
   };
   const canvasRef = useRef(null);
-
+  const qrCodeRef = useRef(null);
   const fetchData = useCallback(() => {
     axios
       .get(`/pembayaran/pengujian/${uuid}`)
@@ -135,49 +136,24 @@ const PengujianDetail = ({ route, navigation }) => {
   };
 
   const isExpired = formData?.payment?.is_expired;
-
   /**
    * Download QRIS dan QRIS template ke galeri perangkat
    *
    * @returns {Promise<void>}
    */
 
+  // Konversi QR code ke base64
+  useEffect(() => {
+    if (qrCodeRef.current && qrisValue) {
+      qrCodeRef.current.toDataURL(dataURL => {
+        setQrCodeBase64(dataURL);
+      });
+    }
+  }, [qrisValue]);
+
+  // Fungsi untuk menggambar pada canvas
   const handleCanvas = async canvas => {
     try {
-      // Fungsi untuk mengambil gambar sebagai base64
-      const getBase64Image = async imageSource => {
-        const photo = Image.resolveAssetSource(imageSource);
-        const photoUri = photo?.uri;
-
-        if (!photoUri) {
-          throw new Error(`Image not found`);
-        }
-
-        const response = await fetch(photoUri);
-        const blob = await response.blob();
-
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            const base64String = reader.result.split(",")[1] || reader.result;
-            resolve(`data:image/png;base64,${base64String}`);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
-        });
-      };
-
-      // Ambil base64 untuk QRIS dan template QRIS
-      const qrisBase64 = await getBase64Image(
-        require("../../../../assets/images/qrcodes.png"),
-      );
-      const qrisTemplateBase64 = await getBase64Image(
-        require("../../../../assets/images/qris-template.png"),
-      );
-
-      // console.log(qrisBase64, 1111);
-      // console.log(qrisTemplateBase64, 2222);
-      // Siapkan canvas
       if (!canvas || canvasRef.current) return;
 
       canvasRef.current = canvas;
@@ -189,28 +165,46 @@ const PengujianDetail = ({ route, navigation }) => {
 
       const ctx = canvas.getContext("2d");
 
+      // Gambar template
+      const getBase64Image = async imageSource => {
+        const photo = Image.resolveAssetSource(imageSource);
+        const response = await fetch(photo?.uri);
+        const blob = await response.blob();
+
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onloadend = () => {
+            resolve(`data:image/png;base64,${reader.result.split(",")[1]}`);
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(blob);
+        });
+      };
+
+      const qrisTemplateBase64 = await getBase64Image(
+        require("../../../../assets/images/qris-template.png"),
+      );
+
       const qrisTemplate = new CanvasImage(canvas);
       qrisTemplate.src = qrisTemplateBase64;
       qrisTemplate.addEventListener("load", () => {
-        // Gambar template terlebih dahulu
         ctx.drawImage(qrisTemplate, 0, 0, width, height);
       });
 
-      const qrisImage = new CanvasImage(canvas);
-      qrisImage.src = qrisBase64;
-      qrisImage.addEventListener("load", () => {
-        // Gambar QRIS di tengah template
-        const imageWidth = 200;
-        const imageHeight = 200;
-        const x = (width - imageWidth) / 2;
-        const y = (height - imageHeight) / 2;
-
-        // Gambar QRIS di atas template
-        ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
-      });
+      // Gambar QR code dinamis
+      if (qrCodeBase64) {
+        const qrisImage = new CanvasImage(canvas);
+        qrisImage.src = qrCodeBase64;
+        qrisImage.addEventListener("load", () => {
+          const imageWidth = 200;
+          const imageHeight = 200;
+          const x = (width - imageWidth) / 2;
+          const y = (height - imageHeight) / 2;
+          ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
+        });
+      }
     } catch (error) {
-      console.error("Error dalam proses download:", error);
-      throw error;
+      console.error("Error dalam proses render:", error);
     }
   };
 
@@ -583,6 +577,11 @@ const PengujianDetail = ({ route, navigation }) => {
                         : 1,
                   }}>
                   <Canvas ref={handleCanvas} />
+                  <QRCode
+                    value={qrisValue}
+                    getRef={ref => (qrCodeRef.current = ref)}
+                    size={150}
+                  />
                 </View>
                 {formData.payment.status === "pending" && (
                   <TouchableOpacity
