@@ -25,12 +25,14 @@ import Canvas, { Image as CanvasImage } from "react-native-canvas";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import BackButton from "../../components/Back";
+import QRCode from "react-native-qrcode-svg";
 
 const PengujianDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({ payment: { status: "pending" } });
   const [loading, setLoading] = useState(true);
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const { uuid } = route.params;
+  const [qrisValue, setQrisValue] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalError, setModalError] = useState(false);
   const { data: setting } = useSetting();
@@ -105,6 +107,18 @@ const PengujianDetail = ({ route, navigation }) => {
         Alert.alert("ERROR", "Kode Pembayaran gagal dibuat" || "Gagal Memuat");
       });
   };
+
+  useEffect(() => {
+    axios
+      .get(`/pembayaran/pengujian/${uuid}`)
+      .then(res => {
+        setQrisValue(res.data.data.payment?.qris_value);
+        console.log(res.data.data.payment?.qris_value, "qris value");
+      })
+      .catch(err => {
+        Alert.alert("error", err.response?.data?.data?.message);
+      });
+  }, [uuid]);
 
   const handleGenerateQRIS = () => {
     setLoading(true);
@@ -307,7 +321,7 @@ const PengujianDetail = ({ route, navigation }) => {
   };
 
   const renderNoPaymentAlert = () => {
-    console.log("Payment Type:", formData?.payment_type);
+    // console.log("Payment Type:", formData?.payment_type);
     // console.log("Payment Data:", formData?.payment);
     if (!formData?.payment) {
       return (
