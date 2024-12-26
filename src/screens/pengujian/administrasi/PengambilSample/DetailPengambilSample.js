@@ -16,6 +16,7 @@ import Toast from 'react-native-toast-message';
 import Foundation from "react-native-vector-icons/Foundation";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 export default function Detail({ route, navigation }) {
   const { uuid, status, pengambilOptions } = route.params;
@@ -865,6 +866,7 @@ export default function Detail({ route, navigation }) {
 
               </View>
             </View>
+            <TextFooter className="mt-5"/>
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>

@@ -4,6 +4,7 @@ import moment from 'moment';
 import AntDesign from 'react-native-vector-icons/AntDesign';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import { Colors } from "react-native-ui-lib";
+import { TextFooter } from '../../components/TextFooter';
 
 const mapStatusPengujian = (status) => {
   const statusPengujian = {
@@ -52,7 +53,7 @@ const DetailTracking = ({ route, navigation }) => {
       ? 'bg-green-100 '
       : 'bg-yellow-100 '
       }`}>
-      <Text className={`text-xs font-poppins ${isPositive
+      <Text className={`text-xs font-poppins-regular ${isPositive
         ? 'text-green-500'
         : 'text-yellow-500'
         }`}>
@@ -62,7 +63,7 @@ const DetailTracking = ({ route, navigation }) => {
   );
 
   return (
-    <ScrollView className="flex-1" style={{ backgroundColor: Colors.grey80 }} >
+    <ScrollView className="flex-1 p-1.5" style={{ backgroundColor: Colors.grey80 }} >
       <View className="flex-1">
         <View className="mx-2 my-3 rounded-xl bg-white elevation">
           <View className="p-4">
@@ -147,6 +148,9 @@ const DetailTracking = ({ route, navigation }) => {
             </View>
           ))}
         </View>
+      </View>
+      <View className="my-5">
+      <TextFooter/>
       </View>
     </ScrollView>
   );

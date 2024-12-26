@@ -1,5 +1,5 @@
-import React, { useState, useCallback, useRef, useEffect,  } from "react";
-import { View, Text, TouchableOpacity, Modal, ScrollView, Platform, } from "react-native";
+import React, { useState, useCallback, useRef, useEffect, } from "react";
+import { View, Text, TouchableOpacity, Modal, ScrollView, Platform, ActivityIndicator } from "react-native";
 import { request, PERMISSIONS, RESULTS } from 'react-native-permissions';
 import { MenuView } from "@react-native-menu/menu";
 import axios from "@/src/libs/axios";
@@ -25,15 +25,16 @@ const rem = multiplier => 16 * multiplier;
 const Global = ({ navigation }) => {
   const [selectedYear, setSelectedYear] = useState(new Date().getFullYear());
   const [selectedStatus, setSelectedStatus] = useState("-");
+  const [isDownloading, setIsDownloading] = useState(false);
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const { setHeader } = useHeaderStore();
-        
-      React.useLayoutEffect(() => {
-        setHeader(false)
-    
-        return () => setHeader(true)
-      }, [])
+
+  React.useLayoutEffect(() => {
+    setHeader(false)
+
+    return () => setHeader(true)
+  }, [])
 
 
   const generateYears = () => {
@@ -100,19 +101,19 @@ const Global = ({ navigation }) => {
   useEffect(() => {
     console.log(`/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`)
   })
-  
+
 
   const requestStoragePermission = async () => {
     try {
       const permission = Platform.select({
-        android: Platform.Version >= 33 
+        android: Platform.Version >= 33
           ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES  // For Android 13 and above
           : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
         ios: PERMISSIONS.IOS.MEDIA_LIBRARY,
       });
-  
+
       const result = await request(permission);
-      
+
       switch (result) {
         case RESULTS.GRANTED:
           console.log('Storage permission granted');
@@ -141,41 +142,42 @@ const Global = ({ navigation }) => {
       return false;
     }
   };
-  
+
   const downloadReport = async () => {
+    setIsDownloading(true);
     try {
       const hasPermission = await requestStoragePermission();
-      
+
       if (!hasPermission) {
         return;
       }
-  
+
       const response = await axios.get(`/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`, {
         headers: {
           Authorization: `Bearer ${authToken}`,
         },
         responseType: 'arraybuffer',
       });
-  
+
       // Generate a unique filename based on status and year
       const statusText = selectedStatus === "-" ? "Semua" : selectedStatus;
       const timestamp = new Date().getTime(); // Add timestamp to make filename unique
       const fileName = `Laporan_Pembayaran_Global_${selectedYear}_${statusText}_${timestamp}.xlsx`;
-  
+
       // Determine path based on platform
-      const path = Platform.OS === "ios" 
-        ? `${RNFS.DocumentDirectoryPath}/${fileName}` 
+      const path = Platform.OS === "ios"
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
         : `${RNFS.DownloadDirectoryPath}/${fileName}`;
-  
+
       // Convert buffer to ASCII string
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
-  
+
       // Save file
       await RNFS.writeFile(path, fileContent, 'ascii');
-  
+
       console.log('File berhasil diunduh dan disimpan di:', path);
-  
+
       Toast.show({
         type: 'success',
         text1: 'Berhasil!',
@@ -183,12 +185,15 @@ const Global = ({ navigation }) => {
       });
     } catch (error) {
       console.error('Error saat mengunduh file:', error);
-  
+
       Toast.show({
         type: 'error',
         text1: 'Gagal!',
         text2: 'Tidak dapat mengunduh laporan',
       });
+    } finally {
+      setIsDownloading(false);
+      setModalVisible(false);
     }
   };
 
@@ -330,32 +335,32 @@ const Global = ({ navigation }) => {
   };
 
   return (
-     <View className="bg-[#ececec] w-full h-full">
-          <View
-            className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-            style={{ backgroundColor: "#fff" }}>
-            <View className="flex-row items-center">
-              <Ionicons
-                name="arrow-back-outline"
-                onPress={() => navigation.goBack()}
-                size={25}
-                color="#312e81"
-              />
-              <Text className="text-[20px] font-poppins-medium text-black ml-4">
-                Global
-              </Text>
-            </View>
-            <View className="bg-green-600 rounded-full">
-              <Ionicons
-                name="globe"
-                size={18}
-                color={"white"}
-                style={{ padding: 5 }}
-              />
-            </View>
-          </View>
+    <View className="bg-[#ececec] w-full h-full">
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: "#fff" }}>
+        <View className="flex-row items-center">
+          <Ionicons
+            name="arrow-back-outline"
+            onPress={() => navigation.goBack()}
+            size={25}
+            color="#312e81"
+          />
+          <Text className="text-[20px] font-poppins-medium text-black ml-4">
+            Global
+          </Text>
+        </View>
+        <View className="bg-green-600 rounded-full">
+          <Ionicons
+            name="globe"
+            size={18}
+            color={"white"}
+            style={{ padding: 5 }}
+          />
+        </View>
+      </View>
 
-        <View className= "p-6">
+      <View className="p-6">
         <View className="flex-row">
           <MenuView
             title="Pilih Tahun"
@@ -403,24 +408,28 @@ const Global = ({ navigation }) => {
 
             <Text className="text-xl font-poppins-semibold text-black mb-3">
               Konfirmasi Download
-            </Text> 
+            </Text>
 
             <View className="w-full h-px bg-gray-200 mb-4" />
 
             <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
-               Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+              Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
             </Text>
 
             <View className="flex-row w-full justify-between">
               <TouchableOpacity
-               onPress={() => {
-                downloadReport();
-                setModalVisible(false);
-              }}
+                onPress={() => {
+                  downloadReport();
+                }}
+                disabled={isDownloading}
                 className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
               >
-                <Text className="text-white font-poppins-medium">Ya, Download</Text>
-              </TouchableOpacity>
+                {isDownloading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white font-poppins-medium">Ya, Download</Text>
+                )}            
+                </TouchableOpacity>
 
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}

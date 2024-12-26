@@ -194,11 +194,11 @@ const Analis = ({ navigation }) => {
         <View className="flex-row justify-between">
           <View className="flex-1 pr-4">
 
-            {item.check_param && (
-              <View className="mt-2 mb-2">
-                <MaterialIcons name="verified" size={20} color="green" style={{ marginBottom: 4 }} />
-              </View>
-            )}
+          {item.check_param && item.status === 3 && (
+            <View className="mt-2 mb-2">
+              <MaterialIcons name="verified" size={20} color="green" style={{ marginBottom: 4 }} />
+            </View>
+          )}
 
             <Text className="text-xs font-poppins-regular text-gray-500">Kode</Text>
             <Text className="text-md font-poppins-semibold text-black mb-2">

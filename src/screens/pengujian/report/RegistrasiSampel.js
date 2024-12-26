@@ -1,7 +1,7 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, Modal, ActivityIndicator, PermissionsAndroid, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ActivityIndicator, PermissionsAndroid, Platform, ScrollView,} from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
@@ -135,6 +135,7 @@ const RegistrasiSampel = ({ navigation }) => {
       });
     } finally {
       setIsDownloading(false);
+      setModalVisible(false);
     }
   };
 
@@ -306,7 +307,6 @@ const RegistrasiSampel = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   downloadReport();
-                  setModalVisible(false);
                 }}
                 className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
                 disabled={isDownloading}

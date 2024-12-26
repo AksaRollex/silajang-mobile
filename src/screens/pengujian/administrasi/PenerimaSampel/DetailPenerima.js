@@ -30,6 +30,7 @@ import DateTimePicker from "@react-native-community/datetimepicker";
 import axios from "@/src/libs/axios";
 import Parameter from "./Parameter";
 import { rupiah } from "@/src/libs/utils";
+import { TextFooter } from "@/src/screens/components/TextFooter";
 
 export default function Detail({ route, navigation }) {
   const { uuid } = route.params;
@@ -876,6 +877,7 @@ export default function Detail({ route, navigation }) {
                 </View>
               </View>
             </View>
+            <TextFooter className="mt-4"/>
           </>
         ) : (
           <Text style={styles.text}>Loading...</Text>

@@ -98,6 +98,7 @@ const SearchForm = ({ control, onSubmit, handleSearch }) => (
           <View className="flex-row items-center bg-white rounded-lg border border-gray-200 px-3 shadow-sm">
             <TextInput
               className="flex-1 text-base py-3 text-black font-poppins-regular"
+              keyboardType="web-search"
               value={value}
               onChangeText={(text) => {
                 onChange(text);

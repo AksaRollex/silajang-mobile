@@ -5,6 +5,9 @@ import axios from '@/src/libs/axios';
 import BackButton from '../components/BackButton';
 import { TextFooter } from '../components/TextFooter';
 import QRCode from 'react-native-qrcode-svg';
+import AntDesign from "react-native-vector-icons/AntDesign"
+import Octicons from "react-native-vector-icons/Octicons"
+import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons"
 
 const DetailMulti = ({ route, navigation }) => {
   const { selected } = route.params;
@@ -49,7 +52,7 @@ const DetailMulti = ({ route, navigation }) => {
 
   const saveQRCode = async () => {
     if (!qrValue) return;
-    
+
     try {
       let svg = null;
       const getDataURL = () => {
@@ -168,26 +171,43 @@ const DetailMulti = ({ route, navigation }) => {
   return (
     <ScrollView className="flex-1 bg-gray-100">
       {/* Header */}
-      <View className="flex-row items-center p-4 bg-white border-b border-gray-200">
-        <BackButton action={() => navigation.navigate('MultiPayment')} size={22} />
-        <Text className="text-lg ml-3 text-black font-bold">{formData.kode}</Text>
+      <View
+        className="flex-row mx-2 my-4 rounded-xl py-4 px-3 bg-white shadow-sm"
+        style={{
+          elevation: 6,
+          shadowColor: "#000",
+          shadowOpacity: 0.1,
+          shadowRadius: 4,
+          shadowOffset: 10,
+        }}>
+        <TouchableOpacity
+          onPress={() => navigation.navigate("MultiPayment")}
+          className="mr-3 px-4 py-3 bg-red-500 rounded-xl ml-2">
+          <AntDesign name="arrowleft" size={20} color="white" />
+        </TouchableOpacity>
+        <Text className="top-2 text-xl ml-2 font-poppins-semibold text-black">
+          {formData.kode}
+        </Text>
       </View>
+      <View className="p-2 ">
+        <View className="bg-white rounded-lg">
+          <View className="p-2">
+            {/* <Text className="ml-2 font-poppins-semibold text-black mt-2 text-[20px]">{formData.kode}</Text> */}
+            {/* Selected Points */}
+            <View className="mb-4">
+              <Text className="text-base font-poppins-semibold ml-2 text-black  mt-2">Titik Permohonan Dipilih :</Text>
+              <View className="flex-row flex-wrap gap-2 p-3 ml-0.5 mt-3 bg-gray-50 rounded-lg">
+                {formData.multi_payments?.map(item => (
 
-      <View className="p-4">
-        {/* Selected Points */}
-        <View className="mb-4">
-          <Text className="text-base font-semibold ml-2 text-black mb-4">Titik Permohonan Dipilih</Text>
-          <View className="flex-row flex-wrap gap-2 p-3 ml-0.5 bg-white rounded-lg">
-            {formData.multi_payments?.map(item => (
-              <View key={item.titik_permohonan.uuid} className="bg-blue-100 px-3 py-1.5 mb-2 rounded-full">
-                <Text className="text-blue-700 text-sm">{item.titik_permohonan.kode}</Text>
+                  <View key={item.titik_permohonan.uuid} className="bg-blue-100 px-3 py-1.5 mb-2 rounded-full">
+                    <Text className="text-blue-700 text-sm font-poppins-regular">{item.titik_permohonan.kode}</Text>
+                  </View>
+                ))}
               </View>
-            ))}
-          </View>
-        </View>
+            </View>
 
-        {/* Payment Status */}
-        {/* {formData.status === 'success' ? (
+            {/* Payment Status */}
+            {/* {formData.status === 'success' ? (
           <View className="bg-green-500 p-3 rounded-lg mb-4">
             <Text className="text-white text-center">
               Pembayaran berhasil dilakukan pada: {moment(formData.tanggal_bayar).format('DD-MM-YYYY')}
@@ -263,64 +283,88 @@ const DetailMulti = ({ route, navigation }) => {
           </View>
         )} */}
 
-        {/* Amount Card */}
-        <View className="bg-white rounded-lg mb-4 shadow-sm">
-          <View className="p-4 border-b border-gray-200">
-            <Text className="text-lg font-semibold text-black">Nominal Pembayaran : </Text>
-          </View>
-          <View className="p-4 bg-gray-50 rounded-b-lg">
-            <Text className="text-sm font-semibold text-black">
-              {formData.multi_payments?.[0]?.titik_permohonan?.permohonan?.user?.nama}
-            </Text>
-            <View className="flex-row justify-between items-center mt-3">
-              <Text className="text-xl font-bold text-blue-600">
-                {currency(formData.jumlah)}
-              </Text>
-            </View>
-          </View>
-        </View>
+            {/* Amount Card */}
+            <View className="bg-white rounded-lg mb-4 shadow-sm p-1">
+              {/* <View className="p-4 border-b border-gray-200">
+                <Text className="text-lg font-semibold text-black">Nominal Pembayaran : </Text>
+              </View> */}
+              <View className="p-3 bg-gray-50 rounded-lg">
+                <Text className="text-black font-poppins-medium mb-1 text-sm">Atas Nama : </Text>
+                <Text className="text-base font-poppins-semibold text-black">
+                  {formData.multi_payments?.[0]?.titik_permohonan?.permohonan?.user?.nama}
+                </Text>
+                <Text className="text-black font-poppins-medium mt-5 mb-1 text-sm">Total Harga : </Text>
+                <View className="flex-row justify-between items-center">
+                  <Text className="text-xl font-poppins-semibold text-blue-600">
+                    {currency(formData.jumlah)}
+                  </Text>
+                </View>
+                <View className="mt-7 mb-7 border-gray-200">
+                  <View className="bg-gray-50 border border-indigo-400 rounded-md items-center justify-cente p-2">
+                    {formData?.type === 'va' ? (
+                      <Text className="mb-2 mt-1 text-[17px] font-poppins-semibold text-black items-center">VA pembayaran belum dibuat</Text>
+                    ) : formData?.type === 'qris' ? (
+                      <Text className="mb-2 mt-1 text-[17px] font-poppins-semibold text-black items-center">Qris Belum dibuat</Text>
+                    ) : null}
 
-        {/* Action Buttons */}
-        {formData.status !== 'success' && (
-          <View className="flex-row justify-end gap-x-3 mb-4">
-            {formData.status === 'pending' && !formData.is_expired && (formData.va_number || formData.qris_value) ? (
-              <>
-                <TouchableOpacity
-                  onPress={handleCancelPayment}
-                  className="bg-red-100 px-4 py-2 rounded-lg">
-                  <Text className="text-red-700">Batalkan</Text>
-                </TouchableOpacity>
-                {formData.type === 'va' && (
-                  <TouchableOpacity
-                    onPress={handleCheckPayment}
-                    className="bg-blue-100 px-4 py-2 rounded-lg">
-                    <Text className="text-blue-700">Cek Status</Text>
-                  </TouchableOpacity>
+                    {formData?.type === 'va' ? (
+                      <Text className="text-[13px] mb-1 text-indigo-500 font-poppins-regular">Silahkan klik tombol di bawah Membuat VA pembayaran</Text>
+                    ) : formData?.type === 'qris' ? (
+                      <Text className="text-[13px] mb-1 text-indigo-500 font-poppins-regular">Silahkan klik tombol di bawah untuk Membuat QRIS</Text>
+                    ) : null}
+                  </View>
+                </View>
+              </View>
+            </View>
+
+
+
+            {/* Action Buttons */}
+            {formData.status !== 'success' && (
+              <View className="flex-row justify-end gap-x-3 mb-4">
+                {formData.status === 'pending' && !formData.is_expired && (formData.va_number || formData.qris_value) ? (
+                  <>
+                    <TouchableOpacity
+                      onPress={handleCancelPayment}
+                      className="bg-red-100 px-4 py-2 rounded-lg">
+                      <Text className="text-red-700">Batalkan</Text>
+                    </TouchableOpacity>
+                    {formData.type === 'va' && (
+                      <TouchableOpacity
+                        onPress={handleCheckPayment}
+                        className="bg-blue-100 px-4 py-2 rounded-lg">
+                        <Text className="text-blue-700">Cek Status</Text>
+                      </TouchableOpacity>
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <TouchableOpacity
+                      onPress={handleSwitchPayment}
+                      className="bg-blue-50 px-4 py-2 rounded-lg flex-row items-center">
+                      <Octicons className="" color={"#312e81"} name="arrow-switch" size={15}></Octicons>
+                      <Text className="text-indigo-800 ml-1.5 items-center font-poppins-regular">
+                        Ganti ke {formData.type === 'va' ? 'QRIS' : 'VA'}
+
+                      </Text>
+                    </TouchableOpacity>
+                    <TouchableOpacity
+                      onPress={handleGeneratePayment}
+                      className="bg-indigo-700 px-4 py-2 rounded-lg flex-row items-center">
+                      <MaterialCommunityIcons name="card-bulleted-outline" color="white" size={15}/>
+                      <Text className="text-white font-poppins-regular ml-1.5">
+                        Buat {formData.type === 'va' ? 'VA Pembayaran' : 'QRIS'}
+                      </Text>
+                    </TouchableOpacity>
+                  </>
                 )}
-              </>
-            ) : (
-              <>
-                <TouchableOpacity
-                  onPress={handleSwitchPayment}
-                  className="bg-blue-100 px-4 py-2 rounded-lg">
-                  <Text className="text-indigo-700">
-                    Ganti ke {formData.type === 'va' ? 'QRIS' : 'VA'}
-                  </Text>
-                </TouchableOpacity>
-                <TouchableOpacity
-                  onPress={handleGeneratePayment}
-                  className="bg-indigo-700 px-4 py-2 rounded-lg">
-                  <Text className="text-white">
-                    Buat {formData.type === 'va' ? 'VA Pembayaran' : 'QRIS'}
-                  </Text>
-                </TouchableOpacity>
-              </>
+              </View>
             )}
           </View>
-        )}
+
+        </View>
       </View>
-      
-      <View className="mt-96">
+      <View className="mt-[50%]">
         <TextFooter />
       </View>
     </ScrollView>
