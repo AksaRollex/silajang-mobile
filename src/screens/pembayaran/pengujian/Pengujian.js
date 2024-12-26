@@ -7,6 +7,7 @@ import {
   Modal,
   ScrollView,
   Platform,
+  ActivityIndicator,
 } from "react-native";
 import React, { useRef, useState, useEffect } from "react";
 import { rupiah } from "@/src/libs/utils";
@@ -35,6 +36,7 @@ const Pengujian = ({ navigation }) => {
   const [SKRDUrl, setSKRDUrl] = useState("");
   const [kwitansiUrl, setKwitansiUrl] = useState("");
   const [modalKwitansi, setModalKwitansi] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleDateSelect = selectedYear => {
     setTahun(selectedYear.toString());
@@ -318,6 +320,7 @@ const Pengujian = ({ navigation }) => {
   };
 
   const handleDownloadSKRD = async () => {
+    setModalVisible(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `SKRD_${Date.now()}.pdf`;
@@ -409,6 +412,7 @@ const Pengujian = ({ navigation }) => {
 
   const handleDownloadKwitansi = async () => {
     try {
+      setModalKwitansi(false);
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `Kwitansi_${Date.now()}.pdf`;
 
@@ -510,7 +514,7 @@ const Pengujian = ({ navigation }) => {
                 className="mr-5"
               />
               <Text className="font-poppins-semibold text-black text-lg text-end  pb-1">
-               Pembayaran Pengujian
+                Pembayaran Pengujian
               </Text>
             </View>
           </View>
@@ -551,11 +555,26 @@ const Pengujian = ({ navigation }) => {
               </View>
 
               {SKRDUrl ? (
-                <Pdf
-                  source={{ uri: SKRDUrl, cache: true }}
-                  style={{ flex: 1 }}
-                  trustAllCerts={false}
-                />
+                <View className="flex-1">
+                  {isLoading && (
+                    <View className="absolute z-10 w-full h-full items-center justify-center">
+                      <ActivityIndicator size="large" color="#0000ff" />
+                      <Text className="mt-2 font-poppins-medium text-gray-600">
+                        Memuat PDF...
+                      </Text>
+                    </View>
+                  )}
+                  <Pdf
+                    source={{ uri: SKRDUrl, cache: true }}
+                    style={{ flex: 1 }}
+                    trustAllCerts={false}
+                    onLoadComplete={() => setIsLoading(false)}
+                    onError={error => {
+                      console.log("PDF Error:", error);
+                      setIsLoading(false);
+                    }}
+                  />
+                </View>
               ) : (
                 <View className="flex-1 justify-center items-center">
                   <Text className="text-xl font-poppins-semibold text-red-500">
@@ -595,11 +614,26 @@ const Pengujian = ({ navigation }) => {
               </View>
 
               {kwitansiUrl ? (
-                <Pdf
-                  source={{ uri: kwitansiUrl, cache: true }}
-                  style={{ flex: 1 }}
-                  trustAllCerts={false}
-                />
+                <View className="flex-1">
+                  {isLoading && (
+                    <View className="absolute z-10 w-full h-full items-center justify-center">
+                      <ActivityIndicator size="large" color="#0000ff" />
+                      <Text className="mt-2 font-poppins-medium text-gray-600">
+                        Memuat PDF...
+                      </Text>
+                    </View>
+                  )}
+                  <Pdf
+                    source={{ uri: kwitansiUrl, cache: true }}
+                    style={{ flex: 1 }}
+                    trustAllCerts={false}
+                    onLoadComplete={() => setIsLoading(false)}
+                    onError={error => {
+                      console.log("PDF Error:", error);
+                      setIsLoading(false);
+                    }}
+                  />
+                </View>
               ) : (
                 <View className="flex-1 justify-center items-center">
                   <Text className="text-xl font-poppins-semibold text-red-500">

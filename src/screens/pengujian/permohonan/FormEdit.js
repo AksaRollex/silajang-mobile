@@ -4,7 +4,6 @@ import {
   StyleSheet,
   TouchableOpacity,
   Text,
-  Image,
   Modal,
 } from "react-native";
 import axios from "@/src/libs/axios";
@@ -13,9 +12,7 @@ import { Button, Colors, TextField } from "react-native-ui-lib";
 import Back from "../../components/Back";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import Toast from "react-native-toast-message";
-import LottieView from "lottie-react-native";
 import { memo, useEffect, useState } from "react";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import Entypo from "react-native-vector-icons/Entypo";
 

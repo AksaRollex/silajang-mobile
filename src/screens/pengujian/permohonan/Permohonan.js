@@ -47,6 +47,19 @@ const Permohonan = ({ navigation }) => {
   });
 
   const dropdownOptions = [
+    // {
+    //   id: "Kontrak",
+    //   title: "Kontrak",
+    //   subactions: [
+
+    //   ],
+    // },
+    {
+      id: "Edit Kontrak",
+      title: "Edit Kontrak",
+      action: item => navigation.navigate("OpenKontrak", { uuid: item.uuid }),
+      Icon: "edit",
+    },
     {
       id: "Edit",
       title: "Edit",
@@ -60,8 +73,34 @@ const Permohonan = ({ navigation }) => {
       action: item => deletePermohonan(`/permohonan/${item.uuid}`),
     },
   ];
+  const getKesimpulanText = (kesimpulan_kontrak, is_mandiri) => {
+    if (kesimpulan_kontrak === 1 && is_mandiri === 1) return "-";
+    if (kesimpulan_kontrak === 1) return "Diterima";
+    if (kesimpulan_kontrak === 2) return "Ditolak";
+    if (!kesimpulan_kontrak) return "-"; // Add this condition
+    return "Menunggu";
+  };
+
+  const getBackgroundStyle = (kesimpulan_kontrak, is_mandiri) => {
+    if (kesimpulan_kontrak === 1 && is_mandiri === 1) return "bg-gray-50";
+    if (kesimpulan_kontrak === 1) return "bg-green-50";
+    if (kesimpulan_kontrak === 2) return "bg-red-50";
+    if (!kesimpulan_kontrak) return "bg-gray-50"; // Add this condition
+    return "bg-blue-50";
+  };
+
+  const getTextStyle = (kesimpulan_kontrak, is_mandiri) => {
+    if (kesimpulan_kontrak === 1 && is_mandiri === 1)
+      return "text-gray-500 text-[10px]";
+    if (kesimpulan_kontrak === 1) return "text-green-500 text-[10px]";
+    if (kesimpulan_kontrak === 2) return "text-red-500 text-[10px]";
+    if (!kesimpulan_kontrak) return "text-gray-500 text-[10px]"; // Add this condition
+    return "text-blue-500 text-[10px]";
+  };
 
   const CardPermohonan = ({ item }) => {
+    console.log(item.is_mandiri, item.kesimpulan_kontrak);
+
     return (
       <View style={styles.card}>
         <View style={styles.roundedBackground} className="rounded-br-full" />
@@ -69,7 +108,6 @@ const Permohonan = ({ navigation }) => {
         <TouchableOpacity
           onPress={() => navigation.navigate("TitikUji", { uuid: item.uuid })}
           style={styles.cardWrapper}>
-          {/* Left section with rounded background */}
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
               <View className="flex-row justify-between">
@@ -90,7 +128,6 @@ const Permohonan = ({ navigation }) => {
             </View>
           </View>
 
-          {/* Middle section */}
           <View style={styles.rightSection}>
             <View style={styles.cardContents} className="flex">
               <Text className=" text-slate-600 mt-3 text-xs uppercase font-poppins-regular">
@@ -105,9 +142,29 @@ const Permohonan = ({ navigation }) => {
               <Text className="text-black text-xs  font-poppins-semibold">
                 {item.is_mandiri ? "Kirim Mandiri" : "Ambil Petugas"}
               </Text>
+              <Text className="text-slate-600 text-xs mt-3 uppercase  font-poppins-regular">
+                Kesimpulan Kontrak
+              </Text>
+              <View className="flex-shrink-0 items-start">
+                <View
+                  className={`${getBackgroundStyle(
+                    item.kesimpulan_kontrak,
+                    item.is_mandiri,
+                  )} rounded-md px-2 py-1 max-w-[120px]`}>
+                  <Text
+                    className={`${getTextStyle(
+                      item.kesimpulan_kontrak,
+                      item.is_mandiri,
+                    )} font-poppins-semibold`}>
+                    {getKesimpulanText(
+                      item.kesimpulan_kontrak,
+                      item.is_mandiri,
+                    )}
+                  </Text>
+                </View>
+              </View>
             </View>
           </View>
-          {/* Right section (dots menu) */}
         </TouchableOpacity>
         <View
           style={styles.cardActions}
@@ -278,12 +335,12 @@ const Permohonan = ({ navigation }) => {
             ) : (
               <></>
             )}
-              <Paginate
-                ref={paginateRef}
-                url="/permohonan"
-                payload={{ tahun: tahun }}
-                Plugin={filtah}
-                renderItem={CardPermohonan}></Paginate>
+            <Paginate
+              ref={paginateRef}
+              url="/permohonan"
+              payload={{ tahun: tahun }}
+              Plugin={filtah}
+              renderItem={CardPermohonan}></Paginate>
           </View>
           <Icons
             name="plus"

@@ -556,7 +556,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                                 color: "#FFF",
                               },
                               button: {
-                                backgroundColor: "#3a6238",
+                                backgroundColor: "#3730a3",
                                 borderRadius: 16,
                                 paddingHorizontal: 12,
                                 paddingVertical: 12,

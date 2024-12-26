@@ -28,6 +28,7 @@ import FormTitikUji from "../pengujian/permohonan/titikUji/Form";
 import Parameter from "../pengujian/permohonan/parameter/Parameter";
 import TrackingList from "../pengujian/trackingPengujian/Detail";
 import EditPermohonan from "../pengujian/permohonan/FormEdit";
+import OpenKontrak from "../pengujian/permohonan/OpenKontrak";
 import TambahPermohonan from "../pengujian/permohonan/FormTambah";
 import Pembayaran from "../pembayaran/Pembayaran";
 import PengujianDetail from "../pembayaran/pengujian/Detail";
@@ -62,6 +63,7 @@ const getTabBarStyle = route => {
     "TrackingList",
     "Permohonan",
     "EditPermohonan",
+    "OpenKontrak",
     "TambahPermohonan",
     "TitikUji",
     "FormTitikUji",
@@ -104,6 +106,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
     "Permohonan",
     "EditPermohonan",
     "TambahPermohonan",
+    "OpenKontrak",
     "TitikUji",
     "FormTitikUji",
     "Parameter",
@@ -220,6 +223,7 @@ const PengujianStackNavigator = () => {
       <Stack.Screen name="Parameter" component={Parameter} />
       <Stack.Screen name="TrackingList" component={TrackingList} />
       <Stack.Screen name="EditPermohonan" component={EditPermohonan} />
+      <Stack.Screen name="OpenKontrak" component={OpenKontrak} />
       <Stack.Screen name="TambahPermohonan" component={TambahPermohonan} />
     </Stack.Navigator>
   );
@@ -241,6 +245,7 @@ export default function MainScreen() {
               "TrackingList",
               "Permohonan",
               "EditPermohonan",
+              "OpenKontrak",
               "TambahPermohonan",
               "TitikUji",
               "FormTitikUji",
