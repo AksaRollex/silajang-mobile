@@ -143,19 +143,40 @@ const PengujianDetail = ({ route, navigation }) => {
    */
 
   // Konversi QR code ke base64
-  useEffect(() => {
-    if (qrCodeRef.current && qrisValue) {
-      qrCodeRef.current.toDataURL(dataURL => {
-        setQrCodeBase64(dataURL);
-      });
-    }
-  }, [qrisValue]);
+  // useEffect(() => {
+  //   if (qrCodeRef.current && qrisValue) {
+  //     qrCodeRef.current.toDataURL(dataURL => {
+  //       setQrCodeBase64(dataURL);
+  //     });
+  //   }
+  // }, [qrisValue]);
 
   // Fungsi untuk menggambar pada canvas
   const handleCanvas = async canvas => {
     try {
       if (!canvas || canvasRef.current) return;
 
+      const getBase64Image = async imageSource => {
+        try {
+          const image = await Image.resolveAssetSource(imageSource);
+          if (!image?.uri) {
+            throw new Error("Invalid image source");
+          }
+
+          const response = await fetch(image.uri);
+          const blob = await response.blob();
+
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("Failed to read image"));
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.error("getBase64Image error:", error);
+          throw error;
+        }
+      };
       canvasRef.current = canvas;
       const width = 350;
       const height = 450;
@@ -164,50 +185,43 @@ const PengujianDetail = ({ route, navigation }) => {
       canvas.height = height;
 
       const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, width, height); // Clear canvas first
 
-      // Gambar template
-      const getBase64Image = async imageSource => {
-        const photo = Image.resolveAssetSource(imageSource);
-        const response = await fetch(photo?.uri);
-        const blob = await response.blob();
-
-        return new Promise((resolve, reject) => {
-          const reader = new FileReader();
-          reader.onloadend = () => {
-            resolve(`data:image/png;base64,${reader.result.split(",")[1]}`);
-          };
-          reader.onerror = reject;
-          reader.readAsDataURL(blob);
+      // Handle QR code first
+      if (qrCodeBase64) {
+        const qrisImage = new CanvasImage(canvas);
+        qrisImage.src = qrCodeBase64;
+        await new Promise(resolve => {
+          qrisImage.addEventListener("load", () => {
+            const imageWidth = 200;
+            const imageHeight = 200;
+            const x = (width - imageWidth) / 2;
+            const y = 180; // Specific Y position for QR code
+            ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
+            resolve();
+          });
         });
-      };
+      }
 
+      // Then overlay the template
       const qrisTemplateBase64 = await getBase64Image(
         require("../../../../assets/images/qris-template.png"),
       );
 
       const qrisTemplate = new CanvasImage(canvas);
       qrisTemplate.src = qrisTemplateBase64;
-      qrisTemplate.addEventListener("load", () => {
-        ctx.drawImage(qrisTemplate, 0, 0, width, height);
-      });
-
-      // Gambar QR code dinamis
-      if (qrCodeBase64) {
-        const qrisImage = new CanvasImage(canvas);
-        qrisImage.src = qrCodeBase64;
-        qrisImage.addEventListener("load", () => {
-          const imageWidth = 200;
-          const imageHeight = 200;
-          const x = (width - imageWidth) / 2;
-          const y = (height - imageHeight) / 2;
-          ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
+      await new Promise(resolve => {
+        qrisTemplate.addEventListener("load", () => {
+          ctx.globalCompositeOperation = "destination-over"; // Draw template behind existing content
+          ctx.drawImage(qrisTemplate, 0, 0, width, height);
+          ctx.globalCompositeOperation = "source-over"; // Reset composite operation
+          resolve();
         });
-      }
+      });
     } catch (error) {
       console.error("Error dalam proses render:", error);
     }
   };
-
   const [dataKode, setDataKode] = useState(null);
 
   useEffect(() => {
@@ -222,6 +236,19 @@ const PengujianDetail = ({ route, navigation }) => {
       });
   }, [uuid]);
 
+  useEffect(() => {
+    if (qrCodeRef.current && canvasRef.current && qrisValue) {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      const qrImage = new Image();
+      qrImage.onload = () => {
+        ctx.drawImage(qrImage, 0, 0);
+      };
+      qrImage.src = qrCodeBase64;
+    }
+  }, [qrCodeBase64]);
+
   const downloadQris = () => {
     if (!dataKode) {
       setModalError(true);
@@ -230,6 +257,8 @@ const PengujianDetail = ({ route, navigation }) => {
       }, 2000);
       return;
     }
+
+ 
 
     const timestamp = new Date().getTime();
     const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
@@ -576,38 +605,50 @@ const PengujianDetail = ({ route, navigation }) => {
                         ? 0.5
                         : 1,
                   }}>
-                  <Canvas ref={handleCanvas} />
-                  <QRCode
-                    value={qrisValue}
-                    getRef={ref => (qrCodeRef.current = ref)}
-                    size={150}
+                  <View className="mx-20 top-20 mt-10 ">
+                    <QRCode
+                      value={qrisValue}
+                      getRef={ref => (qrCodeRef.current = ref)}
+                      size={200}
+                    />
+                  </View>
+                  <Canvas
+                    ref={handleCanvas}
+                    style={{
+                      position: "absolute",
+                      zIndex: -1,
+                    }}
                   />
                 </View>
                 {formData.payment.status === "pending" && (
-                  <TouchableOpacity
-                    onPress={downloadQris}
-                    disabled={formData.payment.is_expired}
-                    className={`flex-row mt-3 px-4 py-2 p-3 rounded-lg ${
-                      formData.payment.is_expired ? "bg-gray-200" : "bg-blue-50"
-                    }`}
-                    style={{
-                      opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
-                    }}>
-                    <Text
-                      className={`font-poppins-semibold ${
+                  <View className="mt-60">
+                    <TouchableOpacity
+                      onPress={downloadQris}
+                      disabled={formData.payment.is_expired}
+                      className={`flex-row mt-3 px-4 py-2 p-3 rounded-lg ${
                         formData.payment.is_expired
-                          ? "text-gray-400"
-                          : "text-black"
-                      }`}>
-                      Unduh QRIS
-                    </Text>
-                    <MaterialIcons
-                      name="qr-code-2"
-                      size={24}
-                      color={formData.payment.is_expired ? "gray" : "black"}
-                      style={{ paddingLeft: 10 }}
-                    />
-                  </TouchableOpacity>
+                          ? "bg-gray-200"
+                          : "bg-blue-50"
+                      }`}
+                      style={{
+                        opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
+                      }}>
+                      <Text
+                        className={`font-poppins-semibold ${
+                          formData.payment.is_expired
+                            ? "text-gray-400"
+                            : "text-black"
+                        }`}>
+                        Unduh QRIS
+                      </Text>
+                      <MaterialIcons
+                        name="qr-code-2"
+                        size={24}
+                        color={formData.payment.is_expired ? "gray" : "black"}
+                        style={{ paddingLeft: 10 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 )}
               </View>
             )}
