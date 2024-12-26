@@ -833,7 +833,7 @@ const Perusahaan = () => {
                     <Controller
                       control={control}
                       name="lat"
-                      rules={{ required: "Tidak Boleh Kosong" }}
+                      // rules={{ required: "Tidak Boleh Kosong" }}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pr-2">
                           <Text className="font-poppins-semibold mb-2 text-black">
@@ -841,11 +841,11 @@ const Perusahaan = () => {
                           </Text>
 
                           <TextField
-                            className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                            className="p-3 rounded-2xl text-black border-stone-300 border font-poppins-regular"
                             enableErrors
                             keyboardType="numeric"
                             onChangeText={onChange}
-                            value={value || location.lat}
+                            value={value || location.latitude}
                             placeholderTextColor="gray"
                             placeholder={userData.lat}
                           />
@@ -856,7 +856,7 @@ const Perusahaan = () => {
                     <Controller
                       control={control}
                       name="long"
-                      rules={{ required: "Tidak Boleh Kosong" }}
+                      // rules={{ required: "Tidak Boleh Kosong" }}
                       render={({ field: { onChange, value } }) => (
                         <View className="w-1/2 pl-2">
                           <Text className="font-poppins-semibold mb-2 text-black text-end">
@@ -864,11 +864,11 @@ const Perusahaan = () => {
                           </Text>
 
                           <TextField
-                            className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                            className="p-3 text-black rounded-2xl border-stone-300 border font-poppins-regular"
                             keyboardType="numeric"
                             onChangeText={onChange}
                             enableErrors
-                            value={value || location.long}
+                            value={value || location.longitude}
                             placeholderTextColor="gray"
                             placeholder={userData.long}
                           />

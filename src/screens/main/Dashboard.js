@@ -55,8 +55,32 @@ const Dashboard = () => {
     [tahun],
   );
   const { data: user } = useUser();
+  console.log("user: ", user);
   const [isYearPickerVisible, setIsYearPickerVisible] = useState(false);
   const navigation = useNavigation();
+
+  // Cek apakah detail user null
+  useEffect(() => {
+    if (
+      (user &&
+        (user.detail.alamat === null ||
+          user.detail.email === null ||
+          user.detail.fax === null)) ||
+      user.detail.instansi === null ||
+      user.detail.jenis_kegiatan === null ||
+      user.detail.kab_kota_id === null ||
+      user.detail.kecamatan_id === null ||
+      user.detail.kelurahan_id === null ||
+      user.detail.lat === null ||
+      user.detail.long === null ||
+      user.detail.pimpinan === null ||
+      user.detail.pj_mutu === null ||
+      user.detail.tanda_tangan === null ||
+      user.detail.telepon === null
+    ) {
+      navigation.navigate("Profile"); // Ganti "Profile" dengan nama halaman navigasi yang sesuai
+    }
+  }, [user, navigation]);
 
   const fetchDashboardData = useCallback(async () => {
     setRefreshing(true);
@@ -98,42 +122,6 @@ const Dashboard = () => {
   const onRefresh = useCallback(() => {
     fetchUserData();
   }, [fetchUserData]);
-
-  const Filtah = () => {
-    return (
-      <View className="">
-        <View className="flex-row justify-end">
-          <TouchableOpacity
-            onPress={handleFilterPress}
-            style={{
-              flexDirection: "row",
-              alignItems: "center",
-              borderRadius: 10,
-              backgroundColor: "white",
-              shadowColor: "#000", // Warna bayangan
-              shadowOffset: { width: 0, height: 2 }, // Posisi bayangan
-              shadowOpacity: 0.25, // Opasitas bayangan
-              shadowRadius: 3.84, // Radius bayangan
-              elevation: 5, // Untuk Android
-            }}
-            className="px-3 py-2">
-            <IonIcons name="calendar" size={24} color="black" />
-            <Text className="text-black font-poppins-regular mx-2">
-              {tahun}
-            </Text>
-            <MaterialIcons name="keyboard-arrow-down" size={24} color="black" />
-          </TouchableOpacity>
-        </View>
-
-        <YearPicker
-          visible={isYearPickerVisible}
-          onClose={() => setIsYearPickerVisible(false)}
-          onSelect={handleYearChange}
-          selectedYear={tahun}
-        />
-      </View>
-    );
-  };
 
   const YearPicker = ({ visible, onClose, onSelect, selectedYear }) => {
     const currentYear = new Date().getFullYear();
@@ -225,10 +213,6 @@ const Dashboard = () => {
             }}
           />
 
-          {/* <View className="mr-8">
-            <Filtah tahun={tahun} onYearChange={handleYearChange} />
-          </View> */}
-
           <View className="items-center justify-center top-5">
             <Text className="text-white text-2xl items-center justify-center font-poppins-bold">
               Selamat Datang
@@ -280,7 +264,7 @@ const Dashboard = () => {
               <AntDesign
                 name="caretdown"
                 size={12}
-                style={{ color: "black", marginLeft : 6, marginTop : 2}}
+                style={{ color: "black", marginLeft: 6, marginTop: 2 }}
               />
             </TouchableOpacity>
           </View>

@@ -14,6 +14,7 @@ import {
 } from "@react-navigation/native";
 import { Colors } from "react-native-ui-lib";
 import { Image } from "react-native-ui-lib";
+import { useUser } from "@/src/services";
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Index";
 import PengujianStack from "../pengujian/Index";
@@ -97,6 +98,27 @@ const getTabBarStyle = route => {
 
 // BUTTOM TAB BAR
 const CustomTabBar = ({ state, descriptors, navigation }) => {
+  const { data: userData } = useUser();
+  const { data: user } = useUser();
+
+  if (!user?.detail?.alamat || 
+    !user?.detail?.email ||
+    !user?.detail?.fax ||
+    !user?.detail?.instansi ||
+    !user?.detail?.jenis_kegiatan ||
+    !user?.detail?.kab_kota_id ||
+    !user?.detail?.kelurahan_id ||
+    !user?.detail?.kecamatan_id ||
+    !user?.detail?.lat ||
+    !user?.detail?.long ||
+    !user?.detail?.pimpinan ||
+    !user?.detail?.pj_mutu ||
+    !user?.detail?.tanda_tangan ||
+    !user?.detail?.telepon  
+  ) {
+    return null; // Jangan tampilkan CustomTabBar
+  }
+
   const route = state.routes[state.index];
   const routeName = getFocusedRouteNameFromRoute(route) ?? "";
 
@@ -158,7 +180,7 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     : "person-sharp"
                 }
                 size={25}
-                color={isFocused ? Colors.brand : '#5f5f5f'}
+                color={isFocused ? Colors.brand : "#5f5f5f"}
               />
               <Text
                 style={[styles.label, isFocused && styles.labelFocused]}
