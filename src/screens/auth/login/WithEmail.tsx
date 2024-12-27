@@ -64,6 +64,7 @@ export default memo(function WithEmail() {
             <TextField
             style={{ fontFamily: "Poppins-Regular" }}
               placeholderTextColor={Colors.grey40}
+              keyboardType="email-address"
               placeholder={"Masukan Email"}
               enableErrors
               fieldStyle={{

@@ -15,6 +15,8 @@ import RNFS from "react-native-fs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
 import ModalSuccess from "@/src/screens/components/ModalSuccess";
+import FileViewer from 'react-native-file-viewer';
+import DocumentPicker from "react-native-document-picker";
 
 const bulans = [
     { id: 1, name: 'Januari' },
@@ -146,7 +148,6 @@ export default function DetailKontrak({ route, navigation }) {
             try {
                 setDownloading(true);
                 
-                // Request permissions first
                 const hasPermission = await requestStoragePermission();
                 if (!hasPermission) {
                     Toast.show({
@@ -158,24 +159,17 @@ export default function DetailKontrak({ route, navigation }) {
                     return;
                 }
     
-                // Get the token for authentication
                 const token = await AsyncStorage.getItem('token');
-                
-                // Create the full URL with the correct path
                 const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
-                
-                // Get file extension and create proper filename
                 const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop() || 'pdf';
                 const fileName = `dokumen_permohonan_${Date.now()}.${fileExtension}`;
                 
-                // Set the correct download path based on platform
                 const downloadDir = Platform.OS === 'ios' 
                     ? RNFS.DocumentDirectoryPath 
                     : RNFS.DownloadDirectoryPath;
                 
                 const downloadPath = `${downloadDir}/${fileName}`;
     
-                // Configure download options with authentication
                 const options = {
                     fromUrl: fileUrl,
                     toFile: downloadPath,
@@ -184,45 +178,68 @@ export default function DetailKontrak({ route, navigation }) {
                         'Accept': 'application/pdf',
                     },
                     background: true,
-                    discretionary: true,
-                    begin: (res) => {
-                        console.log('Download started with status:', res.statusCode);
-                        console.log('Content-Length:', res.contentLength);
-                    },
-                    progress: (res) => {
-                        const progress = (res.bytesWritten / res.contentLength) * 100;
-                        // console.log(`Download progress: ${progress.toFixed(2)}%`);
-                    }
                 };
     
-                // Start the download
                 const response = await RNFS.downloadFile(options).promise;
                 
                 if (response.statusCode === 200) {
-                    // Verify the file exists
                     const exists = await RNFS.exists(downloadPath);
                     
                     if (exists) {
-                        // For Android, make the file visible in Downloads
                         if (Platform.OS === 'android') {
-                            try {
-                                await RNFS.scanFile(downloadPath);
-                            } catch (scanError) {
-                                console.error('Error scanning file:', scanError);
+                            await RNFS.scanFile(downloadPath);
+                        }
+    
+                        // Try to open with FileViewer
+                        try {
+                            await FileViewer.open(downloadPath, {
+                                showOpenWithDialog: false,
+                                mimeType: `application/${fileExtension}`
+                            });
+                        } catch (openError) {
+                            console.log('Error opening file with FileViewer:', openError);
+    
+                            // Fallback for Android using Intents
+                            if (Platform.OS === 'android') {
+                                try {
+                                    const intent = new android.content.Intent(
+                                        android.content.Intent.ACTION_VIEW
+                                    );
+                                    intent.setDataAndType(
+                                        android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                                        `application/${fileExtension}`
+                                    );
+                                    intent.setFlags(
+                                        android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    );
+    
+                                    await ReactNative.startActivity(intent);
+                                } catch (intentError) {
+                                    console.log('Intent fallback failed:', intentError);
+                                    Toast.show({
+                                        type: 'info',
+                                        text1: 'File Berhasil Diunduh',
+                                        text2: `File tersimpan di: ${downloadPath}`,
+                                        visibilityTime: 3000,
+                                    });
+                                }
+                            } else {
+                                Toast.show({
+                                    type: 'info',
+                                    text1: 'File Berhasil Diunduh',
+                                    text2: `File tersimpan di: ${downloadPath}`,
+                                    visibilityTime: 3000,
+                                });
                             }
                         }
     
                         Toast.show({
                             type: 'success',
                             text1: 'Berhasil',
-                            text2: `File berhasil diunduh ke folder ${Platform.OS === 'ios' ? 'Documents' : 'Downloads'}`,
+                            text2: 'File berhasil diunduh',
                             visibilityTime: 3000,
-                            autoHide: true,
-                            topOffset: 30,
-                            bottomOffset: 40,
                         });
-                    } else {
-                        throw new Error('File tidak ditemukan setelah diunduh');
                     }
                 } else {
                     throw new Error(`Download gagal dengan status ${response.statusCode}`);
@@ -257,98 +274,6 @@ export default function DetailKontrak({ route, navigation }) {
         }
         return '';
     }, [data])
-
-    // const HandleDownloadFile = async () => {
-    //     if (data?.kontrak?.dokumen_permohonan) {
-    //         const hasPermission = await requestStoragePermission();
-    //         if (!hasPermission) {
-    //             Toast.show({
-    //                 type: 'error',
-    //                 text1: 'Error',
-    //                 text2: 'Storage permission denied',
-    //             });
-    //             return;
-    //         }
-    
-    //         setDownloading(true);
-    //         const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
-    //         const fileName = data.kontrak.dokumen_permohonan.split('/').pop() || 'Dokumen_Permohonan';
-            
-    //         // Get the download directory path based on platform
-    //         const downloadDir = Platform.OS === 'ios' 
-    //             ? RNFS.DocumentDirectoryPath 
-    //             : RNFS.DownloadDirectoryPath;
-            
-    //         const downloadPath = `${downloadDir}/${fileName}`;
-    
-    //         try {
-    //             // Add headers for authentication if needed
-    //             const headers = {};
-    //             const token = await AsyncStorage.getItem('token');
-    //             if (token) {
-    //                 headers.Authorization = `Bearer ${token}`;
-    //             }
-    
-    //             const options = {
-    //                 fromUrl: fileUrl,
-    //                 toFile: downloadPath,
-    //                 headers,
-    //                 background: true,
-    //                 begin: (res) => {
-    //                     console.log('Download started:', res);
-    //                 },
-    //                 progress: (res) => {
-    //                     const progress = (res.bytesWritten / res.contentLength) * 100;
-    //                     console.log(`Download progress: ${progress.toFixed(2)}%`);
-    //                 }
-    //             };
-    
-    //             const response = await RNFS.downloadFile(options).promise;
-    
-    //             if (response.statusCode === 200) {
-    //                 // Check if file exists after download
-    //                 const exists = await RNFS.exists(downloadPath);
-    //                 if (exists) {
-    //                     Toast.show({
-    //                         type: 'success',
-    //                         text1: 'Success',
-    //                         text2: `File tersimpan di ${Platform.OS === 'ios' ? 'Documents' : 'Downloads'}`,
-    //                         visibilityTime: 3000,
-    //                         autoHide: true,
-    //                         topOffset: 30,
-    //                         bottomOffset: 40,
-    //                     });
-    
-    //                     // For Android, trigger media scanner to show file in gallery
-    //                     if (Platform.OS === 'android') {
-    //                         await RNFS.scanFile(downloadPath);
-    //                     }
-    //                 } else {
-    //                     throw new Error('File not found after download');
-    //                 }
-    //             } else {
-    //                 throw new Error(`Download failed with status ${response.statusCode}`);
-    //             }
-    //         } catch (error) {
-    //             console.error('Error downloading file:', error);
-    //             Toast.show({
-    //                 type: 'error',
-    //                 text1: 'Error',
-    //                 text2: 'Gagal mengunduh file. Silakan coba lagi.',
-    //                 visibilityTime: 3000,
-    //             });
-    //         } finally {
-    //             setDownloading(false);
-    //         }
-    //     } else {
-    //         Toast.show({
-    //             type: 'error',
-    //             text1: 'Error',
-    //             text2: 'Dokumen Permohonan tidak ditemukan',
-    //             visibilityTime: 3000,
-    //         });
-    //     }
-    // };
 
     if (loading) {
         return (

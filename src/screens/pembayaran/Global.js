@@ -98,10 +98,6 @@ const Global = ({ navigation }) => {
     })()
   })
 
-  useEffect(() => {
-    console.log(`/pembayaran/global/report?tahun=${selectedYear}&status=${selectedStatus}`)
-  })
-
 
   const requestStoragePermission = async () => {
     try {

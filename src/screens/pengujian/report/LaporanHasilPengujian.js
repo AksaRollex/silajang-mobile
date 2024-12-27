@@ -128,7 +128,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
             animationType="fade"
             onRequestClose={onClose}
         >
-            <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="flex-1 justify-center items-center bg-black bg-black/50">
                 <View className="bg-white rounded-lg w-[90%] p-4">
                     <View className="flex-row justify-between items-center mb-4">
                         <Text className="text-lg font-poppins-semibold">Ajukan TTE LHU ({type})</Text>
@@ -468,12 +468,12 @@ const LaporanHasilPengujian = ({ navigation }) => {
 
     const Rollback = async (uuid) => {
         try {
-            const response = await axios.put(`/verifikasi/kepala-upt"/${uuid}/rollback`);
-
+            const response = await axios.post(`${APP_URL}/api/v1/verifikasi/kepala-upt/${uuid}/rollback`);
+    
             if (response.data?.success) {
-                queryClient.invalidateQueries(['report/{uuid}/preview-lhu"']);
+                queryClient.invalidateQueries(['report/{uuid}/preview-lhu']);
                 paginateRef.current?.refetch();
-
+    
                 Toast.show({
                     type: 'success',
                     text1: 'Success',

@@ -1,16 +1,18 @@
 import { StyleSheet } from 'react-native'
-import { View, Text, Button, TextField } from "react-native-ui-lib";
-import React from 'react'
+import { View, Text, Button, TextField, Checkbox } from "react-native-ui-lib";
+import React, { useState } from 'react'
 import { useForm, Controller } from "react-hook-form";
 import { useNavigation } from "@react-navigation/native";
 import BackButton from '../../components/BackButton';
 import { useHeaderStore } from '@/src/screens/main/Index'
 import IonIcon from 'react-native-vector-icons/Ionicons';
 import { TextFooter } from '../../components/TextFooter';
-
+import * as Yup from 'yup';
 
 const Denda = ({ navigation }) => {
     const { setHeader } = useHeaderStore();
+    const [selectedType, setSelectedType] = useState('percentage'); // 'percentage' or 'rupiah'
+
     const {
         handleSubmit,
         control,
@@ -20,9 +22,12 @@ const Denda = ({ navigation }) => {
 
     React.useLayoutEffect(() => {
         setHeader(false)
-
         return () => setHeader(true)
     }, [])
+
+    const handleTypeChange = (type) => {
+        setSelectedType(type);
+    };
 
     return (
         <View className="bg-[#ececec] w-full h-full">
@@ -39,8 +44,8 @@ const Denda = ({ navigation }) => {
                 </View>
             </View>
             <View className="p-3">
-                <View className="bg-white mt-3 rounded-lg px-3 py-4">
-                    <Text className="text-base mb-2 font-poppins-semibold">Nominal</Text>
+                <View className="bg-white mt-3 rounded-lg px-3 py-4 p-4">
+                    <Text className="text-base mb-2 font-poppins-semibold">Nominal <Text className="text-red-500">*</Text></Text>
                     <Controller
                         control={control}
                         name="harga"
@@ -62,11 +67,28 @@ const Denda = ({ navigation }) => {
                             />
                         )}
                     />
-                    <Text className="text-black font-poppins-semibold text-lg"></Text>
 
-                    {/* <Text className="text-base mb-2 font-poppins-semibold">Tipe</Text> */}
+                    <Text className="text-base mb-2 mt-4 font-poppins-semibold">Tipe <Text className="text-red-500">*</Text></Text>
+                    <View className=" gap-4">
+                        <View className="flex-row items-center">
+                            <Checkbox
+                                value={selectedType === 'percentage'}
+                                onValueChange={() => handleTypeChange('percentage')}
+                                color="#312e81"
+                            />
+                            <Text className="ml-2 font-poppins-regular">Persentase (%)</Text>
+                        </View>
+                        <View className="flex-row items-center">
+                            <Checkbox
+                                value={selectedType === 'rupiah'}
+                                onValueChange={() => handleTypeChange('rupiah')}
+                                color="#312e81"
+                            />
+                            <Text className="ml-2 font-poppins-regular">Rupiah (Rp)</Text>
+                        </View>
+                    </View>
 
-                    <Text className="text-base mb-2 font-poppins-semibold">Tempo Hari</Text>
+                    <Text className="text-base mb-2 mt-6 font-poppins-semibold">Tempo Hari <Text className="text-red-500">*</Text></Text>
                     <Controller
                         control={control}
                         name="harga"
@@ -88,10 +110,18 @@ const Denda = ({ navigation }) => {
                             />
                         )}
                     />
-                    <Text className="text-black font-poppins-semibold text-lg"></Text>
+
+                    <Button
+                        labelStyle={{ fontFamily: "Poppins-Medium" }}
+                        label="Simpan"
+                        // loading={isLoading}
+                        // onPress={handleSubmit(onSubmit)}
+                        className="rounded-md bg-indigo-800 mt-5 mb-4"
+                    // disabled={isLoading}
+                    />
                 </View>
             </View>
-            <View>
+            <View className="absolute bottom-10 self-center">
                 <TextFooter />
             </View>
         </View>
@@ -101,7 +131,6 @@ const Denda = ({ navigation }) => {
 export default Denda
 
 const styles = StyleSheet.create({
-
     cardContainer: {
         flexDirection: 'row',
         justifyContent: 'center',
