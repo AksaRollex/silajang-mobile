@@ -191,7 +191,7 @@ export default function DetailKontrak({ route, navigation }) {
                     },
                     progress: (res) => {
                         const progress = (res.bytesWritten / res.contentLength) * 100;
-                        console.log(`Download progress: ${progress.toFixed(2)}%`);
+                        // console.log(`Download progress: ${progress.toFixed(2)}%`);
                     }
                 };
     
