@@ -20,7 +20,7 @@ import FontIcon from "react-native-vector-icons/FontAwesome5";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import { MenuView } from "@react-native-menu/menu";
+import { MenuView } from "@react-native-menu/menu"; 
 import { useQuery } from "@tanstack/react-query";
 import BackButton from "@/src/screens/components/BackButton";
 import Paginate from "@/src/screens/components/Paginate";
