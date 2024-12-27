@@ -205,7 +205,8 @@ const Dashboard = () => {
           source={require("../../../assets/images/background.png")}
           style={{
             flex: 1,
-            height: "70%",
+            height: "60%",
+            // height: "70%",
           }}>
           <Header
             navigate={() => {

@@ -298,8 +298,8 @@ const renderLoadingPackages = () => {
     .map((_, index) => (
       <View
         key={`loading-${index}`}
+        className="-ms-10"
         style={{
-          marginVertical: 4,
           padding: 8,
         }}>
         <View LinearGradientComponent={LinearGradient}>

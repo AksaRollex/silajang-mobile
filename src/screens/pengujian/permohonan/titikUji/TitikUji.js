@@ -379,6 +379,23 @@ const TitikUji = ({ navigation, route, callback }) => {
     );
   };
 
+  const renderHeaderInformationTU = () => {
+    // Masalah: Anda menggunakan curly braces {} yang membuat ini menjadi block statement
+    // tapi tidak ada return statement
+    return titikPermohonans?.length === 0 ? (
+      <View className="">
+        <View className="flex p-2 top-3 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+          <Text className="text-black text-center mb-1 font-poppins-semibold">
+            Tambah Lokasi Sampel Pengujian
+          </Text>
+          <Text className="text-black text-[13px] font-poppins-medium text-center ">
+            Anda belum memiliki Titik Lokasi Satupun.
+          </Text>
+        </View>
+      </View>
+    ) : null;
+  };
+
   const handlePreviewPermohonan = async ({ uuid }) => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
@@ -739,19 +756,6 @@ const TitikUji = ({ navigation, route, callback }) => {
               </View>
             )}
 
-          {titikPermohonans?.length === 0 && (
-            <View className="p-4">
-              <View className="flex p-2 top-3 items-center bg-indigo-100 border border-indigo-400 rounded-md">
-                <Text className="text-black text-center mb-1 font-poppins-semibold">
-                  Tambah Lokasi Sampel Pengujian
-                </Text>
-                <Text className="text-black text-[13px] font-poppins-medium text-center ">
-                  Anda belum memiliki Titik Lokasi Satupun.
-                </Text>
-              </View>
-            </View>
-          )}
-
           {/* {
             !titikPermohonans?.data?.length && (
               // !pivotData?.length &&
@@ -771,6 +775,7 @@ const TitikUji = ({ navigation, route, callback }) => {
           } */}
           <View className="w-full h-full rounded-b-md">
             <Paginate
+              HeaderInformationTU={renderHeaderInformationTU}
               ref={paginateRef}
               payload={{ permohonan_uuid: uuid ? uuid : uuidPermohonan }}
               url="/permohonan/titik"

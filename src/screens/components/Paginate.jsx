@@ -39,7 +39,15 @@ if (
 
 const Paginate = forwardRef(
   (
-    { url, payload, renderItem, Plugin, isExternalLoading = false, ...props },
+    {
+      url,
+      payload,
+      renderItem,
+      Plugin,
+      HeaderInformationTU,
+      isExternalLoading = false,
+      ...props
+    },
     ref,
   ) => {
     const queryClient = useQueryClient();
@@ -159,6 +167,7 @@ const Paginate = forwardRef(
 
     const ListHeader = () => (
       <>
+        <View className="mb-8">{HeaderInformationTU && <HeaderInformationTU />}</View>
         <View className=" mb-1 ">
           <Controller
             control={control}
@@ -235,14 +244,14 @@ const Paginate = forwardRef(
             {!Plugin ? (
               <Skeleton
                 animation="wave"
-                width={370}
+                width={windowWidth - 60}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
             ) : (
               <Skeleton
                 animation="wave"
-                width={245}
+                width={windowWidth - 190}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
@@ -250,7 +259,7 @@ const Paginate = forwardRef(
             {Plugin ? (
               <Skeleton
                 animation="wave"
-                width={120}
+                width={windowWidth - 290}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
@@ -414,22 +423,46 @@ const Paginate = forwardRef(
             </View>
           )}
         />
-        <View style={styles.footer}>
-          <View
-            style={{
-              display: "flex",
-              justifyContent: "center",
-              alignItems: "center",
-            }}>
-            <Text style={styles.footerText}>
-              {new Date().getFullYear()} © SI-LAJANG v.3
-            </Text>
-            <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
+        {HeaderInformationTU ? (
+          <View style={styles.footer}>
+            <View
+              className="-mt-20"
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+              <Text style={styles.footerText}>
+                {new Date().getFullYear()} © SI-LAJANG v.3
+              </Text>
+              <Text style={styles.footerTexts}>
+                UPT LABORATORIUM LINGKUNGAN
+              </Text>
+              <Text style={styles.footerText}>
+                DINAS LINGKUNGAN HIDUP KAB.JOMBANG
+              </Text>
+            </View>
           </View>
-          <Text style={styles.footerText}>
-            DINAS LINGKUNGAN HIDUP KAB.JOMBANG
-          </Text>
-        </View>
+        ) : (
+          <View style={styles.footer}>
+            <View
+              style={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+              }}>
+              <Text style={styles.footerText}>
+                {new Date().getFullYear()} © SI-LAJANG v.3
+              </Text>
+              <Text style={styles.footerTexts}>
+                UPT LABORATORIUM LINGKUNGAN
+              </Text>
+              <Text style={styles.footerText}>
+                DINAS LINGKUNGAN HIDUP KAB.JOMBANG
+              </Text>
+            </View>
+          </View>
+        )}
       </View>
     );
   },
