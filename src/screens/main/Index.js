@@ -88,7 +88,7 @@ const TabNavigator = () => {
       'koordinator-administrasi',
       'koordinator-teknis',
       'kepala-upt',
-      // 'customer'
+      'customer'
     ],
   };
 

@@ -16,6 +16,8 @@ import BackButton from "../components/BackButton";
 import { useUser } from "@/src/services";
 import axios from "@/src/libs/axios"; // Adjust the import path as needed
 import Icons from "react-native-vector-icons/AntDesign";
+import { useHeaderStore } from "@/src/screens/main/Index";
+
 
 const UserProfileForm = ({ navigation }) => {
   const [name, setName] = useState("");
@@ -32,6 +34,14 @@ const UserProfileForm = ({ navigation }) => {
       }
     }
   }, [userData]);
+
+    const { setHeader } = useHeaderStore();
+  
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
 
   const handleDeletePhoto = () => {
     Alert.alert(
@@ -160,7 +170,7 @@ const UserProfileForm = ({ navigation }) => {
             </View>
           </View>
             <View className="mb-6">
-              <Text className="font-poppins-semibold text-sm mb-3">Foto</Text>
+              <Text className="font-poppins-semibold text-sm mb-3 text-black">Foto</Text>
               <TouchableOpacity
                 onPress={handleImagePick}
                 className="w-full h-60 border-2 border-dashed border-gray-300 bg-gray-50 rounded-lg flex items-center justify-center"
@@ -186,7 +196,7 @@ const UserProfileForm = ({ navigation }) => {
                   </>
                   
                 ) : (
-                  <Text className="text-gray-400 text-xs font-poppins-regular">
+                  <Text className="text-gray-400 text-xs font-poppins-regular ">
                     Pilih Foto
                   </Text>
                 )}
@@ -194,9 +204,9 @@ const UserProfileForm = ({ navigation }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="font-poppins-semibold text-sm mb-3">Nama</Text>
+              <Text className="font-poppins-semibold text-sm mb-3 text-black">Nama</Text>
               <TextInput
-                className={`border rounded-lg px-4 py-2 text-sm font-poppins-regular ${
+                className={`border rounded-lg px-4 py-2 text-sm font-poppins-regular text-black ${
                   nameError ? "border-red-500" : "border-gray-300"
                 } focus:outline-none focus:border-blue-500`}
                 value={name}
@@ -213,7 +223,7 @@ const UserProfileForm = ({ navigation }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="font-poppins-semibold text-sm mb-3">Email</Text>
+              <Text className="font-poppins-semibold text-sm mb-3 text-black">Email</Text>
               <TextInput
                 value={userData?.email || ""}
                 placeholder="Tidak tersedia"
@@ -223,7 +233,7 @@ const UserProfileForm = ({ navigation }) => {
             </View>
 
             <View className="mb-6">
-              <Text className="font-poppins-semibold text-sm mb-3">
+              <Text className="font-poppins-semibold text-sm mb-3 text-black">
                 No. Telepon
               </Text>
               <TextInput
