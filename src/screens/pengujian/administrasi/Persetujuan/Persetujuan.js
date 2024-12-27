@@ -48,8 +48,9 @@ const Persetujuan = ({ navigation }) => {
   const [reportUrl, setReportUrl] = useState('');
   const { setHeader } = useHeaderStore();
   const [pdfError, setPdfError] = useState(false);
-    const [pdfLoaded, setPdfLoaded] = useState(false);
-  
+  const [pdfLoaded, setPdfLoaded] = useState(false);
+  const [currentReportType, setCurrentReportType] = useState('');
+
     useEffect(() => {
       if (modalVisible) {
         setPdfLoaded(false);
@@ -77,24 +78,40 @@ const Persetujuan = ({ navigation }) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
     setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/sampling?token=${authToken}`);
     setModalVisible(true);
+    setCurrentReportType('sampling');
   };
 
   const BeritaAcara = async (item) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
     setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/berita-acara?token=${authToken}`);
     setModalVisible(true);
+    setCurrentReportType('berita-acara');
   };
 
   const DataPengambilan = async (item) => {
     const authToken = await AsyncStorage.getItem('@auth-token');
     setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/data-pengambilan?token=${authToken}`);
     setModalVisible(true);
+    setCurrentReportType('data-pengambilan');
   };
 
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
-      const fileName = `LHU_${Date.now()}.pdf`;
+      let fileName;
+      switch (currentReportType) {
+        case 'sampling':
+          fileName = `Cetak_Sampling_${Date.now()}.pdf`;
+          break;
+        case 'berita-acara':
+          fileName = `Berita_Acara_${Date.now()}.pdf`;
+          break;
+        case 'data-pengambilan':
+          fileName = `Data_Pengambilan_${Date.now()}.pdf`;
+          break;
+        default:
+          break;
+      }
 
       const downloadPath = Platform.OS === 'ios'
         ? `${RNFS.DocumentDirectoryPath}/${fileName}`

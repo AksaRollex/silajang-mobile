@@ -74,7 +74,8 @@ const PenerimaSampel = ({ navigation }) => {
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
   const [pdfError, setPdfError] = useState(false);
-    const [pdfLoaded, setPdfLoaded] = useState(false);
+  const [pdfLoaded, setPdfLoaded] = useState(false);
+  const [currentReportType, setCurrentReportType] = useState('');
   
     useEffect(() => {
       if (openModal) {
@@ -147,10 +148,34 @@ const PenerimaSampel = ({ navigation }) => {
     }
   };
 
+  const PermohonanPengujian = async (item) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/tanda-terima?token=${authToken}`);
+    setOpenModal(true);
+    setCurrentReportType('tanda-terima');
+  };
+
+  const PengamananSampel = async (item) => {
+    const authToken = await AsyncStorage.getItem('@auth-token');
+    setReportUrl(`${APP_URL}/api/v1/report/${item.uuid}/pengamanan-sampel?token=${authToken}`);
+    setOpenModal(true);
+    setCurrentReportType('pengamanan-sampel');
+  };
+
   const handleDownloadPDF = async () => {
     try {
       const authToken = await AsyncStorage.getItem('@auth-token');
-      const fileName = `LHU_${Date.now()}.pdf`;
+      let fileName;
+      switch (currentReportType) {
+        case 'tanda-terima':
+          fileName = `Permohonan_Pengujian_${Date.now()}.pdf`;
+          break;
+        case 'pengamanan-sampel':
+          fileName = `Pengamanan_Sampel_${Date.now()}.pdf`;
+          break;
+        default:
+          break;
+      }
 
       const downloadPath = Platform.OS === 'ios'
         ? `${RNFS.DocumentDirectoryPath}/${fileName}`
@@ -389,9 +414,9 @@ const PenerimaSampel = ({ navigation }) => {
             </TouchableOpacity>
           )}
 
-          {selectedPenerima === 3 && ( // "Telah Konfirmasi"
+          {selectedPenerima === 3 && (
             <TouchableOpacity
-              onPress={() => handleShowPdf(item, 'tanda-terima')}
+              onPress={() => PermohonanPengujian({ uuid: item.uuid })}
               className="bg-red-600 px-3 py-2 rounded-md"
             >
               <View className="flex-row">
@@ -400,15 +425,15 @@ const PenerimaSampel = ({ navigation }) => {
               </View>
             </TouchableOpacity>
           )}
-          {selectedPenerima === 3 && ( // "Telah Konfirmasi"
+          {selectedPenerima === 3 && (
             <>
               <TouchableOpacity
-                onPress={() => handleShowPdf(item, 'pengamanan-sampel')}
+                onPress={() => PengamananSampel({ uuid: item.uuid })}
                 className="bg-red-600 px-3 py-2 rounded-md mt-2"
               >
                 <View className="flex-row">
                   <FontAwesome5 name="file-pdf" size={15} color="white" style={{ marginRight: 5 }} />
-                  <Text className="text-white font-poppins-medium text-[11px]">Pengaman Sampel</Text>
+                  <Text className="text-white font-poppins-medium text-[11px]">Pengamanan Sampel</Text>
                 </View>
               </TouchableOpacity>
             </>
@@ -506,7 +531,7 @@ const PenerimaSampel = ({ navigation }) => {
       </View>
       </ScrollView>
 
-      <Modal
+      {/* <Modal
         animationType="slide"
         transparent={true}
         visible={modalVisible}
@@ -514,7 +539,7 @@ const PenerimaSampel = ({ navigation }) => {
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <Text style={styles.modalTitle}>Tanda Terima Report</Text>
-            <Text style={styles.modalText}>Report URL: {reportUrl}</Text> {/* Menampilkan URL report */}
+            <Text style={styles.modalText}>Report URL: {reportUrl}</Text> 
 
             <TouchableOpacity
               style={styles.buttonClose}
@@ -523,7 +548,7 @@ const PenerimaSampel = ({ navigation }) => {
             </TouchableOpacity>
           </View>
         </View>
-      </Modal>
+      </Modal> */}
 
       <Modal
         transparent={true}
@@ -599,7 +624,7 @@ const PenerimaSampel = ({ navigation }) => {
               <TouchableOpacity
                 onPress={() => {
                   handleDownloadPDF();
-                  setModalVisible(false);
+                  setOpenModal(false);
                 }}
                 className="p-2 rounded flex-row items-center">
                 <Feather name="download" size={21} color="black" />

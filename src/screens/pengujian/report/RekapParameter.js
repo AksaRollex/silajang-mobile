@@ -479,14 +479,15 @@ const RekapParameter = ({ navigation }) => {
                                     <Ionicons name="chevron-forward" size={20} color="#312e81" />
                                 </View>
                             }
-                            customDayHeaderStyles={{
-                                textStyle: {
-                                    fontFamily: 'Poppins-Medium',
-                                    fontSize: 13,
-                                    color: '#6b7280',
-                                    textAlign: 'center',
-                                }
-                            }}
+                            
+                            // customDayHeaderStyles={{
+                            //     textStyle: {
+                            //         fontFamily: 'Poppins-Medium',
+                            //         fontSize: 13,
+                            //         color: '#6b7280',
+                            //         textAlign: 'center',
+                            //     }
+                            // }}
                             dayShape={customStyles.dayShape}
                             selectedDayStyle={customStyles.selectedDayStyle}
                             selectedDayTextStyle={customStyles.selectedDayTextStyle}
