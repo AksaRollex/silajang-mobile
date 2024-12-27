@@ -1,16 +1,17 @@
 import axios from "@/src/libs/axios";
 import { useNavigation } from "@react-navigation/native";
 import React, { useState, useEffect, useRef } from "react";
-import { View, Text, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform, ScrollView } from "react-native";
+import { View, Text, TouchableOpacity, Modal, ActivityIndicator, PermissionsAndroid, Platform, ScrollView,} from "react-native";
 import { MenuView } from "@react-native-menu/menu";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import Ionicons from "react-native-vector-icons/Ionicons"
+import Ionicons from "react-native-vector-icons/Ionicons";
 import moment from 'moment';
 import Paginate from "@/src/screens/components/Paginate";
 import { APP_URL } from "@env";
-import RNFetchBlob from 'rn-fetch-blob';
+import RNFS from 'react-native-fs';
+import Toast from 'react-native-toast-message';
 import BackButton from "@/src/screens/components/BackButton";
 import { useHeaderStore } from "../../main/Index";
 import { TextFooter } from "@/src/screens/components/TextFooter";
@@ -20,6 +21,7 @@ const RegistrasiSampel = ({ navigation }) => {
   const queryClient = useQueryClient();
   const paginateRef = useRef();
   const [isDownloading, setIsDownloading] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const currentMonth = new Date().getMonth() + 1;
@@ -74,81 +76,66 @@ const RegistrasiSampel = ({ navigation }) => {
     }
   }, [selectedYear, selectedMonth]);
 
-  const handleDownloadExcel = async () => {
-    if (isDownloading) return;
-
-    try {
-      setIsDownloading(true);
-      await downloadExcel('/report/registrasi-sampel', {
-        tahun: selectedYear,
-        bulan: selectedMonth,
-      });
-    } catch (error) {
-      console.error('Download error:', error);
-    } finally {
-      setIsDownloading(false);
-    }
-  };
-
-  const downloadExcel = async (url, params) => {
-    try {
-      // Request permission for Android
-      if (Platform.OS === 'android' && Number(Platform.Version) < 33) {
+  const requestStoragePermission = async () => {
+    if (Platform.OS === 'android' && Number(Platform.Version) < 33) {
+      try {
         const granted = await PermissionsAndroid.request(
           PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
         );
-        if (granted !== PermissionsAndroid.RESULTS.GRANTED) {
-          throw new Error('Storage permission denied');
-        }
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.error('Permission error:', err);
+        return false;
+      }
+    }
+    return true;
+  };
+
+  const downloadReport = async () => {
+    try {
+      setIsDownloading(true);
+      const hasPermission = await requestStoragePermission();
+      
+      if (!hasPermission) {
+        return;
       }
 
-      // Convert params to query string
-      const queryString = Object.keys(params)
-        .map(key => `${key}=${params[key]}`)
-        .join('&');
+      const response = await axios.get(`/report/registrasi-sampel?tahun=${selectedYear}&bulan=${selectedMonth}`, {
+        responseType: 'arraybuffer',
+      });
 
-      // Get the full URL
-      const fullUrl = `${APP_URL}${url}?${queryString}`;
-
-      // Configure headers
-      const headers = {
-        'Content-Type': 'application/json',
-        'Accept': 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        // Add your authorization header if needed
-        // 'Authorization': `Bearer ${your_token_here}`
-      };
-
-      // Generate filename with timestamp
+      // Generate filename with timestamp and month/year info
+      const monthName = monthOptions.find(m => m.id.toString() === selectedMonth)?.title;
       const timestamp = new Date().getTime();
-      const filename = `report_${timestamp}.xlsx`;
+      const fileName = `Registrasi Sampel ${selectedYear}_${monthName}_${timestamp}.xlsx`;
 
-      // Configure download path
-      const { dirs } = RNFetchBlob.fs;
-      const dirToSave = Platform.OS === 'ios' ? dirs.DocumentDir : dirs.DownloadDir;
-      const filePath = `${dirToSave}/${filename}`;
+      // Determine path based on platform
+      const path = Platform.OS === "ios" 
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}` 
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
-      // Download file
-      const response = await RNFetchBlob.config({
-        fileCache: true,
-        addAndroidDownloads: {
-          useDownloadManager: true,
-          notification: true,
-          path: filePath,
-          description: 'Downloading Excel Report',
-          mime: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
-        },
-        path: filePath
-      }).fetch('GET', fullUrl, headers);
+      // Convert buffer to ASCII string
+      const buffer = new Uint8Array(response.data);
+      const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
 
-      if (Platform.OS === 'ios') {
-        // For iOS, we need to share the file
-        RNFetchBlob.ios.openDocument(response.path());
-      }
+      // Save file
+      await RNFS.writeFile(path, fileContent, 'ascii');
 
-      return response.path();
+      Toast.show({
+        type: 'success',
+        text1: 'Berhasil!',
+        text2: 'Laporan Registrasi Sampel berhasil diunduh',
+      });
     } catch (error) {
-      console.error('Download error:', error);
-      throw error;
+      console.error('Error saat mengunduh file:', error);
+      Toast.show({
+        type: 'error',
+        text1: 'Gagal!',
+        text2: 'Tidak dapat mengunduh laporan',
+      });
+    } finally {
+      setIsDownloading(false);
+      setModalVisible(false);
     }
   };
 
@@ -294,6 +281,54 @@ const RegistrasiSampel = ({ navigation }) => {
         </View>
       </View>
 
+      <Modal
+        animationType="fade"
+        transparent
+        visible={modalVisible}
+        onRequestClose={() => setModalVisible(false)}
+      >
+        <View className="flex-1 justify-center items-center bg-black/50">
+          <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+            <View className="w-20 h-20 rounded-full bg-green-100 justify-center items-center mb-4">
+              <FontAwesome5 size={40} color="#177a44" name="file-excel" />
+            </View>
+
+            <Text className="text-xl font-poppins-semibold text-black mb-3">
+              Konfirmasi Download
+            </Text>
+
+            <View className="w-full h-px bg-gray-200 mb-4" />
+
+            <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+              Apakah Anda yakin ingin Mengunduh Report Berformat Excel?
+            </Text>
+
+            <View className="flex-row w-full justify-between">
+              <TouchableOpacity
+                onPress={() => {
+                  downloadReport();
+                }}
+                className="flex-1 mr-2 bg-green-500 py-3 rounded-xl items-center"
+                disabled={isDownloading}
+              >
+                {isDownloading ? (
+                  <ActivityIndicator size="small" color="white" />
+                ) : (
+                  <Text className="text-white font-poppins-medium">Ya, Download</Text>
+                )}
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                onPress={() => setModalVisible(false)}
+                className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
+              >
+                <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
       <ScrollView>
         <Paginate
           ref={paginateRef}
@@ -313,8 +348,7 @@ const RegistrasiSampel = ({ navigation }) => {
       </ScrollView>
 
       <TouchableOpacity
-        onPress={handleDownloadExcel}
-        disabled={isDownloading}
+        onPress={() => setModalVisible(true)}
         style={{
           position: 'absolute',
           bottom: 25,
@@ -332,11 +366,7 @@ const RegistrasiSampel = ({ navigation }) => {
           shadowRadius: 3.84,
           zIndex: 1000
         }}>
-        {isDownloading ? (
-          <ActivityIndicator size="small" color="white" />
-        ) : (
-          <FontAwesome5 name="file-excel" size={20} color="white" />
-        )}
+        <FontAwesome5 name="file-excel" size={20} color="white" />
       </TouchableOpacity>
     </View>
   );

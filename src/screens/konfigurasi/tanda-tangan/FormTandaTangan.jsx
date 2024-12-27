@@ -91,10 +91,6 @@ export default memo(function TandaTanganForm({ route, navigation }) {
         createOrUpdate(formData); 
     };
 
-    if (isLoadingData && uuid) {
-        return <View className="h-full flex justify-center"><ActivityIndicator size={"large"} color={"#312e81"} /></View>
-    }
-
     return (
         <View className="bg-[#ececec] h-full">
               <View

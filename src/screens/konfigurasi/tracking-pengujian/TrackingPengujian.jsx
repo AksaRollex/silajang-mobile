@@ -5,6 +5,7 @@ import { FlatList, Text, View, ActivityIndicator, TouchableOpacity, ScrollView }
 import Icons from "react-native-vector-icons/AntDesign";
 import Entypo from "react-native-vector-icons/Entypo";
 import Icon from "react-native-vector-icons/Feather";
+import MaterialCom from "react-native-vector-icons/MaterialCommunityIcons"
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import IonIcon from "react-native-vector-icons/Ionicons";
 import Feather from "react-native-vector-icons/Feather";
@@ -117,9 +118,9 @@ const TrackingPengujian = ({ navigation }) => {
       style={{ elevation: 4 }}>
 
       <View className="absolute top-4 right-2">
-        <View className={`py-1 px-3 rounded-full ${item.status < 0 ? 'bg-yellow-100' : 'bg-slate-100'}`}>
+        <View className={`py-1 px-2 rounded-md ${item.status < 0 ? 'bg-yellow-100' : 'bg-indigo-100'}`}>
           <Text
-            className={`text-[12px] font-poppins-semibold ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-600'}`}
+            className={`text-[12px] font-poppins-semibold ${item.status < 0 ? 'text-yellow-800' : 'text-indigo-500'}`}
             numberOfLines={2}
           >
             {mapStatusPengujian(item.status)}
@@ -197,10 +198,10 @@ const TrackingPengujian = ({ navigation }) => {
       <View className="flex-row justify-end gap-2">
         <TouchableOpacity
           onPress={() => navigation.navigate("DetailTracking", { selected: item })}
-          className="flex-row items-center bg-[#312e81] px-3 py-3 rounded-lg"
+          className="flex-row items-center bg-indigo-500 px-3 py-3 rounded-lg"
         >
           <Text className="text-white ml-1 text-xs font-poppins-medium">Tracking </Text>
-          <Feather name="chevrons-right" size={14} color="#fff" />
+          <MaterialCom name="chevron-double-right" size={14} color="#fff" />
         </TouchableOpacity>
       </View>
 

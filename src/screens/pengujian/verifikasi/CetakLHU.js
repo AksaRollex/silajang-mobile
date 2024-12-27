@@ -27,8 +27,6 @@ import Paginate from "@/src/screens/components/Paginate";
 import HorizontalFilterMenu from "@/src/screens/components/HorizontalFilterMenu";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useHeaderStore } from "@/src/screens/main/Index";
-
-// import { APP_URL } from "@env";
 import Pdf from "react-native-pdf";
 import DocumentPicker from "react-native-document-picker";
 import RNFS, { downloadFile } from "react-native-fs";
@@ -59,7 +57,7 @@ const HasilUjis = ({ navigation, route }) => {
   const [searchInput, setSearchInput] = useState("");
   const [selectedYear, setSelectedYear] = useState(currentYear.toString());
   const filterOptions = generateYears();
-  const [selectedCetak, setSelectedCetak] = useState(1);
+  const [selectedCetak, setSelectedCetak] = useState(0);
   const paginateRef = useRef();
   const [modalVisible, setModalVisible] = useState(false);
   const [reportUrl, setReportUrl] = useState("");
@@ -71,13 +69,12 @@ const HasilUjis = ({ navigation, route }) => {
   const [revisionNote, setRevisionNote] = useState("");
   const [selectedRevisionItem, setSelectedRevisionItem] = useState(null);
   const [tteModalVisible, setTteModalVisible] = useState(false);
-  // const [loadingProgress, setLoadingProgress] = useState(0);
   const [pdfError, setPdfError] = useState(false);
   const [pdfLoaded, setPdfLoaded] = useState(false);
   const [formTte, setFormTte] = useState({
     tanda_tangan_id: "",
     passphrase: "",
-    tipe: "1", // default value, adjust as needed
+    tipe: "1", 
   });
   const [previewReport, setPreviewReport] = useState(true);
   const [showPrintOptions, setShowPrintOptions] = useState(false);
@@ -360,53 +357,93 @@ const HasilUjis = ({ navigation, route }) => {
     }
   };
 
-  const handleDownloadWord = async (item) => {
-    try {
-      const authToken = await AsyncStorage.getItem("@auth-token");
-      const fileName = `LAPORAN-HASIL-PENGUJIAN-${item.kode}.docx`;
+ const handleDownloadWord = async (item) => {
+  try {
+    const authToken = await AsyncStorage.getItem("@auth-token");
+    const fileName = `LAPORAN-HASIL-PENGUJIAN-${item.kode}.docx`;
 
-      const downloadPath =
-        Platform.OS === "ios"
-          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
-          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+    const downloadPath =
+      Platform.OS === "ios"
+        ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
 
-      const downloadUrl = `${APP_URL}/api/v1/report/${item.uuid}/lhu/word`;
+    const downloadUrl = `${APP_URL}/api/v1/report/${item.uuid}/lhu/word`;
 
-      const options = {
-        fromUrl: downloadUrl,
-        toFile: downloadPath,
-        headers: {
-          Authorization: `Bearer ${authToken}`,
-        },
-      };
+    const options = {
+      fromUrl: downloadUrl,
+      toFile: downloadPath,
+      headers: {
+        Authorization: `Bearer ${authToken}`,
+      },
+    };
 
-      const result = await RNFS.downloadFile(options).promise;
+    const result = await RNFS.downloadFile(options).promise;
 
-      if (result.statusCode === 200) {
-        if (Platform.OS === "android") {
-          await RNFS.scanFile(downloadPath);
-        }
-
-        Toast.show({
-          type: "success",
-          text1: "Success",
-          text2: `Word document berhasil diunduh. ${Platform.OS === "ios"
-              ? "You can find it in the Files app."
-              : `Saved as ${fileName} in your Downloads folder.`
-            }`,
-        });
-      } else {
-        throw new Error("Download failed");
+    if (result.statusCode === 200) {
+      if (Platform.OS === "android") {
+        await RNFS.scanFile(downloadPath);
       }
-    } catch (error) {
-      console.error("Download error:", error);
+
+      // Try to open with FileViewer
+      try {
+        await FileViewer.open(downloadPath, {
+          showOpenWithDialog: false,
+          mimeType: 'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        });
+      } catch (openError) {
+        console.log('Error opening file with FileViewer:', openError);
+
+        // Fallback for Android using Intents
+        if (Platform.OS === 'android') {
+          try {
+            const intent = new android.content.Intent(
+              android.content.Intent.ACTION_VIEW
+            );
+            intent.setDataAndType(
+              android.net.Uri.fromFile(new java.io.File(downloadPath)),
+              'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            );
+            intent.setFlags(
+              android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+              android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+            );
+
+            await ReactNative.startActivity(intent);
+          } catch (intentError) {
+            console.log('Intent fallback failed:', intentError);
+            Toast.show({
+              type: "info",
+              text1: "Word Document Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        } else {
+          // Fallback for iOS
+          Toast.show({
+            type: "info",
+            text1: "Word Document Downloaded",
+            text2: `File saved at: ${downloadPath}`,
+          });
+        }
+      }
+
       Toast.show({
-        type: "error",
-        text1: "Error",
-        text2: `Word document gagal diunduh: ${error.message}`,
+        type: "success",
+        text1: "Success",
+        text2: `Word document berhasil diunduh`,
       });
+    } else {
+      throw new Error("Download failed");
     }
-  };
+  } catch (error) {
+    console.error("Download error:", error);
+    Toast.show({
+      type: "error",
+      text1: "Error",
+      text2: `Word document gagal diunduh: ${error.message}`,
+    });
+  }
+};
 
   const PrintOptionsDropdown = ({ item }) => {
     return (
@@ -543,7 +580,7 @@ const HasilUjis = ({ navigation, route }) => {
               }}
               className="flex-row items-center p-2 bg-amber-100 rounded-md mr-2"
             >
-              <FontIcon name="pencil-alt" size={16} color="#fbbf24" />
+              <Ionicons name="pencil" size={16} color="#fbbf24" />
               <Text className="ml-2 text-amber-400 text-[13px] font-poppins-semibold">
                 Revisi
               </Text>
@@ -726,7 +763,7 @@ const HasilUjis = ({ navigation, route }) => {
             </View>
 
             <View className="mb-4">
-              <Text className="text-sm mb-2 text-gray-600">
+              <Text className="text-sm mb-2 text-gray-600 font-poppins-medium">
                 Keterangan Revisi
               </Text>
               <TextInput
@@ -734,8 +771,9 @@ const HasilUjis = ({ navigation, route }) => {
                 numberOfLines={4}
                 value={revisionNote}
                 onChangeText={setRevisionNote}
-                className="border border-gray-300 rounded-lg p-3 text-sm "
+                className="border border-gray-300 rounded-lg p-3 text-sm font-poppins-regular text-black"
                 placeholder="Masukkan keterangan revisi..."
+                placeholderTextColor="#666"
                 textAlignVertical="top"
               />
             </View>
@@ -752,7 +790,7 @@ const HasilUjis = ({ navigation, route }) => {
               </TouchableOpacity> */}
               <TouchableOpacity
                 onPress={handleRevision}
-                className="bg-indigo-600 px-4 py-2 rounded">
+                className="bg-amber-400 px-4 py-2 rounded">
                 <Text className="text-white font-poppins-semibold">Revisi</Text>
               </TouchableOpacity>
             </View>

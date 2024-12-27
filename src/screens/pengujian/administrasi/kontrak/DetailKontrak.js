@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform } from "react-native";
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
@@ -15,6 +15,8 @@ import RNFS from "react-native-fs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
 import ModalSuccess from "@/src/screens/components/ModalSuccess";
+import FileViewer from 'react-native-file-viewer';
+import DocumentPicker from "react-native-document-picker";
 
 const bulans = [
     { id: 1, name: 'Januari' },
@@ -32,31 +34,31 @@ const bulans = [
 ];
 
 export default function DetailKontrak({ route, navigation }) {
-    const { uuid } = route.params
-    const [data, setData] = useState(null)
-    const [checked, setChecked] = useState()
-    const [loading, setLoading] = useState(true)
-    const [reportUrl, setreportUrl] = useState("");
+    const { uuid } = route.params;
+    const [data, setData] = useState(null);
+    const [checked, setChecked] = useState();
+    const [loading, setLoading] = useState(true);
+    const [downloading, setDownloading] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
 
-    useEffect(() => {
-        const fetchData = async () => {
-            try {
-                const response = await axios.get(`/administrasi/kontrak/${uuid}`)
-                setData(response.data.data)
-                if (
-                    response.data.data &&
-                    response.data.data.kesimpulan_kontrak !== undefined
-                ) {
-                    setChecked(response.data.data.kesimpulan_kontrak)
-                }
-                setLoading(false)
-            } catch (error) {
-                console.error("Error fetching data:", error)
-                setLoading(false)
+    const fetchData = async () => {
+        try {
+            const response = await axios.get(`/administrasi/kontrak/${uuid}`)
+            setData(response.data.data)
+            if (
+                response.data.data &&
+                response.data.data.kesimpulan_kontrak !== undefined
+            ) {
+                setChecked(response.data.data.kesimpulan_kontrak)
             }
+            setLoading(false)
+        } catch (error) {
+            console.error("Error fetching data:", error)
+            setLoading(false)
         }
+    }
 
+    useEffect(() => {
         fetchData()
     }, [uuid])
 
@@ -66,6 +68,11 @@ export default function DetailKontrak({ route, navigation }) {
             await saveStatus(value);
         } catch (error) {
             console.error("Error saving status:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Gagal mengupdate status kontrak',
+            });
         }
     };
 
@@ -76,10 +83,185 @@ export default function DetailKontrak({ route, navigation }) {
             });
 
             setIsUpdateModalVisible(true);
-
             await fetchData();
+
+            Toast.show({
+                type: 'success',
+                text1: 'Success',
+                text2: 'Status kontrak berhasil diperbarui',
+            });
         } catch (error) {
             console.error("Error saving status:", error);
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Gagal menyimpan status',
+            });
+        }
+    };
+
+    const requestStoragePermission = async () => {
+        if (Platform.OS !== 'android') return true;
+    
+        try {
+            // For Android 13 and above (API level 33+)
+            if (Platform.Version >= 33) {
+                const mediaPermission = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.READ_MEDIA_IMAGES,
+                );
+                return mediaPermission === PermissionsAndroid.RESULTS.GRANTED;
+            }
+            // For Android 10 and above (API level 29-32)
+            else if (Platform.Version >= 29) {
+                const storagePermission = await PermissionsAndroid.requestMultiple([
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+                ]);
+                
+                return (
+                    storagePermission['android.permission.WRITE_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED &&
+                    storagePermission['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED
+                );
+            }
+            // For Android 9 and below (API level 28 and below)
+            else {
+                const storagePermission = await PermissionsAndroid.request(
+                    PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+                    {
+                        title: "Izin Penyimpanan",
+                        message: "Aplikasi membutuhkan izin untuk mengunduh file",
+                        buttonNeutral: "Tanya Nanti",
+                        buttonNegative: "Batal",
+                        buttonPositive: "OK"
+                    }
+                );
+                return storagePermission === PermissionsAndroid.RESULTS.GRANTED;
+            }
+        } catch (err) {
+            console.error('Error requesting permission:', err);
+            return false;
+        }
+    };
+    
+    const HandleDownloadFile = async () => {
+        if (data?.kontrak?.dokumen_permohonan) {
+            try {
+                setDownloading(true);
+                
+                const hasPermission = await requestStoragePermission();
+                if (!hasPermission) {
+                    Toast.show({
+                        type: 'error',
+                        text1: 'Error',
+                        text2: 'Izin penyimpanan ditolak. Mohon berikan izin melalui pengaturan aplikasi.',
+                        visibilityTime: 3000,
+                    });
+                    return;
+                }
+    
+                const token = await AsyncStorage.getItem('token');
+                const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
+                const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop() || 'pdf';
+                const fileName = `dokumen_permohonan_${Date.now()}.${fileExtension}`;
+                
+                const downloadDir = Platform.OS === 'ios' 
+                    ? RNFS.DocumentDirectoryPath 
+                    : RNFS.DownloadDirectoryPath;
+                
+                const downloadPath = `${downloadDir}/${fileName}`;
+    
+                const options = {
+                    fromUrl: fileUrl,
+                    toFile: downloadPath,
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Accept': 'application/pdf',
+                    },
+                    background: true,
+                };
+    
+                const response = await RNFS.downloadFile(options).promise;
+                
+                if (response.statusCode === 200) {
+                    const exists = await RNFS.exists(downloadPath);
+                    
+                    if (exists) {
+                        if (Platform.OS === 'android') {
+                            await RNFS.scanFile(downloadPath);
+                        }
+    
+                        // Try to open with FileViewer
+                        try {
+                            await FileViewer.open(downloadPath, {
+                                showOpenWithDialog: false,
+                                mimeType: `application/${fileExtension}`
+                            });
+                        } catch (openError) {
+                            console.log('Error opening file with FileViewer:', openError);
+    
+                            // Fallback for Android using Intents
+                            if (Platform.OS === 'android') {
+                                try {
+                                    const intent = new android.content.Intent(
+                                        android.content.Intent.ACTION_VIEW
+                                    );
+                                    intent.setDataAndType(
+                                        android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                                        `application/${fileExtension}`
+                                    );
+                                    intent.setFlags(
+                                        android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                                        android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
+                                    );
+    
+                                    await ReactNative.startActivity(intent);
+                                } catch (intentError) {
+                                    console.log('Intent fallback failed:', intentError);
+                                    Toast.show({
+                                        type: 'info',
+                                        text1: 'File Berhasil Diunduh',
+                                        text2: `File tersimpan di: ${downloadPath}`,
+                                        visibilityTime: 3000,
+                                    });
+                                }
+                            } else {
+                                Toast.show({
+                                    type: 'info',
+                                    text1: 'File Berhasil Diunduh',
+                                    text2: `File tersimpan di: ${downloadPath}`,
+                                    visibilityTime: 3000,
+                                });
+                            }
+                        }
+    
+                        Toast.show({
+                            type: 'success',
+                            text1: 'Berhasil',
+                            text2: 'File berhasil diunduh',
+                            visibilityTime: 3000,
+                        });
+                    }
+                } else {
+                    throw new Error(`Download gagal dengan status ${response.statusCode}`);
+                }
+            } catch (error) {
+                console.error('Error downloading file:', error);
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Gagal mengunduh file. Silakan coba lagi.',
+                    visibilityTime: 3000,
+                });
+            } finally {
+                setDownloading(false);
+            }
+        } else {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Dokumen Permohonan tidak ditemukan',
+                visibilityTime: 3000,
+            });
         }
     };
 
@@ -92,48 +274,6 @@ export default function DetailKontrak({ route, navigation }) {
         }
         return '';
     }, [data])
-
-    const HandleDownloadFile = async () => {
-        if (data?.kontrak?.dokumen_permohonan) {
-            const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
-            const fileName = 'Dokumen Permohonan';
-            const fileExtension = fileUrl.split('.').pop();
-            const localFilePath = `${RNFS.DocumentDirectoryPath}/${fileName}.${fileExtension}`;
-
-            try {
-                const options = {
-                    fromUrl: fileUrl,
-                    toFile: localFilePath,
-                };
-
-                const result = await RNFS.downloadFile(options).promise;
-
-                if (result.statusCode === 200) {
-                    Toast.show({
-                        type: 'success',
-                        text1: 'Success',
-                        text2: 'File downloaded successfully',
-                    });
-                } else {
-                    throw new Error('Download failed');
-                }
-            } catch (error) {
-                console.error('Error downloading file:', error);
-                Toast.show({
-                    type: 'error',
-                    text1: 'Error',
-                    text2: 'Failed to download the file',
-                });
-            }
-        } else {
-            Toast.show({
-                type: 'error',
-                text1: 'Error',
-                text2: 'Dokumen Permohonan tidak ditemukan',
-            });
-        }
-    };
-
 
     if (loading) {
         return (
@@ -271,9 +411,14 @@ export default function DetailKontrak({ route, navigation }) {
                             <View className="flex-row items-center mb-[15px]">
                                 <TouchableOpacity
                                     className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]"
-                                    onPress={() => HandleDownloadFile()}
+                                    onPress={HandleDownloadFile}
+                                    disabled={downloading}
                                 >
-                                    <Octicons name="download" size={32} color="black" />
+                                    {downloading ? (
+                                        <ActivityIndicator size="small" color="#000" />
+                                    ) : (
+                                        <Octicons name="download" size={31} color="black" />
+                                    )}
                                 </TouchableOpacity>
                                 <View className="flex-1">
                                     <Text className="text-[14px] text-[#666666] font-poppins-regular">Dokumen Permohonan</Text>

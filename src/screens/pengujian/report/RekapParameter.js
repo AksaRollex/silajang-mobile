@@ -1,59 +1,127 @@
-import axios from "@/src/libs/axios";
-import { useNavigation } from "@react-navigation/native";
-import React, { useState, useEffect, useRef, useMemo } from "react";
-import { FlatList, Text, View, ActivityIndicator, Modal, TouchableOpacity, ScrollView } from "react-native";
-import Icons from "react-native-vector-icons/AntDesign";
-import Entypo from "react-native-vector-icons/Entypo";
-import { MenuView } from "@react-native-menu/menu";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useDelete } from "@/src/hooks/useDelete";
-import SearchInput from "@/src/screens/components/SearchInput";
-import Paginate from "@/src/screens/components/Paginate";
-import BackButton from "@/src/screens/components/BackButton";
-import DateTimePickerModal from "react-native-modal-datetime-picker";
+import React, { useState, useRef, useMemo, useEffect } from "react";
+import { View, Text, TouchableOpacity, Modal, ScrollView, Dimensions, FlatList, ActivityIndicator } from "react-native";
+import { useQueryClient } from "@tanstack/react-query";
+import CalendarPicker from 'react-native-calendar-picker';
 import moment from 'moment';
 import Pdf from 'react-native-pdf';
 import RNFS from 'react-native-fs';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import Toast from 'react-native-toast-message';
-import { APP_URL } from "@env";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import Feather from "react-native-vector-icons/Feather";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "../../main/Index";
 import { TextFooter } from "@/src/screens/components/TextFooter";
+import { APP_URL } from "@env";
+import Paginate from "@/src/screens/components/Paginate";
 
 const RekapParameter = ({ navigation }) => {
     const queryClient = useQueryClient();
     const paginateRef = useRef();
     const [selectedItem, setSelectedItem] = useState(null);
     const [showDetailModal, setShowDetailModal] = useState(false);
-    const [showDatePicker, setShowDatePicker] = useState(false);
-    const [dateType, setDateType] = useState('start');
-    const [dateRange, setDateRange] = useState({
-        start: moment().startOf('month').format('YYYY-MM-DD'),
-        end: moment().format('YYYY-MM-DD')
-    });
-    const [shouldRefresh, setShouldRefresh] = useState(false);
+    const [showCalendar, setShowCalendar] = useState(false);
+    const [selectedStartDate, setSelectedStartDate] = useState(moment().startOf('month').format('YYYY-MM-DD'));
+    const [selectedEndDate, setSelectedEndDate] = useState(moment().format('YYYY-MM-DD'));
     const [modalVisible, setModalVisible] = useState(false);
     const [reportUrl, setReportUrl] = useState('');
     const { setHeader } = useHeaderStore();
+    const [pdfError, setPdfError] = useState(false);
+    const [pdfLoaded, setPdfLoaded] = useState(false);
+
+    useEffect(() => {
+        if (modalVisible) {
+            setPdfLoaded(false);
+            setPdfError(false);
+        }
+    }, [modalVisible]);
 
     React.useLayoutEffect(() => {
         setHeader(false)
-
         return () => setHeader(true)
     }, [])
 
 
     // Memoize the payload to prevent unnecessary re-renders
-    const paginatePayload = useMemo(() => ({
-        start: dateRange.start,
-        end: dateRange.end
-    }), [dateRange.start, dateRange.end]);
+    const windowWidth = Dimensions.get('window').width;
+    const dayWidth = (windowWidth - 80) / 7;
+
+    const customStyles = {
+        calendarContainer: {
+            backgroundColor: 'white',
+            borderRadius: 8,
+            padding: 12,
+            width: '100%',
+        },
+        monthTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            color: '#312e81',
+            fontSize: 16,
+            textAlign: 'center',
+        },
+        yearTitleStyle: {
+            fontFamily: 'Poppins-SemiBold',
+            color: '#312e81',
+            fontSize: 16,
+            textAlign: 'center',
+        },
+        dayLabels: {
+            width: dayWidth,
+            textAlign: 'center',
+            color: '#6b7280',
+            fontFamily: 'Poppins-Medium',
+            fontSize: 13,
+        },
+        selectedDayStyle: {
+            backgroundColor: '#e0e7ff',
+        },
+        selectedDayTextStyle: {
+            color: 'white',
+            fontWeight: '600',
+        },
+        dateNameStyle: {
+            color: '#1f2937',
+            fontFamily: 'Poppins-Regular',
+            fontSize: 14,
+            textAlign: 'center',
+        },
+        dayShape: {
+            width: dayWidth - 8,
+            height: dayWidth - 8,
+            borderRadius: (dayWidth - 8) / 2,
+            justifyContent: 'center',
+            alignItems: 'center',
+        },
+    };
+
+    const onDateChange = (date, type) => {
+        if (date) {
+            const formattedDate = date.toISOString().split('T')[0];
+            if (type === 'START_DATE') {
+                setSelectedStartDate(formattedDate);
+            } else if (type === 'END_DATE') {
+                setSelectedEndDate(formattedDate);
+            }
+        }
+    };
+
+    const getCustomDatesStyles = () => {
+        const customDatesStyles = [];
+        const startDate = moment(selectedStartDate);
+        const endDate = moment(selectedEndDate);
+
+        for (let m = moment(startDate); m.diff(endDate, 'days') <= 0; m.add(1, 'days')) {
+            customDatesStyles.push({
+                date: m.clone().toDate(),
+                style: { backgroundColor: '#e8e8e8' },
+                textStyle: { color: '#000' },
+            });
+        }
+        return customDatesStyles;
+    };
 
     const dropdownOptions = useMemo(() => ([
         {
@@ -153,7 +221,7 @@ const RekapParameter = ({ navigation }) => {
     const handlePreviewPDF = async () => {
         try {
             const authToken = await AsyncStorage.getItem('@auth-token');
-            setReportUrl(`${APP_URL}/api/v1/report/parameter?token=${authToken}&start=${dateRange.start}&end=${dateRange.end}`);
+            setReportUrl(`${APP_URL}/api/v1/report/parameter?token=${authToken}&start=${selectedStartDate}&end=${selectedEndDate}`);
             setModalVisible(true);
         } catch (error) {
             console.error('Preview error:', error);
@@ -165,35 +233,35 @@ const RekapParameter = ({ navigation }) => {
         }
     };
 
-    const handleDateSelection = (type) => {
-        setDateType(type);
-        setShowDatePicker(true);
-    };
+    // const handleDateSelection = (type) => {
+    //     setDateType(type);
+    //     setShowDatePicker(true);
+    // };
 
-    const handleDateConfirm = (date) => {
-        const formattedDate = moment(date).format('YYYY-MM-DD');
-        setDateRange(prev => ({
-            ...prev,
-            [dateType]: formattedDate
-        }));
-        setShowDatePicker(false);
+    // const handleDateConfirm = (date) => {
+    //     const formattedDate = moment(date).format('YYYY-MM-DD');
+    //     setDateRange(prev => ({
+    //         ...prev,
+    //         [dateType]: formattedDate
+    //     }));
+    //     setShowDatePicker(false);
 
-        if (dateType === 'start') {
-            setTimeout(() => {
-                setDateType('end');
-                setShowDatePicker(true);
-            }, 500);
-        } else {
-            setShouldRefresh(true);
-        }
-    };
+    //     if (dateType === 'start') {
+    //         setTimeout(() => {
+    //             setDateType('end');
+    //             setShowDatePicker(true);
+    //         }, 500);
+    //     } else {
+    //         setShouldRefresh(true);
+    //     }
+    // };
 
-    useEffect(() => {
-        if (shouldRefresh) {
-            paginateRef.current?.refetch();
-            setShouldRefresh(false);
-        }
-    }, [shouldRefresh]);
+    // useEffect(() => {
+    //     if (shouldRefresh) {
+    //         paginateRef.current?.refetch();
+    //         setShouldRefresh(false);
+    //     }
+    // }, [shouldRefresh]);
 
     const DetailModal = useMemo(() => () => (
         <Modal
@@ -325,7 +393,7 @@ const RekapParameter = ({ navigation }) => {
                             setSelectedItem(item);
                             setShowDetailModal(true);
                         }}
-                        className="flex-row items-center bg-[#312e81] px-3 py-2 rounded"
+                        className="flex-row items-center bg-indigo-500 px-3 py-2 rounded"
                     >
                         <Text className="text-white ml-1 text-xs font-poppins-medium">
                             Detail
@@ -364,26 +432,92 @@ const RekapParameter = ({ navigation }) => {
 
 
             <TouchableOpacity
-                onPress={() => handleDateSelection('start')}
-                className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg border border-gray-300 ">
-                <Text className="text-center font-poppins-semibold text-black">
-                    {`${dateRange.start} to ${dateRange.end}`}
+                onPress={() => setShowCalendar(true)}
+                className="mx-4 mb-4 mt-4 bg-white p-3 rounded-lg">
+                <Text className="text-center text-black font-poppins-semibold">
+                    {`${selectedStartDate} to ${selectedEndDate}`}
                 </Text>
             </TouchableOpacity>
 
-            <DateTimePickerModal
-                isVisible={showDatePicker}
-                mode="date"
-                onConfirm={handleDateConfirm}
-                onCancel={() => setShowDatePicker(false)}
-                date={new Date(dateType === 'start' ? dateRange.start : dateRange.end)}
-            />
+            <Modal
+                transparent={true}
+                visible={showCalendar}
+                onRequestClose={() => setShowCalendar(false)}
+            >
+                <View className="flex-1 justify-center items-center bg-black/50">
+                    <View className="bg-white rounded-lg w-11/12 p-4">
+                        <CalendarPicker
+                            allowRangeSelection={true}
+                            onDateChange={onDateChange}
+                            selectedDayColor="#3730a3"
+                            selectedDayTextColor="#ffffff"
+                            todayBackgroundColor="#e0e7ff"
+                            todayTextStyle={{ color: '#312e81' }}
+                            textStyle={customStyles.dateNameStyle}
+                            customDatesStyles={getCustomDatesStyles()}
+                            monthTitleStyle={customStyles.monthTitleStyle}
+                            yearTitleStyle={customStyles.yearTitleStyle}
+                            weekdays={['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']}
+                            weekdaysStyle={{
+                                borderRadius: 4,
+                                paddingVertical: 8,
+                                marginBottom: 8,
+                            }}
+                            dayLabelsWrapper={{
+                                borderTopWidth: 0,
+                                borderBottomWidth: 0,
+                                paddingTop: 10,
+                                paddingBottom: 10,
+                            }}
+                            previousComponent={
+                                <View className="bg-indigo-50 p-2 rounded-full">
+                                    <Ionicons name="chevron-back" size={20} color="#312e81" />
+                                </View>
+                            }
+                            nextComponent={
+                                <View className="bg-indigo-50 p-2 rounded-full">
+                                    <Ionicons name="chevron-forward" size={20} color="#312e81" />
+                                </View>
+                            }
+                            
+                            // customDayHeaderStyles={{
+                            //     textStyle: {
+                            //         fontFamily: 'Poppins-Medium',
+                            //         fontSize: 13,
+                            //         color: '#6b7280',
+                            //         textAlign: 'center',
+                            //     }
+                            // }}
+                            dayShape={customStyles.dayShape}
+                            selectedDayStyle={customStyles.selectedDayStyle}
+                            selectedDayTextStyle={customStyles.selectedDayTextStyle}
+                            width={windowWidth - 64}
+                            height={windowWidth * 0.9}
+                            minDate={new Date(2023, 0, 1)}
+                            maxDate={new Date(2024, 11, 31)}
+                            scaleFactor={375}
+                        />
+
+                        <TouchableOpacity
+                            onPress={() => setShowCalendar(false)}
+                            className="bg-indigo-900 p-3 rounded-lg mt-4"
+                        >
+                            <Text className="text-white text-center font-poppins-semibold">
+                                Tutup
+                            </Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </Modal>
 
             <ScrollView>
                 <Paginate
                     ref={paginateRef}
                     url="/report/parameter"
-                    payload={paginatePayload}
+                    payload={{
+                        start: selectedStartDate,
+                        end: selectedEndDate,
+                    }}
                     renderItem={CardRekapParameter}
                     className="bottom-2"
                 />
@@ -397,7 +531,7 @@ const RekapParameter = ({ navigation }) => {
                 style={{
                     position: 'absolute',
                     bottom: 25,
-                    right: 15 ,
+                    right: 15,
                     backgroundColor: '#dc2626',
                     borderRadius: 50,
                     width: 55,
@@ -418,8 +552,7 @@ const RekapParameter = ({ navigation }) => {
                 transparent={true}
                 animationType="slide"
                 visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
+                onRequestClose={() => setModalVisible(false)}>
                 <View className="flex-1 justify-center items-center bg-black bg-black/50">
                     <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
                         <View className="flex-row justify-between items-center p-4">
@@ -429,24 +562,65 @@ const RekapParameter = ({ navigation }) => {
                                     handleDownloadPDF();
                                     setModalVisible(false);
                                 }}
-                                className="p-2 rounded flex-row items-center"
-                            >
+                                className="p-2 rounded flex-row items-center">
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
                         </View>
-                        <Pdf
-                            source={{ uri: reportUrl, cache: true }}
-                            style={{ flex: 1 }}
-                            trustAllCerts={false}
-                        />
-                        <View className="flex-row justify-between m-4">
-                            <TouchableOpacity
-                                onPress={() => setModalVisible(false)}
-                                className="bg-[#dc3546] p-2 rounded flex-1 ml-2"
-                            >
-                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
-                            </TouchableOpacity>
-                        </View>
+
+                        {!pdfLoaded && !pdfError && (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#ececec" }}>
+                                <ActivityIndicator size="large" color="#312e81" style={{ top: 180 }} />
+                                <Text className="mt-2 text-black font-poppins-medium" style={{ top: 175 }}>Memuat PDF...</Text>
+                            </View>
+                        )}
+
+                        {!pdfError && (
+                            <Pdf
+                                key={reportUrl}
+                                source={{ uri: reportUrl, cache: true }}
+                                style={{
+                                    flex: 1,
+                                }}
+                                trustAllCerts={false}
+                                onLoadComplete={(numberOfPages) => {
+                                    setPdfLoaded(true);
+                                    console.log(`Number Of Page: ${numberOfPages}`);
+                                }}
+                                onPageChanged={(page, numberOfPages) => {
+                                    console.log(`Current page ${page}`);
+                                }}
+                                onError={(error) => {
+                                    setPdfError(true);
+                                    setPdfLoaded(false);
+                                    console.log('PDF loading error:', error);
+                                }}
+                            />
+                        )}
+
+
+                        {pdfError && (
+                            <View className="flex-1 justify-center items-center self-center p-4">
+                                <Text className="text-md text-black font-poppins-medium">PDF Tidak Ditemukan</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisible(false);
+                                        setPdfError(false);
+                                    }}
+                                    className="bg-red-100 py-2 px-5 rounded mt-1 self-center">
+                                    <Text className="text-red-500 font-poppins-medium">Tutup</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {pdfLoaded && (
+                            <View className="flex-row justify-between m-4">
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(false)}
+                                    className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                                    <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 </View>
             </Modal>

@@ -3,7 +3,7 @@ import BackButton from "@/src/screens/components/BackButton";
 import Paginate from '@/src/screens/components/Paginate';
 import { MenuView } from "@react-native-menu/menu";
 import React, { useRef, useState, useEffect } from "react";
-import { Text, View, Modal, TouchableOpacity, Alert, TextInput, ScrollView } from "react-native";
+import { Text, View, Modal, TouchableOpacity, Alert, TextInput, ScrollView, ActivityIndicator } from "react-native";
 import Entypo from "react-native-vector-icons/Entypo";
 import Feather from "react-native-vector-icons/Feather";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
@@ -128,7 +128,7 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
             animationType="fade"
             onRequestClose={onClose}
         >
-            <View className="flex-1 justify-center items-center bg-black/50">
+            <View className="flex-1 justify-center items-center bg-black bg-black/50">
                 <View className="bg-white rounded-lg w-[90%] p-4">
                     <View className="flex-row justify-between items-center mb-4">
                         <Text className="text-lg font-poppins-semibold">Ajukan TTE LHU ({type})</Text>
@@ -210,6 +210,51 @@ const TTEModal = ({ visible, onClose, onSubmit, type }) => {
     );
 }
 
+const RollbackModal = ({ visible, onClose, onRollback, isLoading }) => {
+    return (
+        <Modal
+            animationType="fade"
+            transparent
+            visible={visible}
+            onRequestClose={onClose}
+        >
+            <View className="flex-1 justify-center items-center bg-black/50">
+                <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+                    <View className="w-20 h-20 rounded-full bg-yellow-100 justify-center items-center mb-4">
+                        <AntDesign name="sync" size={40} color="#facc15" />
+                    </View>
+                    <Text className="text-xl font-poppins-semibold text-black mb-3">
+                        Konfirmasi Rollback
+                    </Text>
+                    <View className="w-full h-px bg-gray-200 mb-4" />
+                    <Text className="text-md text-center text-gray-600 mb-6 font-poppins-regular">
+                        Apakah Anda yakin ingin melakukan rollback data tersebut?
+                    </Text>
+                    <View className="flex-row w-full justify-between">
+                        <TouchableOpacity
+                            onPress={onRollback}
+                            disabled={isLoading}
+                            className="flex-1 mr-2 bg-yellow-400 py-3 rounded-xl items-center"
+                        >
+                            {isLoading ? (
+                                <ActivityIndicator size="small" color="white" />
+                            ) : (
+                                <Text className="text-white font-poppins-medium">Ya, Rollback</Text>
+                            )}
+                        </TouchableOpacity>
+                        <TouchableOpacity
+                            onPress={onClose}
+                            className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
+                        >
+                            <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+                        </TouchableOpacity>
+                    </View>
+                </View>
+            </View>
+        </Modal>
+    );
+};
+
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
     let years = [];
@@ -246,6 +291,17 @@ const LaporanHasilPengujian = ({ navigation }) => {
     const [selectedItem, setSelectedItem] = useState(null);
     const [tteType, setTteType] = useState('system');
     const { setHeader } = useHeaderStore();
+    const [pdfError, setPdfError] = useState(false);
+    const [pdfLoaded, setPdfLoaded] = useState(false);
+    const [rollbackModalVisible, setRollbackModalVisible] = useState(false);
+    const [isRollbackLoading, setIsRollbackLoading] = useState(false);
+
+    useEffect(() => {
+        if (modalVisible) {
+            setPdfLoaded(false);
+            setPdfError(false);
+        }
+    }, [modalVisible]);
 
     React.useLayoutEffect(() => {
         setHeader(false)
@@ -412,12 +468,12 @@ const LaporanHasilPengujian = ({ navigation }) => {
 
     const Rollback = async (uuid) => {
         try {
-            const response = await axios.put(`/verifikasi/kepala-upt"/${uuid}/rollback`);
-
+            const response = await axios.post(`${APP_URL}/api/v1/verifikasi/kepala-upt/${uuid}/rollback`);
+    
             if (response.data?.success) {
-                queryClient.invalidateQueries(['report/{uuid}/preview-lhu"']);
+                queryClient.invalidateQueries(['report/{uuid}/preview-lhu']);
                 paginateRef.current?.refetch();
-
+    
                 Toast.show({
                     type: 'success',
                     text1: 'Success',
@@ -437,6 +493,7 @@ const LaporanHasilPengujian = ({ navigation }) => {
     };
 
     const renderItem = ({ item }) => {
+   
         const tteOptions = [
             Boolean(item.tte_lhu) && {
                 id: "DownloadTTE",
@@ -496,30 +553,25 @@ const LaporanHasilPengujian = ({ navigation }) => {
             }
         };
 
-        const handleRollback = () => {
-            Alert.alert(
-                "Konfirmasi Rollback",
-                "Apakah Anda yakin ingin melakukan rollback?",
-                [
-                    {
-                        text: "Batal",
-                        style: "cancel"
-                    },
-                    {
-                        text: "Ya",
-                        onPress: () => {
-                            Rollback(item.uuid);
-                            Toast.show({
-                                type: 'success',
-                                text1: 'Success',
-                                text2: 'Rollback berhasil dilakukan',
-                            });
-                        },
-                        style: "destructive"
-                    }
-                ],
-                { cancelable: false }
-            );
+        const handleRollbackConfirm = async () => {
+            setIsRollbackLoading(true);
+            try {
+                await Rollback(item.uuid);
+                Toast.show({
+                    type: 'success',
+                    text1: 'Success',
+                    text2: 'Rollback berhasil dilakukan',
+                });
+                setRollbackModalVisible(false);
+            } catch (error) {
+                Toast.show({
+                    type: 'error',
+                    text1: 'Error',
+                    text2: 'Gagal melakukan rollback',
+                });
+            } finally {
+                setIsRollbackLoading(false);
+            }
         };
 
         return (
@@ -598,15 +650,21 @@ const LaporanHasilPengujian = ({ navigation }) => {
                         </TouchableOpacity>
                     )}
 
-                    {item.status < 11 && (
+                    
                         <TouchableOpacity
-                            onPress={handleRollback}
-                            className="ml-2 flex-row items-center p-2 bg-amber-100 rounded-md font-poppins-semibold"
+                            onPress={() => setRollbackModalVisible(true)}
+                            className="ml-2 flex-row items-center p-2 bg-amber-100 rounded-md"
                         >
                             <AntDesign name="sync" size={16} color="#fbbf24" />
                         </TouchableOpacity>
-                    )}
-                </View>
+                    
+                 </View>
+                     <RollbackModal
+                        visible={rollbackModalVisible}
+                        onClose={() => setRollbackModalVisible(false)}
+                        onRollback={handleRollbackConfirm}
+                        isLoading={isRollbackLoading}
+                    />
             </View>
         );
     };
@@ -704,58 +762,99 @@ const LaporanHasilPengujian = ({ navigation }) => {
                 </View>
             </View>
 
-<ScrollView>
-            <Paginate
-                ref={paginateRef}
-                url="/report"
-                payload={{
-                    bulan: selectedMonth,
-                    status: [9, 10, 11],
-                    page: 1,
-                    search: '',
-                    per: 10,
-                    tahun: selectedYear,
-                }}
-                renderItem={renderItem}
-                className="bottom-4"
-            />
-             <View className="mt-12 mb-8">
-          <TextFooter />
-        </View>
+            <ScrollView>
+                <Paginate
+                    ref={paginateRef}
+                    url="/report"
+                    payload={{
+                        bulan: selectedMonth,
+                        status: [9, 10, 11],
+                        page: 1,
+                        search: '',
+                        per: 10,
+                        tahun: selectedYear,
+                    }}
+                    renderItem={renderItem}
+                    className="bottom-4"
+                />
+                <View className="mt-12 mb-8">
+                    <TextFooter />
+                </View>
             </ScrollView>
 
             <Modal
                 transparent={true}
                 animationType="slide"
                 visible={modalVisible}
-                onRequestClose={() => setModalVisible(false)}
-            >
+                onRequestClose={() => setModalVisible(false)}>
                 <View className="flex-1 justify-center items-center bg-black bg-black/50">
                     <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
                         <View className="flex-row justify-between items-center p-4">
-                            <Text className="text-lg font-poppins-semibold text-black">Preview PDF</Text>
-                            <TouchableOpacity onPress={handleDownloadPDF} className="p-2 rounded flex-row items-center">
+                            <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    handleDownloadPDF();
+                                    setModalVisible(false);
+                                }}
+                                className="p-2 rounded flex-row items-center">
                                 <Feather name="download" size={21} color="black" />
                             </TouchableOpacity>
                         </View>
 
-                        {reportUrl ? (
-                            <Pdf
-                                source={{ uri: reportUrl, cache: true }}
-                                style={{ flex: 1 }}
-                                trustAllCerts={false}
-                            />
-                        ) : (
-                            <View className="flex-1 justify-center items-center">
-                                <Text className="text-xl font-poppins-semibold text-red-500">404 | File not found</Text>
+                        {!pdfLoaded && !pdfError && (
+                            <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: "#ececec" }}>
+                                <ActivityIndicator size="large" color="#312e81" style={{ top: 180 }} />
+                                <Text className="mt-2 text-black font-poppins-medium" style={{ top: 175 }}>Memuat PDF...</Text>
                             </View>
                         )}
 
-                        <View className="flex-row justify-between m-4">
-                            <TouchableOpacity onPress={() => setModalVisible(false)} className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
-                                <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
-                            </TouchableOpacity>
-                        </View>
+                        {!pdfError && (
+                            <Pdf
+                                key={reportUrl}
+                                source={{ uri: reportUrl, cache: true }}
+                                style={{
+                                    flex: 1,
+                                }}
+                                trustAllCerts={false}
+                                onLoadComplete={(numberOfPages) => {
+                                    setPdfLoaded(true);
+                                    console.log(`Number Of Page: ${numberOfPages}`);
+                                }}
+                                onPageChanged={(page, numberOfPages) => {
+                                    console.log(`Current page ${page}`);
+                                }}
+                                onError={(error) => {
+                                    setPdfError(true);
+                                    setPdfLoaded(false);
+                                    console.log('PDF loading error:', error);
+                                }}
+                            />
+                        )}
+
+
+                        {pdfError && (
+                            <View className="flex-1 justify-center items-center self-center p-4">
+                                <Text className="text-md text-black font-poppins-medium">PDF Tidak Ditemukan</Text>
+                                <TouchableOpacity
+                                    onPress={() => {
+                                        setModalVisible(false);
+                                        setPdfError(false);
+                                    }}
+                                    className="bg-red-100 py-2 px-5 rounded mt-1 self-center">
+                                    <Text className="text-red-500 font-poppins-medium">Tutup</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
+
+                        {pdfLoaded && (
+                            <View className="flex-row justify-between m-4">
+                                <TouchableOpacity
+                                    onPress={() => setModalVisible(false)}
+                                    className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                                    <Text className="text-white font-poppins-semibold text-center">Tutup</Text>
+                                </TouchableOpacity>
+                            </View>
+                        )}
                     </View>
                 </View>
             </Modal>
