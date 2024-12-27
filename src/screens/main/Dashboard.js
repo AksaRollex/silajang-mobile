@@ -1,25 +1,34 @@
 import axios from "@/src/libs/axios";
-import { rupiah } from "@/src/libs/utils";
+import { formatRupiahShort } from "@/src/libs/utils";
 import { useUser } from "@/src/services";
-import { useNavigation } from '@react-navigation/native';
-import React, { useEffect, useState, useRef } from "react";
-import { SafeAreaView, ScrollView, StyleSheet, Text, View, Dimensions, ActivityIndicator, Modal, TouchableHighlight, TouchableOpacity } from "react-native";
-import { LineChart, BarChart, PieChart, ProgressChart, ContributionGraph, StackedBarChart } from "react-native-chart-kit";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { MenuView } from "@react-native-menu/menu";
+import { useNavigation } from "@react-navigation/native";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import React, { useEffect, useRef, useState } from "react";
+import {
+  ActivityIndicator,
+  Dimensions,
+  Modal,
+  SafeAreaView,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TouchableOpacity,
+  View,
+} from "react-native";
+import { LineChart, PieChart } from "react-native-chart-kit";
+import Toast from "react-native-toast-message";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
-import FontAwesome6 from "react-native-vector-icons/FontAwesome6";
-import Fontisto from "react-native-vector-icons/Fontisto";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
-import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { TextFooter } from "../components/TextFooter";
-import Paginate from "@/src/screens/components/Paginate";
-import { MenuView } from "@react-native-menu/menu";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
-import Toast from "react-native-toast-message";
+import DataModal from "../components/DataModal";
 
 const Dashboard = () => {
   const [dashboard, setDashboard] = useState(null);
+  const [dataDashboard, setDataDashboard] = useState([]);
+  const [modalVisible, setModalVisible] = useState(false);
   const scrollViewRef = useRef(null);
 
   const requestTypes = [
@@ -49,7 +58,20 @@ const Dashboard = () => {
   });
 
   const data = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "Mei", "Jun", "Jul", "Agu", "Sep", "Okt", "Nov", "Des"],
+    labels: [
+      "Jan",
+      "Feb",
+      "Mar",
+      "Apr",
+      "Mei",
+      "Jun",
+      "Jul",
+      "Agu",
+      "Sep",
+      "Okt",
+      "Nov",
+      "Des",
+    ],
     datasets: [
       {
         data: [30, 60, 90, 120, 150],
@@ -59,22 +81,26 @@ const Dashboard = () => {
     ],
   };
 
-  const fetchDashboardData = async (year) => {
+  const fetchDashboardData = async year => {
     setIsLoading(true);
     try {
-      const endpoint = user.role.name === 'customer' ? 'customer' : 'admin';
-      const response = await axios.post(`/dashboard/${endpoint}`, { tahun: parseInt(year) });
+      const endpoint = user.role.name === "customer" ? "customer" : "admin";
+      const response = await axios.post(`/dashboard/${endpoint}`, {
+        tahun: parseInt(year),
+      });
 
       setDashboard(response.data);
       // Set chart data if available
       if (response.data.chartSampels) {
         setChartData({
           labels: response.data.chartSampels.categories,
-          datasets: [{
-            data: response.data.chartSampels.data,
-            color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
-            strokeWidth: 2,
-          }],
+          datasets: [
+            {
+              data: response.data.chartSampels.data,
+              color: (opacity = 1) => `rgba(49, 46, 129, ${opacity})`,
+              strokeWidth: 2,
+            },
+          ],
         });
       }
 
@@ -82,7 +108,7 @@ const Dashboard = () => {
       if (response.data.chartPeraturans) {
         const peraturanData = response.data.chartPeraturans;
         const total = peraturanData.data.reduce((acc, value) => acc + value, 0);
-        const colors = ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0'];
+        const colors = ["#008FFB", "#00E396", "#FEB019", "#FF4560", "#775DD0"];
 
         setChartPeraturans({
           categories: peraturanData.categories,
@@ -99,7 +125,7 @@ const Dashboard = () => {
       if (response.data.chartParameters) {
         const parameterData = response.data.chartParameters;
         const total = parameterData.data.reduce((acc, value) => acc + value, 0);
-        const colors = ['#FF5733', '#33FF57', '#3357FF', '#FF33A1', '#FFC300'];
+        const colors = ["#FF5733", "#33FF57", "#3357FF", "#FF33A1", "#FFC300"];
 
         setChartParameters({
           categories: parameterData.categories,
@@ -139,7 +165,7 @@ const Dashboard = () => {
       strokeWidth: 1,
       stroke: "#e2e8f0",
       strokeDasharray: "0",
-    }
+    },
   };
 
   const generateYears = () => {
@@ -150,40 +176,129 @@ const Dashboard = () => {
     return years;
   };
 
-  const handleYearChange = (event) => {
+  const handleYearChange = event => {
     const selectedYear = event.nativeEvent.event;
     setSelectedYear(selectedYear);
     setIsLoading(true);
     fetchDashboardData(selectedYear);
+    refetch()
   };
+
+  const {
+    data: dashboardData,
+    isLoading: isLoadingDataDashboard,
+    refetch,
+  } = useQuery({
+    queryKey: ["dashboard", selectedYear],
+    queryFn: async () =>
+      axios
+        .post("/dashboard/" + "admin", { tahun: selectedYear })
+        .then(res => res.data),
+    onSuccess: res => {
+      setDashboard(res);
+      setDataDashboard([
+        {
+          data: res.customers,
+          name: "Customer",
+          color: "#5a3dff",
+          icon: "people",
+          navigation: "IndexMaster",
+          screen: "Users",
+          params: { golongan_id: 1 },
+          permission: ["admin", "kepala-upt"],
+        },
+        {
+          data: res.allSampels,
+          name: "Total\nPermohonan",
+          color: "#5a3dff",
+          icon: "book",
+          navigation: "Pengujian",
+          screen: "Persetujuan",
+          permission: ["admin", "kepala-upt", "koordinator-administrasi"],
+        },
+        {
+          data: res.newSampels,
+          name: "Persetujuan\nPermohonan",
+          color: "#ffc300",
+          icon: "checkmark-circle",
+          navigation: "Pengujian",
+          screen: "Persetujuan",
+          permission: ["admin", "kepala-upt", "koordinator-administrasi"],
+        },
+        {
+          data: res.undoneSampels,
+          name: "Sampel\nBelum Dianalisa",
+          color: "#f2416e",
+          icon: "flask",
+          navigation: "Pengujian",
+          screen: "Analis",
+          permission: ["admin", "kepala-upt", "koordinator-administrasi"],
+        },
+        {
+          data: res.unverifSampels,
+          name: "Dokumen\nBelum Diverifikasi",
+          color: "#f2416e",
+          icon: "document-text",
+          navigation: "Pengujian",
+          screen: "Kortek",
+          permission: ["admin", "kepala-upt", "koordinator-teknis"],
+        },
+        {
+          data: formatRupiahShort(res.revenue),
+          name: "Pendapatan",
+          color: "#0fd194",
+          icon: "cash",
+          navigation: "Pembayaran",
+          screen: "Global",
+          permission: [
+            "admin",
+            "kepala-upt",
+            "koordinator-teknis",
+            "koordinator-administrasi",
+          ],
+        },
+        {
+          data: res.total?.toFixed(2),
+          name: "IKM Unit\nPelayanan",
+          color: "#0090a6",
+          icon: "ribbon",
+          navigation: "PengujianKonfig",
+          screen: "UmpanBalik",
+          permission: [
+            "admin", 
+            "kepala-upt",
+            "koordinator-teknis",
+            "koordinator-administrasi",
+            "analis",
+            "pengambil-sample", 
+          ],
+        },
+        {
+          data: res.jumlah,
+          name: "Jumlah\nResponden",
+          color: "#0090a6",
+          icon: "clipboard",
+          navigation: "PengujianKonfig",
+          screen: "UmpanBalik",
+          permission: [
+            "admin", 
+            "kepala-upt",
+            "koordinator-teknis",
+            "koordinator-administrasi",
+            "analis",
+            "pengambil-sample", 
+          ],
+        },
+      ]);
+    },
+    onError: (error) => console.error(error),
+  });
 
   useEffect(() => {
     if (paginateRef.current) {
       paginateRef.current.refetch();
     }
   }, [selectedYear]);
-
-  useEffect(() => {
-    user.role.name == 'customer' ?
-      axios
-        .post("/dashboard/" + 'customer', { tahun: tahun })
-        .then(response => {
-          setDashboard(response.data);
-        })
-        .catch(error => {
-          console.error("error fetching data dashboard ", error);
-        })
-      :
-      axios
-        .post("/dashboard/" + 'admin', { tahun: tahun })
-        .then(response => {
-          setDashboard(response.data);
-        })
-        .catch(error => {
-          console.error("error fetching data dashboard ", error);
-        })
-  }, []);
-
 
   const MainCard = () => {
     const { data: user } = useUser();
@@ -194,34 +309,33 @@ const Dashboard = () => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
 
-    const isSimplifiedView = ['pengambil-sample', 'analis'].includes(user.role.name);
-    const isAdmin = user.role.name === 'admin';
-
-    const { mutate: logout } = useMutation(
-      () => axios.post("/auth/logout"),
-      {
-        onSuccess: async () => {
-          await AsyncStorage.removeItem("@auth-token");
-          Toast.show({
-            type: "success",
-            text1: "Logout Berhasil",
-          });
-          queryClient.invalidateQueries(["auth", "user"]);
-        },
-        onError: () => {
-          Toast.show({
-            type: "error",
-            text1: "Gagal Logout",
-          });
-        },
-      }
+    const isSimplifiedView = ["pengambil-sample", "analis"].includes(
+      user.role.name,
     );
+    const isAdmin = user.role.name === "admin";
 
-    const getDisplayName = (fullName) => {
-      if (!fullName) return '';
+    const { mutate: logout } = useMutation(() => axios.post("/auth/logout"), {
+      onSuccess: async () => {
+        await AsyncStorage.removeItem("@auth-token");
+        Toast.show({
+          type: "success",
+          text1: "Logout Berhasil",
+        });
+        queryClient.invalidateQueries(["auth", "user"]);
+      },
+      onError: () => {
+        Toast.show({
+          type: "error",
+          text1: "Gagal Logout",
+        });
+      },
+    });
 
-      const [nameBeforeComma] = fullName.split(',');
-      const nameParts = nameBeforeComma.trim().split(' ');
+    const getDisplayName = fullName => {
+      if (!fullName) return "";
+
+      const [nameBeforeComma] = fullName.split(",");
+      const nameParts = nameBeforeComma.trim().split(" ");
       if (nameParts.length > 2) {
         return `${nameParts[0]} ${nameParts[1]}`;
       }
@@ -244,20 +358,21 @@ const Dashboard = () => {
       <View
         className="absolute left-0 right-0 px-4"
         style={{
-          top: isSimplifiedView ? '70%' : '20%',
-        }}
-      >
+          top: isSimplifiedView ? "70%" : "20%",
+        }}>
         <View
           className="bg-white rounded-lg shadow-lg"
           style={{
-            shadowColor: '#000',
+            shadowColor: "#000",
             shadowOffset: { width: 0, height: 4 },
             shadowOpacity: 0.3,
             shadowRadius: 6,
             elevation: 8,
-          }}
-        >
-          <View className={`p-4 ${!isSimplifiedView ? 'border-b border-gray-100' : ''}`}>
+          }}>
+          <View
+            className={`p-4 ${
+              !isSimplifiedView ? "border-b border-gray-100" : ""
+            }`}>
             <View className="flex flex-row justify-between items-center">
               <View className="flex flex-row items-center space-x-3">
                 <IonIcons
@@ -273,8 +388,7 @@ const Dashboard = () => {
                     style={{
                       fontSize: getFontSize(displayName, 18, 14),
                       maxWidth: Platform.select({ ios: 200, android: 180 }),
-                    }}
-                  >
+                    }}>
                     Hi, {displayName}
                   </Text>
                   <Text
@@ -284,8 +398,7 @@ const Dashboard = () => {
                     style={{
                       fontSize: getFontSize(user.email, 14, 10),
                       maxWidth: Platform.select({ ios: 200, android: 180 }),
-                    }}
-                  >
+                    }}>
                     {user.email}
                   </Text>
                 </View>
@@ -294,8 +407,7 @@ const Dashboard = () => {
                 <TouchableOpacity
                   className="bg-red-100 px-2 sm:px-3 py-1.5 sm:py-2 rounded-full flex flex-row items-center space-x-1"
                   onPress={handleLogout}
-                  activeOpacity={0.7}
-                >
+                  activeOpacity={0.7}>
                   <IonIcons
                     name="log-out-outline"
                     size={Platform.select({ ios: 16, android: 14 })}
@@ -304,16 +416,14 @@ const Dashboard = () => {
                   <Text
                     className="text-red-500 font-poppins-semibold"
                     style={{
-                      fontSize: Platform.select({ ios: 12, android: 10 })
-                    }}
-                  >
+                      fontSize: Platform.select({ ios: 12, android: 10 }),
+                    }}>
                     Logout
                   </Text>
                 </TouchableOpacity>
               )}
             </View>
           </View>
-
 
           {!isSimplifiedView && (
             <View className="p-5">
@@ -323,21 +433,27 @@ const Dashboard = () => {
                   <View className="items-center">
                     <TouchableOpacity
                       className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                      onPress={() => navigation.navigate("IndexMaster", { screen: 'MasterIndex' })}
-                    >
+                      onPress={() =>
+                        navigation.navigate("IndexMaster", {
+                          screen: "MasterIndex",
+                        })
+                      }>
                       <IonIcons name="cube" size={26} color="#312e81" />
                     </TouchableOpacity>
-                    <Text className="text-xs font-poppins-semibold text-gray-700">Master</Text>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">
+                      Master
+                    </Text>
                   </View>
                   <View className="h-18 w-[2px] bg-gray-100" />
                   <View className="items-center">
                     <TouchableOpacity
                       className="bg-indigo-100 w-12 h-12 rounded-full items-center justify-center mb-2"
-                      onPress={() => navigation.navigate("IndexKonfigurasi")}
-                    >
+                      onPress={() => navigation.navigate("IndexKonfigurasi")}>
                       <IonIcons name="options" size={24} color="#312e81" />
                     </TouchableOpacity>
-                    <Text className="text-xs font-poppins-semibold text-gray-700">Konfigurasi</Text>
+                    <Text className="text-xs font-poppins-semibold text-gray-700">
+                      Konfigurasi
+                    </Text>
                   </View>
                 </View>
               ) : (
@@ -345,18 +461,25 @@ const Dashboard = () => {
                 <View className="px-2 py-1 bg-indigo-50 rounded-lg border border-indigo-100">
                   <TouchableOpacity
                     className="bg-gradient-to-r from-indigo-100 to-blue-50 rounded-xl p-1 flex-row items-center justify-between"
-                    onPress={() => navigation.navigate("IndexKonfigurasi")}
-                  >
+                    onPress={() => navigation.navigate("IndexKonfigurasi")}>
                     <View className="flex-row items-center space-x-3">
                       <View className="bg-indigo-50 w-12 h-12 rounded-full items-center justify-center">
                         <IonIcons name="options" size={24} color="#312e81" />
                       </View>
                       <View>
-                        <Text className="text-sm font-poppins-semibold text-black">Konfigurasi</Text>
-                        <Text className="text-xs font-poppins-regular text-gray-600">Lihat Tracking Pengujian</Text>
+                        <Text className="text-sm font-poppins-semibold text-black">
+                          Konfigurasi
+                        </Text>
+                        <Text className="text-xs font-poppins-regular text-gray-600">
+                          Lihat Tracking Pengujian
+                        </Text>
                       </View>
                     </View>
-                    <IonIcons name="chevron-forward" size={20} color="#312e81" />
+                    <IonIcons
+                      name="chevron-forward"
+                      size={20}
+                      color="#312e81"
+                    />
                   </TouchableOpacity>
                 </View>
               )}
@@ -368,8 +491,7 @@ const Dashboard = () => {
           transparent={true}
           visible={modalVisible}
           animationType="fade"
-          onRequestClose={() => setModalVisible(false)}
-        >
+          onRequestClose={() => setModalVisible(false)}>
           <View className="flex-1 justify-center items-center bg-black/50">
             <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
               <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
@@ -389,18 +511,19 @@ const Dashboard = () => {
               <View className="flex-row w-full justify-between">
                 <TouchableOpacity
                   onPress={confirmLogout}
-                  className="flex-1 mr-2 bg-red-500 py-3 rounded-xl items-center"
-                >
-                  <Text className="text-white font-poppins-medium">Ya, Logout</Text>
+                  className="flex-1 mr-2 bg-red-500 py-3 rounded-xl items-center">
+                  <Text className="text-white font-poppins-medium">
+                    Ya, Logout
+                  </Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={() => setModalVisible(false)}
-                  className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center"
-                >
-                  <Text className="text-gray-700 font-poppins-medium">Batal</Text>
+                  className="flex-1 ml-3 bg-gray-100 py-3 rounded-xl items-center">
+                  <Text className="text-gray-700 font-poppins-medium">
+                    Batal
+                  </Text>
                 </TouchableOpacity>
-
               </View>
             </View>
           </View>
@@ -409,79 +532,69 @@ const Dashboard = () => {
     );
   };
 
-
   return (
     <SafeAreaView className="flex-1 mb-14">
-      <ScrollView
-        className="flex-1"
-        showsVerticalScrollIndicator={false}
-      >
+      <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
         <View className="relative">
-          <View className="bg-indigo-900 h-40">
-          </View>
+          <View className="bg-indigo-900 h-40"></View>
 
           <MainCard />
         </View>
 
-
-        <View className="items-center mt-16 sm:mt-[85px]">
+        <View className="items-center mt-20 sm:mt-[85px]">
           <View
-            className="bg-white rounded-xl w-[95%] sm:w-[91%] overflow-hidden p-3"
+            className="bg-white rounded-xl sm:w-[91%] overflow-hidden p-3"
             style={{
-              shadowColor: '#000',
+              shadowColor: "#000",
               shadowOffset: { width: 0, height: 4 },
               shadowOpacity: 0.3,
               shadowRadius: 6,
               elevation: 3,
-            }}
-          >
+            }}>
             <View className="flex-row items-center justify-between">
-              <View className="flex-row items-center space-x-2">
-                <Text
-                  className="text-black font-poppins-medium text-xs sm:text-sm"
-                >
+              <View className="flex-row items-center space-x-2 ">
+                <Text className="text-black font-poppins-medium text-[12px] sm:text-sm">
                   Pilih Tahun Data Dashboard:
                 </Text>
                 <View className="bg-indigo-50 px-2 py-1 rounded-lg">
-                  <Text
-                    className="text-indigo-900 font-poppins-medium text-xs sm:text-sm"
-                  >
+                  <Text className="text-indigo-900 font-poppins-medium text-[12px] sm:text-sm">
                     {selectedYear}
                   </Text>
                 </View>
                 <MenuView
-                title="Pilih Tahun"
-                onPressAction={handleYearChange}
-                actions={generateYears().map(option => ({
-                  id: option.id.toString(),
-                  title: option.title,
-                }))}
-              >
-                <View className="bg-indigo-100 rounded-full p-1.5">
-                  <View className="w-3 h-3 items-center justify-center">
-                    <View className="w-0 h-0 border-l-[3px] border-l-transparent border-t-[5px] border-t-indigo-900 border-r-[3px] border-r-transparent" />
+                  title="Pilih Tahun"
+                  onPressAction={handleYearChange}
+                  actions={generateYears().map(option => ({
+                    id: option.id.toString(),
+                    title: option.title,
+                  }))}>
+                  <View className="bg-indigo-100 rounded-full p-1.5">
+                    <View className="w-3 h-3 items-center justify-center">
+                      <View className="w-0 h-0 border-l-[3px] border-l-transparent border-t-[5px] border-t-indigo-900 border-r-[3px] border-r-transparent" />
+                    </View>
                   </View>
-                </View>
-              </MenuView>
+                </MenuView>
               </View>
-
-              
             </View>
           </View>
         </View>
 
-        {isLoading ? (
+        {isLoading && isLoadingDataDashboard ? (
           <View style={[styles.loadingContainer, { marginTop: 50 }]}>
             <ActivityIndicator size="large" color="#312e81" />
           </View>
         ) : dashboard ? (
           <View style={styles.contentContainer}>
-            {user.role.name === 'customer' ? (
+            {user.role.name === "customer" ? (
               <>
                 {/* Card 1: Permohonan Baru */}
                 <View className="w-[45%] h-36 my-2 rounded-lg p-5 flex flex-col shadow-lg bg-white border-t-[6px] border-[#828cff]">
                   <View className="flex-row items-center">
-                    <MaterialIcons name="people-alt" size={34} color="#828cff" />
+                    <MaterialIcons
+                      name="people-alt"
+                      size={34}
+                      color="#828cff"
+                    />
                     <Text className="text-[35px] font-poppins-semibold mx-3 text-[#828cff]">
                       {dashboard.permohonanBaru}
                     </Text>
@@ -533,40 +646,159 @@ const Dashboard = () => {
               </>
             ) : (
               <>
-                <View className="self-center">
+                {/* <View className="self-center">
                   <Text className="text-xl font-poppins-semibold text-black">
                     Data Dashboard
                   </Text>
-                </View>
-                <View className="w-full bg-slate-100 mt-3 pt-3 pb-2">
-
-                  <ScrollView
-                    horizontal
-                    showsHorizontalScrollIndicator={false}
-                    className="pl-4"
-                    contentContainerStyle={{ paddingBottom: 8 }}
-                  >
-                    {['admin', 'kepala-upt'].includes(user.role.name) && (
+                </View> */}
+                <View className="w-full mt-3 pb-2">
+                  <View
+                    className="w-full flex gap-1 flex-row flex-wrap justify-center"
+                    contentContainerStyle={{ paddingBottom: 8 }}>
+                    {/* {['admin', 'kepala-upt'].includes(user.role.name) && (
                       <TouchableOpacity
-                        className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#828cff]"
+                        className="rounded-xl p-3 flex flex-col items-center justify-center bg-transparent "
                         onPress={() => navigation.navigate('IndexMaster', { screen: "Users", params: { golongan_id: 1 } })}
-                        style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
                       >
-                        <View className="bg-[#828cff] bg-opacity-10 p-3 rounded-full">
-                          <IonIcons name="people" size={24} color="white" style={{ width: 24, height: 24 }} />
+                        <View className="p-6 bg-white rounded-xl shadow-lg">
+                          <IonIcons name="people" size={20} color="#828cff" />
                         </View>
-                        <View className="ml-4 flex-1">
-                          <Text className="text-2xl font-poppins-semibold text-[#828cff]">
+                        <View className="bg-[#5a3dff] bg-opacity-10 p-2 rounded-full right-0 top-5 absolute">
+                          <Text className="text-xs font-poppins-semibold text-white">
                             {dashboard.customers}
                           </Text>
-                          <Text className="text-sm font-poppins-medium text-black">
-                            Customers
-                          </Text>
                         </View>
+                        <Text className="font-poppins-semibold mt-2 text-black">Customer</Text>
                       </TouchableOpacity>
-                    )}
+                    )} */}
 
-                    {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
+                    {dataDashboard
+                      .filter(item => item.permission.includes(user.role.name))
+                      .map((item, index) => {
+                        if (
+                          index <= 2 &&
+                          ["admin", "kepala-upt"].includes(user.role.name)
+                        ) {
+                          // Menampilkan 3 card pertama
+                          return (
+                            <TouchableOpacity
+                              key={index}
+                              className="rounded-xl h-24 w-24 flex flex-col items-center justify-center bg-transparent "
+                              onPress={() =>
+                                navigation.navigate(item.navigation, {
+                                  screen: item.screen,
+                                  params: item.params,
+                                })
+                              }>
+                              <View className="p-5 bg-white rounded-xl shadow-lg">
+                                <IonIcons
+                                  name={item.icon}
+                                  size={24}
+                                  color={item.color}
+                                />
+                              </View>
+                              <View
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
+                                <Text className="text-xs font-poppins-semibold text-white">
+                                  {item.data > 99 ? "99+" : item.data}
+                                </Text>
+                              </View>
+                              <Text
+                                className="font-poppins-semibold text-xs mt-2 text-center text-black"
+                                style={{  
+                                  minHeight: 50, 
+                                  textAlign: "center",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center",}}>
+                                {item.name}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        } else if (
+                          index === 3 &&
+                          ["admin", "kepala-upt", "koordinator-administrasi"].includes(user.role.name)
+                        ) {
+                          // Menampilkan "Read More" card setelah 3 item
+                          return (
+                            <TouchableOpacity
+                              key={index}
+                              className="rounded-xl w-24 h-24 flex flex-col items-center justify-center bg-transparent"
+                              onPress={() => {
+                                setModalVisible(true);
+                              }} // Ganti dengan navigasi sesuai kebutuhan
+                            >
+                              <View className="p-5 bg-white rounded-xl shadow-lg">
+                                <IonIcons
+                                  name="list"
+                                  size={24}
+                                  color={"#828cff"}
+                                />
+                              </View>
+                              <Text
+                                className="font-poppins-semibold text-xs text-center mt-2 text-black"
+                                style={{  
+                                  minHeight: 50, 
+                                  textAlign: "center",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center", }}>
+                                Read More
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        } else if (
+                          index <= 3 &&
+                          !["admin", "kepala-upt"].includes(user.role.name)
+                        ) {
+                          return (
+                            <TouchableOpacity
+                              key={index}
+                              className="rounded-xl w-24 h-24 flex flex-col items-center justify-center bg-transparent"
+                              onPress={() =>
+                                navigation.navigate(item.navigation, {
+                                  screen: item.screen,
+                                  params: item.params,
+                                })
+                              }>
+                              <View className="p-5 bg-white rounded-xl shadow-lg">
+                                <IonIcons
+                                  name={item.icon}
+                                  size={24}
+                                  color={item.color}
+                                />
+                              </View>
+                              <View
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
+                                <Text className="text-xs font-poppins-semibold text-white">
+                                  {item.data > 99 ? "99+" : item.data}
+                                </Text>
+                              </View>
+                              <Text
+                                className="font-poppins-semibold text-xs text-center mt-2 text-black"
+                                style={{ 
+                                  minHeight: 50, 
+                                  textAlign: "center",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "center", 
+                                  }}>
+                                {item.name}
+                              </Text>
+                            </TouchableOpacity>
+                          );
+                        }
+                      })}
+
+                    <DataModal
+                      visible={modalVisible}
+                      onClose={() => setModalVisible(false)}
+                      data={dataDashboard}
+                      navigation={navigation}
+                      userRole={user.role.name}
+                    />
+
+                    {/* {['admin', 'kepala-upt', 'koordinator-administrasi'].includes(user.role.name) && (
                       <TouchableOpacity className="w-80 h-36 mr-4 rounded-lg p-4 flex flex-row items-center shadow-lg bg-white border-l-[6px] border-[#5a3dff]"
                         onPress={() => navigation.navigate('Pengujian', { screen: "Persetujuan" })}
                         style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}>
@@ -711,17 +943,30 @@ const Dashboard = () => {
                           Jumlah Responden
                         </Text>
                       </View>
-                    </TouchableOpacity>
-                  </ScrollView>
+                    </TouchableOpacity> */}
+                  </View>
                 </View>
 
-
-                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
-                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                >
-                  <Text className="text-lg font-poppins-semibold text-black p-3">Grafik Tren Permohonan</Text>
+                <View
+                  className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}>
+                  <Text className="text-lg font-poppins-semibold text-black p-3">
+                    Grafik Tren Permohonan
+                  </Text>
                   {/* Pembatas garis di bawah teks */}
-                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: "#e0e0e0",
+                      marginHorizontal: 16,
+                    }}
+                  />
 
                   {chartData ? (
                     <LineChart
@@ -734,7 +979,7 @@ const Dashboard = () => {
                       bezier
                       style={{
                         marginVertical: 8,
-                        borderRadius: 16
+                        borderRadius: 16,
                       }}
                       fromZero
                       yAxisInterval={1}
@@ -743,19 +988,33 @@ const Dashboard = () => {
                     <ActivityIndicator size="large" color="#312e81" />
                   )}
 
-                  <Text className="text-[9px] text-gray-500 mt-2 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
+                  <Text className="text-[9px] text-gray-500 mt-2 font-poppins-regular self-end">
+                    Data Tahun: {selectedYear}
+                  </Text>
                 </View>
 
-                <View className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
-                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                >
+                <View
+                  className="bg-white rounded-lg p-2 flex flex-col shadow-lg w-[95%] mt-4"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}>
                   <Text className="text-lg font-poppins-semibold text-black p-3">
                     {chartPeraturans.data.length > 1
                       ? `${chartPeraturans.data.length} Peraturan Paling Banyak Digunakan`
                       : "Peraturan Paling Banyak Digunakan"}
                   </Text>
 
-                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: "#e0e0e0",
+                      marginHorizontal: 16,
+                    }}
+                  />
 
                   <View className="ml-16">
                     <PieChart
@@ -780,7 +1039,7 @@ const Dashboard = () => {
                         marginLeft: 72,
                         marginTop: 59,
                         position: "absolute",
-                        width: 100,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                        width: 100, // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                         height: 100,
                         backgroundColor: "white",
                         borderRadius: 50, // Ini membuatnya menjadi lingkaran
@@ -791,29 +1050,46 @@ const Dashboard = () => {
                   <View className="mt-2 ml-4">
                     {chartPeraturans.data.map((item, index) => (
                       <View key={index} className="flex-row items-center mb-1">
-                        <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                        <View
+                          style={{ backgroundColor: item.color }}
+                          className="w-4 h-4 rounded-lg mr-2"
+                        />
                         <Text className="font-poppins-semibold break-words max-w-[92%] text-gray-500">
-                          <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                          <Text className="font-poppins-semibold text-black">
+                            {item.percentage}%
+                          </Text>{" "}
+                          - {item.name}
                         </Text>
                       </View>
                     ))}
                   </View>
-                  <Text className="text-[9px] text-gray-500 mt-10 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
-
+                  <Text className="text-[9px] text-gray-500 mt-10 font-poppins-regular self-end">
+                    Data Tahun: {selectedYear}
+                  </Text>
                 </View>
 
-
-
-                <View className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4"
-                  style={{ shadowColor: '#000', shadowOffset: { width: 0, height: 8 }, shadowOpacity: 0.3, shadowRadius: 6, elevation: 3, }}
-                >
+                <View
+                  className="bg-white rounded-lg p-2  flex flex-col shadow-lg w-[95%] mb-16 mt-4"
+                  style={{
+                    shadowColor: "#000",
+                    shadowOffset: { width: 0, height: 8 },
+                    shadowOpacity: 0.3,
+                    shadowRadius: 6,
+                    elevation: 3,
+                  }}>
                   <Text className="text-[17px] text-black font-poppins-semibold p-3 truncate">
                     {chartParameters.data.length > 1
                       ? `${chartParameters.data.length} Parameter Paling Banyak Digunakan`
                       : "Parameter Paling Banyak Digunakan"}
                   </Text>
 
-                  <View style={{ height: 1, backgroundColor: '#e0e0e0', marginHorizontal: 16 }} />
+                  <View
+                    style={{
+                      height: 1,
+                      backgroundColor: "#e0e0e0",
+                      marginHorizontal: 16,
+                    }}
+                  />
 
                   <View className="ml-16">
                     <PieChart
@@ -838,29 +1114,34 @@ const Dashboard = () => {
                         marginLeft: 45,
                         marginTop: 75,
                         position: "absolute",
-                        width: 150,   // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
+                        width: 150, // Sesuaikan ukuran lingkaran ini untuk membuat lubang sesuai kebutuhan
                         height: 150,
                         backgroundColor: "white",
                         borderRadius: 100, // Ini membuatnya menjadi lingkaran
                       }}
                     />
-
                   </View>
                   <View className="mt-2 ml-4">
                     {chartParameters.data.map((item, index) => (
                       <View key={index} className="flex-row items-center mb-1">
-                        <View style={{ backgroundColor: item.color }} className="w-4 h-4 rounded-lg mr-2" />
+                        <View
+                          style={{ backgroundColor: item.color }}
+                          className="w-4 h-4 rounded-lg mr-2"
+                        />
                         <Text className="font-poppins-semibold break-words max-w-[92%] text-gray-500">
-                          <Text className="font-poppins-semibold text-black">{item.percentage}%</Text> - {item.name}
+                          <Text className="font-poppins-semibold text-black">
+                            {item.percentage}%
+                          </Text>{" "}
+                          - {item.name}
                         </Text>
                       </View>
                     ))}
-                    <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">Data Tahun: {selectedYear}</Text>
-
+                    <Text className="text-[9px] text-gray-500 mt-9 font-poppins-regular self-end">
+                      Data Tahun: {selectedYear}
+                    </Text>
                   </View>
                 </View>
                 <TextFooter className="top-1" />
-
               </>
             )}
           </View>
@@ -870,14 +1151,14 @@ const Dashboard = () => {
           </View>
         )}
       </ScrollView>
-    </SafeAreaView >
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
+    backgroundColor: "#f5f5f5",
   },
   contentContainer: {
     flexDirection: "row",
@@ -889,8 +1170,8 @@ const styles = StyleSheet.create({
   },
   loadingContainer: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
     marginTop: 50,
   },
   row: {
@@ -898,6 +1179,5 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
 });
-
 
 export default Dashboard;

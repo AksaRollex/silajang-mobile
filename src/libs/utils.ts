@@ -17,6 +17,28 @@ export function formatDate(date: string, mode = "date"): string | undefined {
   }
 }
 
+export function formatRupiahShort(value: number | string) {
+  if (!value || isNaN(Number(value))) return "0";
+
+  if (typeof value === "string") {
+    value = parseInt(value);
+  }
+
+  if (value >= 1_000_000_000) {
+    return `${(value / 1_000_000_000).toString().slice(0, 3)} M`;
+  } else if (value >= 1_000_000) {
+    return `${(value / 1_000_000).toString().slice(0, 3)} Jt`;
+  } else if (value >= 1_000) {
+    return `${(value / 1_000).toString().slice(0, 3)} Rb`;
+  }
+
+  return Intl.NumberFormat("id-ID", {
+    style: "currency",
+    currency: "IDR",
+    maximumFractionDigits: 0,
+  }).format(value); // Default format jika kurang dari ribuan
+}
+
 export function rupiah(value: number | string) {
   if (!value) return 0;
 
