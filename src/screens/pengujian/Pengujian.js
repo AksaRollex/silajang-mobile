@@ -60,6 +60,8 @@ export default function Pengujian() {
     );
   };
 
+
+
   // Check if user is only a customer
   const isCustomerOnly = () => {
     return userRoles.length === 1 && userRoles[0] === 'customer';
@@ -76,6 +78,29 @@ export default function Pengujian() {
       RenderedComponent = null;
       break;
   }
+
+  const getVisibleMenuItems = (section) => {
+    const items = {
+      'administrasi': ['kontrak', 'persetujuan', 'pengambil-sampel', 'penerima-sampel'],
+      'verifikasi': ['analis', 'koordinator-teknis', 'cetak-lhu', 'verifikasi-lhu'],
+      'report': ['laporan-hasil', 'kendali-mutu', 'registrasi-sampel', 'rekap-data', 'rekap-parameter']
+    };
+
+    return items[section]?.filter(item => hasItemAccess(item)) || [];
+  };
+
+  const getItemStyle = (section, item) => {
+    const visibleItems = getVisibleMenuItems(section);
+    const isFirst = visibleItems[0] === item;
+    const isLast = visibleItems[visibleItems.length - 1] === item;
+
+    return {
+      borderTopLeftRadius: isFirst ? 10 : 0,
+      borderTopRightRadius: isFirst ? 10 : 0,
+      borderBottomLeftRadius: isLast ? 10 : 0,
+      borderBottomRightRadius: isLast ? 10 : 0,
+    };
+  };
 
   // Customer view
   if (user?.role?.name?.toLowerCase() === 'customer') {
@@ -136,13 +161,16 @@ export default function Pengujian() {
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("Kontrak")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('administrasi').indexOf('kontrak') !== getVisibleMenuItems('administrasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
               
             )}
             {hasItemAccess('persetujuan') && (
               <View>
               <List.Item
+                style={getItemStyle('administrasi', 'persetujuan')}
                 title={<Text className="font-poppins-medium text-[15px]">Persetujuan</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -153,12 +181,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Persetujuan")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('administrasi').indexOf('persetujuan') !== getVisibleMenuItems('administrasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('pengambil-sampel') && (
             <View>
               <List.Item
+                style={getItemStyle('administrasi', 'pengambil-sampel')}
                 title={<Text className="font-poppins-medium text-[15px]">Pengambil Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -169,22 +200,31 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("PengambilSample")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('administrasi').indexOf('pengambil-sampel') !== getVisibleMenuItems('administrasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('penerima-sampel') && (
-              <List.Item
-                style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
-                left={() => (
-                  <View className="bg-cyan-600 rounded-full">
-                  <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
-                </View>
+              <View>
+                <List.Item
+                  style={getItemStyle('administrasi', 'penerima-sampel')}
+                  title={<Text className="font-poppins-medium text-[15px]">Penerima Sampel</Text>}
+                  left={() => (
+                    <View className="bg-cyan-600 rounded-full">
+                      <Ionicons name="person" size={17} color={'white'} style={{padding: 5}}/>
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
+                  )}
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
+                  onPress={() => navigation.navigate("IndexPenerima")}
+                />
+                {getVisibleMenuItems('administrasi').indexOf('penerima-sampel') !== getVisibleMenuItems('administrasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
                 )}
-                className='px-5 bg-[#ffffff] ml-3 mr-3'
-                onPress={() => navigation.navigate("IndexPenerima")}
-              />
+              </View>
             )}
           </>
         )}
@@ -199,7 +239,7 @@ export default function Pengujian() {
             {hasItemAccess('analis') && (
               <View>
               <List.Item
-              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                style={getItemStyle('verifikasi', 'analis')}
                 title={<Text className="font-poppins-medium text-[15px]">Analis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -210,12 +250,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Analis")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('verifikasi').indexOf('analis') !== getVisibleMenuItems('verifikasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('koordinator-teknis') && (
               <View>
               <List.Item
+                style={getItemStyle('verifikasi', 'koordinator-teknis')}
                 title={<Text className="font-poppins-medium text-[15px]">Koordinator Teknis</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -226,12 +269,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("Kortek")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+              {getVisibleMenuItems('verifikasi').indexOf('koordinator-teknis') !== getVisibleMenuItems('verifikasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('cetak-lhu') && (
               <View>
               <List.Item
+                style={getItemStyle('verifikasi', 'cetak-lhu')}
                 title={<Text className="font-poppins-medium text-[15px]">Cetak LHU</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -242,22 +288,31 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("CetakLHU")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('verifikasi').indexOf('cetak-lhu') !== getVisibleMenuItems('verifikasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
-            {hasItemAccess('verifikasi-lhu') && (
-              <List.Item
-              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
-                left={() => (
-                  <View className="bg-amber-600 rounded-full">
-                  <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
-                </View>
+             {hasItemAccess('verifikasi-lhu') && (
+              <View>
+                <List.Item
+                  style={getItemStyle('verifikasi', 'verifikasi-lhu')}
+                  title={<Text className="font-poppins-medium text-[15px]">Verifikasi LHU</Text>}
+                  left={() => (
+                    <View className="bg-amber-600 rounded-full">
+                      <Ionicons name="shield-checkmark" size={17} color={'white'} style={{padding: 5}}/>
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
+                  )}
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
+                  onPress={() => navigation.navigate("VerifikasiLHU")}
+                />
+                {getVisibleMenuItems('verifikasi').indexOf('verifikasi-lhu') !== getVisibleMenuItems('verifikasi').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
                 )}
-                className='px-5 bg-[#ffffff] ml-3 mr-3'
-                onPress={() => navigation.navigate("VerifikasiLhu")}
-              />
+              </View>
             )}
           </>
         )}
@@ -272,7 +327,7 @@ export default function Pengujian() {
             {hasItemAccess('laporan-hasil') && (
               <View>
               <List.Item
-              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+                style={getItemStyle('report', 'laporan-hasil')}
                 title={<Text className="font-poppins-medium text-[15px]">Laporan Hasil Pengujian</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -283,12 +338,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("LaporanHasilPengujian")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {getVisibleMenuItems('report').indexOf('laporan-hasil') !== getVisibleMenuItems('report').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('kendali-mutu') && (
               <View>
               <List.Item
+                style={getItemStyle('report', 'kendali-mutu')}
                 title={<Text className="font-poppins-medium text-[15px]">Kendali Mutu</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -299,12 +357,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("KendaliMutu")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                 {getVisibleMenuItems('report').indexOf('kendali-mutu') !== getVisibleMenuItems('report').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('registrasi-sampel') && (
               <View>
               <List.Item
+                style={getItemStyle('report', 'registrasi-sampel')}
                 title={<Text className="font-poppins-medium text-[15px]">Registrasi Sampel</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -315,12 +376,15 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("RegistrasiSampel")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                 {getVisibleMenuItems('report').indexOf('kendali-mutu') !== getVisibleMenuItems('report').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('rekap-data') && (
               <View>
               <List.Item
+                style={getItemStyle('report', 'rekap-data')}
                 title={<Text className="font-poppins-medium text-[15px]">Rekap Data</Text>}
                 right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                 left={() => (
@@ -331,22 +395,31 @@ export default function Pengujian() {
                 className='px-5 bg-[#ffffff] ml-3 mr-3'
                 onPress={() => navigation.navigate("RekapData")}
               />
-              <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                 {getVisibleMenuItems('report').indexOf('rekap-data') !== getVisibleMenuItems('report').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
-            {hasItemAccess('rekap-parameter') && (
-              <List.Item
-              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-                title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
-                right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
-                left={() => (
-                  <View className="bg-emerald-500 rounded-full">
-                  <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
-                </View>
+           {hasItemAccess('rekap-parameter') && (
+              <View>
+                <List.Item
+                  style={getItemStyle('report', 'rekap-parameter')}
+                  title={<Text className="font-poppins-medium text-[15px]">Rekap Parameter</Text>}
+                  left={() => (
+                    <View className="bg-emerald-500 rounded-full">
+                      <Ionicons name="filter" size={17} color={'white'} style={{padding: 5}}/>
+                    </View>
+                  )}
+                  right={props => (
+                    <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
+                  )}
+                  className="px-5 bg-[#ffffff] ml-3 mr-3"
+                  onPress={() => navigation.navigate("RekapParameter")}
+                />
+                {getVisibleMenuItems('report').indexOf('rekap-parameter') !== getVisibleMenuItems('report').length - 1 && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
                 )}
-                className='px-5 bg-[#ffffff] ml-3 mr-3'
-                onPress = {() => navigation.navigate("RekapParameter")}
-              />
+              </View>
             )}
           </>
         )}

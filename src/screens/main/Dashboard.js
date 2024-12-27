@@ -309,7 +309,7 @@ const Dashboard = () => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
 
-    const isSimplifiedView = ["pengambil-sample", "analis"].includes(
+    const isSimplifiedView = ["pengambil-sample", "analis", "customer"].includes(
       user.role.name,
     );
     const isAdmin = user.role.name === "admin";

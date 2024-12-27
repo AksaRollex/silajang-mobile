@@ -14,9 +14,37 @@ import FontAwesome6Icon from "react-native-vector-icons/FontAwesome6";
 import { TextFooter } from "../components/TextFooter";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import { useUser } from "@/src/services";
 
 const Pembayaran = () => {
   const navigation = useNavigation();
+  const { data: user } = useUser();
+
+  const roleAccess = {
+    admin: {
+      items: ['pengujian', 'multi-payment', 'non-pengujian', 'global']
+    },
+    'kepala-upt': {
+      items: ['pengujian', 'multi-payment', 'non-pengujian', 'global']
+    },
+    'koordinator-administrasi': {
+      items: ['pengujian', 'non-pengujian', 'global']
+    },
+    'koordinator-teknis': {
+      items: ['pengujian', 'non-pengujian', 'global']
+    },
+    'customer': {
+      items: ['pengujian', 'non-pengujian', 'global']
+    }
+  };
+
+  const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
+  
+  const hasItemAccess = (item) => {
+    return userRoles.some(role =>
+      roleAccess[role]?.items?.includes(item)
+    );
+  };
 
   const Pengujian = () => {
     navigation.navigate("Pengujian");
@@ -37,91 +65,97 @@ const Pembayaran = () => {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollViewContent}>
-
-      <View className=" p-4 flex flex-row items-center mt-2">
-        {/* <Ionicons name="document-text" size={22} style={{ color: "black" }}/> */}
-        <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
-      </View>
-        <View>
-          <List.Item
-          style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
-          title={<Text className="font-poppins-medium text-[15px]">Pengujian</Text>}
-          left={() => (
-            <View className="bg-green-600 rounded-full ml-3">
-            <Ionicons name="wallet" size={17} color={'white'} style={{padding: 5}}/>
-          </View>
-          )}
-          right={props => <List.Icon {...props} icon="chevron-right" />}
-          className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
-          onPress={Pengujian}
-          />
-          <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+        <View className="p-4 flex flex-row items-center mt-2">
+          <Text className="font-poppins-semibold ml-2 text-black text-lg">Pembayaran</Text>
         </View>
 
-        <View>
-          <List.Item
-          title={<Text className="font-poppins-medium text-[15px]">Multi Payment</Text>}
-          left={() => (
-            <View className="bg-green-600 rounded-full ml-3">
-            <MaterialCommunityIcons name="credit-card-multiple" size={17} color={'white'} style={{padding: 5}}/>
-          </View>
-          )}
-          right={props => <List.Icon {...props} icon="chevron-right" />}
-          className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
-          onPress={MultiPayment}
-          />
-          <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-        </View>
-
-        <View> 
-          <List.Item
-            title={<Text className="font-poppins-medium text-[15px]">Non Pengujian</Text>}
-            left={() => (
-              <View className="bg-green-600 rounded-full ml-3">
-              <Ionicons name="card" size={17} color={'white'} style={{padding: 5}}/>
-            </View>
-            )}
-            right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
-            onPress={NonPengujian}
+        {hasItemAccess('pengujian') && (
+          <View>
+            <List.Item
+              style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+              title={<Text className="font-poppins-medium text-[15px]">Pengujian</Text>}
+              left={() => (
+                <View className="bg-green-600 rounded-full ml-3">
+                  <Ionicons name="wallet" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+              )}
+              right={props => <List.Icon {...props} icon="chevron-right" />}
+              className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
+              onPress={Pengujian}
             />
             <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
           </View>
+        )}
 
+        {hasItemAccess('multi-payment') && (
           <View>
             <List.Item
-            style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
-            title={<Text className="font-poppins-medium text-[15px]">Global</Text>}
-            left={() => (
-              <View className="bg-green-600 rounded-full ml-3">
-              <Ionicons name="globe" size={17} color={'white'} style={{padding: 5}}/>
-            </View>
-            )}
-            right={props => <List.Icon {...props} icon="chevron-right" />}
-            className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
-            onPress={Global}
+              title={<Text className="font-poppins-medium text-[15px]">Multi Payment</Text>}
+              left={() => (
+                <View className="bg-green-600 rounded-full ml-3">
+                  <MaterialCommunityIcons name="credit-card-multiple" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+              )}
+              right={props => <List.Icon {...props} icon="chevron-right" />}
+              className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
+              onPress={MultiPayment}
             />
-          <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-          </View> 
-          <View className="mt-[97%]">
-            <TextFooter/>
+            <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
           </View>
+        )}
+
+        {hasItemAccess('non-pengujian') && (
+          <View>
+            <List.Item
+              title={<Text className="font-poppins-medium text-[15px]">Non Pengujian</Text>}
+              left={() => (
+                <View className="bg-green-600 rounded-full ml-3">
+                  <Ionicons name="card" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+              )}
+              right={props => <List.Icon {...props} icon="chevron-right" />}
+              className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
+              onPress={NonPengujian}
+            />
+            <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+          </View>
+        )}
+
+        {hasItemAccess('global') && (
+          <View>
+            <List.Item
+              style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+              title={<Text className="font-poppins-medium text-[15px]">Global</Text>}
+              left={() => (
+                <View className="bg-green-600 rounded-full ml-3">
+                  <Ionicons name="globe" size={17} color={'white'} style={{padding: 5}}/>
+                </View>
+              )}
+              right={props => <List.Icon {...props} icon="chevron-right" />}
+              className='bg-[#ffffff] border-black p-2 ml-3 mr-3'
+              onPress={Global}
+            />
+            <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+          </View>
+        )}
+
+        <View className="mt-[97%]">
+          <TextFooter/>
+        </View>
       </ScrollView>
     </View>
   );
 };
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    // alignItems: "center",
-    // backgroundColor: "#f1f5f9",
-    justifyContent: "flex-start", // Ensure content starts from the top
+    justifyContent: "flex-start",
   },
- 
   scrollViewContent: {
-    flexGrow: 1, // Ensures that ScrollView content is scrollable
-    paddingBottom: 100, // Add padding to avoid content being hidden behind the buttons
+    flexGrow: 1,
+    paddingBottom: 100,
   },
 });
 
-export default Pembayaran
+export default Pembayaran;

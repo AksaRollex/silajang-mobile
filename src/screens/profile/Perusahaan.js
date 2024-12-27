@@ -15,6 +15,7 @@ import {
   Modal,
 } from "react-native";
 import { Controller, set, useForm } from "react-hook-form";
+import { useHeaderStore } from "../main/Index";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import BackButton from "../components/BackButton";
 import Select2 from "@/src/screens/components/Select2";
@@ -62,6 +63,14 @@ const Perusahaan = () => {
   const [isKelurahanLoaded, setIsKelurahanLoaded] = useState(false);
   const [isKecamatanEmpty, setIsKecamatanEmpty] = useState(false);
   const [isKelurahanEmpty, setIsKelurahanEmpty] = useState(false);
+
+    const { setHeader } = useHeaderStore();
+  
+    React.useLayoutEffect(() => {
+      setHeader(false)
+  
+      return () => setHeader(true)
+    }, [])
 
   const openCameraLib = async () => {
     try {
@@ -553,7 +562,7 @@ const Perusahaan = () => {
             {(typePhoto == "capture" || typePhoto == "") && (
               <View style={styles.container}>
                 <TouchableOpacity onPress={openCameraLib} style={styles.button}>
-                  <Text className="font-poppins-semibold text-lg mb-3">
+                  <Text className="font-poppins-semibold text-lg mb-3 text-black">
                     Open Camera
                   </Text>
                 </TouchableOpacity>
@@ -571,7 +580,7 @@ const Perusahaan = () => {
 
             {(typePhoto == "upload" || typePhoto == "") && (
               <>
-                <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center">
+                <Text className="font-poppins-semibold text-sm mb-3 mt-3 flex text-center text-black">
                   Or
                 </Text>
                 <Controller
@@ -706,7 +715,7 @@ const Perusahaan = () => {
             render={({ field: { onChange, value } }) => (
               <View>
                 <Text className="font-poppins-semibold mb-2 text-black">
-                  pimpinan
+                  Pimpinan
                 </Text>
 
                 <TextField
@@ -841,14 +850,14 @@ const Perusahaan = () => {
           )}
 
           <Controller
-            control={control}
+            control={control} 
             name="jenis_kegiatan"
             rules={{ required: "jenis kegiatan harus diisi" }}
             defaultValue={userData?.jenis_kegiatan}
             render={({ field: { onChange, value } }) => (
               <View>
                 <Text className="font-poppins-semibold mb-2 text-black">
-                  jenis kegiatan
+                  Jenis kegiatan
                 </Text>
 
                 <TextField
