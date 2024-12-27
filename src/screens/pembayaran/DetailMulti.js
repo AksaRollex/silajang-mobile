@@ -5,11 +5,12 @@ import axios from '@/src/libs/axios';
 import BackButton from '../components/BackButton';
 import { TextFooter } from '../components/TextFooter';
 import QRCode from 'react-native-qrcode-svg';
-import { useQuery } from '@tanstack/react-query';
 
 const DetailMulti = ({ route, navigation }) => {
   const { selected } = route.params;
 
+  const [formData, setFormData] = useState(null);
+  const [loading, setLoading] = useState(false);
   const [countdown, setCountdown] = useState('');
   const [qrValue, setQrValue] = useState('');
 
@@ -34,13 +35,17 @@ const DetailMulti = ({ route, navigation }) => {
     return `${days.toString().padStart(2, '0')}H : ${hours.toString().padStart(2, '0')}J : ${minutes.toString().padStart(2, '0')}M : ${seconds.toString().padStart(2, '0')}D`;
   }, [formData]);
 
-  const { data: formData, refetch, isLoading } = useQuery({
-    queryKey: ['formData', selected],
-    queryFn: () => axios.get(`/pembayaran/multi-payment/${selected}`).then(res => res.data.data),
-    onSuccess: res => console.log(res),
-    onError: err => Alert.alert('Error', err.response?.data?.message || 'Terjadi kesalahan'),
-    enabled: !!selected
-  })
+  const getPaymentDetails = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`/pembayaran/multi-payment/${selected}`);
+      setFormData(response.data.data);
+    } catch (error) {
+      Alert.alert('Error', error.response?.data?.message || 'Terjadi kesalahan');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const saveQRCode = async () => {
     if (!qrValue) return;
@@ -68,11 +73,16 @@ const DetailMulti = ({ route, navigation }) => {
     }
   };
 
+  useEffect(() => {
+    getPaymentDetails();
+  }, [selected]);
+
   const handleSwitchPayment = async () => {
     try {
+      setLoading(true);
       await axios.post(`/pembayaran/multi-payment/${selected}/switch`);
       Alert.alert('Success', 'Berhasil mengubah metode pembayaran');
-      refetch();
+      getPaymentDetails();
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Terjadi kesalahan');
     } finally {
@@ -82,10 +92,11 @@ const DetailMulti = ({ route, navigation }) => {
 
   const handleGeneratePayment = async () => {
     try {
+      setLoading(true);
       const endpoint = formData.type === 'va' ? 'va' : 'qris';
       await axios.post(`/pembayaran/multi-payment/${selected}/${endpoint}`);
       Alert.alert('Success', 'Berhasil membuat pembayaran baru');
-      refetch();
+      getPaymentDetails();
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Terjadi kesalahan');
     } finally {
@@ -95,9 +106,10 @@ const DetailMulti = ({ route, navigation }) => {
 
   const handleCheckPayment = async () => {
     try {
+      setLoading(true);
       await axios.post(`/pembayaran/multi-payment/${selected}/check`);
       Alert.alert('Success', 'Status pembayaran berhasil diperbarui');
-      refetch();
+      getPaymentDetails();
     } catch (error) {
       Alert.alert('Error', error.response?.data?.message || 'Terjadi kesalahan');
     } finally {
@@ -115,6 +127,7 @@ const DetailMulti = ({ route, navigation }) => {
           text: 'Ya, Batalkan',
           onPress: async () => {
             try {
+              setLoading(true);
               await axios.post(`/pembayaran/multi-payment/${selected}/cancel`);
               Alert.alert('Success', 'Pembayaran berhasil dibatalkan');
               navigation.goBack();
@@ -130,7 +143,7 @@ const DetailMulti = ({ route, navigation }) => {
   };
 
   useEffect(() => {
-    refetch();
+    getPaymentDetails();
   }, [selected]);
 
   useEffect(() => {
@@ -142,22 +155,22 @@ const DetailMulti = ({ route, navigation }) => {
     }
   }, [formData, getExpiredCountdown]);
 
-  if (isLoading) {
+  if (loading) {
     return (
-      <View className="flex-1 justify-center items-center">
+      <View className="flex-1 justify-center items-center bg-gray-100">
         <ActivityIndicator size="large" color="#0066cc" />
       </View>
     );
   }
-  
-  
+
+  if (!formData) return null;
 
   return (
     <ScrollView className="flex-1 bg-gray-100">
       {/* Header */}
       <View className="flex-row items-center p-4 bg-white border-b border-gray-200">
         <BackButton action={() => navigation.navigate('MultiPayment')} size={22} />
-        <Text className="text-lg ml-3 text-black font-bold">{formData?.kode}</Text>
+        <Text className="text-lg ml-3 text-black font-bold">{formData.kode}</Text>
       </View>
 
       <View className="p-4">
@@ -165,7 +178,7 @@ const DetailMulti = ({ route, navigation }) => {
         <View className="mb-4">
           <Text className="text-base font-semibold ml-2 text-black mb-4">Titik Permohonan Dipilih</Text>
           <View className="flex-row flex-wrap gap-2 p-3 ml-0.5 bg-white rounded-lg">
-            {formData?.multi_payments?.map(item => (
+            {formData.multi_payments?.map(item => (
               <View key={item.titik_permohonan.uuid} className="bg-blue-100 px-3 py-1.5 mb-2 rounded-full">
                 <Text className="text-blue-700 text-sm">{item.titik_permohonan.kode}</Text>
               </View>
@@ -257,42 +270,27 @@ const DetailMulti = ({ route, navigation }) => {
           </View>
           <View className="p-4 bg-gray-50 rounded-b-lg">
             <Text className="text-sm font-semibold text-black">
-              {formData?.multi_payments?.[0]?.titik_permohonan?.permohonan?.user?.nama}
+              {formData.multi_payments?.[0]?.titik_permohonan?.permohonan?.user?.nama}
             </Text>
             <View className="flex-row justify-between items-center mt-3">
               <Text className="text-xl font-bold text-blue-600">
-                {currency(formData?.jumlah)}
+                {currency(formData.jumlah)}
               </Text>
-            </View>
-            <View className=" mt-5 p-4 border-t border-gray-200">
-              <View className="bg-indigo-100 border border-indigo-400 rounded-md items-center justify-center">
-              {formData?.type === 'va' ? (
-                <Text className="mb-2 text-lg font-poppins-semibold text-black items-center">VA pembayaran belum dibuat</Text>
-              ) : formData?.type === 'qris' ? (
-                <Text className="mb-2 text-lg font-poppins-semibold text-black items-center">Qris Belum dibuat</Text>
-              ) : null}
-              
-              {formData?.type === 'va' ? (
-                <Text className="text-sm text-gray-600">Silahkan klik tombol di bawah Membuat VA pembayaran</Text>
-              ) : formData?.type === 'qris' ? (
-                <Text className="text-sm text-gray-600">Silahkan klik tombol di bawah untuk Membuat QRIS</Text>
-              ) : null}
-              </View>
             </View>
           </View>
         </View>
 
         {/* Action Buttons */}
-        {formData?.status !== 'success' && (
+        {formData.status !== 'success' && (
           <View className="flex-row justify-end gap-x-3 mb-4">
-            {formData?.status === 'pending' && !formData?.is_expired && (formData?.va_number || formData?.qris_value) ? (
+            {formData.status === 'pending' && !formData.is_expired && (formData.va_number || formData.qris_value) ? (
               <>
                 <TouchableOpacity
                   onPress={handleCancelPayment}
                   className="bg-red-100 px-4 py-2 rounded-lg">
                   <Text className="text-red-700">Batalkan</Text>
                 </TouchableOpacity>
-                {formData?.type === 'va' && (
+                {formData.type === 'va' && (
                   <TouchableOpacity
                     onPress={handleCheckPayment}
                     className="bg-blue-100 px-4 py-2 rounded-lg">
@@ -306,14 +304,14 @@ const DetailMulti = ({ route, navigation }) => {
                   onPress={handleSwitchPayment}
                   className="bg-blue-100 px-4 py-2 rounded-lg">
                   <Text className="text-indigo-700">
-                    Ganti ke {formData?.type === 'va' ? 'QRIS' : 'VA'}
+                    Ganti ke {formData.type === 'va' ? 'QRIS' : 'VA'}
                   </Text>
                 </TouchableOpacity>
                 <TouchableOpacity
                   onPress={handleGeneratePayment}
                   className="bg-indigo-700 px-4 py-2 rounded-lg">
                   <Text className="text-white">
-                    Buat {formData?.type === 'va' ? 'VA Pembayaran' : 'QRIS'}
+                    Buat {formData.type === 'va' ? 'VA Pembayaran' : 'QRIS'}
                   </Text>
                 </TouchableOpacity>
               </>
