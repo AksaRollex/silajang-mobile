@@ -698,7 +698,7 @@ const Dashboard = () => {
                                 />
                               </View>
                               <View
-                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute -top-5 right-0`}>
                                 <Text className="text-[10px] font-poppins-semibold text-white">
                                   {item.data > 99 ? "99+" : item.data}
                                 </Text>
@@ -775,7 +775,7 @@ const Dashboard = () => {
                                 />
                               </View>
                               <View
-                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute right-0 -top-5 `}>
                                 <Text className="text-[10px] font-poppins-semibold text-white">
                                   {item.data > 99 ? "99+" : item.data}
                                 </Text>
