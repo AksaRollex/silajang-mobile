@@ -194,90 +194,49 @@ export default function Profile({ navigation }) {
               </View>
             </View>
             <Modal
-              transparent={true}
-              visible={modalVisible}
               animationType="fade"
-              onRequestClose={() => setModalVisible(false)}>
-              <View
-                style={{
-                  flex: 1,
-                  justifyContent: "center",
-                  alignItems: "center",
-                  backgroundColor: "rgba(0, 0, 0, 0.5)",
-                }}>
-                <View
-                  style={{
-                    padding: 20,
-                    backgroundColor: "white",
-                    borderRadius: 15,
-                    alignItems: "center",
-                    width: "90%",
-                    shadowColor: "#000",
-                    shadowOffset: { width: 0, height: 2 },
-                    shadowOpacity: 0.3,
-                    shadowRadius: 4,
-                    elevation: 5,
-                  }}>
-                  <Icon
-                    name="log-out"
-                    size={50}
-                    color="red"
-                    style={{ marginBottom: 15 }}
-                  />
-                  <Text
-                    style={{
-                      fontSize: 18,
-                      marginBottom: 5,
-                      fontFamily: "Poppins-Bold",
-                      color: "#333",
-                    }}>
+              transparent={true}
+              visible={modalVisible}>
+              <View className="flex-1 justify-center items-center bg-black/50">
+                <View className="w-80 bg-white rounded-2xl p-6 items-center shadow-2xl">
+                  <View className="w-20 h-20 rounded-full bg-red-50 justify-center items-center mb-4">
+                    <Icon name="log-out" size={50} color="red" />
+                  </View>
+                  <Text className="text-xl font-poppins-semibold text-black mb-3">
                     Logout
                   </Text>
-                  <Text
-                    style={{
-                      fontSize: 14,
-                      marginBottom: 15,
-                      fontFamily: "Poppins-SemiBold",
-                      color: "#666",
-                      textAlign: "center",
-                    }}>
+
+                  <View className="w-full h-px bg-gray-200 mb-4" />
+
+                  <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
                     Yakin ingin keluar dari aplikasi ini?
                   </Text>
-                  <View
-                    style={{
-                      flexDirection: "row",
-                      justifyContent: "space-between",
-                    }}>
+                  <View className="flex flex-row justify-center items-center space-x-3 w-full mt-3 ">
                     <TouchableOpacity
-                      onPress={() => setModalVisible(false)}
+                      className="w-28 h-10 justify-center items-center"
+                      onPress={() => {
+                        setModalVisible(false);
+                      }}
                       style={{
-                        paddingVertical: 12,
-                        paddingHorizontal: 25,
-                        backgroundColor: "red",
-                        borderRadius: 8,
-                        marginRight: 10,
+                        backgroundColor: "#d3d2d2",
+                        borderRadius: 5,
+                        marginTop: 10,
                       }}>
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
-                        Batal
+                      <Text className="text-[#343333] font-poppins-semibold ">
+                        Tutup
                       </Text>
                     </TouchableOpacity>
                     <TouchableOpacity
-                      onPress={confirmLogout}
+                      className="w-28 h-10 justify-center items-center"
+                      onPress={() => {
+                        confirmLogout();
+                      }}
                       style={{
-                        paddingVertical: 12,
-                        paddingHorizontal: 25,
-                        backgroundColor: "green",
-                        borderRadius: 8,
+                        backgroundColor: "#ffcbd1",
+                        borderRadius: 5,
+                        marginTop: 10,
                       }}>
-                      <Text
-                        style={{
-                          color: "#fff",
-                          fontFamily: "Poppins-SemiBold",
-                        }}>
+                      <Text className="text-[#de0a26] text-sm font-poppins-semibold ">
                         Ya, Keluar
                       </Text>
                     </TouchableOpacity>

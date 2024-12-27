@@ -20,7 +20,7 @@ import {
   ScrollView,
 } from "react-native";
 import Checkbox from "@react-native-community/checkbox";
-import IonIcons from "react-native-vector-icons/Ionicons";
+// import IonIcons from "react-native-vector-icons/Ionicons";
 import RNPickerSelect from "react-native-picker-select";
 import { useQuery, useMutation } from "@tanstack/react-query";
 import { useForm, Controller } from "react-hook-form";
@@ -37,6 +37,7 @@ import LinearGradient from "react-native-linear-gradient";
 import { debounce } from "lodash";
 import { Skeleton } from "@rneui/themed";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
+import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
 
 // PAGINATE
@@ -420,7 +421,7 @@ const Parameter = ({ route, navigation }) => {
       // queryClient.invalidateQueries([
       //   `/permohonan/titik/${uuid}`
       // ])
-      navigation.navigate("TitikUji", { uuidPermohonan: uuidPermohonan });
+      navigation.navigate("TitikUji", { uuid: uuidPermohonan });
     },
     onError: error => {
       console.log("Save error : ", error);
@@ -909,7 +910,7 @@ const Parameter = ({ route, navigation }) => {
             <FontAwesome5Icon
               name="list"
               size={26}
-              style={{ color: "black" , marginLeft : 15 }}
+              style={{ color: "black", marginLeft: 15 }}
             />
           </TouchableOpacity>
         </View>
@@ -1078,10 +1079,12 @@ const Parameter = ({ route, navigation }) => {
           className="flex-row  justify-between pt-5 px-4 pb-1"
           // style={{ borderBottomWidth: 0.5 }}
         >
-          <Back
+          <IonIcons
+            name="chevron-back"
             size={24}
-            color="black"
-            action={() => navigation.goBack()}
+            color={"black"}
+            style={{ marginRight: 8 }}
+            onPress={() => navigation.navigate("TitikUji", {uuid: uuidPermohonan})}
           />
 
           <Text className="font-poppins-semibold text-black text-lg text-end ">

@@ -1,6 +1,13 @@
-import React, { useRef, useState, useEffect, useCallback } from "react";
+import React, { useRef, useState } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from "react-native";
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  Modal,
+  ActivityIndicator,
+} from "react-native";
 import { useQueryClient } from "@tanstack/react-query";
 import Entypo from "react-native-vector-icons/Entypo";
 import { MenuView } from "@react-native-menu/menu";
@@ -26,7 +33,8 @@ const TitikUji = ({ navigation, route, callback }) => {
   console.log("route", route);
   const { uuid, uuidPermohonan } = route.params || {};
   console.log("uuid permohonan", uuid);
-  console.log("uuid permohonan", uuidPermohonan);
+  const [isLoading, setIsLoading] = useState(true);
+  // console.log("uuid permohonan", uuidPermohonan);
   const { data: user } = useUser();
   // const data = permohonan || {};
   // console.log("data", data);
@@ -55,8 +63,8 @@ const TitikUji = ({ navigation, route, callback }) => {
   const uuidToUse = uuid || uuidPermohonan;
   const { data: permohonan } = usePermohonan(uuidToUse);
   const titikPermohonans = permohonan?.titik_permohonans;
-  console.log(permohonan, 111);
-  console.log("titikPermohonans", titikPermohonans);
+  // console.log(permohonan, 111);
+  // console.log("titikPermohonans", titikPermohonans);
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -69,6 +77,9 @@ const TitikUji = ({ navigation, route, callback }) => {
 
   const [modalBeritaAcara, setModalBeritaAcara] = useState(false);
   const [beritaAcaraUrl, setBeritaAcaraUrl] = useState("");
+
+  const [modalSertifikatLHU, setModalSertifikatLHU] = useState(false);
+  const [sertifikatLHUUrl, setSertifikatLHUUrl] = useState("");
 
   function getKesimpulanText(kesimpulan_permohonan) {
     if (kesimpulan_permohonan === 1) {
@@ -109,9 +120,13 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const CardTitikUji = ({ item }) => {
-    // console.log("item: ", item.uuid);
+    // console.log("item: ", item);
+    const hasParameters = item?.parameters?.length > 0;
     const permohonanPengujian = item?.status >= 2;
     const mandiri = item?.is_mandiri === 1 && item?.is_lunas === 1;
+    const sertifikatLHU =
+      (item?.status_tte === 1 && item?.status_pembayaran === 1) ||
+      item?.permohonan?.user?.golongan_id === 2;
     // console.log(mandiri, "mandiri");
     const dropdownOptions = [
       {
@@ -119,16 +134,20 @@ const TitikUji = ({ navigation, route, callback }) => {
         title: "Edit",
         action: item =>
           navigation.navigate("FormTitikUji", {
-            uuid: item.uuid,
-            permohonan: permohonan,
+            uuidTitikUji: item.uuid,
+            uuid: uuid,
           }),
       },
-      {
-        id: "Hapus",
-        title: "Hapus",
-        action: item => deleteTitikUji(`/permohonan/titik/${item.uuid}`),
-      },
-    ].filter(Boolean);
+      ...(item?.status <= 2
+        ? [
+            {
+              id: "Hapus",
+              title: "Hapus",
+              action: item => deleteTitikUji(`/permohonan/titik/${item.uuid}`),
+            },
+          ]
+        : []),
+    ];
 
     // Fungsi untuk menangani aksi dropdown
     const handleDropdownAction = (option, item) => {
@@ -167,12 +186,17 @@ const TitikUji = ({ navigation, route, callback }) => {
         <View style={styles.roundedBackground} className="rounded-br-full" />
         <TouchableOpacity
           style={styles.cardWrapper}
-          onPress={() =>
-            navigation.navigate("Parameter", {
-              uuid: item.uuid,
-              uuidPermohonan: uuid ? uuid : uuidPermohonan,
-            })
-          }>
+          onPress={() => {
+            if (item.status <= 7) {
+              navigation.navigate("Parameter", {
+                uuid: item.uuid,
+                uuidPermohonan: uuid ? uuid : uuidPermohonan,
+              });
+            } else {
+              // Opsional: Tampilkan pesan jika kondisi tidak terpenuhi
+              console.log("Navigasi hanya diperbolehkan untuk status >= 7");
+            }
+          }}>
           <View style={styles.leftSection}>
             <View style={styles.cardContent}>
               <Text className="font-poppins-regular text-slate-600 text-xs uppercase ">
@@ -230,13 +254,24 @@ const TitikUji = ({ navigation, route, callback }) => {
                   </Text>
                 </View>
               </View>
+
               <Text className="font-poppins-regular text-slate-600 mt-3 text-xs uppercase">
                 Status Pengujian
               </Text>
-              <View className="bg-indigo-50 rounded-md px-2 py-1 max-w-[90px] ">
-                <Text className=" text-[10px] font-poppins-semibold text-indigo-600">
-                  {item.text_status || "-"}
-                </Text>
+              <View className="flex-shrink-0 items-start">
+                {!hasParameters ? (
+                  <View className="bg-yellow-50 rounded-md px-2 py-1">
+                    <Text className="text-yellow-600 text-[10px] font-poppins-semibold">
+                      Parameter belum diisi
+                    </Text>
+                  </View>
+                ) : (
+                  <View className="bg-indigo-50 rounded-md px-2 py-1 max-w-[90px] ">
+                    <Text className=" text-[10px] font-poppins-semibold text-indigo-600">
+                      {item.text_status || "-"}
+                    </Text>
+                  </View>
+                )}
               </View>
             </View>
 
@@ -268,7 +303,7 @@ const TitikUji = ({ navigation, route, callback }) => {
         <View
           style={styles.cardActions}
           className="mb-4 flex-end justify-end items-end mr-2 ">
-          {(permohonanPengujian || mandiri) && (
+          {(permohonanPengujian || mandiri || sertifikatLHU) && (
             <MenuView
               title="Berita Acara"
               actions={[
@@ -294,6 +329,17 @@ const TitikUji = ({ navigation, route, callback }) => {
                       },
                     ]
                   : []),
+                ...(sertifikatLHU
+                  ? [
+                      {
+                        id: "Sertifikat LHU",
+                        title: "Sertifikat LHU",
+
+                        action: () =>
+                          handlePreviewBeritaAcara({ uuid: item.uuid }),
+                      },
+                    ]
+                  : []),
               ]}
               onPressAction={({ nativeEvent }) => {
                 const selectedOption = nativeEvent.event;
@@ -301,6 +347,8 @@ const TitikUji = ({ navigation, route, callback }) => {
                   handlePreviewPermohonan({ uuid: item.uuid });
                 } else if (selectedOption === "Berita Acara") {
                   handlePreviewBeritaAcara({ uuid: item.uuid });
+                } else if (selectedOption === "Sertifikat LHU") {
+                  handlePreviewSertifikatLHU({ uuid: item.uuid });
                 }
               }}>
               <View className="mr-2">
@@ -348,6 +396,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const handleDownloadPermohonan = async () => {
+    setModalPermohonan(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `Permohonan_Pengujian_${Date.now()}.pdf`;
@@ -454,6 +503,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const handleDownloadBeritaAcara = async () => {
+    setModalBeritaAcara(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `Berita_Acara_${Date.now()}.pdf`;
@@ -465,6 +515,113 @@ const TitikUji = ({ navigation, route, callback }) => {
 
       const options = {
         fromUrl: beritaAcaraUrl,
+        toFile: downloadPath,
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      };
+
+      const response = await RNFS.downloadFile(options).promise;
+
+      if (response.statusCode === 200) {
+        if (Platform.OS === "android") {
+          await RNFS.scanFile(downloadPath);
+        }
+
+        try {
+          await FileViewer.open(downloadPath, {
+            showOpenWithDialog: false,
+            mimeType: "application/pdf",
+          });
+        } catch (openError) {
+          console.log("Error opening file with FileViewer:", openError);
+
+          if (Platform.OS === "android") {
+            try {
+              const intent = new android.content.Intent(
+                android.content.Intent.ACTION_VIEW,
+              );
+              intent.setDataAndType(
+                android.net.Uri.fromFile(new java.io.File(downloadPath)),
+                "application/pdf",
+              );
+              intent.setFlags(
+                android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                  android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION,
+              );
+
+              await ReactNative.startActivity(intent);
+            } catch (intentError) {
+              console.log("Intent fallback failed:", intentError);
+
+              // Last resort: show file location
+              Toast.show({
+                type: "info",
+                text1: "PDF Downloaded",
+                text2: `File saved at: ${downloadPath}`,
+              });
+            }
+          } else {
+            // Fallback for iOS
+            Toast.show({
+              type: "info",
+              text1: "PDF Downloaded",
+              text2: `File saved at: ${downloadPath}`,
+            });
+          }
+        }
+
+        Toast.show({
+          type: "success",
+          text1: "Success",
+          text2: `PDF Berhasil Diunduh. ${
+            Platform.OS === "ios"
+              ? "You can find it in the Files app."
+              : `Saved as ${fileName} in your Downloads folder.`
+          }`,
+        });
+      } else {
+        throw new Error("Download failed");
+      }
+    } catch (error) {
+      console.error("Download error:", error);
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: `PDF gagal diunduh: ${error.message}`,
+      });
+    }
+  };
+
+  const handlePreviewSertifikatLHU = async ({ uuid }) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      setBeritaAcaraUrl(
+        `${API_URL}/report/${uuid}/lhu/tte/download?token=${authToken}`,
+      );
+      setModalSertifikatLHU(true);
+    } catch (error) {
+      Toast.show({
+        type: "error",
+        text1: "Error",
+        text2: "Gagal membuka Permohonan",
+      });
+    }
+  };
+
+  const handleDownloadSertifikatLHU = async () => {
+    setModalSertifikatLHU(false);
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fileName = `Berita_Acara_${Date.now()}.pdf`;
+
+      const downloadPath =
+        Platform.OS === "ios"
+          ? `${RNFS.DocumentDirectoryPath}/${fileName}`
+          : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+
+      const options = {
+        fromUrl: sertifikatLHUUrl,
         toFile: downloadPath,
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -557,7 +714,8 @@ const TitikUji = ({ navigation, route, callback }) => {
               />
               {permohonan ? (
                 <Text className="font-poppins-semibold text-black text-lg text-end">
-                  {permohonan?.industri} : Titik Pengujian
+                  {/* {permohonan?.industri} : */}
+                  Titik Pengujian
                 </Text>
               ) : (
                 <Text className="font-poppins-semibold text-black text-lg text-end">
@@ -583,15 +741,15 @@ const TitikUji = ({ navigation, route, callback }) => {
 
           {titikPermohonans?.length === 0 && (
             <View className="p-4">
-            <View className="flex p-2 top-3 items-center bg-indigo-100 border border-indigo-400 rounded-md">
-              <Text className="text-black text-center mb-1 font-poppins-semibold">
-                Tambah Lokasi Sampel Pengujian
-              </Text>
-              <Text className="text-black text-[13px] font-poppins-medium text-center ">
-                Anda belum memiliki Titik Lokasi
-              </Text>
+              <View className="flex p-2 top-3 items-center bg-indigo-100 border border-indigo-400 rounded-md">
+                <Text className="text-black text-center mb-1 font-poppins-semibold">
+                  Tambah Lokasi Sampel Pengujian
+                </Text>
+                <Text className="text-black text-[13px] font-poppins-medium text-center ">
+                  Anda belum memiliki Titik Lokasi Satupun.
+                </Text>
+              </View>
             </View>
-          </View>
           )}
 
           {/* {
@@ -626,7 +784,7 @@ const TitikUji = ({ navigation, route, callback }) => {
             size={28}
             color="#fff"
             style={styles.plusIcon}
-            onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+            onPress={() => navigation.navigate("FormTitikUji", { uuid: uuid })}
           />
         </View>
 
@@ -654,11 +812,26 @@ const TitikUji = ({ navigation, route, callback }) => {
             </View>
 
             {permohonanUrl ? (
-              <Pdf
-                source={{ uri: permohonanUrl, cache: true }}
-                style={{ flex: 1 }}
-                trustAllCerts={false}
-              />
+              <View className="flex-1">
+                {isLoading && (
+                  <View className="absolute z-10 w-full h-full items-center justify-center">
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text className="mt-2 font-poppins-medium text-gray-600">
+                      Memuat PDF...
+                    </Text>
+                  </View>
+                )}
+                <Pdf
+                  source={{ uri: permohonanUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                  onLoadComplete={() => setIsLoading(false)}
+                  onError={error => {
+                    console.log("PDF Error:", error);
+                    setIsLoading(false);
+                  }}
+                />
+              </View>
             ) : (
               <View className="flex-1 justify-center items-center">
                 <Text className="text-xl font-poppins-semibold text-red-500">
@@ -699,11 +872,26 @@ const TitikUji = ({ navigation, route, callback }) => {
             </View>
 
             {beritaAcaraUrl ? (
-              <Pdf
-                source={{ uri: beritaAcaraUrl, cache: true }}
-                style={{ flex: 1 }}
-                trustAllCerts={false}
-              />
+              <View className="flex-1">
+                {isLoading && (
+                  <View className="absolute z-10 w-full h-full items-center justify-center">
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text className="mt-2 font-poppins-medium text-gray-600">
+                      Memuat PDF...
+                    </Text>
+                  </View>
+                )}
+                <Pdf
+                  source={{ uri: beritaAcaraUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                  onLoadComplete={() => setIsLoading(false)}
+                  onError={error => {
+                    console.log("PDF Error:", error);
+                    setIsLoading(false);
+                  }}
+                />
+              </View>
             ) : (
               <View className="flex-1 justify-center items-center">
                 <Text className="text-xl font-poppins-semibold text-red-500">
@@ -715,6 +903,66 @@ const TitikUji = ({ navigation, route, callback }) => {
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
                 onPress={() => setModalBeritaAcara(false)}
+                className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
+                <Text className="text-white font-poppins-semibold text-center">
+                  Tutup
+                </Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      <Modal
+        transparent={true}
+        animationType="slide"
+        visible={modalSertifikatLHU}
+        onRequestClose={() => setModalSertifikatLHU(false)}>
+        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+          <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            <View className="flex-row justify-between items-center p-4">
+              <Text className="text-lg font-poppins-semibold text-black">
+                Preview PDF Berita Acara
+              </Text>
+              <TouchableOpacity
+                onPress={handleDownloadSertifikatLHU}
+                className="p-2 rounded flex-row items-center">
+                <Feather name="download" size={21} color="black" />
+              </TouchableOpacity>
+            </View>
+
+            {sertifikatLHUUrl ? (
+              <View className="flex-1">
+                {isLoading && (
+                  <View className="absolute z-10 w-full h-full items-center justify-center">
+                    <ActivityIndicator size="large" color="#0000ff" />
+                    <Text className="mt-2 font-poppins-medium text-gray-600">
+                      Memuat PDF...
+                    </Text>
+                  </View>
+                )}
+                <Pdf
+                  source={{ uri: sertifikatLHUUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                  onLoadComplete={() => setIsLoading(false)}
+                  onError={error => {
+                    console.log("PDF Error:", error);
+                    setIsLoading(false);
+                  }}
+                />
+              </View>
+            ) : (
+              <View className="flex-1 justify-center items-center">
+                <Text className="text-xl font-poppins-semibold text-red-500">
+                  404 | File not found
+                </Text>
+              </View>
+            )}
+
+            <View className="flex-row justify-between m-4">
+              <TouchableOpacity
+                onPress={() => setModalSertifikatLHU(false)}
                 className="bg-[#dc3546] p-2 rounded flex-1 ml-2">
                 <Text className="text-white font-poppins-semibold text-center">
                   Tutup

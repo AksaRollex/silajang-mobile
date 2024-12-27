@@ -99,9 +99,9 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   };
 
   console.log("route", route);
-  const { uuid, uuidPermohonan } = route.params.permohonan || {};
+  const { uuid, uuidPermohonan, uuidTitikUji } = route.params || {};
   console.log("uuid", uuid);
-  console.log("uuidPermohonan", uuidPermohonan);
+  console.log("uuidtitikuji", uuidTitikUji);
   const { permohonan } = route.params || {};
   const queryClient = useQueryClient();
 
@@ -116,15 +116,15 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
   } = useForm();
 
   const { data, isFetching: isLoadingData } = useQuery(
-    ["permohonan", uuid],
+    ["permohonan", uuidTitikUji],
     () =>
-      axios.get(`/permohonan/titik/${uuid}/edit`).then(res => res.data.data),
+      axios.get(`/permohonan/titik/${uuidTitikUji}/edit`).then(res => res.data.data),
     {
-      enabled: !!uuid,
+      enabled: !!uuidTitikUji,
       onSuccess: data => {
         console.log(data);
         if (data) {
-          // console.log(data.keterangan, 999);
+          console.log(data.keterangan, 999);
           setDate(
             data.tanggal_pengambilan
               ? new Date(data.tanggal_pengambilan)
@@ -238,11 +238,25 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
           delete requestData[key],
       );
 
-      // Kirim data ke API
-      const response = await axios.post("/permohonan/titik/store", requestData);
-
-      console.log(response.data.data);
-      return response.data.data; // Pastikan API mengembalikan data yang relevan
+      if (uuidTitikUji) {
+        // Update jika uuidTitikUji ada
+        const response = await axios.post(
+          `/permohonan/titik/${uuidTitikUji}/update`,
+          requestData,
+        );
+  
+        console.log(response.data.data);
+        return response.data.data; // Pastikan API mengembalikan data yang relevan
+      } else {
+        // Create jika uuidTitikUji tidak ada
+        const response = await axios.post(
+          "/permohonan/titik/store",
+          requestData,
+        );
+  
+        console.log(response.data.data);
+        return response.data.data; // Pastikan API mengembalikan data yang relevan
+      } // Pastikan API mengembalikan data yang relevan
     },
     {
       onSuccess: data => {
@@ -402,7 +416,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                   action={() => navigation.goBack()}
                 />
                 <Text className="font-poppins-semibold text-black text-lg text-end  ">
-                  {uuid ? "Edit" : "Tambah"} Titik Pengujian
+                  {uuidTitikUji ? "Edit" : "Tambah"} Titik Pengujian
                 </Text>
               </View>
               <View className=" p-3 mb-2">
@@ -556,7 +570,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                                 color: "#FFF",
                               },
                               button: {
-                                backgroundColor: "#3a6238",
+                                backgroundColor: "#3730a3",
                                 borderRadius: 16,
                                 paddingHorizontal: 12,
                                 paddingVertical: 12,
@@ -619,7 +633,7 @@ const FormTitikUji = ({ route, navigation, formData, mapStatusPengujian }) => {
                         <View className="border rounded-2xl  border-stone-300 bg-[#fff]">
                           <TextArea
                             className="p-3 bg-[#fff] rounded-2xl  border-stone-300 font-poppins-regular"
-                            value={value}
+                            value={data?.keterangan ?? value}
                             onChangeText={onChange}
                             error={errors.keterangan?.message}
                           />

@@ -22,11 +22,11 @@ import MaterialIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import Select2 from "../../components/Select2";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import FontAwesome5Icon from "react-native-vector-icons/FontAwesome5";
-import SimpleLineIcons from "react-native-vector-icons/SimpleLineIcons";
-import { launchImageLibrary } from "react-native-image-picker";
-import Icons from "react-native-vector-icons/AntDesign";
 import DocumentPicker from "react-native-document-picker";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import SectionedMultiSelect from "react-native-sectioned-multi-select";
+import Icon from "react-native-vector-icons/MaterialIcons";
+
 import FontIcon from "react-native-vector-icons/FontAwesome5";
 import IonIcons from "react-native-vector-icons/Ionicons";
 
@@ -34,19 +34,15 @@ const TambahPermohonan = ({ navigation }) => {
   const [jasaPengambilan, setJasaPengambilan] = useState([]);
   const [selectedJasaPengambilan, setSelectedJasaPengambilan] = useState(null);
   const [selectedCara, setSelectedCara] = useState(null);
-  const [selectedPembayaran, setSelectedPembayaran] = useState(null);
   const [percuy, setPercuy] = useState(null);
   const [modalPercuy, setModalPercuy] = useState(false);
   const [date, setDate] = useState(null);
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [errorModalVisible, setErrorModalVisible] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
-  const [currentPhotoUrl, setCurrentPhotoUrl] = useState(null);
-  const [file, setFile] = React.useState(null);
-
+  const [selectedBulan, setSelectedBulan] = useState(null);
   const [selectedFile, setSelectedFile] = useState(null);
   const [uploadModalVisible, setUploadModalVisible] = useState(false);
-  const [currentItem, setCurrentItem] = useState(null);
 
   const paginateRef = React.useRef;
 
@@ -84,6 +80,7 @@ const TambahPermohonan = ({ navigation }) => {
   const {
     handleSubmit,
     control,
+    setValue,
     formState: { errors },
     getValues,
   } = useForm();
@@ -130,6 +127,8 @@ const TambahPermohonan = ({ navigation }) => {
     isSuccess,
   } = useMutation(
     () => {
+      const formData = getValues();
+
       const requestData = {
         industri: getValues("industri"),
         alamat: getValues("alamat"),
@@ -138,21 +137,17 @@ const TambahPermohonan = ({ navigation }) => {
         is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
         pembayaran: "transfer",
         jasa_pengambilan_id: selectedJasaPengambilan,
-        // tanggal_surat: getValues("tanggal_surat"),
-        // no_surat: getValues("no_surat"),
-        // bulan: getValues("bulan"),
-        // perihal: getValues("perihal"),
-        // dokumen_permohonan: getValues("dokumen_permohonan"),
+        kontrak: {
+          ...formData.kontrak,
+          tanggal_surat: moment(date).format("YYYY-MM-DD"),
+        },
       };
 
-      return axios.post("/permohonan/store", requestData).then(res => res.data);
+      return axios.post("/permohonan/store", requestData);
     },
     {
       onSuccess: data => {
         setPercuy(data);
-        // setTimeout(() => {
-        //   navigation.navigate("Permohonan");
-        // }, 2000);
         setModalPercuy(true);
         queryClient.invalidateQueries(["/permohonan"]);
       },
@@ -168,137 +163,52 @@ const TambahPermohonan = ({ navigation }) => {
     },
   );
 
-  const onSubmit = data => {
-    if (!selectedCara) {
-      Toast.show({
-        type: "error",
-        text1: "Silakan pilih cara pengambilan",
-      });
-      return;
-    }
-
-    if (selectedCara === "ambilPetugas" && !selectedJasaPengambilan) {
-      Toast.show({
-        type: "error",
-        text1: "Silakan pilih jasa pengambilan",
-      });
-      return;
-    }
-
-    send(data);
-  };
-
   const handleSelectCara = cara => {
     setSelectedCara(cara);
   };
 
-  const handleSelectPembayaran = pembayaran => {
-    setSelectedPembayaran(pembayaran);
-  };
-
-  const handleSubmitData = data => {
-    setSubmitted(true);
-    send(data);
-  };
-
   const bulan = [
-    { value: 1, title: "Januari" },
-    { value: 2, title: "Februari" },
-    { value: 3, title: "Maret" },
-    { value: 4, title: "April" },
-    { value: 5, title: "Mei" },
-    { value: 6, title: "Juni" },
-    { value: 7, title: "Juli" },
-    { value: 8, title: "Agustus" },
-    { value: 9, title: "September" },
-    { value: 10, title: "Oktober" },
-    { value: 11, title: "November" },
-    { value: 12, title: "Desember" },
+    { id: 1, name: "Januari" },
+    { id: 2, name: "Februari" },
+    { id: 3, name: "Maret" },
+    { id: 4, name: "April" },
+    { id: 5, name: "Mei" },
+    { id: 6, name: "Juni" },
+    { id: 7, name: "Juli" },
+    { id: 8, name: "Agustus" },
+    { id: 9, name: "September" },
+    { id: 10, name: "Oktober" },
+    { id: 11, name: "November" },
+    { id: 12, name: "Desember" },
   ];
-  const handleChoosePhoto = () => {
-    launchImageLibrary({ mediaType: "photo" }, response => {
-      if (response.errorMessage) {
-        console.log("Image Error : ", response.errorMessage);
-      } else if (response.assets && response.assets.length > 0) {
-        const file = response.assets[0];
-        const fileSizeInBytes = file.fileSize;
-        const fileSizeInKB = fileSizeInBytes / 1024;
-
-        if (fileSizeInKB > 2048) {
-          Toast.show({
-            type: "error",
-            text1: "Ukuran file terlalu besar",
-            text2: "Ukuran file tidak boleh melebihi 2048 KB (2 MB)",
-          });
-        } else {
-          console.log("Chosen file:", file);
-          setFile(file);
-        }
-      }
-    });
-  };
-
-  const handleDeletePhoto = () => {
-    setFile(null);
-    setCurrentPhotoUrl(null);
-  };
   const handleFilePicker = async () => {
     try {
       const res = await DocumentPicker.pick({
         type: [DocumentPicker.types.pdf],
       });
       setSelectedFile(res[0]);
+      setValue("dokumen_permohonan", res[0]);
     } catch (err) {
-      if (DocumentPicker.isCancel(err)) {
-        // User cancelled the picker
-      } else {
+      if (!DocumentPicker.isCancel(err)) {
         console.error("Error picking document:", err);
-        Alert.alert("Error", "Failed to pick document");
       }
     }
   };
 
-  const handleUploadPDF = async () => {
-    try {
-      if (!selectedFile) {
-        Toast.show({
-          type: "error",
-          text1: "Error",
-          text2: "Please select a PDF file first",
-        });
-        return;
-      }
-      const formData = new FormData();
-      formData.append("file", {
-        uri: selectedFile.uri,
-        type: selectedFile.type,
-        name: selectedFile.name,
-      });
-      const response = await axios.post("/permohonan/store", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
-
-      setSelectedFile(null);
-      setUploadModalVisible(false);
-
-      Toast.show({
-        type: "success",
-        text1: "Success",
-        text2: "File berhasil diupload",
-      });
-
-      paginateRef.current?.refetch();
-    } catch (error) {
-      console.error(error);
+  const handleUploadPDF = () => {
+    if (!selectedFile) {
       Toast.show({
         type: "error",
-        text1: "Error",
-        text2: error.response?.data?.message || "Failed to upload file",
+        text2: "Pilih file PDF terlebih dahulu",
       });
+      return;
     }
+
+    setSelectedFile(selectedFile);
+
+    setUploadModalVisible(false);
   };
+
   return (
     <>
       <View className="bg-[#ececec] w-full h-full  p-3">
@@ -521,15 +431,103 @@ const TambahPermohonan = ({ navigation }) => {
                     <Text className="font-poppins-semibold text-black mt-4">
                       Bulan
                     </Text>
-
-                    <Select2
-                      data={bulan}
-                      onSelect={selectedValue => {
-                        onChange(selectedValue);
-                      }}
-                      placeholder="Pilih Bulan"
-                      defaultValue={value}
-                    />
+                    <View className="border rounded-2xl border-stone-300 bg-[#fff] p-3">
+                      <SectionedMultiSelect
+                        IconRenderer={Icon}
+                        hideTags
+                        styles={{
+                          selectToggle: {
+                            backgroundColor: "#fff",
+                            borderWidth: 1,
+                            borderColor: "#CCC",
+                            borderRadius: 16,
+                            padding: 12,
+                            fontFamily: "Poppins-Regular",
+                            marginBottom: 8,
+                          },
+                          selectToggleText: {
+                            fontFamily: "Poppins-Regular",
+                          },
+                          displayKey: {
+                            fontFamily: "Poppins-Regular",
+                            color: "#333",
+                          },
+                          chipContainer: {
+                            borderRadius: 16,
+                            margin: 4,
+                            backgroundColor: "#f8f8f8",
+                          },
+                          chipText: {
+                            color: "#FF0000",
+                            fontSize: 14,
+                            fontFamily: "Poppins-Regular",
+                          },
+                          chipIcon: {
+                            color: "#000",
+                          },
+                          itemText: {
+                            borderRadius: 16,
+                            backgroundColor: "#f8f8f8",
+                            padding: 12,
+                            color: "#333",
+                            fontFamily: "Poppins-Regular",
+                          },
+                          selectedItem: {
+                            borderRadius: 16,
+                          },
+                          selectedItemText: {
+                            fontFamily: "Poppins-Regular",
+                            color: "#46923c",
+                            backgroundColor: "#ececec",
+                          },
+                          confirmText: {
+                            fontFamily: "Poppins-Semibold",
+                            color: "#FFF",
+                          },
+                          button: {
+                            backgroundColor: "#3730a3",
+                            borderRadius: 16,
+                            paddingHorizontal: 12,
+                            paddingVertical: 12,
+                            margin: 10,
+                          },
+                          cancelButton: {
+                            backgroundColor: "#FF0000",
+                            borderRadius: 16,
+                            paddingHorizontal: 12,
+                            paddingVertical: 12,
+                            margin: 10,
+                          },
+                          searchTextInput: {
+                            fontFamily: "Poppins-Regular",
+                            color: "#333",
+                          },
+                          itemFontFamily: "Poppins-Regular",
+                          icons: {
+                            search: {
+                              name: "search",
+                              color: "#000",
+                            },
+                          },
+                        }}
+                        items={bulan}
+                        uniqueKey="id"
+                        subKey="children"
+                        onSelectedItemsChange={items => {
+                          onChange(items);
+                          setSelectedBulan(items);
+                        }}
+                        selectedItems={value || []}
+                        selectText="Pilih Bulan"
+                        confirmText="KONFIRMASI"
+                        showRemoveAll={true}
+                        removeAllText="Hapus Semua"
+                        modalAnimationType="fade"
+                        showCancelButton={true}
+                        searchPlaceholderText="Cari Bulan..."
+                        onChangeInput={text => console.log(text)}
+                      />
+                    </View>
                   </View>
                 )}
               />
@@ -558,16 +556,44 @@ const TambahPermohonan = ({ navigation }) => {
                 Dokumen Permohonan
               </Text>
               <View className="rounded-lg">
-                <TouchableOpacity
-                  onPress={() => {
-                    setUploadModalVisible(true);
-                  }}
-                  className="flex-row items-center p-4  bg-indigo-100 rounded-xl mr-2">
-                  <FontIcon name="file-upload" size={25} color="#4f46e5" />
-                  <Text className="ml-2 text-indigo-600  font-poppins-semibold">
-                    Upload
-                  </Text>
-                </TouchableOpacity>
+                {selectedFile ? (
+                  <View className="flex-row items-center p-4 bg-indigo-100 rounded-xl mr-2 ">
+                    <FontIcon name="file-upload" size={25} color="#4f46e5" />
+                    <View className="px-4  flex-row justify-center items-center">
+                      <View className="w-72">
+                        <Text className=" text-indigo-600 font-poppins-semibold">
+                          {selectedFile.name || selectedFile.split("/").pop()}
+                        </Text>
+                      </View>
+                      <TouchableOpacity
+                        onPress={() => setSelectedFile(null)}
+                        className="p-2 rounded-full">
+                        <AntDesign name="close" size={16} color="black" />
+                      </TouchableOpacity>
+                    </View>
+                  </View>
+                ) : (
+                  <Controller
+                    control={control}
+                    name="dokumen_permohonan"
+                    render={({ field: { onChange, value } }) => (
+                      <TouchableOpacity
+                        onPress={() => {
+                          setUploadModalVisible(true);
+                        }}
+                        className="flex-row items-center p-4 bg-indigo-100 rounded-xl mr-2">
+                        <FontIcon
+                          name="file-upload"
+                          size={25}
+                          color="#4f46e5"
+                        />
+                        <Text className="ml-2 text-indigo-600 font-poppins-semibold">
+                          Upload
+                        </Text>
+                      </TouchableOpacity>
+                    )}
+                  />
+                )}
               </View>
 
               {showDatePicker && (
@@ -704,13 +730,13 @@ const TambahPermohonan = ({ navigation }) => {
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 mr-2">
                       {/* <Text className="text-sm mb-1">Selected File:</Text> */}
-                      <Text className="text-sm font-poppins-semibold">
+                      <Text className="text-sm px-2 text-black font-poppins-semibold">
                         {selectedFile.name}
                       </Text>
                     </View>
                     <TouchableOpacity
                       onPress={() => setSelectedFile(null)}
-                      className="bg-gray-200 p-2 rounded-full">
+                      className="p-2 rounded-full">
                       <AntDesign name="close" size={16} color="black" />
                     </TouchableOpacity>
                   </View>

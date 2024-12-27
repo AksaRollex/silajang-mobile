@@ -50,23 +50,57 @@ const Paginate = forwardRef(
     const { control, handleSubmit } = useForm();
     const cardData = [1, 2, 3];
 
-    const { data, isFetching, refetch, isLoading } = useQuery({
-      queryKey: [url, page, search, payload],
+    const { data, isFetching, refetch } = useQuery({
+      queryKey: [url, page, search],
       queryFn: () =>
-        axios.post(url, { ...payload, page, search }).then(res => res.data),
+        axios
+          .post(url, {
+            page,
+            search,
+            ...(payload || {}),
+          })
+          .then(res => res.data),
       placeholderData: { data: [] },
       onSuccess: res => {
         LayoutAnimation.configureNext(LayoutAnimation.Presets.easeInEaseOut);
         if (page === 1) {
           setDataList(res.data);
         } else {
-          setDataList(prevData => [...prevData, ...res.data]);
+          setDataList(prevData => {
+            const newData = [];
+            for (let i = 0; i < prevData.length; i++) {
+              newData[i] = prevData[i];
+            }
+            for (let i = 0; i < res.data.length; i++) {
+              newData[prevData.length + i] = res.data[i];
+            }
+            return newData;
+          });
         }
       },
     });
 
+    const PaginationInfo = () => {
+      const startIndex = (page - 1) * (data?.per_page || 10) + 1;
+      const endIndex = Math.min(
+        page * (data?.per_page || 10),
+        data?.total || 0,
+      );
+      const totalItems = data?.total || 0;
+
+      return (
+        <View className="mt-2 mb-1">
+          <Text className="text-gray-600 text-sm text-center font-poppins-regular">
+            Menampilkan {startIndex} sampai {endIndex} dari {totalItems} data
+          </Text>
+        </View>
+      );
+    };
+
     useEffect(() => {
-      if (!data.data?.length) queryClient.invalidateQueries([url]);
+      if (data && !data.data?.length) {
+        queryClient.invalidateQueries([url]);
+      }
       console.log(payload);
     }, [data]);
 
@@ -85,9 +119,8 @@ const Paginate = forwardRef(
         refetch();
       }
     }, [JSON.stringify(payload)]);
-
     const handleLoadMore = () => {
-      if (!isFetchingMore && page < data.last_page) {
+      if (!isFetchingMore && data?.last_page && page < data.last_page) {
         setIsFetchingMore(true);
         setPage(prevPage => prevPage + 1);
       }
@@ -186,25 +219,6 @@ const Paginate = forwardRef(
       </View>
     );
 
-    const Footer = () => (
-      <View style={styles.footer}>
-        <View
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}>
-          <Text style={styles.footerText}>
-            {new Date().getFullYear()} © SI-LAJANG v.3
-          </Text>
-          <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
-        </View>
-        <Text style={styles.footerText}>
-          DINAS LINGKUNGAN HIDUP KAB.JOMBANG
-        </Text>
-      </View>
-    );
-
     // Combine external loading state with internal loading state
     const shouldShowLoading = isExternalLoading || (isFetching && page === 1);
 
@@ -221,14 +235,14 @@ const Paginate = forwardRef(
             {!Plugin ? (
               <Skeleton
                 animation="wave"
-                width={350}
+                width={370}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
             ) : (
               <Skeleton
                 animation="wave"
-                width={210}
+                width={245}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
@@ -236,7 +250,7 @@ const Paginate = forwardRef(
             {Plugin ? (
               <Skeleton
                 animation="wave"
-                width={130}
+                width={120}
                 LinearGradientComponent={LinearGradient}
                 height={53}
               />
@@ -382,7 +396,12 @@ const Paginate = forwardRef(
           onEndReached={handleLoadMore}
           showsVerticalScrollIndicator={false}
           onEndReachedThreshold={0.5}
-          ListFooterComponent={ListFooter}
+          ListFooterComponent={() => (
+            <View>
+              <ListFooter />
+              <PaginationInfo />
+            </View>
+          )}
           ListEmptyComponent={() => (
             <View className="flex-1 justify-center items-center mt-20">
               <Image
