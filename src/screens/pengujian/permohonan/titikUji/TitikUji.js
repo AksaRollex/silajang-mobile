@@ -34,7 +34,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   const { uuid, uuidPermohonan } = route.params || {};
   console.log("uuid permohonan", uuid);
   const [isLoading, setIsLoading] = useState(true);
-  console.log("uuid permohonan", uuidPermohonan);
+  // console.log("uuid permohonan", uuidPermohonan);
   const { data: user } = useUser();
   // const data = permohonan || {};
   // console.log("data", data);
@@ -63,8 +63,8 @@ const TitikUji = ({ navigation, route, callback }) => {
   const uuidToUse = uuid || uuidPermohonan;
   const { data: permohonan } = usePermohonan(uuidToUse);
   const titikPermohonans = permohonan?.titik_permohonans;
-  console.log(permohonan, 111);
-  console.log("titikPermohonans", titikPermohonans);
+  // console.log(permohonan, 111);
+  // console.log("titikPermohonans", titikPermohonans);
 
   // useFocusEffect(
   //   useCallback(() => {
@@ -120,7 +120,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const CardTitikUji = ({ item }) => {
-    console.log("item: ", item);
+    // console.log("item: ", item);
     const hasParameters = item?.parameters?.length > 0;
     const permohonanPengujian = item?.status >= 2;
     const mandiri = item?.is_mandiri === 1 && item?.is_lunas === 1;
@@ -134,8 +134,8 @@ const TitikUji = ({ navigation, route, callback }) => {
         title: "Edit",
         action: item =>
           navigation.navigate("FormTitikUji", {
-            uuid: item.uuid,
-            permohonan: permohonan,
+            uuidTitikUji: item.uuid,
+            uuid: uuid,
           }),
       },
       ...(item?.status <= 2
@@ -789,7 +789,7 @@ const TitikUji = ({ navigation, route, callback }) => {
             size={28}
             color="#fff"
             style={styles.plusIcon}
-            onPress={() => navigation.navigate("FormTitikUji", { permohonan })}
+            onPress={() => navigation.navigate("FormTitikUji", { uuid: uuid })}
           />
         </View>
 

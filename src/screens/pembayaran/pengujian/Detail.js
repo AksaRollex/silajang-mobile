@@ -222,6 +222,7 @@ const PengujianDetail = ({ route, navigation }) => {
       console.error("Error dalam proses render:", error);
     }
   };
+  
   const [dataKode, setDataKode] = useState(null);
 
   useEffect(() => {
