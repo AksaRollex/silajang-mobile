@@ -1006,8 +1006,8 @@ const HasilUjis = ({ navigation, route }) => {
                 <View className="bg-[#f8f8f8] p-2 rounded-lg shadow">
                   <View className="flex-row items-center justify-between">
                     <View className="flex-1 mr-2">
-                      <Text className="text-sm mb-1">Selected File:</Text>
-                      <Text className="text-sm font-poppins-semibold">
+                      <Text className="text-sm mb-1 font-pooppins-regular text-black">Selected File:</Text>
+                      <Text className="text-sm font-poppins-semibold text-black">
                         {selectedFile.name}
                       </Text>
                     </View>

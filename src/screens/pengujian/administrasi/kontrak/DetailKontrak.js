@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useMemo } from "react";
-import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform } from "react-native";
+import { Text, View, StyleSheet, ScrollView, TouchableOpacity, ActivityIndicator, PermissionsAndroid, Platform, Modal } from "react-native";
 import { RadioButton } from "react-native-paper";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
@@ -14,6 +14,7 @@ import Feather from "react-native-vector-icons/Feather";
 import RNFS from "react-native-fs";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { APP_URL } from "@env";
+import { API_URL } from "@env";
 import ModalSuccess from "@/src/screens/components/ModalSuccess";
 import FileViewer from 'react-native-file-viewer';
 import DocumentPicker from "react-native-document-picker";
@@ -40,6 +41,10 @@ export default function DetailKontrak({ route, navigation }) {
     const [loading, setLoading] = useState(true);
     const [downloading, setDownloading] = useState(false);
     const [isUpdateModalVisible, setIsUpdateModalVisible] = useState(false);
+    const [uploadModalVisible, setUploadModalVisible] = useState(false);
+    const [selectedFile, setSelectedFile] = useState(null);
+    const [currentItem, setCurrentItem] = useState(null);
+      
 
     const fetchData = async () => {
         try {
@@ -102,7 +107,7 @@ export default function DetailKontrak({ route, navigation }) {
 
     const requestStoragePermission = async () => {
         if (Platform.OS !== 'android') return true;
-    
+
         try {
             // For Android 13 and above (API level 33+)
             if (Platform.Version >= 33) {
@@ -117,7 +122,7 @@ export default function DetailKontrak({ route, navigation }) {
                     PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
                     PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
                 ]);
-                
+
                 return (
                     storagePermission['android.permission.WRITE_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED &&
                     storagePermission['android.permission.READ_EXTERNAL_STORAGE'] === PermissionsAndroid.RESULTS.GRANTED
@@ -142,12 +147,75 @@ export default function DetailKontrak({ route, navigation }) {
             return false;
         }
     };
-    
+
+    const handleUploadPDF = async () => {
+        // console.log("item: ", item);
+        try {
+            if (!selectedFile) {
+                Toast.show({
+                    type: "error",
+                    text1: "Error",
+                    text2: "Please select a PDF file first",
+                });
+                return;
+            }
+            const formData = new FormData();
+            formData.append("file", {
+                uri: selectedFile.uri,
+                type: selectedFile.type,
+                name: selectedFile.name,
+            });
+            const response = await axios.post(
+                `${API_URL}/administrasi/kontrak/${currentItem.uuid}/upload-file`,
+                formData,
+                {
+                    headers: {
+                        "Content-Type": "multipart/form-data",
+                    },
+                },
+            );
+
+            setSelectedFile(null);
+            setUploadModalVisible(false);
+
+            Toast.show({
+                type: "success",
+                text1: "Success",
+                text2: "File berhasil diupload",
+            });
+
+            paginateRef.current?.refetch();
+        } catch (error) {
+            console.error(error);
+            Toast.show({
+                type: "error",
+                text1: "Error",
+                text2: error.response?.data?.message || "Failed to upload file",
+            });
+        }
+    };
+
+    const handleFilePicker = async () => {
+        try {
+          const res = await DocumentPicker.pick({
+            type: [DocumentPicker.types.pdf],
+          });
+          setSelectedFile(res[0]);
+        } catch (err) {
+          if (DocumentPicker.isCancel(err)) {
+            // User cancelled the picker
+          } else {
+            console.error("Error picking document:", err);
+            Alert.alert("Error", "Failed to pick document");
+          }
+        }
+      };
+
     const HandleDownloadFile = async () => {
         if (data?.kontrak?.dokumen_permohonan) {
             try {
                 setDownloading(true);
-                
+
                 const hasPermission = await requestStoragePermission();
                 if (!hasPermission) {
                     Toast.show({
@@ -158,18 +226,18 @@ export default function DetailKontrak({ route, navigation }) {
                     });
                     return;
                 }
-    
+
                 const token = await AsyncStorage.getItem('token');
                 const fileUrl = `${APP_URL}/storage/${data.kontrak.dokumen_permohonan}`;
                 const fileExtension = data.kontrak.dokumen_permohonan.split('.').pop() || 'pdf';
                 const fileName = `dokumen_permohonan_${Date.now()}.${fileExtension}`;
-                
-                const downloadDir = Platform.OS === 'ios' 
-                    ? RNFS.DocumentDirectoryPath 
+
+                const downloadDir = Platform.OS === 'ios'
+                    ? RNFS.DocumentDirectoryPath
                     : RNFS.DownloadDirectoryPath;
-                
+
                 const downloadPath = `${downloadDir}/${fileName}`;
-    
+
                 const options = {
                     fromUrl: fileUrl,
                     toFile: downloadPath,
@@ -179,17 +247,17 @@ export default function DetailKontrak({ route, navigation }) {
                     },
                     background: true,
                 };
-    
+
                 const response = await RNFS.downloadFile(options).promise;
-                
+
                 if (response.statusCode === 200) {
                     const exists = await RNFS.exists(downloadPath);
-                    
+
                     if (exists) {
                         if (Platform.OS === 'android') {
                             await RNFS.scanFile(downloadPath);
                         }
-    
+
                         // Try to open with FileViewer
                         try {
                             await FileViewer.open(downloadPath, {
@@ -198,7 +266,7 @@ export default function DetailKontrak({ route, navigation }) {
                             });
                         } catch (openError) {
                             console.log('Error opening file with FileViewer:', openError);
-    
+
                             // Fallback for Android using Intents
                             if (Platform.OS === 'android') {
                                 try {
@@ -213,7 +281,7 @@ export default function DetailKontrak({ route, navigation }) {
                                         android.content.Intent.FLAG_ACTIVITY_CLEAR_TOP |
                                         android.content.Intent.FLAG_GRANT_READ_URI_PERMISSION
                                     );
-    
+
                                     await ReactNative.startActivity(intent);
                                 } catch (intentError) {
                                     console.log('Intent fallback failed:', intentError);
@@ -233,7 +301,7 @@ export default function DetailKontrak({ route, navigation }) {
                                 });
                             }
                         }
-    
+
                         Toast.show({
                             type: 'success',
                             text1: 'Berhasil',
@@ -430,9 +498,9 @@ export default function DetailKontrak({ route, navigation }) {
                                 <View className="bg-[#e8fff3] p-[10px] rounded-[10px] mr-[10px]">
                                     <MaterialCommunityIcons name="clock-time-three-outline" size={30} color="#50cc96" />
                                 </View>
-                                <View className="flex-1">
+                                <View className="">
                                     <Text className="text-[14px] text-[#666666] font-poppins-regular">Masa Kontrak</Text>
-                                    <Text className="text-[16px] font-poppins-semibold text-black">{formattedBulan}</Text>
+                                    <Text className="text-[16px] font-poppins-semibold text-white bg-indigo-600 rounded-md px-2">{formattedBulan}</Text>
                                 </View>
                             </View>
 
@@ -465,6 +533,28 @@ export default function DetailKontrak({ route, navigation }) {
                                     <Text className="text-[16px] font-poppins-semibold text-black">{data.kontrak.tanggal}</Text>
                                 </View>
                             </View>
+
+                            <View className="flex-row items-center mb-[15px]">
+                                <TouchableOpacity
+                                    className="bg-[#f2f2f2] p-[15px] rounded-[10px] mr-[10px]"
+                                    onPress={() => {
+                                        setCurrentItem(uuid);
+                                        setUploadModalVisible(true);
+                                      }}
+                                    disabled={downloading}
+                                >
+                                    {downloading ? (
+                                        <ActivityIndicator size="small" color="#000"/>
+                                    ) : (
+                                        <MaterialIcons name="upload-file" size={31} color="black" />
+                                    )}
+                                </TouchableOpacity>
+                                <View className="flex-1">
+                                    <Text className="text-[14px] text-[#666666] font-poppins-regular">Upload File Kontrak</Text>
+                                    <Text className="text-[16px] font-poppins-semibold text-black">Klik icon untuk upload</Text>
+                                </View>
+                            </View>
+
 
                             <Text className="text-[16px] font-poppins-semibold text-black">Kesimpulan Permohonan</Text>
 
@@ -508,8 +598,71 @@ export default function DetailKontrak({ route, navigation }) {
                     <Text className="font-poppins-medium">Loading...</Text>
                 )}
             </View>
-        </ScrollView>
 
+            <Modal
+                transparent={true}
+                animationType="fade"
+                visible={uploadModalVisible}
+                onRequestClose={() => {
+                    setUploadModalVisible(false);
+                    setSelectedFile(null);
+                }}>
+                <View className="flex-1 justify-center items-center bg-black/50">
+                    <View className="bg-[#ffffff] rounded-lg w-[90%] p-5">
+                        <View className="flex-row justify-between items-center mb-4">
+                            <Text className="text-lg font-poppins-semibold text-black">Upload File Kontrak</Text>
+                            <TouchableOpacity
+                                onPress={() => {
+                                    setUploadModalVisible(false);
+                                    setSelectedFile(null);
+                                }}>
+                                <AntDesign name="close" size={20} color="#666" />
+                            </TouchableOpacity>
+                        </View>
+
+                        {selectedFile ? (
+                            <View className="mb-4">
+                                <View className="bg-[#f8f8f8] p-2 rounded-lg shadow">
+                                    <View className="flex-row items-center justify-between">
+                                        <View className="flex-1 mr-2">
+                                            <Text className="text-sm mb-1 text-black font-poppins-regular">Selected File:</Text>
+                                            <Text className="text-sm font-poppins-semibold text-black">
+                                                {selectedFile.name}
+                                            </Text>
+                                        </View>
+                                        <TouchableOpacity
+                                            onPress={() => setSelectedFile(null)}
+                                            className="bg-gray-200 p-2 rounded-full">
+                                            <AntDesign name="close" size={16} color="black" />
+                                        </TouchableOpacity>
+                                    </View>
+                                </View>
+                                <View className="flex-row justify-end mt-4">
+                                    <TouchableOpacity
+                                        onPress={handleUploadPDF}
+                                        className="bg-indigo-600 px-4 py-2 rounded">
+                                        <Text className="text-white font-poppins-semibold">Upload & Simpan</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        ) : (
+                            <View>
+                                <Text className="text-sm mb-4">
+                                    Silahkan pilih file PDF yang akan diupload
+                                </Text>
+                                <View className="flex-row justify-end">
+                                    <TouchableOpacity
+                                        onPress={handleFilePicker}
+                                        className="bg-indigo-600 px-4 py-2 rounded">
+                                        <Text className="text-white font-poppins-semibold">Pilih File</Text>
+                                    </TouchableOpacity>
+                                </View>
+                            </View>
+                        )}
+                    </View>
+                </View>
+            </Modal>
+        </ScrollView>
     );
 }
 
