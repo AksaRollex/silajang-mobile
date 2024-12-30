@@ -603,7 +603,7 @@ const Pengujian = ({ navigation, onSelectYearMonth }) => {
               <Text className="text-lg font-poppins-semibold text-black">Preview Pdf</Text>
               <TouchableOpacity
                 onPress={() => {
-                  handleDownloadPDF();
+                  handleDownloadReport();
                   setModalVisible(false);
                 }}
                 className="p-2 rounded flex-row items-center">
