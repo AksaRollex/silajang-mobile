@@ -8,6 +8,7 @@ import {
   Dimensions,
   StyleSheet,
   ImageBackground,
+  ScrollView,
 } from "react-native";
 import axios from "@/src/libs/axios";
 import { useUser } from "@/src/services";
@@ -19,6 +20,7 @@ import FooterText from "../components/FooterText";
 import DefaultAvatar from "../../../assets/images/avatar.png";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import FastImage from "react-native-fast-image";
+import Header from "../components/Header";
 
 const { width, height } = Dimensions.get("window");
 const rem = multiplier => baseRem * multiplier;
@@ -67,52 +69,69 @@ export default function Profile({ navigation }) {
   });
 
   return (
-    <ImageBackground
-      source={require("../../../assets/images/background.png")}
-      style={{ flex: 1, resizeMode: "cover" }}>
-      <>
-        {userData ? (
-          <View className="z-20 bottom-20">
-            <View className="w-full py-5 rounded-b-2xl">
-              <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
-                Profil Saya
-              </Text>
-              <View className=" ">
-                {userData ? (
+    <View style={styles.container}>
+      <ScrollView
+        className="flex-col"
+        showsVerticalScrollIndicator={false}
+        stickyHeaderIndices={[]}>
+        {/* <ImageBackground
+          source={require("../../../assets/images/background.png")}
+          style={{ flex: 1, resizeMode: "cover" }}>
+          <Text className="text-white text-xl font-poppins-bold mx-6 top-20">
+            Profil Saya
+          </Text>
+        </ImageBackground> */}
+        <ImageBackground
+          source={require("../../../assets/images/background.png")}
+          style={{
+            height: 180, // Atur tinggi yang tetap
+          }}>
+          <Header
+            navigate={() => {
+              navigation.navigate("Profile");
+            }}
+          />
+
+          {/* <View className="z-50">
+            {userData ? (
+        
+            ) : (
+              <View className="h-full flex justify-center">
+                <ActivityIndicator size={"large"} color={"#312e81"} />
+              </View>
+            )}
+          </View> */}
+        </ImageBackground>
+
+        <View className="flex-1" style={{ marginTop: -50 }}>
+          <View
+            className="rounded-t-3xl h-full bg-[#F9FAFB] "
+            style={{ zIndex: 1 }}>
+            {userData ? (
+              <>
+                <View
+                  className="z-50 w-full mt-4"
+                  style={{
+                    position: "absolute",
+                  }}>
                   <TouchableOpacity
                     onPress={() => openImageViewer(userData.photo)}
                     style={{
-                      zIndex: 10,
-                      top: "150%",
                       alignSelf: "center",
                     }}>
                     <FastImage
-                      className="rounded-full w-28 h-28"
+                      className="rounded-full w-28 h-28 border-4 border-white"
                       source={
                         userData?.photo
                           ? { uri: `${process.env.APP_URL}${userData.photo}` }
-                          : DefaultAvatar // Default avatar digunakan langsung
+                          : DefaultAvatar
                       }
-                      defaultSource={DefaultAvatar} // Gambar lokal sebagai fallback
+                      defaultSource={DefaultAvatar}
                       resizeMode={FastImage.resizeMode.cover}
                     />
                   </TouchableOpacity>
-                ) : (
-                  <View></View>
-                )}
-              </View>
-            </View>
-          </View>
-        ) : (
-          <View className="h-full flex justify-center">
-            <ActivityIndicator size={"large"} color={"#312e81"} />
-          </View>
-        )}
-        <View className="h-full bottom-14">
-          <View className="rounded-3xl h-full bg-[#F9FAFB]">
-            {userData ? (
-              <>
-                <View className="flex-col align-center justify-center mx-2 mt-32">
+                </View>
+                <View className="flex-col align-center justify-center mx-2  mt-32">
                   <Text className="text-base text-black font-poppins-bold my-1 text-center ">
                     {userData?.nama}
                   </Text>
@@ -267,12 +286,16 @@ export default function Profile({ navigation }) {
             </Modal>
           </View>
         </View>
-      </>
-    </ImageBackground>
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#F9FAFB",
+  },
   imageViewerContainer: {
     flex: 1,
     backgroundColor: "rgba(0, 0, 0, 0.9)",

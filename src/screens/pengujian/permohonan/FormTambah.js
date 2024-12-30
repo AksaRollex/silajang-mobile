@@ -12,7 +12,7 @@ import {
 } from "react-native";
 import moment from "moment";
 import { useForm, Controller } from "react-hook-form";
-import { useMutation } from "@tanstack/react-query";
+import { QueryClient, useMutation } from "@tanstack/react-query";
 import { TextField, Colors, Button, TextArea } from "react-native-ui-lib";
 import Toast from "react-native-toast-message";
 import axios from "@/src/libs/axios";
@@ -121,34 +121,59 @@ const TambahPermohonan = ({ navigation }) => {
   };
 
   const queryClient = useQueryClient();
+
   const {
     mutate: send,
     isLoading,
     isSuccess,
   } = useMutation(
     () => {
-      const formData = getValues();
+      const formData = new FormData();
+      const values = getValues();
 
-      const requestData = {
-        industri: getValues("industri"),
-        alamat: getValues("alamat"),
-        kegiatan: getValues("kegiatan"),
-        keterangan: getValues("keterangan"),
-        is_mandiri: selectedCara === "kirimMandiri" ? 1 : 0,
-        pembayaran: "transfer",
-        jasa_pengambilan_id: selectedJasaPengambilan,
-        kontrak: {
-          ...formData.kontrak,
-          tanggal_surat: moment(date).format("YYYY-MM-DD"),
+      // Tambahkan file ke FormData
+      const dokumenFile = values.dokumen_permohonan;
+      formData.append("dokumen_permohonan", {
+        uri: dokumenFile.uri,
+        type: dokumenFile.type,
+        name: dokumenFile.name,
+      });
+
+      // Untuk field bulan yang memerlukan array
+      // Opsi 1: Jika selectedBulan sudah berupa array
+      if (Array.isArray(selectedBulan)) {
+        selectedBulan.forEach((bulan, index) => {
+          formData.append(`bulan[${index}]`, bulan);
+        });
+      }
+      // Opsi 2: Jika selectedBulan adalah single value
+      else {
+        formData.append("bulan[]", selectedBulan);
+      }
+
+      // Tambahkan data lainnya
+      formData.append("nomor_surat", values.nomor_surat);
+      formData.append("perihal", values.perihal);
+      formData.append("tanggal_surat", moment(date).format("YYYY-MM-DD"));
+      formData.append("industri", values.industri);
+      formData.append("alamat", values.alamat);
+      formData.append("kegiatan", values.kegiatan);
+      formData.append("keterangan", values.keterangan);
+      formData.append("is_mandiri", selectedCara === "kirimMandiri" ? 1 : 0);
+      formData.append("pembayaran", "transfer");
+      formData.append("jasa_pengambilan_id", selectedJasaPengambilan);
+
+      return axios.post("/permohonan/store", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data",
         },
-      };
-
-      return axios.post("/permohonan/store", requestData);
+      });
     },
     {
       onSuccess: data => {
         setPercuy(data);
         setModalPercuy(true);
+        console.log(data, "sended data");
         queryClient.invalidateQueries(["/permohonan"]);
       },
       onError: error => {
@@ -209,6 +234,18 @@ const TambahPermohonan = ({ navigation }) => {
     setUploadModalVisible(false);
   };
 
+  const [userData, setUserData] = useState(null);
+  useEffect(() => {
+    axios
+      .get("/auth")
+      .then(response => {
+        setUserData(response.data.user.detail);
+        console.log(response.data.user.detail);
+      })
+      .catch(error => {
+        console.error("Error fetching data:", error);
+      });
+  }, []);
   return (
     <>
       <View className="bg-[#ececec] w-full h-full  p-3">
@@ -233,88 +270,96 @@ const TambahPermohonan = ({ navigation }) => {
             </Text>
           </View>
           <View className=" py-4 px-3">
-            <Controller
-              control={control}
-              name="industri"
-              rules={{ required: "Nama Industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1 text-black ">
-                    Nama Industri
-                  </Text>
-                  <TextField
-                    enableErrors
-                    placeholder="CV. PT. "
-                    onChangeText={onChange}
-                    placeholderTextColor="grey"
-                    className="p-3 bg-[#fff] rounded-2xl text-black border-stone-300 border font-poppins-regular"
-                    value={value}
-                  />
-                  {errors.industri && (
-                    <Text
-                      style={{ color: "red" }}
-                      className="-mt-5 mb-2 lowercase font-poppins-regular">
-                      {errors.industri.message}
-                    </Text>
+            {userData && (
+              <>
+                <Controller
+                  control={control}
+                  name="industri"
+                  defaultValue={userData.instansi}
+                  rules={{ required: "Nama Industri tidak boleh kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-1 text-black ">
+                        Nama Industri
+                      </Text>
+                      <TextField
+                        enableErrors
+                        placeholder="CV. PT. "
+                        onChangeText={onChange}
+                        placeholderTextColor="grey"
+                        className="p-3 bg-[#fff] rounded-2xl text-black border-stone-300 border font-poppins-regular"
+                        value={value}
+                        // value={userData.instansi}
+                      />
+                      {errors.industri && (
+                        <Text
+                          style={{ color: "red" }}
+                          className="-mt-5 mb-2 lowercase font-poppins-regular">
+                          {errors.industri.message}
+                        </Text>
+                      )}
+                    </View>
                   )}
-                </View>
-              )}
-            />
+                />
 
-            <Controller
-              control={control}
-              name="alamat"
-              rules={{ required: "alamat industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1 text-black ">
-                    Alamat Industri
+                <Controller
+                  control={control}
+                  name="alamat"
+                  defaultValue={userData.alamat}
+                  rules={{ required: "alamat industri tidak boleh kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-1 text-black ">
+                        Alamat Industri
+                      </Text>
+                      <TextField
+                        enableErrors
+                        placeholderTextColor="grey"
+                        className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
+                        onChangeText={onChange}
+                        placeholder="Masukkan Alamat Industri"
+                        value={value}
+                      />
+                    </View>
+                  )}
+                />
+                {errors.alamat && (
+                  <Text
+                    style={{ color: "red" }}
+                    className="-mt-5 mb-2 lowercase font-poppins-regular">
+                    {errors.alamat.message}
                   </Text>
-                  <TextField
-                    enableErrors
-                    placeholderTextColor="grey"
-                    className="p-3 bg-[#fff] rounded-2xl border-stone-300 border font-poppins-regular"
-                    onChangeText={onChange}
-                    placeholder="Masukkan Alamat Industri"
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.alamat && (
-              <Text
-                style={{ color: "red" }}
-                className="-mt-5 mb-2 lowercase font-poppins-regular">
-                {errors.alamat.message}
-              </Text>
-            )}
+                )}
 
-            <Controller
-              control={control}
-              name="kegiatan"
-              rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
-              render={({ field: { onChange, value } }) => (
-                <View>
-                  <Text className="font-poppins-semibold mb-1 text-black ">
-                    Kegiatan Industri
+                <Controller
+                  control={control}
+                  defaultValue={userData.jenis_kegiatan}
+                  name="kegiatan"
+                  rules={{ required: "Kegiatan Industri tidak boleh kosong" }}
+                  render={({ field: { onChange, value } }) => (
+                    <View>
+                      <Text className="font-poppins-semibold mb-1 text-black ">
+                        Kegiatan Industri
+                      </Text>
+                      <TextField
+                        enableErrors
+                        placeholderTextColor="grey"
+                        placeholder="Masukkan Kegiatan Industri"
+                        className="p-3 bg-[#fff] rounded-2xl  border-stone-300 border font-poppins-regular"
+                        onChangeText={onChange}
+                        value={value}
+                      />
+                    </View>
+                  )}
+                />
+                {errors.kegiatan && (
+                  <Text
+                    style={{ color: "red" }}
+                    className="-mt-5 mb-2 lowercase font-poppins-regular">
+                    {errors.kegiatan.message}
                   </Text>
-                  <TextField
-                    enableErrors
-                    placeholderTextColor="grey"
-                    placeholder="Masukkan Kegiatan Industri"
-                    className="p-3 bg-[#fff] rounded-2xl  border-stone-300 border font-poppins-regular"
-                    onChangeText={onChange}
-                    value={value}
-                  />
-                </View>
-              )}
-            />
-            {errors.kegiatan && (
-              <Text
-                style={{ color: "red" }}
-                className="-mt-5 mb-2 lowercase font-poppins-regular">
-                {errors.kegiatan.message}
-              </Text>
+                )}
+              </>
             )}
 
             {/* <Controller
@@ -567,7 +612,7 @@ const TambahPermohonan = ({ navigation }) => {
                       </View>
                       <TouchableOpacity
                         onPress={() => setSelectedFile(null)}
-                        className="p-2 rounded-full">
+                        className="p-2  rounded-full">
                         <AntDesign name="close" size={16} color="black" />
                       </TouchableOpacity>
                     </View>
