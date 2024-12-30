@@ -24,6 +24,7 @@ import RNFS from "react-native-fs";
 import Canvas, { Image as CanvasImage } from "react-native-canvas";
 import { SafeAreaView } from "react-native-safe-area-context";
 import AntDesign from "react-native-vector-icons/AntDesign";
+import IonIcons from "react-native-vector-icons/Ionicons";
 import BackButton from "../../components/Back";
 import QRCode from "react-native-qrcode-svg";
 
@@ -36,6 +37,8 @@ const PengujianDetail = ({ route, navigation }) => {
   const [qrCodeBase64, setQrCodeBase64] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
   const [modalError, setModalError] = useState(false);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewPath, setPreviewPath] = useState("");
   const { data: setting } = useSetting();
   const copyToClipboard = text => {
     Clipboard.setString(text);
@@ -114,7 +117,7 @@ const PengujianDetail = ({ route, navigation }) => {
       .get(`/pembayaran/pengujian/${uuid}`)
       .then(res => {
         setQrisValue(res.data.data.payment?.qris_value);
-        console.log(res.data.data.payment?.qris_value, "qris value");
+        // console.log(res.data.data.payment?.qris_value, "qris value");
       })
       .catch(err => {
         Alert.alert("error", err.response?.data?.data?.message);
@@ -187,22 +190,6 @@ const PengujianDetail = ({ route, navigation }) => {
       const ctx = canvas.getContext("2d");
       ctx.clearRect(0, 0, width, height); // Clear canvas first
 
-      // Handle QR code first
-      if (qrCodeBase64) {
-        const qrisImage = new CanvasImage(canvas);
-        qrisImage.src = qrCodeBase64;
-        await new Promise(resolve => {
-          qrisImage.addEventListener("load", () => {
-            const imageWidth = 200;
-            const imageHeight = 200;
-            const x = (width - imageWidth) / 2;
-            const y = 180; // Specific Y position for QR code
-            ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
-            resolve();
-          });
-        });
-      }
-
       // Then overlay the template
       const qrisTemplateBase64 = await getBase64Image(
         require("../../../../assets/images/qris-template.png"),
@@ -210,19 +197,31 @@ const PengujianDetail = ({ route, navigation }) => {
 
       const qrisTemplate = new CanvasImage(canvas);
       qrisTemplate.src = qrisTemplateBase64;
-      await new Promise(resolve => {
-        qrisTemplate.addEventListener("load", () => {
-          ctx.globalCompositeOperation = "destination-over"; // Draw template behind existing content
-          ctx.drawImage(qrisTemplate, 0, 0, width, height);
-          ctx.globalCompositeOperation = "source-over"; // Reset composite operation
-          resolve();
-        });
+      qrisTemplate.addEventListener("load", () => {
+        console.log(qrisTemplate, 222);
+
+        ctx.globalCompositeOperation = "destination-over"; // Draw template behind existing content
+        ctx.drawImage(qrisTemplate, 0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over"; // Reset composite operation
       });
+
+      // Handle QR code first
+      if (qrCodeBase64) {
+        const qrisImage = new CanvasImage(canvas);
+        qrisImage.src = `data:image/png;base64,${qrCodeBase64}`;
+        qrisImage.addEventListener("load", () => {
+          const imageWidth = 200;
+          const imageHeight = 200;
+          const x = (width - imageWidth) / 2;
+          const y = 120; // Specific Y position for QR code
+          ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
+        });
+      }
     } catch (error) {
       console.error("Error dalam proses render:", error);
     }
   };
-  
+
   const [dataKode, setDataKode] = useState(null);
 
   useEffect(() => {
@@ -237,73 +236,79 @@ const PengujianDetail = ({ route, navigation }) => {
       });
   }, [uuid]);
 
-  useEffect(() => {
-    if (qrCodeRef.current && canvasRef.current && qrisValue) {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
-      
-      const qrImage = new Image();
-      qrImage.onload = () => {
-        ctx.drawImage(qrImage, 0, 0);
-      };
-      qrImage.src = qrCodeBase64;
-    }
-  }, [qrCodeBase64]);
+  // useEffect(() => {
+  //   if (qrCodeRef.current && canvasRef.current && qrisValue) {
+  //     const canvas = canvasRef.current;
+  //     const ctx = canvas.getContext("2d");
 
-  const downloadQris = () => {
-    if (!dataKode) {
-      setModalError(true);
-      setTimeout(() => {
-        setModalError(false);
-      }, 2000);
-      return;
-    }
+  //     const qrImage = new Image();
+  //     qrImage.onload = () => {
+  //       ctx.drawImage(qrImage, 0, 0);
+  //     };
+  //     qrImage.src = qrCodeBase64;
+  //   }
+  // }, [qrCodeBase64]);
 
- 
-
-    const timestamp = new Date().getTime();
-    const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
-    // const downloadDestPath = `${RNFS.TemporaryDirectoryPath}/${timestamp}.png`;
-    // const downloadDestPath = `${RNFS.TemporaryDirectoryPath}/${sanitizedKode}.png`;
-    const downloadDir = RNFS.PicturesDirectoryPath;
-    const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
-
-    console.log("Download Directory:", downloadDir);
-    console.log("Full Path:", downloadDestPath);
-
-    canvasRef.current
-      .toDataURL("image/png")
-      .then(fullData => {
-        const base64Data = fullData.split(",")[1];
-
-        console.log("Base64 Data Length:", base64Data.length);
-
-        RNFS.writeFile(downloadDestPath, base64Data, "base64")
-          .then(() => {
-            console.log("File berhasil disimpan di:", downloadDestPath);
-            setModalVisible(true);
-            setTimeout(() => {
-              setModalVisible(false);
-            }, 2000);
-
-            // Coba scan file ke gallery
-            RNFS.scanFile(downloadDestPath)
-              .then(() => {
-                console.log("File successfully scanned into gallery");
-              })
-              .catch(error => {
-                console.error("Gagal scan file:", error);
-              });
-          })
-          .catch(error => {
-            console.error("Gagal menyimpan file:", error);
-            // Log detail error
-            console.error("Error Details:", JSON.stringify(error));
-          });
-      })
-      .catch(error => {
-        console.error("Gagal mengambil data URL:", error);
+  const handleQrCodeRef = ref => {
+    if (ref) {
+      qrCodeRef.current = ref;
+      ref.toDataURL(data => {
+        setQrCodeBase64(data);
       });
+    }
+  };
+
+  const downloadQris = async () => {
+    try {
+      if (!dataKode) {
+        setModalError(true);
+        setTimeout(() => {
+          setModalError(false);
+        }, 2000);
+        return;
+      }
+
+      if (!canvasRef.current) {
+        console.error("Canvas reference not found");
+        return;
+      }
+
+      const timestamp = new Date().getTime();
+      const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
+      const downloadDir = RNFS.PicturesDirectoryPath;
+      const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
+
+      console.log("Download Directory:", downloadDir);
+      console.log("Full Path:", downloadDestPath);
+
+      // Ensure canvas is fully rendered before getting data URL
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const fullData = await canvasRef.current.toDataURL("image/png");
+      const base64Data = fullData.split(",")[1];
+
+      console.log("Base64 Data Length:", base64Data.length);
+
+      await RNFS.writeFile(downloadDestPath, base64Data, "base64");
+      console.log("File berhasil disimpan di:", downloadDestPath);
+
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(false);
+        setPreviewPath(downloadDestPath); // Simpan path file
+        setPreviewVisible(true); // Tampilkan preview
+      }, 2000);
+
+      try {
+        await RNFS.scanFile(downloadDestPath);
+        console.log("File successfully scanned into gallery");
+      } catch (error) {
+        console.error("Gagal scan file:", error);
+      }
+    } catch (error) {
+      console.error("Gagal dalam proses download:", error);
+      console.error("Error Details:", JSON.stringify(error));
+    }
   };
 
   const renderHargaDanAtasNama = () => {
@@ -606,23 +611,42 @@ const PengujianDetail = ({ route, navigation }) => {
                         ? 0.5
                         : 1,
                   }}>
-                  <View className="mx-20 top-20 mt-10 ">
-                    <QRCode
-                      value={qrisValue}
-                      getRef={ref => (qrCodeRef.current = ref)}
-                      size={200}
-                    />
-                  </View>
-                  <Canvas
-                    ref={handleCanvas}
-                    style={{
-                      position: "absolute",
-                      zIndex: -1,
-                    }}
-                  />
+                  {/* Tampilkan ActivityIndicator jika qrisValue kosong atau null */}
+                  {!qrisValue ? (
+                    <View
+                      style={{
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flex: 1,
+                      }}>
+                      <ActivityIndicator size="large" color={Colors.brand} />
+                    </View>
+                  ) : (
+                    <>
+                      <View
+                        className="mx-20 top-20 mt-10"
+                        style={{ opacity: 0 }}>
+                        <QRCode
+                          value={qrisValue}
+                          getRef={handleQrCodeRef}
+                          size={200}
+                        />
+                      </View>
+                      {Boolean(qrCodeBase64) && (
+                        <Canvas
+                          ref={handleCanvas}
+                          style={{
+                            position: "absolute",
+                            zIndex: -1,
+                          }}
+                        />
+                      )}
+                    </>
+                  )}
                 </View>
+
                 {formData.payment.status === "pending" && (
-                  <View className="mt-60">
+                  <View className="mt-56">
                     <TouchableOpacity
                       onPress={downloadQris}
                       disabled={formData.payment.is_expired}
@@ -736,11 +760,13 @@ const PengujianDetail = ({ route, navigation }) => {
         <Modal animationType="fade" transparent={true} visible={modalVisible}>
           <View style={styles.overlayView}>
             <View style={styles.successContainer}>
-              <Image
-                source={require("@/assets/images/check-mark.png")}
-                style={styles.lottie}
-              />
-
+              <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+                <IonIcons
+                  size={50}
+                  color="#95bb72"
+                  name="checkmark-done-sharp"
+                />
+              </View>
               <Text style={styles.successTextTitle}>
                 File berhasil di download
               </Text>
@@ -750,6 +776,29 @@ const PengujianDetail = ({ route, navigation }) => {
             </View>
           </View>
         </Modal>
+
+        {previewVisible && (
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={previewVisible}>
+            <View style={styles.overlayView}>
+              <View style={styles.previewContainer}>
+                <Image
+                  source={{ uri: `file://${previewPath}` }}
+                  style={styles.previewImage}
+                  resizeMode="contain"
+                />
+                <TouchableOpacity
+                  style={styles.closeButton}
+                  onPress={() => setPreviewVisible(false)}>
+                  <Text style={styles.closeButtonText}>Tutup</Text>
+                </TouchableOpacity>
+              </View>
+            </View>
+          </Modal>
+        )}
+
         <Modal animationType="fade" transparent={true} visible={modalError}>
           <View style={styles.overlayView}>
             <View style={styles.successContainer}>
@@ -779,6 +828,29 @@ const PengujianDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  previewContainer: {
+    width: "90%",
+    height: "70%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewImage: {
+    width: "100%",
+    height: "80%",
+  },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: "#f00",
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   card: {
     backgroundColor: "white",
     borderRadius: 10,

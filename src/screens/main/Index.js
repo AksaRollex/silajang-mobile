@@ -179,8 +179,8 @@ const CustomTabBar = ({ state, descriptors, navigation }) => {
                     ? "wallet"
                     : "person-sharp"
                 }
-                size={25}
-                color={isFocused ? Colors.brand : "#5f5f5f"}
+                size={22}
+                color={isFocused ? Colors.brand : "grey"}
               />
               <Text
                 style={[styles.label, isFocused && styles.labelFocused]}
@@ -346,7 +346,7 @@ const styles = StyleSheet.create({
     tintColor: "white",
   },
   label: {
-    fontSize: 12,
+    fontSize: 10,
     color: "grey",
   },
   labelFocused: {

@@ -22,6 +22,7 @@ import { API_URL } from "@env";
 import RNFS from "react-native-fs";
 import Feather from "react-native-vector-icons/Feather";
 import Pdf from "react-native-pdf";
+import FileViewer from "react-native-file-viewer";
 import Toast from "react-native-toast-message";
 import IonIcons from "react-native-vector-icons/Ionicons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
@@ -396,6 +397,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const handleDownloadPermohonan = async () => {
+    setIsLoading(true);  // Set isLoading to true sebelum mulai download
     setModalPermohonan(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
@@ -423,7 +425,7 @@ const TitikUji = ({ navigation, route, callback }) => {
 
         try {
           await FileViewer.open(downloadPath, {
-            showOpenWithDialog: false,
+            showOpenWithDialog: true,
             mimeType: "application/pdf",
           });
         } catch (openError) {
@@ -483,7 +485,10 @@ const TitikUji = ({ navigation, route, callback }) => {
         text1: "Error",
         text2: `PDF gagal diunduh: ${error.message}`,
       });
+    } finally {
+      setIsLoading(false); // Set isLoading to false setelah Toast muncul
     }
+  
   };
 
   const handlePreviewBeritaAcara = async ({ uuid }) => {
@@ -503,6 +508,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const handleDownloadBeritaAcara = async () => {
+    setIsLoading(true);
     setModalBeritaAcara(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
@@ -530,7 +536,7 @@ const TitikUji = ({ navigation, route, callback }) => {
 
         try {
           await FileViewer.open(downloadPath, {
-            showOpenWithDialog: false,
+            showOpenWithDialog: true,
             mimeType: "application/pdf",
           });
         } catch (openError) {
@@ -590,6 +596,8 @@ const TitikUji = ({ navigation, route, callback }) => {
         text1: "Error",
         text2: `PDF gagal diunduh: ${error.message}`,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -610,6 +618,7 @@ const TitikUji = ({ navigation, route, callback }) => {
   };
 
   const handleDownloadSertifikatLHU = async () => {
+    setIsLoading(true);
     setModalSertifikatLHU(false);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
@@ -637,7 +646,7 @@ const TitikUji = ({ navigation, route, callback }) => {
 
         try {
           await FileViewer.open(downloadPath, {
-            showOpenWithDialog: false,
+            showOpenWithDialog: true,
             mimeType: "application/pdf",
           });
         } catch (openError) {
@@ -697,6 +706,8 @@ const TitikUji = ({ navigation, route, callback }) => {
         text1: "Error",
         text2: `PDF gagal diunduh: ${error.message}`,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -806,7 +817,7 @@ const TitikUji = ({ navigation, route, callback }) => {
               </Text>
               <TouchableOpacity
                 onPress={handleDownloadPermohonan}
-                className="p-2 rounded flex-row items-center">
+                className="p-2 bg-gray-100 rounded-full shadow">
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
@@ -814,11 +825,14 @@ const TitikUji = ({ navigation, route, callback }) => {
             {permohonanUrl ? (
               <View className="flex-1">
                 {isLoading && (
-                  <View className="absolute z-10 w-full h-full items-center justify-center">
-                    <ActivityIndicator size="large" color="#0000ff" />
-                    <Text className="mt-2 font-poppins-medium text-gray-600">
-                      Memuat PDF...
-                    </Text>
+                  <View className="absolute z-10 w-full h-full items-center justify-center bg-black bg-opacity-30">
+                    {/* Animasi loading */}
+                    <View className="bg-white p-6 rounded-lg shadow-md items-center">
+                      <ActivityIndicator size="large" color="#4A90E2" />
+                      <Text className="mt-4 font-poppins-medium text-gray-700">
+                        Memuat PDF, mohon tunggu...
+                      </Text>
+                    </View>
                   </View>
                 )}
                 <Pdf
@@ -874,11 +888,13 @@ const TitikUji = ({ navigation, route, callback }) => {
             {beritaAcaraUrl ? (
               <View className="flex-1">
                 {isLoading && (
-                  <View className="absolute z-10 w-full h-full items-center justify-center">
-                    <ActivityIndicator size="large" color="#0000ff" />
-                    <Text className="mt-2 font-poppins-medium text-gray-600">
-                      Memuat PDF...
-                    </Text>
+                  <View className="absolute z-10 w-full h-full items-center justify-center bg-black bg-opacity-30">
+                    <View className="bg-white p-6 rounded-lg shadow-md items-center">
+                      <ActivityIndicator size="large" color="#4A90E2" />
+                      <Text className="mt-4 font-poppins-medium text-gray-700">
+                        Memuat PDF, mohon tunggu...
+                      </Text>
+                    </View>
                   </View>
                 )}
                 <Pdf
@@ -934,11 +950,13 @@ const TitikUji = ({ navigation, route, callback }) => {
             {sertifikatLHUUrl ? (
               <View className="flex-1">
                 {isLoading && (
-                  <View className="absolute z-10 w-full h-full items-center justify-center">
-                    <ActivityIndicator size="large" color="#0000ff" />
-                    <Text className="mt-2 font-poppins-medium text-gray-600">
-                      Memuat PDF...
-                    </Text>
+                  <View className="absolute z-10 w-full h-full items-center justify-center bg-black bg-opacity-30">
+                    <View className="bg-white p-6 rounded-lg shadow-md items-center">
+                      <ActivityIndicator size="large" color="#4A90E2" />
+                      <Text className="mt-4 font-poppins-medium text-gray-700">
+                        Memuat PDF, mohon tunggu...
+                      </Text>
+                    </View>
                   </View>
                 )}
                 <Pdf
@@ -976,6 +994,31 @@ const TitikUji = ({ navigation, route, callback }) => {
   );
 };
 const styles = StyleSheet.create({
+  loadingOverlay: {
+    position: "absolute",
+    width: "100%",
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+    backgroundColor: "rgba(0, 0, 0, 0.3)", // Semi transparan
+    zIndex: 10,
+  },
+  loadingContainer: {
+    backgroundColor: "#fff",
+    padding: 20,
+    borderRadius: 10,
+    shadowColor: "#000",
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 5,
+    alignItems: "center",
+  },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: "#4A4A4A",
+    fontFamily: "Poppins-Medium",
+  },
   backButton: {
     padding: 4,
     backgroundColor: "#6b7fde",
