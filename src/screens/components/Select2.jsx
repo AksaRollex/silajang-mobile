@@ -84,8 +84,8 @@ const styles = StyleSheet.create({
 dropdownButtonStyle: {
   flexDirection: "row",
   alignItems: "center",
-  paddingHorizontal: 12,
-  paddingVertical: 12,
+  paddingHorizontal: 10,
+  paddingVertical: 10,
   borderRadius : 10,
   borderWidth: 1, // Tambahkan border jika diinginkan
   borderColor: "#374151", // Warna border
@@ -98,12 +98,12 @@ dropdownButtonIconStyle: {
 },
 dropdownButtonTxtStyle: {
   flex: 1,
-  fontSize: 16,
+  fontSize: 14,
   color: "black", // Warna teks hitam
   fontFamily: "Poppins-Regular",
 },
 dropdownButtonArrowStyle: {
-  fontSize: 18,
+  fontSize: 16 ,
   color: "black",
 },
 dropdownMenuStyle: {
