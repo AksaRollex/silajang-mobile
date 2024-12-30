@@ -2,7 +2,7 @@ import { View, Text, Button, Colors } from "react-native-ui-lib";
 import React, { memo, useEffect, useState } from "react";
 import { useForm, Controller, set } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ActivityIndicator, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity,} from "react-native";
+import { ActivityIndicator, ScrollView, StyleSheet, TextInput, Image, TouchableOpacity, } from "react-native";
 import axios from "@/src/libs/axios";
 import Toast from "react-native-toast-message";
 import { launchImageLibrary } from "react-native-image-picker";
@@ -37,10 +37,10 @@ export default memo(function Form({ route, navigation }) {
   const [formData, setFormData] = useState({ tanda_tangan_id: "", });
   const [tandaTanganUrl, setTandaTanganUrl] = useState(null);
   const [tandaTanganFile, setTandaTanganFile] = useState(null);
-  const togglePasswordVisibility = () => { setShowPassword(!showPassword);};
-  const togglePasswordVisibility2 = () => { setShowPassword2(!showPassword2);};
+  const togglePasswordVisibility = () => { setShowPassword(!showPassword); };
+  const togglePasswordVisibility2 = () => { setShowPassword2(!showPassword2); };
 
-  const { handleSubmit, control, formState: { errors }, setValue, watch} = useForm({
+  const { handleSubmit, control, formState: { errors }, setValue, watch } = useForm({
     values: { ...userData },
     defaultValues: {
       nama: "",
@@ -105,14 +105,14 @@ export default memo(function Form({ route, navigation }) {
     },
   );
 
-  
-  
+
+
   useEffect(() => {
     const fetchTandaTangan = async () => {
       try {
         const response = await axios.get(`/master/user/${uuid}/edit`);
         const userData = response.data.data;
-  
+
         if (userData.detail.tanda_tangan) {
           const fullTandaTanganUrl = `${APP_URL}${userData.detail.tanda_tangan}`;
           setTandaTanganUrl(fullTandaTanganUrl);
@@ -136,7 +136,7 @@ export default memo(function Form({ route, navigation }) {
         setPhotoTT([])
       }
     };
-  
+
     if (uuid) {
       fetchTandaTangan();
     }
@@ -150,13 +150,13 @@ export default memo(function Form({ route, navigation }) {
       quality: 0.8,
       selectionLimit: 1,
     };
-  
+
     launchImageLibrary(options, async (response) => {
       if (response.didCancel) {
         console.log('User cancelled image picker');
         return;
       }
-  
+
       if (response.errorCode) {
         Toast.show({
           type: "error",
@@ -165,10 +165,10 @@ export default memo(function Form({ route, navigation }) {
         });
         return;
       }
-  
+
       if (response.assets && response.assets.length > 0) {
         const selectedImage = response.assets[0];
-        
+
         // Validasi ukuran file
         const fileSizeInKB = selectedImage.fileSize / 1024;
         if (fileSizeInKB > 2048) {
@@ -179,15 +179,15 @@ export default memo(function Form({ route, navigation }) {
           });
           return;
         }
-  
+
         const tandaTanganFile = {
-          uri: Platform.OS === 'android' 
-            ? selectedImage.uri 
+          uri: Platform.OS === 'android'
+            ? selectedImage.uri
             : selectedImage.uri.replace('file://', ''),
           type: selectedImage.type || "image/jpeg",
           name: selectedImage.fileName || "tanda_tangan.jpg"
         };
-  
+
         // Update state
         setTandaTangan(tandaTanganFile);
         setTandaTanganUrl(selectedImage.uri);
@@ -202,13 +202,13 @@ export default memo(function Form({ route, navigation }) {
 
       setTandaTanganUrl(null);
       setTandaTanganFile([]);
-  
+
       Toast.show({
         type: "success",
         text1: "Berhasil",
         text2: "Tanda tangan telah dihapus"
       });
-      
+
       // Refetch user data to ensure sync with backend
       await refetchUserData();
     } catch (error) {
@@ -371,7 +371,7 @@ export default memo(function Form({ route, navigation }) {
   const onSubmit = async (data) => {
     try {
       const formData = new FormData();
-      
+
       formData.append('nama', data.nama);
       formData.append('nip', data.nip);
       formData.append('nik', data.nik);
@@ -383,7 +383,7 @@ export default memo(function Form({ route, navigation }) {
           data.role_ids.forEach((roleId, index) => {
             formData.append(`role_ids[${index}]`, roleId);
           });
-        } 
+        }
         else {
           const roleIds = String(data.role_ids).split(',').map(id => id.trim());
           roleIds.forEach((roleId, index) => {
@@ -391,19 +391,19 @@ export default memo(function Form({ route, navigation }) {
           });
         }
       }
-  
+
       if (data.password) {
         formData.append('password', data.password);
         formData.append('password_confirmation', data.password_confirmation);
       }
-  
+
       if (data.detail) {
         const detailFields = [
-          'instansi', 'alamat', 'pimpinan', 'pj_mutu', 
-          'telepon', 'fax', 'email', 'jenis_kegiatan', 
+          'instansi', 'alamat', 'pimpinan', 'pj_mutu',
+          'telepon', 'fax', 'email', 'jenis_kegiatan',
           'lat', 'long'
         ];
-  
+
         detailFields.forEach(field => {
           if (data.detail[field]) {
             formData.append(`detail[${field}]`, data.detail[field]);
@@ -423,7 +423,7 @@ export default memo(function Form({ route, navigation }) {
           name: photoFile.name
         });
       }
-  
+
       if (tandaTanganUrl) {
         formData.append('tanda_tangan', {
           uri: tandaTanganUrl.uri || tandaTanganUrl,
@@ -431,17 +431,17 @@ export default memo(function Form({ route, navigation }) {
           name: tandaTanganUrl.name || 'tanda_tangan.jpg'
         });
       }
-  
-      const endpoint = uuid 
+
+      const endpoint = uuid
         ? `/master/user/${uuid}/update`
         : "/master/user/store";
-  
+
       const response = await axios.post(endpoint, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
       });
-  
+
       Toast.show({
         type: "success",
         text1: "Success",
@@ -456,7 +456,7 @@ export default memo(function Form({ route, navigation }) {
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: uuid 
+        text2: uuid
           ? `Gagal memperbarui data: ${error.response?.data?.message || ''}`
           : "Gagal membuat data",
       });
@@ -479,13 +479,14 @@ export default memo(function Form({ route, navigation }) {
 
   return (
     <ScrollView>
-       <View
-                className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
-                style={{ backgroundColor: '#fff' }}
-              >
-                  <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
-                  <Text className="text-lg font-poppins-semibold">{data ? "Edit User" : "Tambah User" }</Text>
-              </View>
+      <View
+        className="flex-row items-center justify-between py-3.5 px-4 border-b border-gray-300"
+        style={{ backgroundColor: '#fff' }}
+      >
+        <IonIcon name="arrow-back-outline" onPress={() => navigation.goBack()} size={25} color="#312e81" />
+        <Text className="text-lg font-poppins-semibold">{data ? "Edit User" : "Tambah User"}</Text>
+      </View>
+      
       <View style={styles.container}>
         <View style={styles.cardContainer}>
           <View className="">
@@ -507,9 +508,9 @@ export default memo(function Form({ route, navigation }) {
                       resizeMode="cover"
                     />
                     <TouchableOpacity
-                     className="absolute -top-2 -right-2 bg-white rounded-full w-9 h-9 items-center justify-center shadow-lg border border-red-100"
-                     onPress={handleDeletePhoto}>
-                     <Icons name="close" size={23} color="#dc2626" />
+                      className="absolute -top-2 -right-2 bg-white rounded-full w-9 h-9 items-center justify-center shadow-lg border border-red-100"
+                      onPress={handleDeletePhoto}>
+                      <Icons name="close" size={23} color="#dc2626" />
                     </TouchableOpacity>
                   </View>
                 ) : (
@@ -552,8 +553,8 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="nip"
-              rules={{ 
-                required: "Nip harus diisi", 
+              rules={{
+                required: "Nip harus diisi",
                 pattern: {
                   value: /^[0-9]*$/,
                   message: "Nip harus berupa angka",
@@ -566,7 +567,7 @@ export default memo(function Form({ route, navigation }) {
                   onChangeText={(text) => {
                     const numericValue = text.replace(/[^0-9]/g, "");
                     onChange(numericValue);
-                    keyboardType="numeric";
+                    keyboardType = "numeric";
                   }}
                 />
               )}
@@ -578,13 +579,13 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="nik"
-              rules={{ 
+              rules={{
                 required: "Nik harus diisi",
                 pattern: {
                   value: /^[0-9]*$/,
                   message: "Nik harus berupa angka",
                 }
-               }}
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
@@ -592,7 +593,7 @@ export default memo(function Form({ route, navigation }) {
                   onChangeText={(text) => {
                     const numericValues = text.replace(/[^0-9]/g, "");
                     onChange(numericValues);
-                    keyboardType="numeric";
+                    keyboardType = "numeric";
                   }}
                 />
               )}
@@ -801,7 +802,7 @@ export default memo(function Form({ route, navigation }) {
                         <View className="relative">
                           <FastImage
                             className="w-48 h-48 rounded-lg"
-                            source={{ 
+                            source={{
                               uri: tandaTanganUrl?.tanda_tangan
                             }}
                             resizeMode="contain"
@@ -824,7 +825,7 @@ export default memo(function Form({ route, navigation }) {
                             className="absolute bottom-0 right-0 bg-indigo-600 rounded-full w-10 h-10 items-center justify-center shadow-lg"
                             onPress={() => {
                               handleChooseTandaTangan();
-                              onChange(null); 
+                              onChange(null);
                             }}>
                             <Icons name="camera" size={20} color="white" />
                           </TouchableOpacity>
@@ -839,7 +840,7 @@ export default memo(function Form({ route, navigation }) {
                       className="border-2 border-dashed border-indigo-600/30 bg-indigo-50/20 rounded-2xl p-8"
                       onPress={() => {
                         handleChooseTandaTangan();
-                        onChange(null); 
+                        onChange(null);
                       }}>
                       <View className="items-center space-y-4">
                         <View className="bg-indigo-100 rounded-full p-5">
@@ -905,7 +906,7 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="detail.email"
-              rules={{ 
+              rules={{
                 required: "Email harus diisi",
                 pattern: {
                   value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
@@ -928,13 +929,13 @@ export default memo(function Form({ route, navigation }) {
             <Controller
               control={control}
               name="detail.telepon"
-              rules={{ 
+              rules={{
                 required: "No. Telepon harus diisi",
                 pattern: {
                   value: /^08[0-9]\d{8,11}$/,
                   message: "No. Telepon harus berupa angka",
                 }
-               }}
+              }}
               render={({ field: { onChange, value } }) => (
                 <TextInput
                   style={styles.input}
@@ -1184,15 +1185,15 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   input: {
-  flexDirection: "row",
-  alignItems: "center",
-  paddingHorizontal: 12,
-  paddingVertical: 12,
-  borderRadius : 4,
-  borderWidth: 1,  
-  borderColor: "#374151", 
-  backgroundColor: "#FFFFFF",
-  color: Colors.black
+    flexDirection: "row",
+    alignItems: "center",
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 4,
+    borderWidth: 1,
+    borderColor: "#374151",
+    backgroundColor: "#FFFFFF",
+    color: Colors.black
   },
   textArea: {
     height: 100,
