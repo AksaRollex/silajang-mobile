@@ -100,7 +100,7 @@ const MoreDataModal = ({ visible, onClose, data, navigation, userRole }) => {
           {/* Header */}
           <View style={{ flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 15 }}>
             <Text style={{ fontSize: 20, fontFamily: 'Poppins-SemiBold', color: '#000' }}>
-              More Data
+              Semua Data
             </Text>
             <TouchableOpacity onPress={handleClose}>
               <MaterialCommunityIcons name="close" size={24} color="#000" />

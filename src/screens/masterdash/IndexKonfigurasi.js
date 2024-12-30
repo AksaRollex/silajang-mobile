@@ -19,7 +19,7 @@ export default function IndexKonfigurasi() {
   const roleAccess = {
     admin: {
       sections: ['konfigurasi'],
-      items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian','denda']
+      items: ['log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian', 'denda']
     },
     'kepala-upt': {
       sections: ['konfigurasi'],
@@ -34,6 +34,29 @@ export default function IndexKonfigurasi() {
       items: ['tracking-pengujian']
     },
   };
+  const getVisibleMenuItems = () => {
+    const allItems = ['denda', 'log-tte', 'tanda-tangan', 'umpan-balik', 'tracking-pengujian'];
+    return allItems.filter(item => hasItemAccess(item));
+  };
+
+  const getItemStyle = (item) => {
+    const visibleItems = getVisibleMenuItems();
+    const isFirst = visibleItems[0] === item;
+    const isLast = visibleItems[visibleItems.length - 1] === item;
+
+    return {
+      borderTopLeftRadius: isFirst ? 10 : 0,
+      borderTopRightRadius: isFirst ? 10 : 0,
+      borderBottomLeftRadius: isLast ? 10 : 0,
+      borderBottomRightRadius: isLast ? 10 : 0,
+    };
+  };
+
+  const shouldShowBorder = (item) => {
+    const visibleItems = getVisibleMenuItems();
+    return visibleItems.indexOf(item) !== visibleItems.length - 1;
+  };
+
   const userRoles = user?.roles?.map(role => role.name.toLowerCase()) || [];
   const hasAccess = (section) => {
     return userRoles.some(role =>
@@ -116,11 +139,11 @@ export default function IndexKonfigurasi() {
               {/* <FontAwesome6 name="computer" size={22} style={{ color: "black" }} /> */}
               <Text className="font-poppins-semibold text-black text-lg ml-2">Konfigurasi</Text>
             </View>
-            {hasItemAccess('denda') && (
-            <View>
-                <List.Item
 
-                  style={{ borderTopLeftRadius: 10, borderTopRightRadius: 10 }}
+            {hasItemAccess('denda') && (
+              <View>
+                <List.Item
+                  style={getItemStyle('denda')}
                   title={<Text className="font-poppins-medium text-[15px]">Denda</Text>}
                   left={() => (
                     <View className="bg-rose-600 rounded-full">
@@ -133,15 +156,17 @@ export default function IndexKonfigurasi() {
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("Denda")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {shouldShowBorder('denda') && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
 
 
             {hasItemAccess('log-tte') && (
               <View>
-
                 <List.Item
+                  style={getItemStyle('log-tte')}
                   title={<Text className="font-poppins-medium text-[15px]">Log TTE</Text>}
                   left={() => (
                     <View className="bg-blue-600 rounded-full">
@@ -154,13 +179,16 @@ export default function IndexKonfigurasi() {
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
                   onPress={() => navigation.navigate("LogTte")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-              </View>
+                {shouldShowBorder('log-tte') && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}              
+                </View>
 
             )}
             {hasItemAccess('tanda-tangan') && (
               <View>
                 <List.Item
+                  style={getItemStyle('tanda-tangan')}
                   title={<Text className="font-poppins-medium text-[15px]">Tanda Tangan</Text>}
                   right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
@@ -171,12 +199,15 @@ export default function IndexKonfigurasi() {
                   className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("TandaTangan")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                {shouldShowBorder('tanda-tangan') && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}
               </View>
             )}
             {hasItemAccess('umpan-balik') && (
               <View>
                 <List.Item
+                  style={getItemStyle('umpan-balik')}
                   title={<Text className="font-poppins-medium text-[15px]">Umpan Balik</Text>}
                   right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
@@ -187,15 +218,17 @@ export default function IndexKonfigurasi() {
                   className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("UmpanBalik")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-              </View>
+                {shouldShowBorder('umpan-balik') && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}           
+               </View>
             )}
 
             {hasItemAccess('tracking-pengujian') && (
               <View>
                 <List.Item
+                  style={getItemStyle('tracking-pengujian')}
                   title={<Text className="font-poppins-medium text-[15px]">Tracking Pengujian</Text>}
-                  style={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
                   right={props => <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />}
                   left={() => (
                     <View className="bg-purple-600 rounded-full">
@@ -205,14 +238,16 @@ export default function IndexKonfigurasi() {
                   className='px-5 bg-[#ffffff] ml-3 mr-3'
                   onPress={() => navigation.navigate("TrackingPengujian")}
                 />
-                <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
-              </View>
+                {shouldShowBorder('tracking-pengujian') && (
+                  <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
+                )}            
+                  </View>
             )}
 
           </>
         )}
         <View className="mt-[80%]">
-        <TextFooter />
+          <TextFooter />
         </View>
       </ScrollView>
     </View>
@@ -223,7 +258,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "rgba(13, 71, 161, 0.2)",
-    justifyContent: "flex-start", // Ensure content starts from the top
+    justifyContent: "flex-start",
   },
   headerContainer: {
     width: "100%",
@@ -248,13 +283,12 @@ const styles = StyleSheet.create({
   },
   buttonContainer: {
     position: "absolute",
-    bottom: 0, // Position buttons at the bottom
+    bottom: 0,
     width: "100%",
     flexDirection: "row",
     justifyContent: "space-around",
     padding: 10,
     marginBottom: 60,
-    // backgroundColor: "rgba(255, 255, 255, 0.9)", // Optional: Semi-transparent background
   },
   button: {
     paddingVertical: 10,

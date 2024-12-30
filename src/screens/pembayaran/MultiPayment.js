@@ -13,9 +13,12 @@ import { useHeaderStore } from "../main/Index";
 import Ionicons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { TextFooter } from "../components/TextFooter";
+import FileViewer from 'react-native-file-viewer';
 import Feather from "react-native-vector-icons/Feather";
 import Pdf from "react-native-pdf";
 import { APP_URL } from "@env";
+import RNFS, { downloadFile } from "react-native-fs";
+import Toast from "react-native-toast-message";
 
 
 const MultiPayment = ({ navigation }) => {
@@ -27,6 +30,7 @@ const MultiPayment = ({ navigation }) => {
   const { setHeader } = useHeaderStore();
   const [selectedItem, setSelectedItem] = useState(null);
   const [tteType, setTteType] = useState('system');
+  const [previewReport, setPreviewReport] = useState(true);
   const [tteModalVisible, setTteModalVisible] = useState(false);
   const [pdfError, setPdfError] = useState(false);
   const [reportUrl, setReportUrl] = useState('');
@@ -74,20 +78,42 @@ const MultiPayment = ({ navigation }) => {
     }
   };
 
-  const handlePreviewReport = async () => {
+  const handleReport = async () => {
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
-      const baseUrl = `/api/v1/report/pembayaran/pengujian`;
-      const reportUrl = `${APP_URL}${baseUrl}?tahun=${tahun}&bulan=${bulan}&type=${type}&token=${authToken}`;
-
-      setReportUrl(reportUrl);
-      setModalVisible(true);
+      
+      if (previewReport) {
+        // For preview in modal
+        const baseUrl = `/api/v1/report/pembayaran/multi-payment`;
+        const reportUrl = `${APP_URL}${baseUrl}?tahun=${selectedYear}&bulan=${selectedMonth}&type=${selectedType}&token=${authToken}`;
+        
+        setReportUrl(reportUrl);
+        setModalVisible(true);
+      }
     } catch (error) {
-      console.error("Preview Report error:", error);
+      console.error("Report handling error:", error);
+      Toast.show({
+        type: "error", 
+        text1: "Error",
+        text2: "Gagal memuat laporan",
+      });
+    }
+  };
+  
+  // Helper function to handle report download
+  const handleDownloadReport = async (downloadUrl) => {
+    try {
+      const authToken = await AsyncStorage.getItem("@auth-token");
+      const fullUrl = `${APP_URL}${downloadUrl}&token=${authToken}`;
+      
+      // Use React Native's Linking to open the URL in browser/download
+      await Linking.openURL(fullUrl);
+    } catch (error) {
+      console.error("Download error:", error);
       Toast.show({
         type: "error",
         text1: "Error",
-        text2: "Gagal memuat laporan",
+        text2: "Gagal mengunduh laporan",
       });
     }
   };
@@ -149,11 +175,11 @@ const MultiPayment = ({ navigation }) => {
             })));
           }
         } catch (error) {
-          console.error('Error fetching TTDs:', error);
+          console.error('Error fetching types:', error);
           Toast.show({
             type: 'error',
             text1: 'Error',
-            text2: error.response?.data?.message || 'Failed to fetch TTD options',
+            text2: error.response?.data?.message || 'Failed to fetch type options',
           });
         } finally {
           setIsLoading(false);
@@ -204,7 +230,7 @@ const MultiPayment = ({ navigation }) => {
               <Text className="text-sm font-poppins-bold mb-2 text-black">Tanda Tangan<Text className="text-red-500">*</Text></Text>
               {isLoading ? (
                 <View className="border border-gray-300 rounded-md p-3">
-                  <Text className="font-poppins-semibold text-black">Loading TTD options...</Text>
+                  <Text className="font-poppins-semibold text-black">Loading type options...</Text>
                 </View>
               ) : (
                 <MenuView
@@ -223,8 +249,8 @@ const MultiPayment = ({ navigation }) => {
                 >
                   <View className="border border-gray-300 rounded-md p-3">
                     <View className="flex-row justify-between items-center">
-                      <Text className="font-poppins-semibold">
-                        {ttds.find(t => t.id.toString() === formData.tanda_tangan_id)?.text || 'Pilih TTD'}
+                      <Text className="font-poppins-semibold text-black">
+                        {ttds.find(t => t.id.toString() === formData.tanda_tangan_id)?.text || 'Pilih type'}
                       </Text>
                       <MaterialIcons name="arrow-drop-down" size={24} color="black" />
                     </View>
@@ -239,7 +265,7 @@ const MultiPayment = ({ navigation }) => {
               </Text>
               <View className="relative">
                 <TextInput
-                  className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12"
+                  className="border border-gray-300 rounded-md p-3 font-poppins-medium w-full pr-12 text-black"
                   secureTextEntry={!showPassword}
                   value={formData.passphrase}
                   onChangeText={(text) => setFormData(prev => ({ ...prev, passphrase: text }))}
@@ -752,7 +778,7 @@ const MultiPayment = ({ navigation }) => {
         </View>
       </ScrollView>
       <TouchableOpacity
-        onPress={handlePreviewReport}
+        onPress={handleReport}
         className="absolute right-4 bg-red-400 px-4 py-3 rounded-full flex-row items-center"
         style={{
           position: 'absolute',

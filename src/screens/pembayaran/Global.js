@@ -99,44 +99,19 @@ const Global = ({ navigation }) => {
   })
 
 
-  const requestStoragePermission = async () => {
-    try {
-      const permission = Platform.select({
-        android: Platform.Version >= 33
-          ? PERMISSIONS.ANDROID.READ_MEDIA_IMAGES  // For Android 13 and above
-          : PERMISSIONS.ANDROID.WRITE_EXTERNAL_STORAGE,
-        ios: PERMISSIONS.IOS.MEDIA_LIBRARY,
-      });
-
-      const result = await request(permission);
-
-      switch (result) {
-        case RESULTS.GRANTED:
-          console.log('Storage permission granted');
-          return true;
-        case RESULTS.DENIED:
-          console.log('Storage permission denied');
-          Toast.show({
-            type: 'error',
-            text1: 'Izin Ditolak',
-            text2: 'Izin penyimpanan diperlukan untuk mengunduh file',
-          });
-          return false;
-        case RESULTS.BLOCKED:
-          console.log('Storage permission blocked');
-          Toast.show({
-            type: 'error',
-            text1: 'Izin Diblokir',
-            text2: 'Mohon aktifkan izin penyimpanan di pengaturan aplikasi',
-          });
-          return false;
-        default:
-          return false;
+ const requestStoragePermission = async () => {
+    if (Platform.OS === 'android' && Number(Platform.Version) < 33) {
+      try {
+        const granted = await PermissionsAndroid.request(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+        );
+        return granted === PermissionsAndroid.RESULTS.GRANTED;
+      } catch (err) {
+        console.error('Permission error:', err);
+        return false;
       }
-    } catch (error) {
-      console.log('Error requesting storage permission:', error);
-      return false;
     }
+    return true;
   };
 
   const downloadReport = async () => {
