@@ -28,18 +28,13 @@ import IndexMaster from "../masterdash/index/index";
 import IndexKonfigurasi from "../masterdash/index/IndexKonfig";
 import LinearGradient from "react-native-linear-gradient";
 import { ToggleButton } from "react-native-paper";
-import { create } from "zustand";
+import { useHeaderStore } from "@/App";
 
 const { Navigator, Screen } = createNativeStackNavigator();
 
 const Tab = createBottomTabNavigator();
 const Drawer = createDrawerNavigator();
 const Stack = createNativeStackNavigator();
-
-const useHeaderStore = create((set) => ({
-  header: true,
-  setHeader: (state) => set({ header: state }),
-}));
 
 const Header = () => {
   return (
@@ -164,6 +159,7 @@ const TabNavigator = () => {
       borderTopColor: "#E5E7EB",
       paddingHorizontal: 10,
     },
+    unmountOnBlur: true
   };
   
   return (
@@ -200,13 +196,10 @@ const TabNavigator = () => {
           }}
           listeners={({ navigation }) => ({
             tabPress: (e) => {
-              if (navigation.isFocused()) {
-                e.preventDefault();
-                navigation.reset({
-                  index: 0,
-                  routes: [{ name: 'Pengujian' }],
-                });
-              }
+              e.preventDefault();
+              navigation.navigate("Pengujian", {
+                screen: "PengujianIndex"
+              });
             },
           })}
         />
@@ -249,6 +242,9 @@ const TabNavigator = () => {
 
 const Admin = () => {
     const { header } = useHeaderStore();
+    useEffect(() => {
+      console.log(header)
+    }, [header])
   return (
   <NavigationContainer independent={true}>
     <Stack.Navigator

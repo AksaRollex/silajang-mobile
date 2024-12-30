@@ -23,6 +23,7 @@ import FileViewer from 'react-native-file-viewer';
 import { Platform } from "react-native";
 import { useHeaderStore } from "@/src/screens/main/Index";
 import { TextFooter } from "@/src/screens/components/TextFooter";
+import { useFocusEffect } from "@react-navigation/native";
 
 const currentYear = new Date().getFullYear();
 const generateYears = () => {
@@ -56,11 +57,17 @@ const Analis = ({ navigation }) => {
       }
     }, [modalVisible]);
 
-  React.useLayoutEffect(() => {
-    setHeader(false)
+    useFocusEffect(React.useCallback(() => {
+      console.log("Mounted analis")
+      setHeader(false)
 
-    return () => setHeader(true)
-  }, [])
+      return () => setHeader(true)
+    }, []))
+  //   React.useEffect(() => {
+  //   setHeader(false)
+
+  //   return () => setHeader(true)
+  // }, [])
 
   const [initialRender, setInitialRender] = useState(true);
 

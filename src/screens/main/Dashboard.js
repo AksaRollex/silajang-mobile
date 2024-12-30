@@ -309,9 +309,11 @@ const Dashboard = () => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
 
-    const isSimplifiedView = ["pengambil-sample", "analis", "customer"].includes(
-      user.role.name,
-    );
+    const isSimplifiedView = [
+      "pengambil-sample",
+      "analis",
+      "customer",
+    ].includes(user.role.name);
     const isAdmin = user.role.name === "admin";
 
     const { mutate: logout } = useMutation(() => axios.post("/auth/logout"), {
@@ -675,21 +677,33 @@ const Dashboard = () => {
                     {dataDashboard
                       .filter(item => item.permission.includes(user.role.name))
                       .map((item, index) => {
+                        // Check if the item is IKM or Jumlah Responden and user is not admin
+                        const isDisabled =
+                          (item.name === "IKM Unit\nPelayanan" ||
+                            item.name === "Jumlah\nResponden") &&
+                          user.role.name !== "admin";
+
+                          const isDisabled2 = 
+                          (item.name !== "Pendapatan") && 
+                          user.role.name == "kepala-upt";
+
                         if (
                           index <= 2 &&
                           ["admin", "kepala-upt"].includes(user.role.name)
                         ) {
-                          // Menampilkan 3 card pertama
                           return (
                             <TouchableOpacity
                               key={index}
-                              className="rounded-xl h-[92px] w-[92px] flex flex-col items-center justify-center bg-transparent "
-                              onPress={() =>
-                                navigation.navigate(item.navigation, {
-                                  screen: item.screen,
-                                  params: item.params,
-                                })
-                              }>
+                              className={`rounded-xl h-[92px] w-[92px] flex flex-col items-center justify-center bg-transparent`}
+                              onPress={() => {
+                                if (!isDisabled && !isDisabled2) {
+                                  navigation.navigate(item.navigation, {
+                                    screen: item.screen,
+                                    params: item.params,
+                                  });
+                                }
+                              }}
+                              disabled={isDisabled && isDisabled2}>
                               <View className="p-5 bg-white rounded-xl shadow-lg">
                                 <IonIcons
                                   name={item.icon}
@@ -724,15 +738,13 @@ const Dashboard = () => {
                             "koordinator-administrasi",
                           ].includes(user.role.name)
                         ) {
-                          // Menampilkan "Read More" card setelah 3 item
                           return (
                             <TouchableOpacity
                               key={index}
                               className="rounded-xl w-[92px] h-[92px] flex flex-col items-center justify-center bg-transparent"
                               onPress={() => {
                                 setModalVisible(true);
-                              }} // Ganti dengan navigasi sesuai kebutuhan
-                            >
+                              }}>
                               <View className="p-5 bg-white rounded-xl shadow-lg">
                                 <IonIcons
                                   name="list"
@@ -761,12 +773,15 @@ const Dashboard = () => {
                             <TouchableOpacity
                               key={index}
                               className="rounded-xl w-[92px] h-[92px] flex flex-col items-center justify-center bg-transparent"
-                              onPress={() =>
-                                navigation.navigate(item.navigation, {
-                                  screen: item.screen,
-                                  params: item.params,
-                                })
-                              }>
+                              onPress={() => {
+                                if (!isDisabled) {
+                                  navigation.navigate(item.navigation, {
+                                    screen: item.screen,
+                                    params: item.params,
+                                  });
+                                }
+                              }}
+                              disabled={isDisabled}>
                               <View className="p-5 bg-white rounded-xl shadow-lg">
                                 <IonIcons
                                   name={item.icon}
@@ -775,7 +790,7 @@ const Dashboard = () => {
                                 />
                               </View>
                               <View
-                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute right-0 -top-5 `}>
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute right-0 -top-5`}>
                                 <Text className="text-[10px] font-poppins-semibold text-white">
                                   {item.data > 99 ? "99+" : item.data}
                                 </Text>
