@@ -11,8 +11,18 @@ import {
 import Ionicons from 'react-native-vector-icons/Ionicons';
 import BackButton from '../components/BackButton';
 import axios from "@/src/libs/axios";
+import { useHeaderStore } from '../main/Index';
+
 
 const ChangePasswordForm = ({navigation}) => {
+   const { setHeader } = useHeaderStore();
+    
+      React.useLayoutEffect(() => {
+        setHeader(false)
+    
+        return () => setHeader(true)
+      }, [])
+
   const [formData, setFormData] = useState({
     old_password: '',
     password: '',
@@ -103,11 +113,11 @@ const ChangePasswordForm = ({navigation}) => {
 
           {/* Password Lama */}
           <View className="mb-6">
-            <Text className="font-poppins-semibold text-sm mb-3">Password Lama</Text>
+            <Text className="font-poppins-semibold text-sm mb-3 text-black">Password Lama</Text>
             <View className="relative">
               <TextInput
                 secureTextEntry={!showPassword.old}
-                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white"
+                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white text-black"
                 value={formData.old_password}
                 onChangeText={(text) => setFormData({ ...formData, old_password: text })}
                 placeholderTextColor="#aaa"
@@ -127,11 +137,11 @@ const ChangePasswordForm = ({navigation}) => {
 
           {/* Password Baru */}
           <View className="mb-6">
-            <Text className="font-poppins-semibold text-sm mb-3">Password Baru</Text>
+            <Text className="font-poppins-semibold text-sm mb-3 text-black">Password Baru</Text>
             <View className="relative">
               <TextInput
                 secureTextEntry={!showPassword.new}
-                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white"
+                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white text-black"
                 value={formData.password}
                 onChangeText={(text) => setFormData({ ...formData, password: text })}
                 placeholderTextColor="#aaa"
@@ -151,11 +161,11 @@ const ChangePasswordForm = ({navigation}) => {
 
           {/* Konfirmasi Password Baru */}
           <View className="mb-6">
-            <Text className="font-poppins-semibold text-sm mb-3">Konfirmasi Password Baru</Text>
+            <Text className="font-poppins-semibold text-sm mb-3 text-black">Konfirmasi Password Baru</Text>
             <View className="relative">
               <TextInput
                 secureTextEntry={!showPassword.confirm}
-                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white"
+                className="border border-gray-300 rounded-lg px-4 py-3 text-base font-poppins-regular bg-white text-black"
                 value={formData.password_confirmation}
                 onChangeText={(text) =>
                   setFormData({ ...formData, password_confirmation: text })

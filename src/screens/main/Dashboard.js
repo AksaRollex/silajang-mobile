@@ -181,7 +181,7 @@ const Dashboard = () => {
     setSelectedYear(selectedYear);
     setIsLoading(true);
     fetchDashboardData(selectedYear);
-    refetch()
+    refetch();
   };
 
   const {
@@ -265,12 +265,12 @@ const Dashboard = () => {
           navigation: "PengujianKonfig",
           screen: "UmpanBalik",
           permission: [
-            "admin", 
+            "admin",
             "kepala-upt",
             "koordinator-teknis",
             "koordinator-administrasi",
             "analis",
-            "pengambil-sample", 
+            "pengambil-sample",
           ],
         },
         {
@@ -281,17 +281,17 @@ const Dashboard = () => {
           navigation: "PengujianKonfig",
           screen: "UmpanBalik",
           permission: [
-            "admin", 
+            "admin",
             "kepala-upt",
             "koordinator-teknis",
             "koordinator-administrasi",
             "analis",
-            "pengambil-sample", 
+            "pengambil-sample",
           ],
         },
       ]);
     },
-    onError: (error) => console.error(error),
+    onError: error => console.error(error),
   });
 
   useEffect(() => {
@@ -309,7 +309,7 @@ const Dashboard = () => {
       return text.length > 18 ? defaultSize : defaultSize;
     };
 
-    const isSimplifiedView = ["pengambil-sample", "analis"].includes(
+    const isSimplifiedView = ["pengambil-sample", "analis", "customer"].includes(
       user.role.name,
     );
     const isAdmin = user.role.name === "admin";
@@ -653,7 +653,7 @@ const Dashboard = () => {
                 </View> */}
                 <View className="w-full mt-3 pb-2">
                   <View
-                    className="w-full flex gap-1 flex-row flex-wrap justify-center"
+                    className="w-full flex gap-1 flex-row justify-center"
                     contentContainerStyle={{ paddingBottom: 8 }}>
                     {/* {['admin', 'kepala-upt'].includes(user.role.name) && (
                       <TouchableOpacity
@@ -683,7 +683,7 @@ const Dashboard = () => {
                           return (
                             <TouchableOpacity
                               key={index}
-                              className="rounded-xl h-24 w-24 flex flex-col items-center justify-center bg-transparent "
+                              className="rounded-xl h-[92px] w-[92px] flex flex-col items-center justify-center bg-transparent "
                               onPress={() =>
                                 navigation.navigate(item.navigation, {
                                   screen: item.screen,
@@ -698,32 +698,37 @@ const Dashboard = () => {
                                 />
                               </View>
                               <View
-                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
-                                <Text className="text-xs font-poppins-semibold text-white">
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute -top-5 right-0`}>
+                                <Text className="text-[10px] font-poppins-semibold text-white">
                                   {item.data > 99 ? "99+" : item.data}
                                 </Text>
                               </View>
                               <Text
-                                className="font-poppins-semibold text-xs mt-2 text-center text-black"
-                                style={{  
-                                  minHeight: 50, 
+                                className="font-poppins-semibold text-[10px] mt-2 text-center text-black"
+                                style={{
+                                  minHeight: 50,
                                   textAlign: "center",
                                   display: "flex",
                                   alignItems: "center",
-                                  justifyContent: "center",}}>
+                                  justifyContent: "center",
+                                }}>
                                 {item.name}
                               </Text>
                             </TouchableOpacity>
                           );
                         } else if (
                           index === 3 &&
-                          ["admin", "kepala-upt", "koordinator-administrasi"].includes(user.role.name)
+                          [
+                            "admin",
+                            "kepala-upt",
+                            "koordinator-administrasi",
+                          ].includes(user.role.name)
                         ) {
                           // Menampilkan "Read More" card setelah 3 item
                           return (
                             <TouchableOpacity
                               key={index}
-                              className="rounded-xl w-24 h-24 flex flex-col items-center justify-center bg-transparent"
+                              className="rounded-xl w-[92px] h-[92px] flex flex-col items-center justify-center bg-transparent"
                               onPress={() => {
                                 setModalVisible(true);
                               }} // Ganti dengan navigasi sesuai kebutuhan
@@ -736,14 +741,15 @@ const Dashboard = () => {
                                 />
                               </View>
                               <Text
-                                className="font-poppins-semibold text-xs text-center mt-2 text-black"
-                                style={{  
-                                  minHeight: 50, 
+                                className="font-poppins-semibold text-[10px] text-center mt-2 text-black"
+                                style={{
+                                  minHeight: 50,
                                   textAlign: "center",
                                   display: "flex",
                                   alignItems: "center",
-                                  justifyContent: "center", }}>
-                                Read More
+                                  justifyContent: "center",
+                                }}>
+                                Lihat Semua
                               </Text>
                             </TouchableOpacity>
                           );
@@ -754,7 +760,7 @@ const Dashboard = () => {
                           return (
                             <TouchableOpacity
                               key={index}
-                              className="rounded-xl w-24 h-24 flex flex-col items-center justify-center bg-transparent"
+                              className="rounded-xl w-[92px] h-[92px] flex flex-col items-center justify-center bg-transparent"
                               onPress={() =>
                                 navigation.navigate(item.navigation, {
                                   screen: item.screen,
@@ -769,20 +775,20 @@ const Dashboard = () => {
                                 />
                               </View>
                               <View
-                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full right-0 top-0 absolute`}>
-                                <Text className="text-xs font-poppins-semibold text-white">
+                                className={`bg-[${item.color}] bg-opacity-10 p-1 rounded-full absolute right-0 -top-5 `}>
+                                <Text className="text-[10px] font-poppins-semibold text-white">
                                   {item.data > 99 ? "99+" : item.data}
                                 </Text>
                               </View>
                               <Text
-                                className="font-poppins-semibold text-xs text-center mt-2 text-black"
-                                style={{ 
-                                  minHeight: 50, 
+                                className="font-poppins-semibold text-[10px] text-center mt-2 text-black"
+                                style={{
+                                  minHeight: 50,
                                   textAlign: "center",
                                   display: "flex",
                                   alignItems: "center",
-                                  justifyContent: "center", 
-                                  }}>
+                                  justifyContent: "center",
+                                }}>
                                 {item.name}
                               </Text>
                             </TouchableOpacity>
