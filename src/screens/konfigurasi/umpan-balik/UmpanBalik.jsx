@@ -298,26 +298,20 @@ const UmpanBalik = ({ navigation }) => {
   };
 
   const requestStoragePermission = async () => {
-    if (Platform.OS !== 'android') return true;
-
-    try {
-      const granted = await PermissionsAndroid.request(
-        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-        {
-          title: "Storage Permission",
-          message: "Application needs access to your storage to download files",
-          buttonNeutral: "Ask Me Later",
-          buttonNegative: "Cancel",
-          buttonPositive: "OK"
+      if (Platform.OS === 'android' && Number(Platform.Version) < 33) {
+        try {
+          const granted = await PermissionsAndroid.request(
+            PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
+          );
+          return granted === PermissionsAndroid.RESULTS.GRANTED;
+        } catch (err) {
+          console.error('Permission error:', err);
+          return false;
         }
-      );
-      return granted === PermissionsAndroid.RESULTS.GRANTED;
-    } catch (err) {
-      console.error('Permission error:', err);
-      return false;
-    }
-  };
-
+      }
+      return true;
+    };
+  
   const [authToken, setAuthToken] = useState('');
   useEffect(() => {
     (async () => {
@@ -327,8 +321,13 @@ const UmpanBalik = ({ navigation }) => {
   })
 
   const downloadTemplate = async () => {
-    setIsDownloading(true);
     try {
+      setIsDownloading(true);
+      const hasPermission = await requestStoragePermission();
+      
+      if (!hasPermission) {
+        return;
+      }
       const response = await axios.get('konfigurasi/umpan-balik/template', {
         headers: {
           Authorization: `Bearer ${authToken}`,
@@ -336,20 +335,28 @@ const UmpanBalik = ({ navigation }) => {
         responseType: 'arraybuffer',
       });
   
-      // Generate unique filename with timestamp
-      const timestamp = new Date().getTime();
-      const fileName = `Template_Import_Umpan_Balik_${timestamp}.xlsx`;
+      const baseFileName = 'Template Import Umpan Balik.xlsx';
+      const directoryPath = Platform.OS === 'ios' 
+        ? RNFS.DocumentDirectoryPath 
+        : RNFS.DownloadDirectoryPath;
   
-      // Determine path based on platform
-      const path = Platform.OS === "ios" 
-        ? `${RNFS.DocumentDirectoryPath}/${fileName}` 
-        : `${RNFS.DownloadDirectoryPath}/${fileName}`;
+      const makeUniqueFilename = async (basePath, originalFilename) => {
+        const [name, ext] = originalFilename.split(/(?=\.[^.]+$)/);
+        let counter = 1;
+        let finalPath = `${basePath}/${originalFilename}`;
+        
+        while (await RNFS.exists(finalPath)) {
+          finalPath = `${basePath}/${name}(${counter})${ext}`;
+          counter++;
+        }
+        return finalPath;
+      };
   
-      // Convert buffer to ASCII string
+      const path = await makeUniqueFilename(directoryPath, baseFileName);
+  
       const buffer = new Uint8Array(response.data);
       const fileContent = buffer.reduce((data, byte) => data + String.fromCharCode(byte), '');
   
-      // Save file
       await RNFS.writeFile(path, fileContent, 'ascii');
   
       console.log('File berhasil diunduh dan disimpan di:', path);
