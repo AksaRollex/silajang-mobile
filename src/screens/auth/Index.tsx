@@ -15,8 +15,8 @@ const screenOptions = {
 export default memo(function Auth() {
   return (
     <Navigator screenOptions={screenOptions}>
-      <Screen name="login" component={Login} />
-      <Screen name="register" component={Register} />
+      <Screen name="Login" component={Login} />
+      <Screen name="Register" component={Register} />
     </Navigator>
   );
 });

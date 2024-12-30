@@ -11,17 +11,20 @@ export default function FooterText() {
             justifyContent: "center",
             alignItems: "center",
           }}>
-          <Text style={styles.footerText}>{new Date().getFullYear()} © SI-LAJANG v.3</Text>
+          <Text style={styles.footerText}>
+            {new Date().getFullYear()} © SI-LAJANG v.3
+          </Text>
           <Text style={styles.footerTexts}>UPT LABORATORIUM LINGKUNGAN</Text>
         </View>
-        <Text style={styles.footerText}>DINAS LINGKUNGAN HIDUP KAB.JOMBANG</Text>
+        <Text style={styles.footerText}>
+          DINAS LINGKUNGAN HIDUP KAB.JOMBANG
+        </Text>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  
   footer: {
     flex: 1,
     paddingVertical: 10,

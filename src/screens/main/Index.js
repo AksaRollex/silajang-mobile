@@ -17,8 +17,6 @@ import { Image } from "react-native-ui-lib";
 import { useUser } from "@/src/services";
 import Dashboard from "./Dashboard";
 import Profile from "../profile/Index";
-import PengujianStack from "../pengujian/Index";
-import PembayaranStack from "../pembayaran/Index";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import PermohonanScreen from "../pengujian/permohonan/Permohonan";
 import TrackingPengujianScreen from "../pengujian/trackingPengujian/TrackingPengujian";

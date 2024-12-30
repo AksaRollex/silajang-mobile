@@ -1,31 +1,49 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React from "react";
-import { Colors } from "react-native-ui-lib";
-import Icons from "react-native-vector-icons/Feather";
-
+import { useNavigation } from "@react-navigation/native";
+import Auth from "../auth/Index";
+import { Screen } from "react-native-screens";
+import { useUser } from "@/src/services";
 const baseRem = 16;
 const rem = multiplier => baseRem * multiplier;
 
-export default function Header({ navigate }) {
+export default function Header({}) {
+  const navigation = useNavigation();
+  const { data: user, isSuccess } = useUser();
+
   return (
-    <View style={styles.container}>
+    <View className="w-full">
       <View className="p-2 flex-row justify-between items-center">
         <View className="flex-row items-center gap-2">
           <Image
             source={require("@/assets/images/logo.png")}
             style={styles.logo}
-            />
+          />
           <Text style={styles.headerText}>SI-LAJANG</Text>
-          </View>
+        </View>
+
+        {user && isSuccess ? (
+          <View></View>
+        ) : (
+          <TouchableOpacity
+            className="p-2  rounded-xl"
+            onPress={() => navigation.navigate("Auth", { screen: "Login" })}
+            style={{
+              borderWidth: 1,
+              borderStyle: "dashed",
+              borderColor: "#5C6BC0",
+            }}>
+            <Text className="capitalize font-poppins-medium text-center text-white">
+              Masuk
+            </Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    display: "flex",
-  },
   headerContainer: {
     width: "100%",
     paddingVertical: 10,

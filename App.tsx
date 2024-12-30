@@ -6,11 +6,11 @@ import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useUser } from "./src/services";
-import { NativeBaseProvider, extendTheme } from "native-base";
 
 // Import your screens
 import Main from "./src/screens/main/Index";
 import Auth from "./src/screens/auth/Index";
+import Landing from "./src/screens/landing/Index";
 
 const Stack = createNativeStackNavigator();
 
@@ -70,9 +70,12 @@ function Navigation(): React.JSX.Element {
         {user && isSuccess ? (
           <>
             <Stack.Screen name="main" component={Main} />
+        {/* <Stack.Screen name="landing" component={Landing} /> */}
+
           </>
         ) : (
-          <Stack.Screen name="auth" component={Auth} />
+          // <Stack.Screen name="auth" component={Auth} />
+          <Stack.Screen name="landing" component={Landing} />
         )}
       </Stack.Navigator>
     </NavigationContainer>

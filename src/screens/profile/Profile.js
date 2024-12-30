@@ -120,7 +120,7 @@ export default function Profile({ navigation }) {
                       alignSelf: "center",
                     }}>
                     <FastImage
-                      className="rounded-full w-28 h-28 border-4 border-white"
+                      className="rounded-full w-28 h-28 border-4 border-[#F9FAFB]"
                       source={
                         userData?.photo
                           ? { uri: `${process.env.APP_URL}${userData.photo}` }
