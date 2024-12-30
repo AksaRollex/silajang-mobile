@@ -307,7 +307,7 @@ export default function Pengujian() {
                     <MaterialIcons {...props} name="arrow-forward-ios" size={12} color={Colors.black} />
                   )}
                   className="px-5 bg-[#ffffff] ml-3 mr-3"
-                  onPress={() => navigation.navigate("VerifikasiLHU")}
+                  onPress={() => navigation.navigate("VerifikasiLhu")}
                 />
                 {getVisibleMenuItems('verifikasi').indexOf('verifikasi-lhu') !== getVisibleMenuItems('verifikasi').length - 1 && (
                   <View style={{ borderBottomWidth: 1, borderBottomColor: '#f0f0f0', marginHorizontal: 15 }} />
