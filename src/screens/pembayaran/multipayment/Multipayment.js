@@ -17,6 +17,7 @@ import { API_URL } from "@env";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import BackButton from "../../components/Back";
 import IonIcons from "react-native-vector-icons/Ionicons";
+import FileViewer from "react-native-file-viewer";
 import MaterialIcons from "react-native-vector-icons/MaterialIcons";
 import FontAwesome5 from "react-native-vector-icons/FontAwesome5";
 import Feather from "react-native-vector-icons/Feather";
@@ -406,6 +407,7 @@ const Pengujian = ({ navigation }) => {
   };
 
   const handleDownloadSKRD = async () => {
+    setIsLoading(true);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `SKRD_${Date.now()}.pdf`;
@@ -432,7 +434,7 @@ const Pengujian = ({ navigation }) => {
 
         try {
           await FileViewer.open(downloadPath, {
-            showOpenWithDialog: false,
+            showOpenWithDialog: true,
             mimeType: "application/pdf",
           });
         } catch (openError) {
@@ -492,10 +494,13 @@ const Pengujian = ({ navigation }) => {
         text1: "Error",
         text2: `PDF gagal diunduh: ${error.message}`,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const handleDownloadKwitansi = async () => {
+    setIsLoading(true);
     try {
       const authToken = await AsyncStorage.getItem("@auth-token");
       const fileName = `Kwitansi_${Date.now()}.pdf`;
@@ -582,6 +587,8 @@ const Pengujian = ({ navigation }) => {
         text1: "Error",
         text2: `PDF gagal diunduh: ${error.message}`,
       });
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -668,25 +675,45 @@ const Pengujian = ({ navigation }) => {
         animationType="slide"
         visible={modalVisible}
         onRequestClose={() => setModalVisible(false)}>
-        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            {/* Header */}
             <View className="flex-row justify-between items-center p-4">
               <Text className="text-lg font-poppins-semibold text-black">
                 Preview PDF SKRD
               </Text>
               <TouchableOpacity
                 onPress={handleDownloadSKRD}
-                className="p-2 rounded flex-row items-center">
+                className="p-2 bg-gray-100 rounded-full shadow">
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
 
+            {/* Content */}
             {SKRDUrl ? (
-              <Pdf
-                source={{ uri: SKRDUrl, cache: true }}
-                style={{ flex: 1 }}
-                trustAllCerts={false}
-              />
+              <View className="flex-1">
+                {isLoading && (
+                  <View className="absolute z-10 w-full h-full items-center justify-center bg-black bg-opacity-30">
+                    {/* Animasi loading */}
+                    <View className="bg-white p-6 rounded-lg shadow-md items-center">
+                      <ActivityIndicator size="large" color="#4A90E2" />
+                      <Text className="mt-4 font-poppins-medium text-gray-700">
+                        Memuat PDF, harap tunggu...
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                <Pdf
+                  source={{ uri: SKRDUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                  onLoadComplete={() => setIsLoading(false)}
+                  onError={error => {
+                    console.log("PDF Error:", error);
+                    setIsLoading(false);
+                  }}
+                />
+              </View>
             ) : (
               <View className="flex-1 justify-center items-center">
                 <Text className="text-xl font-poppins-semibold text-red-500">
@@ -695,6 +722,7 @@ const Pengujian = ({ navigation }) => {
               </View>
             )}
 
+            {/* Footer */}
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
                 onPress={() => setModalVisible(false)}
@@ -712,25 +740,45 @@ const Pengujian = ({ navigation }) => {
         animationType="slide"
         visible={modalKwitansi}
         onRequestClose={() => setModalKwitansi(false)}>
-        <View className="flex-1 justify-center items-center bg-black bg-black/50">
+        <View className="flex-1 justify-center items-center bg-black bg-opacity-50">
           <View className="bg-white rounded-lg w-full h-full m-5 mt-8">
+            {/* Header */}
             <View className="flex-row justify-between items-center p-4">
               <Text className="text-lg font-poppins-semibold text-black">
                 Preview PDF Kwitansi
               </Text>
               <TouchableOpacity
                 onPress={handleDownloadKwitansi}
-                className="p-2 rounded flex-row items-center">
+                className="p-2 bg-gray-100 rounded-full shadow">
                 <Feather name="download" size={21} color="black" />
               </TouchableOpacity>
             </View>
 
+            {/* Content */}
             {kwitansiUrl ? (
-              <Pdf
-                source={{ uri: kwitansiUrl, cache: true }}
-                style={{ flex: 1 }}
-                trustAllCerts={false}
-              />
+              <View className="flex-1">
+                {isLoading && (
+                  <View className="absolute z-10 w-full h-full items-center justify-center bg-black bg-opacity-30">
+                    {/* Animasi loading */}
+                    <View className="bg-white p-6 rounded-lg shadow-md items-center">
+                      <ActivityIndicator size="large" color="#4A90E2" />
+                      <Text className="mt-4 font-poppins-medium text-gray-700">
+                        Memuat PDF, harap tunggu...
+                      </Text>
+                    </View>
+                  </View>
+                )}
+                <Pdf
+                  source={{ uri: kwitansiUrl, cache: true }}
+                  style={{ flex: 1 }}
+                  trustAllCerts={false}
+                  onLoadComplete={() => setIsLoading(false)}
+                  onError={error => {
+                    console.log("PDF Error:", error);
+                    setIsLoading(false);
+                  }}
+                />
+              </View>
             ) : (
               <View className="flex-1 justify-center items-center">
                 <Text className="text-xl font-poppins-semibold text-red-500">
@@ -739,6 +787,7 @@ const Pengujian = ({ navigation }) => {
               </View>
             )}
 
+            {/* Footer */}
             <View className="flex-row justify-between m-4">
               <TouchableOpacity
                 onPress={() => setModalKwitansi(false)}

@@ -228,7 +228,7 @@ export default function Profile({ navigation }) {
                   <View className="w-full h-px bg-gray-200 mb-4" />
 
                   <Text className="text-md text-center text-gray-600  capitalize font-poppins-regular">
-                    Yakin ingin keluar dari aplikasi ini?
+                    Yakin ingin keluar dari akun ini?
                   </Text>
                   <View className="flex flex-row justify-center items-center space-x-3 w-full mt-3 ">
                     <TouchableOpacity

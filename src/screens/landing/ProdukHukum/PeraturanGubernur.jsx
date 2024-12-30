@@ -12,7 +12,7 @@ import AskButton from "../component/AskButton";
 import FooterLanding from "../component/FooterLanding";
 import { useQuery } from "@tanstack/react-query";
 import axios from "@/src/libs/axios";
-import { API_URL } from "@env";
+import { APP_URL } from "@env";
 
 const PeraturanGubernur = () => {
   const slug = "peraturan-gubernur";
@@ -30,7 +30,7 @@ const PeraturanGubernur = () => {
 
   const handleDocumentPress = async fileUrl => {
     try {
-      const serverUrl = API_URL;
+      const serverUrl = APP_URL;
 
       const cleanPath = fileUrl.startsWith("/")
         ? fileUrl.substring(1)

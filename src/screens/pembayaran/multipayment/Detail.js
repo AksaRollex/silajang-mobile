@@ -21,15 +21,21 @@ import { QueryClient } from "@tanstack/react-query";
 import RNFS from "react-native-fs";
 import Canvas, { Image as CanvasImage } from "react-native-canvas";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
+import IonIcons from "react-native-vector-icons/Ionicons";
 import AntDesign from "react-native-vector-icons/AntDesign";
 const MultipaymentDetail = ({ route, navigation }) => {
   const [formData, setFormData] = useState({});
   const [countdownExp, setCountdownExp] = useState("00:00:00:00");
   const [dateExp, setDateExp] = useState("06:60:60:60");
   const [modalVisible, setModalVisible] = useState(false);
+  const [qrisValue, setQrisValue] = useState(null);
+  const [qrCodeBase64, setQrCodeBase64] = useState(null);
+  const [previewVisible, setPreviewVisible] = useState(false);
+  const [previewPath, setPreviewPath] = useState("");
   const [modalError, setModalError] = useState(false);
   const { uuid } = route.params;
   const canvasRef = useRef(null);
+  const qrCodeRef = useRef(null);
   console.log(route);
   const { data: setting } = useSetting();
 
@@ -39,76 +45,84 @@ const MultipaymentDetail = ({ route, navigation }) => {
    * @returns {Promise<void>}
    */
 
+  useEffect(() => {
+    axios
+      .get(`/pembayaran/pengujian/${uuid}`)
+      .then(res => {
+        setQrisValue(res.data.data.payment?.qris_value);
+        // console.log(res.data.data.payment?.qris_value, "qris value");
+      })
+      .catch(err => {
+        Alert.alert("error", err.response?.data?.data?.message);
+      });
+  }, [uuid]);
+
   const handleCanvas = async canvas => {
-      try {
-        if (!canvas || canvasRef.current) return;
-  
-        const getBase64Image = async imageSource => {
-          try {
-            const image = await Image.resolveAssetSource(imageSource);
-            if (!image?.uri) {
-              throw new Error("Invalid image source");
-            }
-  
-            const response = await fetch(image.uri);
-            const blob = await response.blob();
-  
-            return new Promise((resolve, reject) => {
-              const reader = new FileReader();
-              reader.onload = () => resolve(reader.result);
-              reader.onerror = () => reject(new Error("Failed to read image"));
-              reader.readAsDataURL(blob);
-            });
-          } catch (error) {
-            console.error("getBase64Image error:", error);
-            throw error;
+    try {
+      if (!canvas || canvasRef.current) return;
+
+      const getBase64Image = async imageSource => {
+        try {
+          const image = await Image.resolveAssetSource(imageSource);
+          if (!image?.uri) {
+            throw new Error("Invalid image source");
           }
-        };
-        canvasRef.current = canvas;
-        const width = 350;
-        const height = 450;
-  
-        canvas.width = width;
-        canvas.height = height;
-  
-        const ctx = canvas.getContext("2d");
-        ctx.clearRect(0, 0, width, height); // Clear canvas first
-  
-        // Handle QR code first
-        if (qrCodeBase64) {
-          const qrisImage = new CanvasImage(canvas);
-          qrisImage.src = qrCodeBase64;
-          await new Promise(resolve => {
-            qrisImage.addEventListener("load", () => {
-              const imageWidth = 200;
-              const imageHeight = 200;
-              const x = (width - imageWidth) / 2;
-              const y = 180; // Specific Y position for QR code
-              ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
-              resolve();
-            });
+
+          const response = await fetch(image.uri);
+          const blob = await response.blob();
+
+          return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = () => reject(new Error("Failed to read image"));
+            reader.readAsDataURL(blob);
           });
+        } catch (error) {
+          console.error("getBase64Image error:", error);
+          throw error;
         }
-  
-        // Then overlay the template
-        const qrisTemplateBase64 = await getBase64Image(
-          require("../../../../assets/images/qris-template.png"),
-        );
-  
-        const qrisTemplate = new CanvasImage(canvas);
-        qrisTemplate.src = qrisTemplateBase64;
-        await new Promise(resolve => {
-          qrisTemplate.addEventListener("load", () => {
-            ctx.globalCompositeOperation = "destination-over"; // Draw template behind existing content
-            ctx.drawImage(qrisTemplate, 0, 0, width, height);
-            ctx.globalCompositeOperation = "source-over"; // Reset composite operation
-            resolve();
-          });
+      };
+      canvasRef.current = canvas;
+      const width = 350;
+      const height = 450;
+
+      canvas.width = width;
+      canvas.height = height;
+
+      const ctx = canvas.getContext("2d");
+      ctx.clearRect(0, 0, width, height); // Clear canvas first
+
+      // Then overlay the template
+      const qrisTemplateBase64 = await getBase64Image(
+        require("../../../../assets/images/qris-template.png"),
+      );
+
+      const qrisTemplate = new CanvasImage(canvas);
+      qrisTemplate.src = qrisTemplateBase64;
+      qrisTemplate.addEventListener("load", () => {
+        console.log(qrisTemplate, 222);
+
+        ctx.globalCompositeOperation = "destination-over"; // Draw template behind existing content
+        ctx.drawImage(qrisTemplate, 0, 0, width, height);
+        ctx.globalCompositeOperation = "source-over"; // Reset composite operation
+      });
+
+      // Handle QR code first
+      if (qrCodeBase64) {
+        const qrisImage = new CanvasImage(canvas);
+        qrisImage.src = `data:image/png;base64,${qrCodeBase64}`;
+        qrisImage.addEventListener("load", () => {
+          const imageWidth = 200;
+          const imageHeight = 200;
+          const x = (width - imageWidth) / 2;
+          const y = 120; // Specific Y position for QR code
+          ctx.drawImage(qrisImage, x, y, imageWidth, imageHeight);
         });
-      } catch (error) {
-        console.error("Error dalam proses render:", error);
       }
-    };
+    } catch (error) {
+      console.error("Error dalam proses render:", error);
+    }
+  };
 
   const [dataKode, setDataKode] = useState(null);
 
@@ -124,55 +138,66 @@ const MultipaymentDetail = ({ route, navigation }) => {
       });
   }, [uuid]);
 
-  const downloadQris = () => {
-    if (!dataKode) {
-      setModalError(true);
-      setTimeout(() => {
-        setModalError(false);
-      }, 2000);
-      return;
-    }
-
-    const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
-    const downloadDir = RNFS.PicturesDirectoryPath;
-    const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
-
-    console.log("Download Directory:", downloadDir);
-    console.log("Full Path:", downloadDestPath);
-
-    canvasRef.current
-      .toDataURL("image/png")
-      .then(fullData => {
-        const base64Data = fullData.split(",")[1];
-
-        console.log("Base64 Data Length:", base64Data.length);
-
-        RNFS.writeFile(downloadDestPath, base64Data, "base64")
-          .then(() => {
-            console.log("File berhasil disimpan di:", downloadDestPath);
-            setModalVisible(true);
-            setTimeout(() => {
-              setModalVisible(false);
-            }, 2000);
-
-            // Coba scan file ke gallery
-            RNFS.scanFile(downloadDestPath)
-              .then(() => {
-                console.log("File successfully scanned into gallery");
-              })
-              .catch(error => {
-                console.error("Gagal scan file:", error);
-              });
-          })
-          .catch(error => {
-            console.error("Gagal menyimpan file:", error);
-            // Log detail error
-            console.error("Error Details:", JSON.stringify(error));
-          });
-      })
-      .catch(error => {
-        console.error("Gagal mengambil data URL:", error);
+  const handleQrCodeRef = ref => {
+    if (ref) {
+      qrCodeRef.current = ref;
+      ref.toDataURL(data => {
+        setQrCodeBase64(data);
       });
+    }
+  };
+
+  const downloadQris = async () => {
+    try {
+      if (!dataKode) {
+        setModalError(true);
+        setTimeout(() => {
+          setModalError(false);
+        }, 2000);
+        return;
+      }
+
+      if (!canvasRef.current) {
+        console.error("Canvas reference not found");
+        return;
+      }
+
+      const timestamp = new Date().getTime();
+      const sanitizedKode = dataKode.replace(/[^a-zA-Z0-9-]/g, "");
+      const downloadDir = RNFS.PicturesDirectoryPath;
+      const downloadDestPath = `${downloadDir}/${sanitizedKode}.png`;
+
+      console.log("Download Directory:", downloadDir);
+      console.log("Full Path:", downloadDestPath);
+
+      // Ensure canvas is fully rendered before getting data URL
+      await new Promise(resolve => setTimeout(resolve, 500));
+
+      const fullData = await canvasRef.current.toDataURL("image/png");
+      const base64Data = fullData.split(",")[1];
+
+      console.log("Base64 Data Length:", base64Data.length);
+
+      await RNFS.writeFile(downloadDestPath, base64Data, "base64");
+      console.log("File berhasil disimpan di:", downloadDestPath);
+
+      setModalVisible(true);
+      setTimeout(() => {
+        setModalVisible(false);
+        setPreviewPath(downloadDestPath); // Simpan path file
+        setPreviewVisible(true); // Tampilkan preview
+      }, 2000);
+
+      try {
+        await RNFS.scanFile(downloadDestPath);
+        console.log("File successfully scanned into gallery");
+      } catch (error) {
+        console.error("Gagal scan file:", error);
+      }
+    } catch (error) {
+      console.error("Gagal dalam proses download:", error);
+      console.error("Error Details:", JSON.stringify(error));
+    }
   };
 
   const copyToClipboard = text => {
@@ -635,21 +660,34 @@ const MultipaymentDetail = ({ route, navigation }) => {
     } else if (formData?.data?.type === "qris") {
       return (
         <View className="items-center mb-4 pb-4 border-b border-gray-100">
-                <View
-                  style={{
-                    opacity:
-                      formData.payment?.is_expired ||
-                      formData.payment?.status === "success"
-                        ? 0.5
-                        : 1,
-                  }}>
-                  <View className="mx-20 top-20 mt-10 ">
-                    <QRCode
-                      value={qrisValue}
-                      getRef={ref => (qrCodeRef.current = ref)}
-                      size={200}
-                    />
-                  </View>
+          <View
+            style={{
+              opacity:
+                formData.payment?.is_expired ||
+                formData.payment?.status === "success"
+                  ? 0.5
+                  : 1,
+            }}>
+            {/* Tampilkan ActivityIndicator jika qrisValue kosong atau null */}
+            {!qrisValue ? (
+              <View
+                style={{
+                  alignItems: "center",
+                  justifyContent: "center",
+                  flex: 1,
+                }}>
+                <ActivityIndicator size="large" color={Colors.brand} />
+              </View>
+            ) : (
+              <>
+                <View className="mx-20 top-20 mt-10" style={{ opacity: 0 }}>
+                  <QRCode
+                    value={qrisValue}
+                    getRef={handleQrCodeRef}
+                    size={200}
+                  />
+                </View>
+                {Boolean(qrCodeBase64) && (
                   <Canvas
                     ref={handleCanvas}
                     style={{
@@ -657,38 +695,37 @@ const MultipaymentDetail = ({ route, navigation }) => {
                       zIndex: -1,
                     }}
                   />
-                </View>
-                {formData.payment.status === "pending" && (
-                  <View className="mt-60">
-                    <TouchableOpacity
-                      onPress={downloadQris}
-                      disabled={formData.payment.is_expired}
-                      className={`flex-row mt-3 px-4 py-2 p-3 rounded-lg ${
-                        formData.payment.is_expired
-                          ? "bg-gray-200"
-                          : "bg-blue-50"
-                      }`}
-                      style={{
-                        opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
-                      }}>
-                      <Text
-                        className={`font-poppins-semibold ${
-                          formData.payment.is_expired
-                            ? "text-gray-400"
-                            : "text-black"
-                        }`}>
-                        Unduh QRIS
-                      </Text>
-                      <MaterialIcons
-                        name="qr-code-2"
-                        size={24}
-                        color={formData.payment.is_expired ? "gray" : "black"}
-                        style={{ paddingLeft: 10 }}
-                      />
-                    </TouchableOpacity>
-                  </View>
                 )}
-              </View>
+              </>
+            )}
+          </View>
+          {formData.payment.status === "pending" && (
+            <View className="mt-60">
+              <TouchableOpacity
+                onPress={downloadQris}
+                disabled={formData.payment.is_expired}
+                className={`flex-row mt-3 px-4 py-2 p-3 rounded-lg ${
+                  formData.payment.is_expired ? "bg-gray-200" : "bg-blue-50"
+                }`}
+                style={{
+                  opacity: formData.payment.is_expired ? 0.5 : 1, // Mengatur opacity sesuai kondisi
+                }}>
+                <Text
+                  className={`font-poppins-semibold ${
+                    formData.payment.is_expired ? "text-gray-400" : "text-black"
+                  }`}>
+                  Unduh QRIS
+                </Text>
+                <MaterialIcons
+                  name="qr-code-2"
+                  size={24}
+                  color={formData.payment.is_expired ? "gray" : "black"}
+                  style={{ paddingLeft: 10 }}
+                />
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
       );
     }
 
@@ -758,11 +795,13 @@ const MultipaymentDetail = ({ route, navigation }) => {
           <Modal animationType="fade" transparent={true} visible={modalVisible}>
             <View style={styles.overlayView}>
               <View style={styles.successContainer}>
-                <Image
-                  source={require("@/assets/images/check-mark.png")}
-                  style={styles.lottie}
-                />
-
+                <View className="w-20 h-20 rounded-full bg-green-50 justify-center items-center mb-4">
+                  <IonIcons
+                    size={50}
+                    color="#95bb72"
+                    name="checkmark-done-sharp"
+                  />
+                </View>
                 <Text style={styles.successTextTitle}>
                   File berhasil di download
                 </Text>
@@ -789,6 +828,29 @@ const MultipaymentDetail = ({ route, navigation }) => {
               </View>
             </View>
           </Modal>
+
+          {previewVisible && (
+            <Modal
+              animationType="slide"
+              transparent={true}
+              visible={previewVisible}>
+              <View style={styles.overlayView}>
+                <View style={styles.previewContainer}>
+                  <Image
+                    source={{ uri: `file://${previewPath}` }}
+                    style={styles.previewImage}
+                    resizeMode="contain"
+                  />
+                  <TouchableOpacity
+                    style={styles.closeButton}
+                    onPress={() => setPreviewVisible(false)}>
+                    <Text style={styles.closeButtonText}>Tutup</Text>
+                  </TouchableOpacity>
+                </View>
+              </View>
+            </Modal>
+          )}
+
           <ScrollView className="px-3 py-1 rounded-b-md">
             <View className="py-4 px-3 rounded-lg ">
               {renderPaymentStatus()}
@@ -809,6 +871,29 @@ const MultipaymentDetail = ({ route, navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  previewContainer: {
+    width: "90%",
+    height: "70%",
+    backgroundColor: "#fff",
+    borderRadius: 10,
+    padding: 10,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  previewImage: {
+    width: "100%",
+    height: "80%",
+  },
+  closeButton: {
+    marginTop: 10,
+    backgroundColor: "#f00",
+    padding: 10,
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: "#fff",
+    fontWeight: "bold",
+  },
   infoText: {
     fontSize: 16,
     marginBottom: 10,
