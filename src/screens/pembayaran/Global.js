@@ -19,6 +19,7 @@ import Toast from "react-native-toast-message";
 import { rupiah } from "@/src/libs/utils";
 import { TextFooter } from "../components/TextFooter";
 import { useHeaderStore } from "../main/Index";
+import { useFocusEffect } from "@react-navigation/native";
 
 const rem = multiplier => 16 * multiplier;
 
@@ -30,11 +31,17 @@ const Global = ({ navigation }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const { setHeader } = useHeaderStore();
 
-  React.useLayoutEffect(() => {
+  // React.useLayoutEffect(() => {
+  //   setHeader(false)
+
+  //   return () => setHeader(true)
+  // }, [])
+
+  useFocusEffect(React.useCallback(() => {
     setHeader(false)
 
     return () => setHeader(true)
-  }, [])
+  }, []))
 
 
   const generateYears = () => {

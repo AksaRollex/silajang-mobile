@@ -218,6 +218,14 @@ const TabNavigator = () => {
               />
             ),
           }}
+          listeners={({ navigation }) => ({
+            tabPress: (e) => {
+              e.preventDefault();
+              navigation.navigate("Pembayaran", {
+                screen: "PembayaranIndex"
+              });
+            },
+          })}
         />
       )}
   
