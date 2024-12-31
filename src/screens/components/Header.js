@@ -30,7 +30,7 @@ export default function Header({}) {
             onPress={() => navigation.navigate("Auth", { screen: "Login" })}
             style={{
               borderWidth: 1,
-              borderStyle: "dashed",
+              // borderStyle: "dashed",
               borderColor: "#5C6BC0",
             }}>
             <Text className="capitalize font-poppins-medium text-center text-white">

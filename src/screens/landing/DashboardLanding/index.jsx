@@ -16,13 +16,14 @@ import IonIcons from "react-native-vector-icons/Ionicons";
 import Header from "../../components/Header";
 import FooterLanding from "../component/FooterLanding";
 import { useQuery } from "@tanstack/react-query";
-import axios from "@/src/libs/axios";
+import axios from "axios";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 import { BarChart } from "react-native-chart-kit";
 import { usePengumuman } from "@/src/services/usePengumuman";
 import AntDesign from "react-native-vector-icons/AntDesign";
 import { useBanner } from "@/src/services/useBanner";
 import { APP_URL } from "@env";
+import { API_URL } from "@env";
 import AskButton from "../component/AskButton";
 import { MenuView } from "@react-native-menu/menu";
 
@@ -81,7 +82,24 @@ const DashboardLanding = ({ navigation }) => {
     ["umpanBalikSummary"],
     async () => {
       try {
-        const response = await axios.post("/konfigurasi/umpan-balik/show");
+        const currentDate = new Date();
+        const currentMonth = currentDate.getMonth() + 1;
+        const currentYear = currentDate.getFullYear();
+
+        console.log("bulan", currentMonth);
+        console.log("tahun", currentYear);
+
+        const response = await axios.post(
+          `${API_URL}/konfigurasi/umpan-balik/show`,
+          {
+            bulan: currentMonth,
+            tahun: currentYear,
+            full: 1,
+          },
+        );
+
+        console.log("uhuyy", response.data);
+
         return response.data;
       } catch (error) {
         console.error("Error detail:", {
@@ -101,8 +119,6 @@ const DashboardLanding = ({ navigation }) => {
       onError: error => console.log("Query error:", error),
     },
   );
-
-  console.log(summaryData);
 
   const renderStats = data => {
     if (!data?.data) return null;
