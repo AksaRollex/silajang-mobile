@@ -20,8 +20,8 @@ const Kontak = ({ navigation }) => {
   const { data: dataSetting } = useSetting();
 
   const [coordinates, setCoordinates] = useState({
-    latitude: -7.5462722,
-    longitude: 112.2307275,
+    latitude: -7.537917,
+    longitude: 112.2406,
   });
 
   const openLargerMap = () => {
