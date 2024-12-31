@@ -9,7 +9,7 @@ import {
   Platform,
   StyleSheet,
   Alert,
-  Linking
+  Linking,
 } from "react-native";
 import React, { useState, useRef, useEffect } from "react";
 import Header from "../../components/Header";
@@ -58,85 +58,87 @@ const FAQ = ({ navigation }) => {
   const videoUrl = require("../../../../assets/media/documentation.mp4");
 
   const requestStoragePermission = async () => {
-    // Cek apakah perangkat menjalankan Android versi 6.0 (API 23) atau lebih tinggi
-    if (Platform.OS === "android" && Platform.Version >= 23) {
+    if (Platform.OS === "android") {
       try {
-        // Meminta izin akses penyimpanan
-        const granted = await PermissionsAndroid.request(
-          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
-          {
-            title: "Izin Penyimpanan",
-            message: "Aplikasi memerlukan izin untuk menyimpan file.",
-            buttonNeutral: "Tanya Nanti",
-            buttonNegative: "Batal",
-            buttonPositive: "OK",
-          }
+        // Cek status permission saat ini
+        const readStatus = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE
+        );
+        const writeStatus = await PermissionsAndroid.check(
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE
         );
   
-        // Jika izin diberikan, lanjutkan proses
-        if (granted === PermissionsAndroid.RESULTS.GRANTED) {
-          console.log("Izin penyimpanan diberikan");
-        } else {
-          console.log("Izin penyimpanan ditolak");
-  
-          // Jika izin ditolak, tampilkan alert dengan opsi ke pengaturan
+        // Jika salah satu permission ditolak dengan "never ask again"
+        if (!readStatus || !writeStatus) {
           Alert.alert(
-            "Izin diperlukan",
-            "Aplikasi memerlukan izin untuk mengakses penyimpanan. Silakan aktifkan izin di pengaturan aplikasi.",
+            "Izin Diperlukan",
+            "Aplikasi memerlukan izin penyimpanan. Silakan aktifkan di pengaturan aplikasi.",
             [
               { text: "Batal" },
               {
-                text: "Pengaturan",
-                onPress: () => Linking.openSettings(),
+                text: "Buka Pengaturan",
+                onPress: () => {
+                  Linking.openSettings();
+                },
               },
             ]
           );
+          return false;
         }
+  
+        // Jika belum pernah meminta permission
+        const permissions = [
+          PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+          PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
+        ];
+  
+        const statuses = await PermissionsAndroid.requestMultiple(permissions);
+        
+        return Object.values(statuses).every(
+          status => status === PermissionsAndroid.RESULTS.GRANTED
+        );
       } catch (err) {
-        console.warn(err);
+        console.error('Error requesting permission:', err);
+        return false;
       }
     }
+    return true;
   };
-  
+
   useEffect(() => {
-    // Panggil fungsi saat komponen pertama kali dimuat
-    requestStoragePermission();
+    const checkPermissions = async () => {
+      try {
+        const result = await requestStoragePermission();
+        console.log('Initial permission check result:', result);
+      } catch (error) {
+        console.error('Error in initial permission check:', error);
+      }
+    };
+    
+    checkPermissions();
   }, []);
 
   const downloadFile = async () => {
+    const hasPermission = await requestStoragePermission();
+    if (!hasPermission) return;
+
     const { fs } = RNFetchBlob;
-    const fileDir = fs.dirs.DownloadDir; // Direktori unduhan
+    const fileDir = fs.dirs.DownloadDir;
     const fileName = `manual_book_${Date.now()}.pdf`;
     const destinationPath = `${fileDir}/${fileName}`;
 
     try {
-      // Pastikan izin diberikan
-      const hasPermission = await requestStoragePermission();
-      if (!hasPermission) {
-        console.error("Izin penyimpanan tidak diberikan");
-        return;
-      }
-
-      // Path file aset
-      const assetPath = "manual_book_silajang_user.pdf"; // Sesuaikan nama file
-
-      // Cek jika file aset ada
-      if (!assetPath) {
-        console.error("Path file aset tidak valid");
-        return;
-      }
-
-      // Salin file dari aset ke direktori unduhan
-      RNFetchBlob.fs
-        .cp(fs.asset(assetPath), destinationPath)
-        .then(() => {
-          console.log("File berhasil diunduh ke:", destinationPath);
-        })
-        .catch(error => {
-          console.error("Gagal mengunduh file:", error);
-        });
+      await RNFetchBlob.fs.cp(
+        fs.asset("manual_book_silajang_user.pdf"),
+        destinationPath,
+      );
+      Alert.alert(
+        "Download Sukses",
+        `File berhasil diunduh ke: ${destinationPath}`,
+      );
     } catch (error) {
-      console.error("Error:", error);
+      console.error("Gagal mengunduh file:", error);
+      Alert.alert("Download Gagal", "Terjadi kesalahan saat mengunduh file.");
     }
   };
 
